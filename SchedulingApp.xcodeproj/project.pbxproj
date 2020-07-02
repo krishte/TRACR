@@ -15,6 +15,10 @@
 		561880B624AB4A8600558F29 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 561880B424AB4A8600558F29 /* LaunchScreen.storyboard */; };
 		561880C124AB4A8700558F29 /* SchedulingAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880C024AB4A8700558F29 /* SchedulingAppTests.swift */; };
 		561880CC24AB4A8700558F29 /* SchedulingAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880CB24AB4A8700558F29 /* SchedulingAppUITests.swift */; };
+		561880DA24AB753700558F29 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880D924AB753700558F29 /* HomeView.swift */; };
+		561880DC24AB759500558F29 /* ClassesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880DB24AB759500558F29 /* ClassesView.swift */; };
+		561880DE24AB75A600558F29 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880DD24AB75A600558F29 /* FilterView.swift */; };
+		561880E024AB75B100558F29 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880DF24AB75B100558F29 /* ProgressView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +53,10 @@
 		561880C724AB4A8700558F29 /* SchedulingAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SchedulingAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		561880CB24AB4A8700558F29 /* SchedulingAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchedulingAppUITests.swift; sourceTree = "<group>"; };
 		561880CD24AB4A8700558F29 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		561880D924AB753700558F29 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		561880DB24AB759500558F29 /* ClassesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassesView.swift; sourceTree = "<group>"; };
+		561880DD24AB75A600558F29 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
+		561880DF24AB75B100558F29 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +114,10 @@
 				561880B424AB4A8600558F29 /* LaunchScreen.storyboard */,
 				561880B724AB4A8600558F29 /* Info.plist */,
 				561880B124AB4A8600558F29 /* Preview Content */,
+				561880D924AB753700558F29 /* HomeView.swift */,
+				561880DB24AB759500558F29 /* ClassesView.swift */,
+				561880DD24AB75A600558F29 /* FilterView.swift */,
+				561880DF24AB75B100558F29 /* ProgressView.swift */,
 			);
 			path = SchedulingApp;
 			sourceTree = "<group>";
@@ -268,8 +280,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				561880AA24AB4A8500558F29 /* AppDelegate.swift in Sources */,
+				561880DA24AB753700558F29 /* HomeView.swift in Sources */,
 				561880AC24AB4A8500558F29 /* SceneDelegate.swift in Sources */,
 				561880AE24AB4A8500558F29 /* ContentView.swift in Sources */,
+				561880E024AB75B100558F29 /* ProgressView.swift in Sources */,
+				561880DE24AB75A600558F29 /* FilterView.swift in Sources */,
+				561880DC24AB759500558F29 /* ClassesView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

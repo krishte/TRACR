@@ -22,7 +22,7 @@ struct ContentView: View {
             }.tag(1)
             ClassesView().tabItem {
                 Image(systemName: "list.dash")
-                Text("Classes").font(.title)
+                Text("Classes")
                 
             }.tag(1)
              FilterView().tabItem {

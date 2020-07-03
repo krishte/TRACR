@@ -1,5 +1,4 @@
 this is a test file okay so this is just like a test file
 this is the next line
-this is the third line okay
+this is the conflict line okay
 yeah this is it.
-

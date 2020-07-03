@@ -93,7 +93,7 @@ struct ClassesView: View {
             .navigationBarItems(leading:
              HStack {
              Button(action: {}) {
-                Image(systemName: "gear").resizable().scaledToFit()
+                Image(systemName: "gear").resizable().scaledToFit().font(.title)
              }.foregroundColor(.black)
               
             },trailing:

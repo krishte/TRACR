@@ -17,7 +17,7 @@ struct ContentView: View {
                 
             HomeView().tabItem {
                 Image(systemName: "house").resizable().scaledToFill()
-                Text("Schedule").font(.body)
+                Text("Schedule").font(.title)
                 
             }.tag(1)
             ClassesView().tabItem {

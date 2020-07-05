@@ -74,7 +74,7 @@ struct ClassesView: View {
     
     let classlist = [
         Classcool(name: "German", attentionspan: 5, tolerance: 4, assignmentnumber: 4),
-        Classcool(name: "Math", attentionspan: 4, tolerance: 3, assignmentnumber: 2),
+        Classcool(name: "Math", attentionspan: 5, tolerance: 3, assignmentnumber: 2),
         Classcool(name: "English", attentionspan: 1, tolerance: 2, assignmentnumber: 3)
            
         

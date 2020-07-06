@@ -13,27 +13,28 @@ struct ContentView: View {
         
      
         
-            TabView {
+        TabView {
                 
             HomeView().tabItem {
                 Image(systemName: "house").resizable().scaledToFill()
-                Text("Schedule").font(.body)
+                Text("Home").font(.body)
                 
-            }.tag(1)
+            }
             ClassesView().tabItem {
-                Image(systemName: "list.dash")
+                Image(systemName: "list.dash").resizable().scaledToFill()
                 Text("Classes")
                 
-            }.tag(1)
+            }
              FilterView().tabItem {
-                Image(systemName:"tortoise")
-                Text("Filter").tag(1)
+                Image(systemName:"tortoise").resizable().scaledToFill()
+                Text("Filter")
                 }
             ProgressView().tabItem {
                 Image(systemName: "chart.bar").resizable().scaledToFit()
-                Text("Progress").tag(1)
+                Text("Progress")
+                    
                 }
-            }
+        }
             
         
     }

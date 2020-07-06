@@ -65,6 +65,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 struct SceneDelegate_Previews: PreviewProvider {
     static var previews: some View {
-        Text("Hello, pasodifjpoj p!")
+        Text("Hello, World!")
     }
 }

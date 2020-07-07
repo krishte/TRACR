@@ -26,7 +26,7 @@ struct ContentView: View {
                 
             }
              FilterView().tabItem {
-                Image(systemName:"tortoise").resizable().scaledToFill()
+                Image(systemName:"wand.and.stars").resizable().scaledToFill()
                 Text("Filter")
                 }
             ProgressView().tabItem {

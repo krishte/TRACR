@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E2269" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Assignment" representedClassName="Assignment" syncable="YES">
+        <attribute name="duedate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="progress" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="subject" optional="YES" attributeType="String"/>
+        <attribute name="timeleft" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="totaltime" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="Classcool" representedClassName="Classcool" syncable="YES">
+        <attribute name="attentionspan" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="tolerance" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="SubassignmentData" representedClassName="SubassignmentData" syncable="YES">
+        <attribute name="assigmentname" optional="YES" attributeType="String"/>
+        <attribute name="enddatetime" optional="YES" attributeType="String"/>
+        <attribute name="startdatetime" optional="YES" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="SubassignmentData" positionX="-36" positionY="-18" width="128" height="88"/>
+        <element name="Classcool" positionX="0" positionY="9" width="128" height="88"/>
+        <element name="Assignment" positionX="27" positionY="18" width="128" height="133"/>
+    </elements>
+</model>

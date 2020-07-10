@@ -17,11 +17,13 @@ extension Assignment {
         return NSFetchRequest<Assignment>(entityName: "Assignment")
     }
 
-    @NSManaged public var duedate: Date?
-    @NSManaged public var name: String?
+    @NSManaged public var duedate: Date
+    @NSManaged public var name: String
     @NSManaged public var progress: Int64
-    @NSManaged public var subject: String?
+    @NSManaged public var subject: String
     @NSManaged public var timeleft: Int64
     @NSManaged public var totaltime: Int64
-
+    @NSManaged public var completed: Bool
+    
 }
+

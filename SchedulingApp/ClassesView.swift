@@ -77,31 +77,59 @@ class SubAssignment: Identifiable {
 
 struct ClassView: View {
     var classcool: Classcool
+    @Environment(\.managedObjectContext) var managedObjectContext
     
+    @FetchRequest(entity: Assignment.entity(),
+                  sortDescriptors: [])
+    
+
+    var assignmentlist: FetchedResults<Assignment>
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 
-                Text(classcool.name)
+                Text(classcool.name).font(.subheadline).fontWeight(.bold)
+                if (assignmentlist.count > 0)
+                {
+                    List {
+                        ForEach(assignmentlist) {
+                            assignment in
+                            Text(assignment.name)
+                        }
+                    }
+                }
+
                 
             }
             Spacer()
-//            Text(String(classcool.assignmentlist.count))
+            Text(String(assignmentlist.count))
         }
     }
 }
 
 struct DetailView: View {
     var classcool: Classcool
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @FetchRequest(entity: Assignment.entity(),
+                  sortDescriptors: [])
+    
+    var assignmentlist: FetchedResults<Assignment>
     
     var body: some View {
         VStack {
-            Text(classcool.name).font(.title)
-            
+            Text(classcool.name).font(.title).fontWeight(.bold)
+            Spacer()
             Text("Tolerance: " + String(classcool.tolerance))
             
-            Text("Attention Span: " + String(classcool.attentionspan))
+            
+            List {
+                ForEach(assignmentlist) {
+                    assignment in
+                    Text(assignment.name)
+                }
+            }
         }
     }
 }
@@ -117,23 +145,30 @@ struct ClassesView: View {
     var classlist: FetchedResults<Classcool>
 //
 //    var classlist: [Classcool] = [
-////        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: .blue, assignmentlist: []),
-////        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: .green, assignmentlist: []),
-////        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: .orange, assignmentlist: [])
-////
+//        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: .blue, assignmentlist: []),
+//        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: .green, assignmentlist: []),
+//        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: .orange, assignmentlist: [])
+//
 //
 //
 //    ]
-    var globalassignmentlist: [Assignment] = []
-    
+
     var body: some View {
 
      NavigationView{
-          List(classlist) { classcool in
-            NavigationLink(destination: DetailView(classcool: classcool )) {
-                ClassView(classcool:classcool )
+        List {
+            ForEach(classlist) {
+                classcool in
+                NavigationLink(destination: DetailView(classcool: classcool )) {
+                    ClassView(classcool:classcool )
                 }
+            }.onDelete { indexSet in
+                for index in indexSet {
+                    self.managedObjectContext.delete(self.classlist[index])
+                }
+            }
           }
+            
         
             .navigationBarItems(leading:
              HStack {
@@ -144,18 +179,26 @@ struct ClassesView: View {
             },trailing:
          HStack {
              Button(action: {
-        
-                let newClass = Classcool(context: self.managedObjectContext)
-                newClass.attentionspan = 5
-                newClass.tolerance = 7
-                newClass.name = "Math"
-                      print("hello")
-                do {
-                 try self.managedObjectContext.save()
-                 print("Order saved.")
-                } catch {
-                 print(error.localizedDescription)
-                 }
+              let classnames = ["german", "math", "english", "music", "history"]
+//
+//
+//
+//                for classname in classnames {
+//                    let newClass = Classcool(context: self.managedObjectContext)
+//                    newClass.attentionspan = Int64.random(in: 0 ... 10)
+//                    newClass.tolerance = Int64.random(in: 0 ... 10)
+//                    newClass.name = classname
+//                    do {
+//                       try self.managedObjectContext.save()
+//                       print("Order saved.")
+//                      } catch {
+//                       print(error.localizedDescription)
+//                       }
+//                }
+//
+            
+  
+                
                 
              }) {
                  Image(systemName: "plus")

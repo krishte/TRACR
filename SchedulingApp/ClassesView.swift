@@ -72,9 +72,9 @@ struct ClassView: View {
         HStack {
             VStack(alignment: .leading) {
                 
-                Text(classcool.name).foregroundColor(classcool.color)
+                Text(classcool.name)
                 
-            }
+            }.background(classcool.color)
             Spacer()
             Text(String(classcool.assignmentlist.count))
         }
@@ -99,9 +99,9 @@ struct ClassesView: View {
 
     
     var classlist = [
-        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: .blue, assignmentlist: []),
-        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: .green, assignmentlist: []),
-        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: .orange, assignmentlist: [])
+        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
+        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: Color("two"), assignmentlist: []),
+        Classcool(name: "English", attentionspan: 1, tolerance: 2, color: Color("three"), assignmentlist: [])
            
         
     
@@ -109,28 +109,32 @@ struct ClassesView: View {
     var globalassignmentlist: [Assignment] = []
     
     var body: some View {
-     NavigationView{
-          List(classlist) { classcool in
-                NavigationLink(destination: DetailView(classcool: classcool)) {
-                    ClassView(classcool:classcool)
-                }
-          }
+         GeometryReader { geometry in
+             NavigationView{
+                List(self.classlist) { classcool in
+                   NavigationLink(destination: DetailView(classcool: classcool)) {
+                       ClassView(classcool:classcool)
+                       }
+                 }
+                 .navigationBarItems(
+                    leading:
+                        HStack(spacing: geometry.size.width / 4.2) {
+                            Button(action: {print("settings button clicked")}) {
+                                Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
+                            }.padding(.leading, 2.0);
+                        
+                            Image("Tracr").resizable().scaledToFit().frame(width: geometry.size.width / 4);
+
+                            Button(action: {print("add button clicked")}) {
+                                Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
+                            }
+                    }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
+                    
+             }
+        }
         
-            .navigationBarItems(leading:
-             HStack {
-             Button(action: {}) {
-                Image(systemName: "gear").resizable().scaledToFit().font(.title)
-             }.foregroundColor(.black)
-              
-            },trailing:
-         HStack {
-             Button(action: {}) {
-                 Image(systemName: "plus")
-                    .font(.title)
-             }.foregroundColor(.black)
-            }).navigationBarTitle(Text("Classes"))
-     }
- 
+        
+        
     }
 }
 

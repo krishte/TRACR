@@ -11,32 +11,29 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         
-     
-        
         TabView {
                 
             HomeView().tabItem {
                 Image(systemName: "house").resizable().scaledToFill()
                 Text("Home").font(.body)
-                
             }
+            
             ClassesView().tabItem {
                 Image(systemName: "list.dash").resizable().scaledToFill()
                 Text("Classes")
-                
             }
+            
              FilterView().tabItem {
                 Image(systemName:"wand.and.stars").resizable().scaledToFill()
                 Text("Filter")
-                }
+            }
+            
             ProgressView().tabItem {
                 Image(systemName: "chart.bar").resizable().scaledToFit()
                 Text("Progress")
                     
-                }
+            }
         }
-            
-        
     }
 }
     

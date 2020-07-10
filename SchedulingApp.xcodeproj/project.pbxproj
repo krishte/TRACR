@@ -19,6 +19,7 @@
 		561880DE24AB75A600558F29 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880DD24AB75A600558F29 /* FilterView.swift */; };
 		561880E024AB75B100558F29 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880DF24AB75B100558F29 /* ProgressView.swift */; };
 		CFDB39DF24B206F40055C48A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */; };
+		CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39E224B8845A0055C48A /* Colors.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		561880DD24AB75A600558F29 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
 		561880DF24AB75B100558F29 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		CFDB39E224B8845A0055C48A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 				561880AB24AB4A8500558F29 /* SceneDelegate.swift */,
 				561880AD24AB4A8500558F29 /* ContentView.swift */,
 				561880AF24AB4A8600558F29 /* Assets.xcassets */,
+				CFDB39E224B8845A0055C48A /* Colors.xcassets */,
 				CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */,
 				561880B724AB4A8600558F29 /* Info.plist */,
 				561880B124AB4A8600558F29 /* Preview Content */,
@@ -256,6 +259,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CFDB39DF24B206F40055C48A /* LaunchScreen.storyboard in Resources */,
+				CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */,
 				561880B324AB4A8600558F29 /* Preview Assets.xcassets in Resources */,
 				561880B024AB4A8600558F29 /* Assets.xcassets in Resources */,
 			);

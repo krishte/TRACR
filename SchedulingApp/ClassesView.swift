@@ -9,6 +9,7 @@
 import SwiftUI
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 class SubAssignment: Identifiable {
     var startdatetime: String = ""
@@ -25,6 +26,8 @@ class SubAssignment: Identifiable {
 
 }
 =======
+=======
+>>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
 //class Classcool: Identifiable {
 //    var name: String = ""
 //    var attentionspan: Int = 0
@@ -89,7 +92,10 @@ class SubAssignment: Identifiable {
 //    }
 //
 //}
+<<<<<<< HEAD
 >>>>>>> d8fc43a05acd14b4c5d86a1ffbc6e281cbceae51
+=======
+>>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
 
 
 struct ClassView: View {
@@ -107,7 +113,7 @@ struct ClassView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(classcool.name).font(.subheadline).fontWeight(.bold)
+                Text(classcool.name).font(.subheadline).fontWeight(.bold).foregroundColor(Color("one"))
                 
                     }
             Spacer()
@@ -165,15 +171,6 @@ struct ClassesView: View {
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
-//
-//    var classlist: [Classcool] = [
-//        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
-//        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: Color("two"), assignmentlist: []),
-//        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: Color("three"), assignmentlist: [])
-//
-//
-//
-//    ]
 
     var body: some View {
          GeometryReader { geometry in
@@ -202,6 +199,7 @@ struct ClassesView: View {
                         HStack(spacing: geometry.size.width / 4.2) {
                             Button(action: {
 <<<<<<< HEAD
+<<<<<<< HEAD
                                                let classnames = ["german", "math", "english", "music", "history"]
                                 
                                 
@@ -219,6 +217,8 @@ struct ClassesView: View {
                                                 }})
                                 {
 =======
+=======
+>>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
                                 
                                 let classnames = ["german", "math", "english", "music", "history"]
                 
@@ -253,7 +253,10 @@ struct ClassesView: View {
                                
                                 
                             }) {
+<<<<<<< HEAD
 >>>>>>> d8fc43a05acd14b4c5d86a1ffbc6e281cbceae51
+=======
+>>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
                                 Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                             }.padding(.leading, 2.0);
                         
@@ -267,9 +270,13 @@ struct ClassesView: View {
              }
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> d8fc43a05acd14b4c5d86a1ffbc6e281cbceae51
+=======
+
+>>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
     }
 }
 

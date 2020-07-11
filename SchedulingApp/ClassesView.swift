@@ -40,7 +40,7 @@ struct ClassView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(classcool.name).font(.subheadline).fontWeight(.bold)
+                Text(classcool.name).font(.subheadline).fontWeight(.bold).foregroundColor(Color("one"))
                 
 
                     
@@ -111,15 +111,6 @@ struct ClassesView: View {
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
-//
-//    var classlist: [Classcool] = [
-//        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
-//        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: Color("two"), assignmentlist: []),
-//        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: Color("three"), assignmentlist: [])
-//
-//
-//
-//    ]
 
     var body: some View {
          GeometryReader { geometry in
@@ -147,7 +138,8 @@ struct ClassesView: View {
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {
                             Button(action: {
-                                               let classnames = ["german", "math", "english", "music", "history"]
+                                                let classnames = ["german", "math", "english", "music", "history"]
+                                                let colornames = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
                                 
                                 
                                                 for classname in classnames {
@@ -155,6 +147,7 @@ struct ClassesView: View {
                                                     newClass.attentionspan = Int64.random(in: 0 ... 10)
                                                     newClass.tolerance = Int64.random(in: 0 ... 10)
                                                     newClass.name = classname
+                                                    newClass.color = colornames.randomElement()!
                                                     do {
                                                        try self.managedObjectContext.save()
                                                        print("Class made")

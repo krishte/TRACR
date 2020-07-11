@@ -105,7 +105,6 @@ struct ClassView: View {
                            
                         }
                     }
-
             Spacer()
             Text(String(assignmentlist.count))
         }
@@ -184,7 +183,6 @@ struct ClassesView: View {
                     for index in indexSet {
                     self.managedObjectContext.delete(self.classlist[index])
                     }
-                
                   do {
                    try self.managedObjectContext.save()
                    print("Class made")

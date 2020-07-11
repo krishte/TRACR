@@ -8,21 +8,70 @@
 
 import SwiftUI
 
+//class Classcool: Identifiable {
+//    var name: String = ""
+//    var attentionspan: Int = 0
+//    var tolerance: Int = 0
+//    var color: Color = Color.blue
+//    var assignmentlist: [Assignment] = []
+//
+//    init(name: String, attentionspan: Int, tolerance: Int, color: Color, assignmentlist: [Assignment])
+//    {
+//        self.name = name
+//        self.attentionspan = attentionspan
+//        self.tolerance = tolerance
+//        self.color = color
+//        self.assignmentlist = assignmentlist
+//    }
+//}
 
-class SubAssignment: Identifiable {
-    var startdatetime: String = ""
-    var enddatetime: String = ""
-    var assignmentname: String = ""
-    
-    init(startdatetime: String, enddatetime: String, assignmentname: String)
-    {
-        self.startdatetime = startdatetime
-        self.enddatetime = enddatetime
-        self.assignmentname = assignmentname
-        
-    }
+//class Assignment: Identifiable {
+//    var subject: String = ""
+//    var name: String = ""
+//    var type: AssignmentTypes = AssignmentTypes.exam
+//    var duedate: Date
+//    var totaltime: Int = 0
+//    var progress: Int = 0
+//    var timeleft: Int = 0
+//    var subassigmentlist: [SubAssignment] = []
+//
+//
+//    init(subject: String, name: String, type: AssignmentTypes, duedate: Date, totaltime: Int, progress: Int, timeleft: Int, subsylist: [SubAssignment])
+//    {
+//        self.subject = subject
+//        self.name = name
+//        self.type = type
+//        self.duedate = duedate
+//        self.totaltime = totaltime
+//        self.progress = progress
+//        self.timeleft = timeleft
+//        self.subassigmentlist = subsylist
+//
+//    }
+//
+//}
 
-}
+//enum AssignmentTypes: String {
+//    case essay
+//    case exam
+//    case presentation
+//    case test
+//}
+//
+//class SubAssignment: Identifiable {
+//    var startdatetime: String = ""
+//    var enddatetime: String = ""
+//    var assignmentname: String = ""
+//
+//    init(startdatetime: String, enddatetime: String, assignmentname: String)
+//    {
+//        self.startdatetime = startdatetime
+//        self.enddatetime = enddatetime
+//        self.assignmentname = assignmentname
+//
+//    }
+//
+//}
 
 
 struct ClassView: View {
@@ -42,19 +91,6 @@ struct ClassView: View {
             VStack(alignment: .leading) {
                 Text(classcool.name).font(.subheadline).fontWeight(.bold).foregroundColor(Color("one"))
                 
-
-                    
-                        List(assignmentlist) {
-                            assignment in
-                            if (assignment.subject == self.classcool.name)
-                            {
-                                Text(assignment.name)
-                                
-                                
-                            }
-
-                           
-                        }
                     }
             Spacer()
             Text(String(assignmentlist.count))
@@ -138,24 +174,40 @@ struct ClassesView: View {
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {
                             Button(action: {
-                                                let classnames = ["german", "math", "english", "music", "history"]
-                                                let colornames = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
                                 
+                                let classnames = ["german", "math", "english", "music", "history"]
+                
+                
+                
+                                for classname in classnames {
+                                    let newClass = Classcool(context: self.managedObjectContext)
+                                    newClass.attentionspan = Int64.random(in: 0 ... 10)
+                                    newClass.tolerance = Int64.random(in: 0 ... 10)
+                                    newClass.name = classname
+                                    do {
+                                       try self.managedObjectContext.save()
+                                       print("Class made")
+                                      } catch {
+                                       print(error.localizedDescription)
+                                       }
+                                }
                                 
-                                                for classname in classnames {
-                                                    let newClass = Classcool(context: self.managedObjectContext)
-                                                    newClass.attentionspan = Int64.random(in: 0 ... 10)
-                                                    newClass.tolerance = Int64.random(in: 0 ... 10)
-                                                    newClass.name = classname
-                                                    newClass.color = colornames.randomElement()!
-                                                    do {
-                                                       try self.managedObjectContext.save()
-                                                       print("Class made")
-                                                      } catch {
-                                                       print(error.localizedDescription)
-                                                       }
-                                                }})
-                                {
+                                for classname in classnames {
+                                    let randomint = Int.random(in: 1...5)
+                                    for i in 0..<randomint {
+                                        let newAssignment = Assignment(context: self.managedObjectContext)
+                                        newAssignment.name = classname + " assignment " + String(i)
+                                        newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
+                                        newAssignment.totaltime = Int64.random(in: 5...20)
+                                        newAssignment.subject = classname
+                                        newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
+                                        newAssignment.progress = ((newAssignment.totaltime - newAssignment.timeleft)/newAssignment.totaltime) * 100
+                                        
+                                    }
+                                }
+                               
+                                
+                            }) {
                                 Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                             }.padding(.leading, 2.0);
                         
@@ -168,6 +220,7 @@ struct ClassesView: View {
                     
              }
         }
+
     }
 }
 

@@ -231,25 +231,7 @@ struct ClassesView: View {
                     
              }
         }
-//           HStack {
-//             Button(action: {
-//               let classnames = ["german", "math", "english", "music", "history"]
-//
-//
-//
-//                for classname in classnames {
-//                    let newClass = Classcool(context: self.managedObjectContext)
-//                    newClass.attentionspan = Int64.random(in: 0 ... 10)
-//                    newClass.tolerance = Int64.random(in: 0 ... 10)
-//                    newClass.name = classname
-//                    do {
-//                       try self.managedObjectContext.save()
-//                       print("Class made")
-//                      } catch {
-//                       print(error.localizedDescription)
-//                       }
-//                }
-//
+
     }
 }
 

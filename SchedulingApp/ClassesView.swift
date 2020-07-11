@@ -177,7 +177,7 @@ struct ClassesView: View {
                     ForEach(self.classlist) {
                       classcool in
                       NavigationLink(destination: DetailView(classcool: classcool )) {
-                        ClassView(classcool:classcool )
+                        ClassView(classcool: classcool)
                       }
                     }.onDelete { indexSet in
                     for index in indexSet {
@@ -195,7 +195,23 @@ struct ClassesView: View {
                  .navigationBarItems(
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {
-                            Button(action: {print("settings button clicked")}) {
+                            Button(action: {
+                                               let classnames = ["german", "math", "english", "music", "history"]
+                                
+                                
+                                                for classname in classnames {
+                                                    let newClass = Classcool(context: self.managedObjectContext)
+                                                    newClass.attentionspan = Int64.random(in: 0 ... 10)
+                                                    newClass.tolerance = Int64.random(in: 0 ... 10)
+                                                    newClass.name = classname
+                                                    do {
+                                                       try self.managedObjectContext.save()
+                                                       print("Class made")
+                                                      } catch {
+                                                       print(error.localizedDescription)
+                                                       }
+                                                }})
+                                {
                                 Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                             }.padding(.leading, 2.0);
                         
@@ -208,25 +224,6 @@ struct ClassesView: View {
                     
              }
         }
-//           HStack {
-//             Button(action: {
-//               let classnames = ["german", "math", "english", "music", "history"]
-//
-//
-//
-//                for classname in classnames {
-//                    let newClass = Classcool(context: self.managedObjectContext)
-//                    newClass.attentionspan = Int64.random(in: 0 ... 10)
-//                    newClass.tolerance = Int64.random(in: 0 ... 10)
-//                    newClass.name = classname
-//                    do {
-//                       try self.managedObjectContext.save()
-//                       print("Class made")
-//                      } catch {
-//                       print(error.localizedDescription)
-//                       }
-//                }
-//
     }
 }
 

@@ -89,7 +89,7 @@ struct ClassView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text(classcool.name).font(.subheadline).fontWeight(.bold)
+                Text(classcool.name).font(.subheadline).fontWeight(.bold).foregroundColor(Color("one"))
                 
                     }
             Spacer()
@@ -147,15 +147,6 @@ struct ClassesView: View {
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
-//
-//    var classlist: [Classcool] = [
-//        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
-//        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: Color("two"), assignmentlist: []),
-//        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: Color("three"), assignmentlist: [])
-//
-//
-//
-//    ]
 
     var body: some View {
          GeometryReader { geometry in
@@ -164,7 +155,7 @@ struct ClassesView: View {
                     ForEach(self.classlist) {
                       classcool in
                       NavigationLink(destination: DetailView(classcool: classcool )) {
-                        ClassView(classcool:classcool )
+                        ClassView(classcool: classcool)
                       }
                     }.onDelete { indexSet in
                     for index in indexSet {
@@ -225,7 +216,7 @@ struct ClassesView: View {
                             Button(action: {print("add button clicked")}) {
                                 Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                             }
-                    }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
+                        }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"), displayMode: .large)
                     
              }
         }

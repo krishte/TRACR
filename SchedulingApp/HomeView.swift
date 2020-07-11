@@ -104,7 +104,6 @@ struct HomeView: View {
                                         self.showAddOptions = true                            }
                                 }
                         }.padding(.top, -11.0))
-                        
                  }
             }
             

@@ -193,6 +193,7 @@ struct ClassesView: View {
                                     newClass.attentionspan = Int64.random(in: 0 ... 10)
                                     newClass.tolerance = Int64.random(in: 0 ... 10)
                                     newClass.name = classname
+                                    newClass.assignmentnumber = 0
                                     do {
                                        try self.managedObjectContext.save()
                                        print("Class made")
@@ -211,6 +212,12 @@ struct ClassesView: View {
                                         newAssignment.subject = classname
                                         newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
                                         newAssignment.progress = ((newAssignment.totaltime - newAssignment.timeleft)/newAssignment.totaltime) * 100
+                                        do {
+                                          try self.managedObjectContext.save()
+                                          print("Class made")
+                                         } catch {
+                                          print(error.localizedDescription)
+                                          }
                                         
                                     }
                                 }

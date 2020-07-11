@@ -105,8 +105,7 @@ struct ClassView: View {
                            
                         }
                     }
-                }
-            }
+
             Spacer()
             Text(String(assignmentlist.count))
         }
@@ -185,7 +184,7 @@ struct ClassesView: View {
                     for index in indexSet {
                     self.managedObjectContext.delete(self.classlist[index])
                     }
-                }
+                
                   do {
                    try self.managedObjectContext.save()
                    print("Class made")
@@ -194,6 +193,7 @@ struct ClassesView: View {
                    }
                 print("Class deleted")
             }
+                }
                  .navigationBarItems(
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {

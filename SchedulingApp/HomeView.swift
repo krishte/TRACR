@@ -25,7 +25,7 @@ func NewFreeTime() {
 }
 
 func NewGrade() {
-    print("new grade")
+    print("new grade change")
 }
 
 struct AddOptionsSubView: View {
@@ -104,7 +104,6 @@ struct HomeView: View {
                                         self.showAddOptions = true                            }
                                 }
                         }.padding(.top, -11.0))
-                        
                  }
             }
             

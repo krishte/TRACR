@@ -8,55 +8,6 @@
 
 import SwiftUI
 
-//class Classcool: Identifiable {
-//    var name: String = ""
-//    var attentionspan: Int = 0
-//    var tolerance: Int = 0
-//    var color: Color = Color.blue
-//    var assignmentlist: [Assignment] = []
-//
-//    init(name: String, attentionspan: Int, tolerance: Int, color: Color, assignmentlist: [Assignment])
-//    {
-//        self.name = name
-//        self.attentionspan = attentionspan
-//        self.tolerance = tolerance
-//        self.color = color
-//        self.assignmentlist = assignmentlist
-//    }
-//}
-
-//class Assignment: Identifiable {
-//    var subject: String = ""
-//    var name: String = ""
-//    var type: AssignmentTypes = AssignmentTypes.exam
-//    var duedate: Date
-//    var totaltime: Int = 0
-//    var progress: Int = 0
-//    var timeleft: Int = 0
-//    var subassigmentlist: [SubAssignment] = []
-//
-//
-//    init(subject: String, name: String, type: AssignmentTypes, duedate: Date, totaltime: Int, progress: Int, timeleft: Int, subsylist: [SubAssignment])
-//    {
-//        self.subject = subject
-//        self.name = name
-//        self.type = type
-//        self.duedate = duedate
-//        self.totaltime = totaltime
-//        self.progress = progress
-//        self.timeleft = timeleft
-//        self.subassigmentlist = subsylist
-//
-//    }
-//
-//}
-
-//enum AssignmentTypes: String {
-//    case essay
-//    case exam
-//    case presentation
-//    case test
-//}
 
 class SubAssignment: Identifiable {
     var startdatetime: String = ""
@@ -181,7 +132,7 @@ struct ClassesView: View {
                       }
                     }.onDelete { indexSet in
                     for index in indexSet {
-                    self.managedObjectContext.delete(self.classlist[index])
+                        self.managedObjectContext.delete(self.classlist[index])
                     }
                   do {
                    try self.managedObjectContext.save()
@@ -220,7 +171,7 @@ struct ClassesView: View {
                             Button(action: {print("add button clicked")}) {
                                 Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                             }
-                    }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
+                        }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"), displayMode: .large)
                     
              }
         }

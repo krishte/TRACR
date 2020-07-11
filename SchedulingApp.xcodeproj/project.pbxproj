@@ -23,6 +23,8 @@
 		56A66ECE24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A66ECC24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift */; };
 		56A66ED124B7D4CE00CCD161 /* Classcool+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A66ECF24B7D4CE00CCD161 /* Classcool+CoreDataClass.swift */; };
 		56A66ED224B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A66ED024B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift */; };
+		56FBB03724BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FBB03524BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift */; };
+		56FBB03824BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FBB03624BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift */; };
 		CFDB39DF24B206F40055C48A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */; };
 		CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39E224B8845A0055C48A /* Colors.xcassets */; };
 /* End PBXBuildFile section */
@@ -67,6 +69,8 @@
 		56A66ECC24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Assignment+CoreDataProperties.swift"; path = "SchedulingApp/Assignment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		56A66ECF24B7D4CE00CCD161 /* Classcool+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Classcool+CoreDataClass.swift"; path = "SchedulingApp/Classcool+CoreDataClass.swift"; sourceTree = "<group>"; };
 		56A66ED024B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Classcool+CoreDataProperties.swift"; path = "SchedulingApp/Classcool+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		56FBB03524BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignment+CoreDataClass.swift"; path = "SchedulingApp/Subassignment+CoreDataClass.swift"; sourceTree = "<group>"; };
+		56FBB03624BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignment+CoreDataProperties.swift"; path = "SchedulingApp/Subassignment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CFDB39E224B8845A0055C48A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -99,6 +103,8 @@
 		5618809D24AB4A8500558F29 = {
 			isa = PBXGroup;
 			children = (
+				56FBB03524BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift */,
+				56FBB03624BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift */,
 				56A66ECF24B7D4CE00CCD161 /* Classcool+CoreDataClass.swift */,
 				56A66ED024B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift */,
 				56A66ECB24B7D47A00CCD161 /* Assignment+CoreDataClass.swift */,
@@ -306,7 +312,9 @@
 				561880AC24AB4A8500558F29 /* SceneDelegate.swift in Sources */,
 				561880AE24AB4A8500558F29 /* ContentView.swift in Sources */,
 				561880E024AB75B100558F29 /* ProgressView.swift in Sources */,
+				56FBB03824BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift in Sources */,
 				561880DE24AB75A600558F29 /* FilterView.swift in Sources */,
+				56FBB03724BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift in Sources */,
 				56A66ECE24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift in Sources */,
 				56A66ED224B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift in Sources */,
 				56A66EBE24B77D5000CCD161 /* ClassModel.xcdatamodeld in Sources */,

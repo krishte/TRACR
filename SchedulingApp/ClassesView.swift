@@ -74,7 +74,6 @@ class SubAssignment: Identifiable {
 }
 
 
-
 struct ClassView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -90,7 +89,6 @@ struct ClassView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                
                 Text(classcool.name).font(.subheadline).fontWeight(.bold)
                 
 
@@ -106,10 +104,8 @@ struct ClassView: View {
 
                            
                         }
-                    
-                
-
-                
+                    }
+                }
             }
             Spacer()
             Text(String(assignmentlist.count))
@@ -161,33 +157,34 @@ struct ClassesView: View {
 
     
     @Environment(\.managedObjectContext) var managedObjectContext
-    
+
     @FetchRequest(entity: Classcool.entity(),
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
 //
 //    var classlist: [Classcool] = [
-//        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: .blue, assignmentlist: []),
-//        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: .green, assignmentlist: []),
-//        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: .orange, assignmentlist: [])
+//        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
+//        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: Color("two"), assignmentlist: []),
+//        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: Color("three"), assignmentlist: [])
 //
 //
 //
 //    ]
 
     var body: some View {
-
-     NavigationView{
-        List {
-            ForEach(classlist) {
-                classcool in
-                NavigationLink(destination: DetailView(classcool: classcool )) {
-                    ClassView(classcool:classcool )
-                }
-            }.onDelete { indexSet in
-                for index in indexSet {
+         GeometryReader { geometry in
+             NavigationView{
+                List {
+                    ForEach(self.classlist) {
+                      classcool in
+                      NavigationLink(destination: DetailView(classcool: classcool )) {
+                        ClassView(classcool:classcool )
+                      }
+                    }.onDelete { indexSet in
+                    for index in indexSet {
                     self.managedObjectContext.delete(self.classlist[index])
+                    }
                 }
                   do {
                    try self.managedObjectContext.save()
@@ -197,19 +194,25 @@ struct ClassesView: View {
                    }
                 print("Class deleted")
             }
-          }
-            
-        
-            .navigationBarItems(leading:
-             HStack {
-             Button(action: {}) {
-                Image(systemName: "gear").resizable().scaledToFit().font(.title)
-                }.foregroundColor(.black)
-              
-            },trailing:
-         HStack {
-             Button(action: {
-//              let classnames = ["german", "math", "english", "music", "history"]
+                 .navigationBarItems(
+                    leading:
+                        HStack(spacing: geometry.size.width / 4.2) {
+                            Button(action: {print("settings button clicked")}) {
+                                Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
+                            }.padding(.leading, 2.0);
+                        
+                            Image("Tracr").resizable().scaledToFit().frame(width: geometry.size.width / 4);
+
+                            Button(action: {print("add button clicked")}) {
+                                Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
+                            }
+                    }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
+                    
+             }
+        }
+//           HStack {
+//             Button(action: {
+//               let classnames = ["german", "math", "english", "music", "history"]
 //
 //
 //
@@ -226,35 +229,6 @@ struct ClassesView: View {
 //                       }
 //                }
 //
-//                for classname in classnames {
-//                    let newAssignment = Assignment(context: self.managedObjectContext)
-//                    newAssignment.name = classname + " assignment"
-//                    newAssignment.subject = classname
-//                    newAssignment.totaltime = Int64.random(in: 1 ... 40)
-//                    newAssignment.timeleft = newAssignment.totaltime - Int64.random(in: 1 ... newAssignment.totaltime)
-//                    newAssignment.progress = Int64.random(in: 0 ... 100)
-//                    //newAssignment.completed = false
-//                    newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
-//                    do {
-//                       try self.managedObjectContext.save()
-//                       print("Assignment made")
-//                      } catch {
-//                       print(error.localizedDescription)
-//                       }
-//
-//                }
-
-            
-  
-                
-                
-             }) {
-                 Image(systemName: "plus")
-                    .font(.title)
-             }.foregroundColor(.black)
-            }).navigationBarTitle(Text("Classes"))
-     }
- 
     }
 }
 

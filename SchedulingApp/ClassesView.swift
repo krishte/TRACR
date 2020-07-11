@@ -85,20 +85,29 @@ struct ClassView: View {
 
     var assignmentlist: FetchedResults<Assignment>
     
+
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 
                 Text(classcool.name).font(.subheadline).fontWeight(.bold)
-                if (assignmentlist.count > 0)
-                {
-                    List {
-                        ForEach(assignmentlist) {
+                
+
+                    
+                        List(assignmentlist) {
                             assignment in
-                            Text(assignment.name)
+                            if (assignment.subject == self.classcool.name)
+                            {
+                                Text(assignment.name)
+                                
+                                
+                            }
+
+                           
                         }
-                    }
-                }
+                    
+                
 
                 
             }
@@ -116,18 +125,32 @@ struct DetailView: View {
                   sortDescriptors: [])
     
     var assignmentlist: FetchedResults<Assignment>
+    var assignmentsbyclass: [Assignment] = []
     
     var body: some View {
         VStack {
             Text(classcool.name).font(.title).fontWeight(.bold)
             Spacer()
             Text("Tolerance: " + String(classcool.tolerance))
-            
+            Spacer()
             
             List {
                 ForEach(assignmentlist) {
                     assignment in
-                    Text(assignment.name)
+                    if (assignment.subject == self.classcool.name)
+                    {
+                        Text(assignment.name)
+                    }
+                }.onDelete { indexSet in
+                    for index in indexSet {
+                        self.managedObjectContext.delete(self.assignmentlist[index])
+                    }
+                      do {
+                       try self.managedObjectContext.save()
+                      } catch {
+                       print(error.localizedDescription)
+                       }
+                    print("Assignment deleted")
                 }
             }
         }
@@ -166,6 +189,13 @@ struct ClassesView: View {
                 for index in indexSet {
                     self.managedObjectContext.delete(self.classlist[index])
                 }
+                  do {
+                   try self.managedObjectContext.save()
+                   print("Class made")
+                  } catch {
+                   print(error.localizedDescription)
+                   }
+                print("Class deleted")
             }
           }
             
@@ -179,7 +209,7 @@ struct ClassesView: View {
             },trailing:
          HStack {
              Button(action: {
-              let classnames = ["german", "math", "english", "music", "history"]
+//              let classnames = ["german", "math", "english", "music", "history"]
 //
 //
 //
@@ -190,12 +220,30 @@ struct ClassesView: View {
 //                    newClass.name = classname
 //                    do {
 //                       try self.managedObjectContext.save()
-//                       print("Order saved.")
+//                       print("Class made")
 //                      } catch {
 //                       print(error.localizedDescription)
 //                       }
 //                }
 //
+//                for classname in classnames {
+//                    let newAssignment = Assignment(context: self.managedObjectContext)
+//                    newAssignment.name = classname + " assignment"
+//                    newAssignment.subject = classname
+//                    newAssignment.totaltime = Int64.random(in: 1 ... 40)
+//                    newAssignment.timeleft = newAssignment.totaltime - Int64.random(in: 1 ... newAssignment.totaltime)
+//                    newAssignment.progress = Int64.random(in: 0 ... 100)
+//                    //newAssignment.completed = false
+//                    newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
+//                    do {
+//                       try self.managedObjectContext.save()
+//                       print("Assignment made")
+//                      } catch {
+//                       print(error.localizedDescription)
+//                       }
+//
+//                }
+
             
   
                 

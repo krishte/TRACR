@@ -23,7 +23,7 @@ extension Assignment {
     @NSManaged public var subject: String
     @NSManaged public var timeleft: Int64
     @NSManaged public var totaltime: Int64
-    @NSManaged public var completed: Bool
+//    @NSManaged public var completed: Bool
     
 }
 

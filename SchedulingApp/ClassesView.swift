@@ -57,21 +57,21 @@ import SwiftUI
 //    case presentation
 //    case test
 //}
-
-class SubAssignment: Identifiable {
-    var startdatetime: String = ""
-    var enddatetime: String = ""
-    var assignmentname: String = ""
-    
-    init(startdatetime: String, enddatetime: String, assignmentname: String)
-    {
-        self.startdatetime = startdatetime
-        self.enddatetime = enddatetime
-        self.assignmentname = assignmentname
-        
-    }
-
-}
+//
+//class SubAssignment: Identifiable {
+//    var startdatetime: String = ""
+//    var enddatetime: String = ""
+//    var assignmentname: String = ""
+//
+//    init(startdatetime: String, enddatetime: String, assignmentname: String)
+//    {
+//        self.startdatetime = startdatetime
+//        self.enddatetime = enddatetime
+//        self.assignmentname = assignmentname
+//
+//    }
+//
+//}
 
 
 struct ClassView: View {
@@ -91,19 +91,6 @@ struct ClassView: View {
             VStack(alignment: .leading) {
                 Text(classcool.name).font(.subheadline).fontWeight(.bold)
                 
-
-                    
-                        List(assignmentlist) {
-                            assignment in
-                            if (assignment.subject == self.classcool.name)
-                            {
-                                Text(assignment.name)
-                                
-                                
-                            }
-
-                           
-                        }
                     }
             Spacer()
             Text(String(assignmentlist.count))
@@ -181,7 +168,7 @@ struct ClassesView: View {
                       }
                     }.onDelete { indexSet in
                     for index in indexSet {
-                    self.managedObjectContext.delete(self.classlist[index])
+                        self.managedObjectContext.delete(self.classlist[index])
                     }
                   do {
                    try self.managedObjectContext.save()
@@ -195,7 +182,41 @@ struct ClassesView: View {
                  .navigationBarItems(
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {
-                            Button(action: {print("settings button clicked")}) {
+                            Button(action: {
+                                
+                                let classnames = ["german", "math", "english", "music", "history"]
+                
+                
+                
+                                for classname in classnames {
+                                    let newClass = Classcool(context: self.managedObjectContext)
+                                    newClass.attentionspan = Int64.random(in: 0 ... 10)
+                                    newClass.tolerance = Int64.random(in: 0 ... 10)
+                                    newClass.name = classname
+                                    do {
+                                       try self.managedObjectContext.save()
+                                       print("Class made")
+                                      } catch {
+                                       print(error.localizedDescription)
+                                       }
+                                }
+                                
+                                for classname in classnames {
+                                    let randomint = Int.random(in: 1...5)
+                                    for i in 0..<randomint {
+                                        let newAssignment = Assignment(context: self.managedObjectContext)
+                                        newAssignment.name = classname + " assignment " + String(i)
+                                        newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
+                                        newAssignment.totaltime = Int64.random(in: 5...20)
+                                        newAssignment.subject = classname
+                                        newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
+                                        newAssignment.progress = ((newAssignment.totaltime - newAssignment.timeleft)/newAssignment.totaltime) * 100
+                                        
+                                    }
+                                }
+                               
+                                
+                            }) {
                                 Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                             }.padding(.leading, 2.0);
                         
@@ -208,25 +229,7 @@ struct ClassesView: View {
                     
              }
         }
-//           HStack {
-//             Button(action: {
-//               let classnames = ["german", "math", "english", "music", "history"]
-//
-//
-//
-//                for classname in classnames {
-//                    let newClass = Classcool(context: self.managedObjectContext)
-//                    newClass.attentionspan = Int64.random(in: 0 ... 10)
-//                    newClass.tolerance = Int64.random(in: 0 ... 10)
-//                    newClass.name = classname
-//                    do {
-//                       try self.managedObjectContext.save()
-//                       print("Class made")
-//                      } catch {
-//                       print(error.localizedDescription)
-//                       }
-//                }
-//
+
     }
 }
 

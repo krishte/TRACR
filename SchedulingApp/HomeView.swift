@@ -28,49 +28,46 @@ func NewGrade() {
     print("new grade")
 }
 
+struct AddOptionsSubView: View {
+    var assignmentFunc: () -> ()
+    var systemImageName: String
+    var addText: String
+    var imageWidth: CGFloat
+        
+    var body: some View {
+        Button(action: {self.assignmentFunc()}) {
+            HStack {
+                Image(systemName: self.systemImageName).resizable().scaledToFit().frame(width: imageWidth)
+                Spacer()
+                Text(addText).font(Font.body.weight(.semibold))
+            }.frame(width: 160)
+        }.foregroundColor(.black).padding(.horizontal, 14).padding(.vertical, 7).background(Color("add_overlay_bg_light")).cornerRadius(10)
+    }
+}
+
 struct AddOptionsView: View {
     var body: some View {
         VStack(alignment: .trailing) {
             VStack(alignment: .trailing, spacing: 10) {
-                Button(action: {NewAssignment()}) {
-                    HStack {
-                        Image(systemName: "paperclip").resizable().scaledToFit().frame(width: 18)
-                        Spacer()
-                        Text("Assignment").font(Font.body.weight(.semibold))
-                    }.frame(width: 160)
-                }.foregroundColor(.black).padding(.horizontal, 14).padding(.vertical, 7).background(Color("add_overlay_bg_light")).cornerRadius(10)
+                AddOptionsSubView(assignmentFunc: {
+                    NewAssignment()
+                }, systemImageName: "paperclip", addText: "Assignment", imageWidth: 18)
 
-                Button(action: {NewClass()}) {
-                    HStack {
-                        Image(systemName: "list.bullet").resizable().scaledToFit().frame(width: 18)
-                        Spacer()
-                        Text("Class").font(Font.body.weight(.semibold))
-                    }.frame(width: 160)
-                }.foregroundColor(.black).padding(.horizontal, 14).padding(.vertical, 7).background(Color("add_overlay_bg_light")).cornerRadius(10)
-                
-                Button(action: {NewOccupiedTime()}) {
-                    HStack {
-                        Image(systemName: "clock.fill").resizable().scaledToFit().frame(width: 18)
-                        Spacer()
-                        Text("Occupied Time").font(Font.body.weight(.semibold))
-                    }.frame(width: 160)
-                }.foregroundColor(.black).padding(.horizontal, 14).padding(.vertical, 7).background(Color("add_overlay_bg_light")).cornerRadius(10)
-                
-                Button(action: {NewFreeTime()}) {
-                    HStack {
-                        Image(systemName: "clock").resizable().scaledToFit().frame(width: 18)
-                        Spacer()
-                        Text("Free Time").font(Font.body.weight(.semibold))
-                    }.frame(width: 160)
-                }.foregroundColor(.black).padding(.horizontal, 14).padding(.vertical, 7).background(Color("add_overlay_bg_light")).cornerRadius(10)
+                AddOptionsSubView(assignmentFunc: {
+                    NewClass()
+                }, systemImageName: "list.bullet", addText: "Class", imageWidth: 18)
 
-                Button(action: {NewGrade()}) {
-                    HStack {
-                        Image(systemName: "percent").resizable().scaledToFit().frame(width: 16)
-                        Spacer()
-                        Text("Grade").font(Font.body.weight(.semibold))
-                    }.frame(width: 160)
-                }.foregroundColor(.black).padding(.horizontal, 14).padding(.vertical, 7).background(Color("add_overlay_bg_light")).cornerRadius(10)
+                AddOptionsSubView(assignmentFunc: {
+                    NewOccupiedTime()
+                }, systemImageName: "clock.fill", addText: "Occupied Time", imageWidth: 18)
+
+                AddOptionsSubView(assignmentFunc: {
+                    NewFreeTime()
+                }, systemImageName: "clock", addText: "Free Time", imageWidth: 18)
+
+                AddOptionsSubView(assignmentFunc: {
+                    NewGrade()
+                }, systemImageName: "percent", addText: "Grade", imageWidth: 16)
                 
             }.padding().background(Color("add_overlay_bg")).overlay(
             RoundedRectangle(cornerRadius: 10)
@@ -84,7 +81,7 @@ struct AddOptionsView: View {
 }
 
 struct HomeView: View {
-    @State var showAddOptions = true
+    @State var showAddOptions = false
     
     var body: some View {
         ZStack {
@@ -104,7 +101,7 @@ struct HomeView: View {
                                     Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12).onTapGesture {
                                         NewAssignment()                            }
                                     .onLongPressGesture(minimumDuration: 0.05) {
-                                        self.showAddOptions.toggle()                            }
+                                        self.showAddOptions = true                            }
                                 }
                         }.padding(.top, -11.0))
                         

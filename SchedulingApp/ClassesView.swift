@@ -74,7 +74,6 @@ class SubAssignment: Identifiable {
 }
 
 
-
 struct ClassView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -98,7 +97,7 @@ struct ClassView: View {
                         }
                     }
                 }
-            }.background(classcool.color)
+            }
             Spacer()
             Text(String(assignmentlist.count))
         }
@@ -154,7 +153,7 @@ struct ClassesView: View {
          GeometryReader { geometry in
              NavigationView{
                 List {
-                    ForEach(classlist) {
+                    ForEach(self.classlist) {
                       classcool in
                       NavigationLink(destination: DetailView(classcool: classcool )) {
                         ClassView(classcool:classcool )

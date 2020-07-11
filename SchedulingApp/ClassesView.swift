@@ -107,6 +107,11 @@ struct DetailView: View {
     
     var assignmentlist: FetchedResults<Assignment>
     
+     @FetchRequest(entity: Classcool.entity(),
+                  sortDescriptors: [])
+    
+    var classlist: FetchedResults<Classcool>
+    
     var body: some View {
         VStack {
             Text(classcool.name).font(.title).fontWeight(.bold)
@@ -125,6 +130,8 @@ struct DetailView: View {
                     for index in indexSet {
                         self.managedObjectContext.delete(self.assignmentlist[index])
                     }
+                    self.classcool.assignmentnumber -= 1
+                    
                       do {
                        try self.managedObjectContext.save()
                       } catch {
@@ -147,6 +154,10 @@ struct ClassesView: View {
     
     var classlist: FetchedResults<Classcool>
     
+    @FetchRequest(entity: Assignment.entity(),
+                  sortDescriptors: [])
+    
+    var assignmentlist: FetchedResults<Assignment>
 //
 //    var classlist: [Classcool] = [
 //        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
@@ -168,6 +179,7 @@ struct ClassesView: View {
                       }
                     }.onDelete { indexSet in
                     for index in indexSet {
+   
                         self.managedObjectContext.delete(self.classlist[index])
                     }
                   do {

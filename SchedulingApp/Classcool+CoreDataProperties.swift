@@ -20,5 +20,6 @@ extension Classcool {
     @NSManaged public var attentionspan: Int64
     @NSManaged public var name: String
     @NSManaged public var tolerance: Int64
+    @NSManaged public var assignmentnumber: Int64
 
 }

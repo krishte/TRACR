@@ -8,26 +8,6 @@
 
 import SwiftUI
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-class SubAssignment: Identifiable {
-    var startdatetime: String = ""
-    var enddatetime: String = ""
-    var assignmentname: String = ""
-    
-    init(startdatetime: String, enddatetime: String, assignmentname: String)
-    {
-        self.startdatetime = startdatetime
-        self.enddatetime = enddatetime
-        self.assignmentname = assignmentname
-        
-    }
-
-}
-=======
-=======
->>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
 //class Classcool: Identifiable {
 //    var name: String = ""
 //    var attentionspan: Int = 0
@@ -92,10 +72,6 @@ class SubAssignment: Identifiable {
 //    }
 //
 //}
-<<<<<<< HEAD
->>>>>>> d8fc43a05acd14b4c5d86a1ffbc6e281cbceae51
-=======
->>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
 
 
 struct ClassView: View {
@@ -117,7 +93,7 @@ struct ClassView: View {
                 
                     }
             Spacer()
-            Text(String(assignmentlist.count))
+            Text(String(classcool.assignmentnumber))
         }
     }
 }
@@ -130,7 +106,6 @@ struct DetailView: View {
                   sortDescriptors: [])
     
     var assignmentlist: FetchedResults<Assignment>
-    var assignmentsbyclass: [Assignment] = []
     
     var body: some View {
         VStack {
@@ -171,6 +146,7 @@ struct ClassesView: View {
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
+    
 //
 //    var classlist: [Classcool] = [
 //        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
@@ -207,27 +183,6 @@ struct ClassesView: View {
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {
                             Button(action: {
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                               let classnames = ["german", "math", "english", "music", "history"]
-                                
-                                
-                                                for classname in classnames {
-                                                    let newClass = Classcool(context: self.managedObjectContext)
-                                                    newClass.attentionspan = Int64.random(in: 0 ... 10)
-                                                    newClass.tolerance = Int64.random(in: 0 ... 10)
-                                                    newClass.name = classname
-                                                    do {
-                                                       try self.managedObjectContext.save()
-                                                       print("Class made")
-                                                      } catch {
-                                                       print(error.localizedDescription)
-                                                       }
-                                                }})
-                                {
-=======
-=======
->>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
                                 
                                 let classnames = ["german", "math", "english", "music", "history"]
                 
@@ -238,6 +193,7 @@ struct ClassesView: View {
                                     newClass.attentionspan = Int64.random(in: 0 ... 10)
                                     newClass.tolerance = Int64.random(in: 0 ... 10)
                                     newClass.name = classname
+                                    newClass.assignmentnumber = 0
                                     do {
                                        try self.managedObjectContext.save()
                                        print("Class made")
@@ -256,16 +212,30 @@ struct ClassesView: View {
                                         newAssignment.subject = classname
                                         newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
                                         newAssignment.progress = ((newAssignment.totaltime - newAssignment.timeleft)/newAssignment.totaltime) * 100
+                                        for classity in self.classlist {
+                                            if (classity.name == newAssignment.subject)
+                                            {
+                                                classity.assignmentnumber += 1
+                                                do {
+                                                 try self.managedObjectContext.save()
+                                                 print("Class made")
+                                                } catch {
+                                                 print(error.localizedDescription)
+                                                 }
+                                            }
+                                        }
+                                        do {
+                                          try self.managedObjectContext.save()
+                                          print("Class made")
+                                         } catch {
+                                          print(error.localizedDescription)
+                                          }
                                         
                                     }
                                 }
                                
                                 
                             }) {
-<<<<<<< HEAD
->>>>>>> d8fc43a05acd14b4c5d86a1ffbc6e281cbceae51
-=======
->>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
                                 Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                             }.padding(.leading, 2.0);
                         
@@ -278,14 +248,7 @@ struct ClassesView: View {
                     
              }
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 
->>>>>>> d8fc43a05acd14b4c5d86a1ffbc6e281cbceae51
-=======
-
->>>>>>> dc902f682f2018cd371182d36e1a0fc0a2ad0327
     }
 }
 

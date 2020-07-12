@@ -87,17 +87,40 @@ struct ClassView: View {
 
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(classcool.name).font(.subheadline).fontWeight(.bold)
+       
+        ZStack {
+            RoundedRectangle(cornerRadius: 25, style: .continuous)
+            .fill(Color.blue)
+                .frame(width: UIScreen.main.bounds.size.width-40, height: 100, alignment: .center)
+            
+            HStack {
                 
-                    }
-            Spacer()
-            Text(String(classcool.assignmentnumber))
+
+                VStack(alignment: .leading) {
+                    Text(classcool.name).font(.subheadline).fontWeight(.bold)
+                    
+                }.padding(20)
+                Spacer()
+                Text(String(classcool.assignmentnumber)).padding(20)
+            }
         }
+          
+        
     }
 }
 
+struct IndividualAssignmentView: View {
+    var assignment: Assignment
+    var body: some View {
+        VStack {
+            Text(assignment.name).fontWeight(.bold).frame(width: 400, height: 50, alignment: .topLeading)
+            Text("Due date: " + assignment.duedate.description).frame(width: 400, height: 30, alignment: .topLeading)
+            Text("Total time: " + String(assignment.totaltime)).frame(width: 400, height: 30, alignment: .topLeading)
+        }
+    }
+    
+    
+}
 struct DetailView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -124,7 +147,12 @@ struct DetailView: View {
                     assignment in
                     if (assignment.subject == self.classcool.name)
                     {
-                        Text(assignment.name)
+                        
+//                        Text(assignment.name)
+//                        Text("Due date " + assignment.duedate.description)
+                        IndividualAssignmentView(assignment: assignment)
+
+                        
                     }
                 }.onDelete { indexSet in
                     for index in indexSet {
@@ -196,7 +224,7 @@ struct ClassesView: View {
                         HStack(spacing: geometry.size.width / 4.2) {
                             Button(action: {
                                 
-                                let classnames = ["german", "math", "english", "music", "history"]
+                                let classnames = ["German", "Math", "English", "Music", "History"]
                 
                 
                 

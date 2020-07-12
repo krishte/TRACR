@@ -12,7 +12,11 @@ struct FilterView: View {
     var body: some View {
          GeometryReader { geometry in
              NavigationView{
-                 Text("Filter")
+                VStack {
+                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                        .fill(Color.blue)
+                        .frame(width: geometry.size.width-50, height: 100)
+                }
                  .navigationBarItems(
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {

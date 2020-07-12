@@ -87,7 +87,7 @@ struct HomeView: View {
         ZStack {
              GeometryReader { geometry in
                  NavigationView{
-                     EmptyView()
+                     Text("Schedule")
                      .navigationBarItems(
                         leading:
                             HStack(spacing: geometry.size.width / 4.2) {

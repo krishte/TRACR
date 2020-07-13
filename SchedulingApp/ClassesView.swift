@@ -25,7 +25,7 @@ struct AssignmentPeakView: View {
         HStack {
             Text(self.name).fontWeight(.medium)
             Spacer()
-            Text(self.datedisplay)
+            Text(self.datedisplay).fontWeight(.light)
         }.padding(.horizontal, 25).padding(.top, 15)
     }
 }

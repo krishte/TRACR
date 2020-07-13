@@ -8,71 +8,6 @@
 
 import SwiftUI
 
-//class Classcool: Identifiable {
-//    var name: String = ""
-//    var attentionspan: Int = 0
-//    var tolerance: Int = 0
-//    var color: Color = Color.blue
-//    var assignmentlist: [Assignment] = []
-//
-//    init(name: String, attentionspan: Int, tolerance: Int, color: Color, assignmentlist: [Assignment])
-//    {
-//        self.name = name
-//        self.attentionspan = attentionspan
-//        self.tolerance = tolerance
-//        self.color = color
-//        self.assignmentlist = assignmentlist
-//    }
-//}
-
-//class Assignment: Identifiable {
-//    var subject: String = ""
-//    var name: String = ""
-//    var type: AssignmentTypes = AssignmentTypes.exam
-//    var duedate: Date
-//    var totaltime: Int = 0
-//    var progress: Int = 0
-//    var timeleft: Int = 0
-//    var subassigmentlist: [SubAssignment] = []
-//
-//
-//    init(subject: String, name: String, type: AssignmentTypes, duedate: Date, totaltime: Int, progress: Int, timeleft: Int, subsylist: [SubAssignment])
-//    {
-//        self.subject = subject
-//        self.name = name
-//        self.type = type
-//        self.duedate = duedate
-//        self.totaltime = totaltime
-//        self.progress = progress
-//        self.timeleft = timeleft
-//        self.subassigmentlist = subsylist
-//
-//    }
-//
-//}
-
-//enum AssignmentTypes: String {
-//    case essay
-//    case exam
-//    case presentation
-//    case test
-//}
-//
-//class SubAssignment: Identifiable {
-//    var startdatetime: String = ""
-//    var enddatetime: String = ""
-//    var assignmentname: String = ""
-//
-//    init(startdatetime: String, enddatetime: String, assignmentname: String)
-//    {
-//        self.startdatetime = startdatetime
-//        self.enddatetime = enddatetime
-//        self.assignmentname = assignmentname
-//
-//    }
-//
-//}
-
 
 struct ClassView: View {
     var classcool: Classcool
@@ -105,7 +40,7 @@ struct ClassView: View {
                     Spacer()
                     Text(String(classcool.assignmentnumber)).font(.title).padding(20)
                 }
-                
+//
 //                if (classcool.assignmentnumber > 0)
 //                {
 //                    List {
@@ -134,21 +69,7 @@ struct ClassView: View {
 struct IndividualAssignmentView: View {
     var assignment: Assignment
     var body: some View {
-//        ZStack {
-//            RoundedRectangle(cornerRadius: 25, style: .continuous)
-//            .fill(Color.blue)
-//                .frame(width: UIScreen.main.bounds.size.width-50, height: 120, alignment: .center)
-//
-//            HStack{
-//                Spacer()
-//                VStack {
-//                    Text(assignment.name).fontWeight(.bold).frame(width: 400, height: 50, alignment: .topLeading)
-//                    Text("Due date: " + assignment.duedate.description).frame(width: 400,height: 30, alignment: .topLeading)
-//                    Text("Total time: " + String(assignment.totaltime)).frame(width:400, height: 30, alignment: .topLeading)
-//                }.padding(20)
-//            }
-//
-//        }
+
         
         VStack {
               Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
@@ -164,7 +85,7 @@ struct DetailView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [])
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
@@ -216,7 +137,7 @@ struct ClassesView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Classcool.entity(),
-                  sortDescriptors: [])
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
     
@@ -224,15 +145,6 @@ struct ClassesView: View {
                   sortDescriptors: [])
     
     var assignmentlist: FetchedResults<Assignment>
-//
-//    var classlist: [Classcool] = [
-//        Classcool(name: "German", attentionspan: 5, tolerance: 4, color: Color("one"), assignmentlist: []),
-//        Classcool(name: "Math", attentionspan: 4, tolerance: 3,color: Color("two"), assignmentlist: []),
-//        Classcool(name: "English", attentionspan: 1, tolerance: 2,color: Color("three"), assignmentlist: [])
-//
-//
-//
-//    ]
 
     var body: some View {
          GeometryReader { geometry in

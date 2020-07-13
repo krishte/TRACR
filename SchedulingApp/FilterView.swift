@@ -15,23 +15,7 @@ struct DropDown: View {
     var filters = ["Class", "Due date", "Total time", "Time left", "Assignment name", "Class"]
     var body: some View {
         VStack {
-//            Text("Sort By: ")
-//                .contextMenu {
-//                Button(action: {
-//
-//                           }) {
-//                               Text("Class name")
-//                               Image(systemName: "list.dash")
-//                           }
-//
-//                           Button(action: {
-//
-//                           }) {
-//                               Text("Due date")
-//                               Image(systemName: "calendar")
-//                           }
-//
-//            }
+
             Form {
                 Section {
                     Picker(selection: $selectedFilter, label: Text("Sort by: ")) {
@@ -41,21 +25,68 @@ struct DropDown: View {
                     }
                 }
             }.frame(height: 50)
-
+            
+            AssignmentsView(selectedFilter: self.filters[selectedFilter])
             
         }
     }
 
 }
 
+struct AssignmentsView: View {
+    
+    var selectedFilter: String
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    
+    @FetchRequest(entity: Assignment.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
+    
+    var assignmentlist: FetchedResults<Assignment>
+    
+    @FetchRequest(entity: Classcool.entity(),
+                  sortDescriptors: [])
+    
+    var classlist: FetchedResults<Classcool>
+    var body: some View {
+            List {
+            ForEach(self.assignmentlist) {
+                assignment in
+                IndividualAssignmentView(assignment: assignment)
 
-
+               
+            }.onDelete { indexSet in
+                for index in indexSet {
+                    for classity in self.classlist {
+                        if (classity.name == self.assignmentlist[index].subject)
+                        {
+                            classity.assignmentnumber -= 1
+                        }
+                    }
+                    self.managedObjectContext.delete(self.assignmentlist[index])
+                }
+               
+               
+                
+                  do {
+                   try self.managedObjectContext.save()
+                    
+                  } catch {
+                   print(error.localizedDescription)
+                   }
+                print("Assignment deleted")
+            }
+        }
+    }
+    
+    
+}
 struct FilterView: View {
     
 
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [])
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
@@ -73,34 +104,7 @@ struct FilterView: View {
                 
                 VStack {
                         DropDown()
-                        List {
-                            ForEach(self.assignmentlist) {
-                                assignment in
-                                IndividualAssignmentView(assignment: assignment)
 
-                               
-                            }.onDelete { indexSet in
-                                for index in indexSet {
-                                    for classity in self.classlist {
-                                        if (classity.name == self.assignmentlist[index].subject)
-                                        {
-                                            classity.assignmentnumber -= 1
-                                        }
-                                    }
-                                    self.managedObjectContext.delete(self.assignmentlist[index])
-                                }
-                               
-                               
-                                
-                                  do {
-                                   try self.managedObjectContext.save()
-                                    
-                                  } catch {
-                                   print(error.localizedDescription)
-                                   }
-                                print("Assignment deleted")
-                            }
-                        }
                     }
                  .navigationBarItems(
                     leading:

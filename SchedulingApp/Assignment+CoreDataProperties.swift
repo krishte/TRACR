@@ -25,7 +25,8 @@ extension Assignment {
     @NSManaged public var totaltime: Int64
     @NSManaged public var color: String
     @NSManaged public var grade: Int64
-//    @NSManaged public var completed: Bool
+    @NSManaged public var completed: Bool
+    @NSManaged public var type: String
     
 }
 

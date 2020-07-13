@@ -85,38 +85,76 @@ struct ClassView: View {
     var assignmentlist: FetchedResults<Assignment>
     
 
-    
     var body: some View {
-       
         ZStack {
-            RoundedRectangle(cornerRadius: 25, style: .continuous)
-            .fill(Color.blue)
-                .frame(width: UIScreen.main.bounds.size.width-40, height: 100, alignment: .center)
-            
-            HStack {
-                
+  
 
-                VStack(alignment: .leading) {
-                    Text(classcool.name).font(.subheadline).fontWeight(.bold)
+            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                .fill( Color(UIColor(red: CGFloat(classcool.red), green: CGFloat(classcool.green), blue: CGFloat(classcool.blue), alpha: 0.8)))
+                .frame(width: UIScreen.main.bounds.size.width-40, height: 100  + CGFloat(35*classcool.assignmentnumber), alignment: .center)
+            VStack {
+                
+                
+                HStack {
                     
-                }.padding(20)
-                Spacer()
-                Text(String(classcool.assignmentnumber)).padding(20)
+                    
+                    VStack(alignment: .leading) {
+                        Text(classcool.name).font(.title).fontWeight(.bold)
+                        
+                    }.padding(20)
+                    Spacer()
+                    Text(String(classcool.assignmentnumber)).font(.title).padding(20)
+                }
+                
+                if (classcool.assignmentnumber > 0)
+                {
+                    List {
+                        ForEach(assignmentlist) {
+                            assignment in
+                            if (assignment.subject == self.classcool.name)
+                            {
+                                HStack {
+                                        Text(assignment.name)
+                                }.frame(height: 20)
+
+
+
+                            }
+                        }.listRowBackground(Color(UIColor(red: CGFloat(classcool.red), green: CGFloat(classcool.green), blue: CGFloat(classcool.blue), alpha: 0.8)))
+                    }.environment(\.defaultMinListRowHeight, 20)
+                }
+        
             }
-        }
           
         
+        }
     }
 }
 
 struct IndividualAssignmentView: View {
     var assignment: Assignment
     var body: some View {
+//        ZStack {
+//            RoundedRectangle(cornerRadius: 25, style: .continuous)
+//            .fill(Color.blue)
+//                .frame(width: UIScreen.main.bounds.size.width-50, height: 120, alignment: .center)
+//
+//            HStack{
+//                Spacer()
+//                VStack {
+//                    Text(assignment.name).fontWeight(.bold).frame(width: 400, height: 50, alignment: .topLeading)
+//                    Text("Due date: " + assignment.duedate.description).frame(width: 400,height: 30, alignment: .topLeading)
+//                    Text("Total time: " + String(assignment.totaltime)).frame(width:400, height: 30, alignment: .topLeading)
+//                }.padding(20)
+//            }
+//
+//        }
+        
         VStack {
-            Text(assignment.name).fontWeight(.bold).frame(width: 400, height: 50, alignment: .topLeading)
-            Text("Due date: " + assignment.duedate.description).frame(width: 400, height: 30, alignment: .topLeading)
-            Text("Total time: " + String(assignment.totaltime)).frame(width: 400, height: 30, alignment: .topLeading)
-        }
+              Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+              Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+              Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+        }.padding(10).background( Color(UIColor(red: CGFloat(assignment.red), green: CGFloat(assignment.green), blue: CGFloat(assignment.blue), alpha: 0.8))).cornerRadius(20)
     }
     
     
@@ -225,7 +263,7 @@ struct ClassesView: View {
                             Button(action: {
                                 
                                 let classnames = ["German", "Math", "English", "Music", "History"]
-                
+                                
                 
                 
                                 for classname in classnames {
@@ -234,6 +272,9 @@ struct ClassesView: View {
                                     newClass.tolerance = Int64.random(in: 0 ... 10)
                                     newClass.name = classname
                                     newClass.assignmentnumber = 0
+                                    newClass.red = Float.random(in: 0 ... 1)
+                                    newClass.blue = Float.random(in: 0 ... 1)
+                                    newClass.green = Float.random(in: 0 ... 1)
                                     do {
                                        try self.managedObjectContext.save()
                                        print("Class made")
@@ -256,6 +297,9 @@ struct ClassesView: View {
                                             if (classity.name == newAssignment.subject)
                                             {
                                                 classity.assignmentnumber += 1
+                                                newAssignment.red = classity.red
+                                                newAssignment.blue = classity.blue
+                                                newAssignment.green = classity.green
                                                 do {
                                                  try self.managedObjectContext.save()
                                                  print("Class made")

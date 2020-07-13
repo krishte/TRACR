@@ -21,5 +21,7 @@ extension Classcool {
     @NSManaged public var name: String
     @NSManaged public var tolerance: Int64
     @NSManaged public var assignmentnumber: Int64
-
+    @NSManaged public var red: Float
+    @NSManaged public var blue: Float
+    @NSManaged public var green: Float
 }

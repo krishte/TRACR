@@ -12,16 +12,19 @@ struct DropDown: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State private var selectedFilter = 0
     
-    var filters = ["Class", "Due date", "Total time", "Time left", "Assignment name"]
+    var filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type", "Grade", "Completed Assignments"]
     var body: some View {
         VStack {
 
             Form {
                 Section {
                     Picker(selection: $selectedFilter, label: Text("Sort by: ")) {
-                       ForEach(0 ..< filters.count) {
-                          Text(self.filters[$0])
-                       }
+                        Section {
+                            ForEach(0 ..< filters.count) {
+                               Text(self.filters[$0])
+                            }
+                        }
+
                     }
                 }
             }.frame(height: 50)
@@ -99,17 +102,31 @@ struct AssignmentsView: View {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
         }
-        else if (selectedFilter == "Assignment name")
+        else if (selectedFilter == "Name")
         {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.name, ascending: true)])
         }
-        else
+        else if (selectedFilter == "Time left")
         {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.timeleft, ascending: true)])
         }
-
+        else if (selectedFilter == "Type")
+        {
+            self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
+            sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.type, ascending: true)])
+        }
+        else if (selectedFilter == "Grade")
+        {
+            self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
+            sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.grade, ascending: true)])
+        }
+        else
+        {
+            self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
+            sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true)])
+        }
 
     }
     var body: some View {

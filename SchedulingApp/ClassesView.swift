@@ -120,7 +120,7 @@ struct DetailView: View {
                     {
                         
 //                        Text(assignment.name)
-//                        Text("Due date " + assignment.duedate.description)
+//                        Text("Due date: " + assignment.duedate.description)
                         IndividualAssignmentView(assignment: assignment)
 
                         

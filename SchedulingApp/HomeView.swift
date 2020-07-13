@@ -25,7 +25,7 @@ func NewFreeTime() {
 }
 
 func NewGrade() {
-    print("new grade change")
+    print("new grade")
 }
 
 struct AddOptionsSubView: View {
@@ -76,7 +76,6 @@ struct AddOptionsView: View {
 }
 
 struct HomeView: View {
-    @State var showAddOptions = false
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Subassignment.entity(),

@@ -9,30 +9,57 @@
 import SwiftUI
 
 
+struct AssignmentPeakView: View {
+    let datedisplay, color, name: String
+    
+
+    init(assignment: Assignment) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd/MM/yy"
+        self.datedisplay = formatter.string(from: assignment.duedate)
+        self.color = assignment.color
+        self.name = assignment.name
+    }
+    
+    var body: some View {
+        HStack {
+            Text(self.name).fontWeight(.medium)
+            Spacer()
+            Text(self.datedisplay).fontWeight(.light)
+        }.padding(.horizontal, 25).padding(.top, 15)
+    }
+}
+
 struct ClassView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [])
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
-
     var assignmentlist: FetchedResults<Assignment>
     
-
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
                 .fill(Color(classcool.color))
-                .frame(width: UIScreen.main.bounds.size.width-40, height: 100 , alignment: .center)
+                .frame(width: UIScreen.main.bounds.size.width - 40, height: (80 + (35 * CGFloat(classcool.assignmentnumber))))
             VStack {
                 HStack {
-                    VStack(alignment: .leading) {
-                        Text(classcool.name).font(.title).fontWeight(.bold)
-                        
-                    }.padding(20)
+                    Text(classcool.name).font(.title).fontWeight(.bold)
                     Spacer()
-                    Text(String(classcool.assignmentnumber)).font(.title).padding(20)
+                    if classcool.assignmentnumber == 0 {
+                        Text("No Assignments").font(.body).fontWeight(.light)
+                    }
+                }.padding(.horizontal, 25)
+                
+                VStack {
+                    ForEach(assignmentlist) {
+                        assignment in
+                            if (assignment.subject == self.classcool.name) {
+                                AssignmentPeakView(assignment: assignment)
+                            }
+                    }
                 }
             }
         }
@@ -74,7 +101,7 @@ struct DetailView: View {
     
     var assignmentlist: FetchedResults<Assignment>
     
-     @FetchRequest(entity: Classcool.entity(),
+    @FetchRequest(entity: Classcool.entity(),
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
@@ -93,7 +120,7 @@ struct DetailView: View {
                     {
                         
 //                        Text(assignment.name)
-//                        Text("Due date " + assignment.duedate.description)
+//                        Text("Due date: " + assignment.duedate.description)
                         IndividualAssignmentView(assignment: assignment)
 
                         
@@ -158,7 +185,7 @@ struct ClassesView: View {
                    }
                 print("Class deleted")
             }
-                }
+                    }
                  .navigationBarItems(
                     leading:
                         HStack(spacing: geometry.size.width / 4.2) {

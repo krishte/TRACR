@@ -71,11 +71,26 @@ struct IndividualAssignmentView: View {
     var body: some View {
         VStack {
               Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+              Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
               Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
               Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-        }.padding(10).background(Color(assignment.color)).cornerRadius(20)
-    }
+                Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                Text("Progress: " + String(assignment.progress)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
+                    HStack {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
+                        Spacer()
+                    }
+                   
+                    
+                }
+            }.padding(10).background(Color(assignment.color)).cornerRadius(20)
+
+        }
+
 }
+
 
 struct DetailView: View {
     var classcool: Classcool
@@ -105,7 +120,7 @@ struct DetailView: View {
                     {
                         
 //                        Text(assignment.name)
-//                        Text("Due date " + assignment.duedate.description)
+//                        Text("Due date: " + assignment.duedate.description)
                         IndividualAssignmentView(assignment: assignment)
 
                         
@@ -177,7 +192,7 @@ struct ClassesView: View {
                             Button(action: {
                                 
                                 let classnames = ["German", "Math", "English", "Music", "History"]
-                                
+                                let assignmenttypes = ["exam", "essay", "presentation", "test"]
                 
                 
                                 for classname in classnames {
@@ -204,7 +219,11 @@ struct ClassesView: View {
                                         newAssignment.totaltime = Int64.random(in: 5...20)
                                         newAssignment.subject = classname
                                         newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
-                                        newAssignment.progress = Int64(((Double(newAssignment.totaltime - newAssignment.timeleft))/Double(newAssignment.totaltime)) * 100)
+                                        newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
+                                        newAssignment.grade = 0
+                                        newAssignment.completed = false
+                                        newAssignment.type = assignmenttypes.randomElement()!
+
                                         for classity in self.classlist {
                                             if (classity.name == newAssignment.subject)
                                             {

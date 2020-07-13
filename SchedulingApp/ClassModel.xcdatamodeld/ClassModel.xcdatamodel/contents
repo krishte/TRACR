@@ -2,6 +2,7 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E2269" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Assignment" representedClassName="Assignment" syncable="YES">
         <attribute name="color" optional="YES" attributeType="String"/>
+        <attribute name="completed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="duedate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="grade" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -9,6 +10,7 @@
         <attribute name="subject" optional="YES" attributeType="String"/>
         <attribute name="timeleft" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="totaltime" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
     </entity>
     <entity name="Classcool" representedClassName="Classcool" syncable="YES">
         <attribute name="assignmentnumber" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -23,7 +25,7 @@
         <attribute name="startdatetime" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Assignment" positionX="27" positionY="18" width="128" height="163"/>
+        <element name="Assignment" positionX="27" positionY="18" width="128" height="193"/>
         <element name="Classcool" positionX="0" positionY="9" width="128" height="118"/>
         <element name="Subassignment" positionX="-36" positionY="-18" width="128" height="88"/>
     </elements>

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19F101" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="16119" systemVersion="19E2269" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Assignment" representedClassName="Assignment" syncable="YES">
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="duedate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="grade" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="progress" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="subject" optional="YES" attributeType="String"/>
@@ -22,7 +23,7 @@
         <attribute name="startdatetime" optional="YES" attributeType="String"/>
     </entity>
     <elements>
-        <element name="Assignment" positionX="27" positionY="18" width="128" height="148"/>
+        <element name="Assignment" positionX="27" positionY="18" width="128" height="163"/>
         <element name="Classcool" positionX="0" positionY="9" width="128" height="118"/>
         <element name="Subassignment" positionX="-36" positionY="-18" width="128" height="88"/>
     </elements>

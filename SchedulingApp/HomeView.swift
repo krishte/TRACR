@@ -90,7 +90,7 @@ struct HomeView: View {
                      .navigationBarItems(
                         leading:
                             HStack(spacing: geometry.size.width / 4.2) {
-                                Button(action: {print("settings button clicked")}) {
+                                Button(action: {print("settings button clickedd")}) {
                                     Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
                                 }.padding(.leading, 2.0);
                             

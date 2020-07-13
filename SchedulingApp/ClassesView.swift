@@ -94,7 +94,7 @@ struct DetailView: View {
                       } catch {
                        print(error.localizedDescription)
                        }
-                    print("Assignment deleted")
+                    print("Assignment has been deleted")
                 }
             }
         }

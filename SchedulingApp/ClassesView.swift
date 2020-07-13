@@ -118,12 +118,7 @@ struct DetailView: View {
                     assignment in
                     if (assignment.subject == self.classcool.name)
                     {
-                        
-//                        Text(assignment.name)
-//                        Text("Due date: " + assignment.duedate.description)
                         IndividualAssignmentView(assignment: assignment)
-
-                        
                     }
                 }.onDelete { indexSet in
                     for index in indexSet {
@@ -159,109 +154,106 @@ struct ClassesView: View {
     var assignmentlist: FetchedResults<Assignment>
 
     var body: some View {
-         GeometryReader { geometry in
-             NavigationView{
-                List {
-                    ForEach(self.classlist) {
-                      classcool in
-                      NavigationLink(destination: DetailView(classcool: classcool )) {
-                        ClassView(classcool:classcool )
-                      }
-                    }.onDelete { indexSet in
-                    for index in indexSet {
-                        for (index2, element) in self.assignmentlist.enumerated() {
-                            if (element.subject == self.classlist[index].name)
-                            {
-                                self.managedObjectContext.delete(self.assignmentlist[index2])
-                            }
+         NavigationView{
+            List {
+                ForEach(self.classlist) {
+                  classcool in
+                  NavigationLink(destination: DetailView(classcool: classcool )) {
+                    ClassView(classcool:classcool )
+                  }
+                }.onDelete { indexSet in
+                for index in indexSet {
+                    for (index2, element) in self.assignmentlist.enumerated() {
+                        if (element.subject == self.classlist[index].name)
+                        {
+                            self.managedObjectContext.delete(self.assignmentlist[index2])
                         }
-                        self.managedObjectContext.delete(self.classlist[index])
                     }
-                  do {
-                   try self.managedObjectContext.save()
-                   print("Class made")
-                  } catch {
-                   print(error.localizedDescription)
-                   }
-                print("Class deleted")
-            }
-                    }
-                 .navigationBarItems(
-                    leading:
-                        HStack(spacing: geometry.size.width / 4.2) {
-                            Button(action: {
-                                
-                                let classnames = ["German", "Math", "English", "Music", "History"]
-                                let assignmenttypes = ["exam", "essay", "presentation", "test"]
-                
-                
-                                for classname in classnames {
-                                    let newClass = Classcool(context: self.managedObjectContext)
-                                    newClass.attentionspan = Int64.random(in: 0 ... 10)
-                                    newClass.tolerance = Int64.random(in: 0 ... 10)
-                                    newClass.name = classname
-                                    newClass.assignmentnumber = 0
-                                    newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-                                    do {
-                                       try self.managedObjectContext.save()
-                                       print("Class made")
-                                      } catch {
-                                       print(error.localizedDescription)
-                                       }
-                                }
-                                
-                                for classname in classnames {
-                                    let randomint = Int.random(in: 1...5)
-                                    for i in 0..<randomint {
-                                        let newAssignment = Assignment(context: self.managedObjectContext)
-                                        newAssignment.name = classname + " assignment " + String(i)
-                                        newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
-                                        newAssignment.totaltime = Int64.random(in: 5...20)
-                                        newAssignment.subject = classname
-                                        newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
-                                        newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
-                                        newAssignment.grade = 0
-                                        newAssignment.completed = false
-                                        newAssignment.type = assignmenttypes.randomElement()!
-
-                                        for classity in self.classlist {
-                                            if (classity.name == newAssignment.subject)
-                                            {
-                                                classity.assignmentnumber += 1
-                                                newAssignment.color = classity.color
-                                                do {
-                                                 try self.managedObjectContext.save()
-                                                 print("Class made")
-                                                } catch {
-                                                 print(error.localizedDescription)
-                                                 }
-                                            }
-                                        }
-                                        do {
-                                          try self.managedObjectContext.save()
-                                          print("Class made")
-                                         } catch {
-                                          print(error.localizedDescription)
-                                          }
-                                        
-                                    }
-                                }
-                               
-                                
-                            }) {
-                                Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
-                            }.padding(.leading, 2.0);
-                        
-                            Image("Tracr").resizable().scaledToFit().frame(width: geometry.size.width / 4);
-
-                            Button(action: {print("add button clicked")}) {
-                                Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
-                            }
-                    }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
-                    
-             }
+                    self.managedObjectContext.delete(self.classlist[index])
+                }
+              do {
+               try self.managedObjectContext.save()
+               print("Class made")
+              } catch {
+               print(error.localizedDescription)
+               }
+            print("Class deleted")
         }
+                }
+             .navigationBarItems(
+                leading:
+                    HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                        Button(action: {
+                            
+                            let classnames = ["German", "Math", "English", "Music", "History"]
+                            let assignmenttypes = ["exam", "essay", "presentation", "test"]
+            
+            
+                            for classname in classnames {
+                                let newClass = Classcool(context: self.managedObjectContext)
+                                newClass.attentionspan = Int64.random(in: 0 ... 10)
+                                newClass.tolerance = Int64.random(in: 0 ... 10)
+                                newClass.name = classname
+                                newClass.assignmentnumber = 0
+                                newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+                                do {
+                                   try self.managedObjectContext.save()
+                                   print("Class made")
+                                  } catch {
+                                   print(error.localizedDescription)
+                                   }
+                            }
+                            
+                            for classname in classnames {
+                                let randomint = Int.random(in: 1...5)
+                                for i in 0..<randomint {
+                                    let newAssignment = Assignment(context: self.managedObjectContext)
+                                    newAssignment.name = classname + " assignment " + String(i)
+                                    newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
+                                    newAssignment.totaltime = Int64.random(in: 5...20)
+                                    newAssignment.subject = classname
+                                    newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
+                                    newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
+                                    newAssignment.grade = 0
+                                    newAssignment.completed = false
+                                    newAssignment.type = assignmenttypes.randomElement()!
 
+                                    for classity in self.classlist {
+                                        if (classity.name == newAssignment.subject)
+                                        {
+                                            classity.assignmentnumber += 1
+                                            newAssignment.color = classity.color
+                                            do {
+                                             try self.managedObjectContext.save()
+                                             print("Class made")
+                                            } catch {
+                                             print(error.localizedDescription)
+                                             }
+                                        }
+                                    }
+                                    do {
+                                      try self.managedObjectContext.save()
+                                      print("Class made")
+                                     } catch {
+                                      print(error.localizedDescription)
+                                      }
+                                    
+                                }
+                            }
+                           
+                            
+                        }) {
+                            Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }.padding(.leading, 2.0);
+                    
+                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4);
+
+                        Button(action: {print("add button clicked")}) {
+                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }
+                }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
+                
+         }
     }
 }
 

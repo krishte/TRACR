@@ -10,25 +10,23 @@ import SwiftUI
 
 struct ProgressView: View {
     var body: some View {
-         GeometryReader { geometry in
-             NavigationView{
-                 Text("Progress")
-                 .navigationBarItems(
-                    leading:
-                        HStack(spacing: geometry.size.width / 4.2) {
-                            Button(action: {print("settings button clicked")}) {
-                                Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
-                            }.padding(.leading, 2.0);
-                        
-                            Image("Tracr").resizable().scaledToFit().frame(width: geometry.size.width / 4);
-
-                            Button(action: {print("add button clicked")}) {
-                                Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
-                            }
-                    }.padding(.top, -11.0))
+         NavigationView{
+             Text("Progress")
+             .navigationBarItems(
+                leading:
+                    HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                        Button(action: {print("settings button clicked")}) {
+                            Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }.padding(.leading, 2.0);
                     
-             }
-        }    }
+                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4);
+
+                        Button(action: {print("add button clicked")}) {
+                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }
+                }.padding(.top, -11.0))
+         }
+    }
 }
 
 struct ProgressView_Previews: PreviewProvider {

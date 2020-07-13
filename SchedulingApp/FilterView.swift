@@ -33,6 +33,23 @@ struct DropDown: View {
 
 }
 
+struct IndividualAssignmentFilterView: View {
+    var assignment: Assignment
+    var body: some View {
+
+        
+        VStack {
+              Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+              Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+              Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+              Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+              Text("Progress: " + String(assignment.progress)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+        }.padding(10).background( Color(assignment.color)).cornerRadius(20)
+    }
+    
+    
+}
+
 struct AssignmentsView: View {
     
 
@@ -91,7 +108,7 @@ struct AssignmentsView: View {
             List {
                 ForEach(self.assignmentlist) {
                     assignment in
-                    IndividualAssignmentView(assignment: assignment)
+                    IndividualAssignmentFilterView(assignment: assignment)
 
                    
                 }.onDelete { indexSet in

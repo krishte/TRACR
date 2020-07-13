@@ -77,6 +77,12 @@ struct AddOptionsView: View {
 
 struct HomeView: View {
     @State var showAddOptions = false
+    @Environment(\.managedObjectContext) var managedObjectContext
+
+    @FetchRequest(entity: Subassignment.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignment.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignment>
     
     var body: some View {
              GeometryReader { geometry in
@@ -105,6 +111,8 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+             let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+          
+          return HomeView().environment(\.managedObjectContext, context)
     }
 }

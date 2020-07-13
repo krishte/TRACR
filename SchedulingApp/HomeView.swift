@@ -32,16 +32,12 @@ struct AddOptionsSubView: View {
     var assignmentFunc: () -> ()
     var systemImageName: String
     var addText: String
-    var imageWidth: CGFloat
         
     var body: some View {
         Button(action: {self.assignmentFunc()}) {
-            HStack {
-                Image(systemName: self.systemImageName).resizable().scaledToFit().frame(width: imageWidth)
-                Spacer()
-                Text(addText).font(Font.body.weight(.semibold))
-            }.frame(width: 160)
-        }.foregroundColor(.black).padding(.horizontal, 14).padding(.vertical, 7).background(Color("add_overlay_bg_light")).cornerRadius(10)
+            Text(addText)
+            Image(systemName: self.systemImageName)
+        }
     }
 }
 
@@ -51,23 +47,23 @@ struct AddOptionsView: View {
             VStack(alignment: .trailing, spacing: 10) {
                 AddOptionsSubView(assignmentFunc: {
                     NewAssignment()
-                }, systemImageName: "paperclip", addText: "Assignment", imageWidth: 18)
+                }, systemImageName: "paperclip", addText: "Assignment")
 
                 AddOptionsSubView(assignmentFunc: {
                     NewClass()
-                }, systemImageName: "list.bullet", addText: "Class", imageWidth: 18)
+                }, systemImageName: "list.bullet", addText: "Class")
 
                 AddOptionsSubView(assignmentFunc: {
                     NewOccupiedTime()
-                }, systemImageName: "clock.fill", addText: "Occupied Time", imageWidth: 18)
+                }, systemImageName: "clock.fill", addText: "Occupied Time")
 
                 AddOptionsSubView(assignmentFunc: {
                     NewFreeTime()
-                }, systemImageName: "clock", addText: "Free Time", imageWidth: 18)
+                }, systemImageName: "clock", addText: "Free Time")
 
                 AddOptionsSubView(assignmentFunc: {
                     NewGrade()
-                }, systemImageName: "percent", addText: "Grade", imageWidth: 16)
+                }, systemImageName: "percent", addText: "Grade")
                 
             }.padding().background(Color("add_overlay_bg")).overlay(
             RoundedRectangle(cornerRadius: 10)
@@ -75,7 +71,6 @@ struct AddOptionsView: View {
             ).shadow(color: Color.black.opacity(0.1), radius: 20, x: -7, y: 7).padding(.leading, 61)
             
             Spacer()
-            
         }
     }
 }
@@ -84,7 +79,6 @@ struct HomeView: View {
     @State var showAddOptions = false
     
     var body: some View {
-        ZStack {
              GeometryReader { geometry in
                  NavigationView{
                      Text("Schedule")
@@ -97,24 +91,14 @@ struct HomeView: View {
                             
                                 Image("Tracr").resizable().scaledToFit().frame(width: geometry.size.width / 4);
 
-                                Button(action: {}){
-                                    Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12).onTapGesture {
-                                        NewAssignment()                            }
-                                    .onLongPressGesture(minimumDuration: 0.05) {
-                                        self.showAddOptions = true                            }
+                                Button(action: {NewAssignment()}){
+                                    Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: geometry.size.width / 12)
+                                }.contextMenu{
+                                    AddOptionsView()
                                 }
-                        }.padding(.top, -11.0))
+                            }.padding(.top, -5.0))
                  }
             }
-            
-            VStack {
-                if showAddOptions {
-                    AddOptionsView()
-                }
-            }
-        }.onTapGesture {
-            self.showAddOptions = false
-        }
     }
 }
 

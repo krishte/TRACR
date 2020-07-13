@@ -192,6 +192,7 @@ struct ClassesView: View {
                                         newAssignment.subject = classname
                                         newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
                                         newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
+                                        newAssignment.grade = 0
 
                                         for classity in self.classlist {
                                             if (classity.name == newAssignment.subject)

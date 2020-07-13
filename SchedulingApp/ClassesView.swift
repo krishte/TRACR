@@ -91,7 +91,7 @@ struct ClassView: View {
 
             RoundedRectangle(cornerRadius: 25, style: .continuous)
                 .fill( Color(UIColor(red: CGFloat(classcool.red), green: CGFloat(classcool.green), blue: CGFloat(classcool.blue), alpha: 0.8)))
-                .frame(width: UIScreen.main.bounds.size.width-40, height: 100  + CGFloat(35*classcool.assignmentnumber), alignment: .center)
+                .frame(width: UIScreen.main.bounds.size.width-40, height: 100 , alignment: .center)
             VStack {
                 
                 
@@ -106,23 +106,23 @@ struct ClassView: View {
                     Text(String(classcool.assignmentnumber)).font(.title).padding(20)
                 }
                 
-                if (classcool.assignmentnumber > 0)
-                {
-                    List {
-                        ForEach(assignmentlist) {
-                            assignment in
-                            if (assignment.subject == self.classcool.name)
-                            {
-                                HStack {
-                                        Text(assignment.name)
-                                }.frame(height: 20)
-
-
-
-                            }
-                        }.listRowBackground(Color(UIColor(red: CGFloat(classcool.red), green: CGFloat(classcool.green), blue: CGFloat(classcool.blue), alpha: 0.8)))
-                    }.environment(\.defaultMinListRowHeight, 20)
-                }
+//                if (classcool.assignmentnumber > 0)
+//                {
+//                    List {
+//                        ForEach(assignmentlist) {
+//                            assignment in
+//                            if (assignment.subject == self.classcool.name)
+//                            {
+//                                HStack {
+//                                        Text(assignment.name)
+//                                }.frame(height: 20)
+//
+//
+//
+//                            }
+//                        }.listRowBackground(Color(UIColor(red: CGFloat(classcool.red), green: CGFloat(classcool.green), blue: CGFloat(classcool.blue), alpha: 0.8)))
+//                    }.environment(\.defaultMinListRowHeight, 20)
+//                }
         
             }
           
@@ -245,7 +245,12 @@ struct ClassesView: View {
                       }
                     }.onDelete { indexSet in
                     for index in indexSet {
-   
+                        for (index2, element) in self.assignmentlist.enumerated() {
+                            if (element.subject == self.classlist[index].name)
+                            {
+                                self.managedObjectContext.delete(self.assignmentlist[index2])
+                            }
+                        }
                         self.managedObjectContext.delete(self.classlist[index])
                     }
                   do {

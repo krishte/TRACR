@@ -255,7 +255,7 @@ struct ClassesView: View {
                         Button(action: {print("add button clicked")}) {
                             Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
-                }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
+                    }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
                 
          }
     }

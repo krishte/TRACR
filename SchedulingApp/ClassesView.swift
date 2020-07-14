@@ -72,6 +72,7 @@ struct ClassView: View {
 
 struct IndividualAssignmentView: View {
     var assignment: Assignment
+    
     var body: some View {
         VStack {
               Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)

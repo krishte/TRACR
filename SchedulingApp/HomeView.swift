@@ -91,10 +91,10 @@ struct HomeBodyView: View {
                             self.nthdayfromnow = datenumberindex
                         }
                     }
-                }.padding(.horizontal, 15)
+                }.padding(.horizontal, 15).frame(height: 55)
             }
             
-            Text(daytitlesfromtoday[self.nthdayfromnow]).font(.title).fontWeight(.medium).padding()
+            Text(daytitlesfromtoday[self.nthdayfromnow]).font(.title).fontWeight(.medium).padding(.top, 5).padding(.bottom, 15)
             
             VStack {
             //THE SUBASSIGNMENT BUBBLES GO HERE

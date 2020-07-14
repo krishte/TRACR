@@ -38,16 +38,25 @@ struct DropDown: View {
 
 struct IndividualAssignmentFilterView: View {
     var assignment: Assignment
+    let isExpanded: Bool
     var body: some View {
 
         
         VStack {
+            if (!isExpanded)
+            {
               Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-              Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
               Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-              Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-              Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-              Text("Progress: " + String(assignment.progress)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+            }
+            else
+            {
+                Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+                Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+                Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+            }
+
                 ZStack {
                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
                    HStack {
@@ -57,7 +66,7 @@ struct IndividualAssignmentFilterView: View {
                   
                    
                }
-        }.padding(10).background( Color(assignment.color)).cornerRadius(20)
+            }.padding(10).background( Color(assignment.color)).cornerRadius(20)
     }
     
     
@@ -67,7 +76,7 @@ struct AssignmentsView: View {
     
 
     @Environment(\.managedObjectContext) var managedObjectContext
-    
+    @State private var selection: Set<Assignment> = []
 
     
     var assignmentlistrequest: FetchRequest<Assignment>
@@ -124,13 +133,23 @@ struct AssignmentsView: View {
         }
 
     }
+    
+    private func selectDeselect(_ singularassignment: Assignment) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
     var body: some View {
         VStack {
             
             List {
                 ForEach(self.assignmentlist) {
                     assignment in
-                    IndividualAssignmentFilterView(assignment: assignment)
+                    IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment)).onTapGesture {
+                        self.selectDeselect(assignment)
+                        }.animation(.spring()).shadow(radius: 10)
 
                    
                 }.onDelete { indexSet in

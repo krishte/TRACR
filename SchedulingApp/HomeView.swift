@@ -15,8 +15,54 @@ struct NewAssignmentModalView: View {
 }
 
 struct NewClassModalView: View {
+     @Environment(\.managedObjectContext) var managedObjectContext
+     @State private var classname: String = ""
+     @State private var classtolerance: Int64 = 5
+    
+    init() {
+        self.classname = ""
+        self.classtolerance = 5
+
+        
+    }
+
+
     var body: some View {
-        Text("new class")
+        NavigationView {
+            Form {
+                Section {
+                    TextField("Firstname", text: $classname)
+                }
+                Section {
+                    Stepper(value: $classtolerance,
+                        in: 1...10,
+                        label: {
+                            Text("Tolerance: \(classtolerance)")
+                    })
+                    
+                }
+                Section {
+                    Button(action: {
+                        let newClass = Classcool(context: self.managedObjectContext)
+                        print(self.classtolerance)
+                        print(self.classname)
+                        newClass.attentionspan = Int64.random(in: 0 ... 10)
+                        newClass.tolerance = self.classtolerance
+                        newClass.name = self.classname
+                        newClass.assignmentnumber = 0
+                        newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+                        do {
+                         try self.managedObjectContext.save()
+                        } catch {
+                         print(error.localizedDescription)
+                         }
+                        
+                    }) {
+                        Text("Add Class")
+                    }
+                }
+            }.navigationBarTitle("Add Class")
+        }
     }
 }
 
@@ -140,7 +186,8 @@ struct HomeView: View {
                             Button(action: {self.NewClassPresenting.toggle()}) {
                                 Text("Class")
                                 Image(systemName: "list.bullet")
-                            }.sheet(isPresented: $NewClassPresenting, content: {NewClassModalView()})
+                            }.sheet(isPresented: $NewClassPresenting, content: {
+                                NewClassModalView()})
                             Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
                                 Text("Occupied Time")
                                 Image(systemName: "clock.fill")

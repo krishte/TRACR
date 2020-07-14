@@ -80,7 +80,7 @@ struct IndividualAssignmentView: View {
               Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
               Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-                Text("Progress: " + String(assignment.progress)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+
                 ZStack {
                     RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
                     HStack {

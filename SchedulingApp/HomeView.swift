@@ -97,10 +97,10 @@ struct SubAssignmentView: View {
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
-    @FetchRequest(entity: Subassignment.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignment.startdatetime, ascending: true)])
-    
-    var subassignmentlist: FetchedResults<Subassignment>
+//    @FetchRequest(entity: Subassignment.entity(),
+//                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignment.startdatetime, ascending: true)])
+//    
+//    var subassignmentlist: FetchedResults<Subassignment>
     
     var datesfromtoday: [Date] = []
     var daytitlesfromtoday: [String] = []

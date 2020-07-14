@@ -43,7 +43,7 @@ struct ClassView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
                 .fill(Color(classcool.color))
-                .frame(width: UIScreen.main.bounds.size.width - 40, height: (80 + (35 * CGFloat(classcool.assignmentnumber))))
+                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
             VStack {
                 HStack {
                     Text(classcool.name).font(.title).fontWeight(.bold)
@@ -57,14 +57,14 @@ struct ClassView: View {
                     }
                 }.padding(.horizontal, 25)
                 
-                VStack {
-                    ForEach(assignmentlist) {
-                        assignment in
-                            if (assignment.subject == self.classcool.name) {
-                                AssignmentPeakView(assignment: assignment)
-                            }
-                    }
-                }
+//                VStack {
+//                    ForEach(assignmentlist) {
+//                        assignment in
+//                            if (assignment.subject == self.classcool.name) {
+//                                AssignmentPeakView(assignment: assignment)
+//                            }
+//                    }
+//                }
             }
         }
     }
@@ -191,7 +191,7 @@ struct ClassesView: View {
                         Button(action: {
                             
                             let classnames = ["German", "Math", "English", "Music", "History"]
-                            let assignmenttypes = ["exam", "essay", "presentation", "test"]
+                            let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
             
             
                             for classname in classnames {

@@ -65,7 +65,7 @@ struct IndividualAssignmentFilterView: View {
                    }
                   
                    
-               }
+                }
             }.padding(10).background( Color(assignment.color)).cornerRadius(20)
     }
     

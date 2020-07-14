@@ -39,8 +39,8 @@ struct ContentView: View {
             }
             
              FilterView().tabItem {
-                Image(systemName:"wand.and.stars").resizable().scaledToFill()
-                Text("Filter")
+                Image(systemName:"paperclip").resizable().scaledToFill()
+                Text("Assignments")
             }
             
             ProgressView().tabItem {

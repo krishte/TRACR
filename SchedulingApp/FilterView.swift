@@ -67,7 +67,6 @@ struct AssignmentsView: View {
     
 
     @Environment(\.managedObjectContext) var managedObjectContext
-//    var selectedFilter: String
     
 
     
@@ -79,11 +78,7 @@ struct AssignmentsView: View {
     
     var classlist: FetchedResults<Classcool>
     
-//    @FetchRequest(entity: Assignment.entity(),
-//    sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
-//
-//    var assignmentlist: FetchedResults<Assignment>
-    
+
     
 
     init(selectedFilter:String){

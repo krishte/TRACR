@@ -12,7 +12,7 @@ struct DropDown: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State private var selectedFilter = 0
     
-    var filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type", "Grade", "Completed Assignments"]
+    var filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
     var body: some View {
         VStack {
 
@@ -116,20 +116,10 @@ struct AssignmentsView: View {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.timeleft, ascending: true)])
         }
-        else if (selectedFilter == "Type")
-        {
-            self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
-            sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.type, ascending: true)])
-        }
-        else if (selectedFilter == "Grade")
-        {
-            self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
-            sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.grade, ascending: true)])
-        }
         else
         {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
-            sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true)])
+            sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.type, ascending: true)])
         }
 
     }

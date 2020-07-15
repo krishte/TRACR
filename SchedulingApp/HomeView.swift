@@ -51,11 +51,11 @@ struct NewClassModalView: View {
                         newClass.name = self.classname
                         newClass.assignmentnumber = 0
                         newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-                        do {
-                         try self.managedObjectContext.save()
-                        } catch {
-                         print(error.localizedDescription)
-                         }
+//                        do {
+//                         try self.managedObjectContext.save()
+//                        } catch {
+//                         print(error.localizedDescription)
+//                         }
                         
                     }) {
                         Text("Add Class")
@@ -85,7 +85,7 @@ struct NewGradeModalView: View {
 }
 
 struct SubAssignmentView: View {
-    var subassignment: Subassignment
+    var subassignment: Subassignmentnew
     
     var body: some View {
         VStack{
@@ -97,10 +97,10 @@ struct SubAssignmentView: View {
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
-//    @FetchRequest(entity: Subassignment.entity(),
-//                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignment.startdatetime, ascending: true)])
-//    
-//    var subassignmentlist: FetchedResults<Subassignment>
+    @FetchRequest(entity: Subassignmentnew.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
     
     var datesfromtoday: [Date] = []
     var daytitlesfromtoday: [String] = []

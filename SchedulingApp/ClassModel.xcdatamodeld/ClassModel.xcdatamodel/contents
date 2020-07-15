@@ -19,14 +19,14 @@
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="tolerance" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
-    <entity name="Subassignment" representedClassName="Subassignment" syncable="YES">
-        <attribute name="assigmentname" optional="YES" attributeType="String"/>
-        <attribute name="enddatetime" optional="YES" attributeType="String"/>
-        <attribute name="startdatetime" optional="YES" attributeType="String"/>
+    <entity name="Subassignmentnew" representedClassName="Subassignmentnew" syncable="YES">
+        <attribute name="assignmentname" optional="YES" attributeType="String"/>
+        <attribute name="enddatetime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="startdatetime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <elements>
         <element name="Assignment" positionX="27" positionY="18" width="128" height="193"/>
         <element name="Classcool" positionX="0" positionY="9" width="128" height="118"/>
-        <element name="Subassignment" positionX="-36" positionY="-18" width="128" height="88"/>
+        <element name="Subassignmentnew" positionX="0" positionY="72" width="128" height="88"/>
     </elements>
 </model>

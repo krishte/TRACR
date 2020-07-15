@@ -110,6 +110,9 @@ struct IndividualAssignmentFilterView: View {
                         if (self.deleteonce == true) {
                             self.deleteonce = false
                             self.assignment.completed = true
+                            self.assignment.timeleft = 0
+                            self.assignment.progress = 100
+                            
 
                             for classity in self.classlist {
                                 if (classity.name == self.assignment.subject) {

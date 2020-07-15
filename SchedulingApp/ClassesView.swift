@@ -68,25 +68,96 @@ struct ClassView: View {
 }
 
 struct IndividualAssignmentView: View {
-    var assignment: Assignment
+    @ObservedObject var assignment: Assignment
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @State var dragoffset = CGSize.zero
+    
+    
+    @State var isDragged: Bool = false
+    @State var deleted: Bool = false
+    @State var deleteonce: Bool = true
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    
+    var classlist: FetchedResults<Classcool>
     
     var body: some View {
-        VStack {
-            Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-            Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-            Text("Due date: " + assignment.duedate.description).frame(width:  UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-            Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-            Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-
-            ZStack {
-                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
-                
-                HStack {
-                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
-                    Spacer()
+        ZStack {
+            VStack {
+                if (isDragged) {
+                    ZStack {
+                        HStack {
+                            Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
+                        }
+                        HStack {
+                            Spacer()
+                            if (self.dragoffset.width < -110) {
+                                Text("Complete").foregroundColor(Color.white).frame(width:100)
+                            }
+                            else {
+                                Text("Complete").foregroundColor(Color.white).frame(width:100).offset(x: self.dragoffset.width + 110)
+                            }
+                        }
+                    }
                 }
             }
-        }.padding(10).background(Color(assignment.color)).cornerRadius(20)
+            
+            VStack {
+
+                Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+                Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+                Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                
+
+                ZStack {
+                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
+                    HStack {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
+                        Spacer()
+                    }
+                }
+            }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+                .onChanged { value in
+                    self.dragoffset = value.translation
+                    self.isDragged = true
+
+                    if (self.dragoffset.width > 0) {
+                        self.dragoffset = CGSize.zero
+                        self.dragoffset.width = 0
+                    }
+                                        
+                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
+                        self.deleted = true
+                    }
+                }
+                .onEnded { value in
+                    self.dragoffset = .zero
+                    self.isDragged = false
+                    if (self.deleted == true) {
+                        if (self.deleteonce == true) {
+                            self.deleteonce = false
+                            self.assignment.completed = true
+                            self.assignment.timeleft = 0
+                            self.assignment.progress = 100
+                            
+
+                            for classity in self.classlist {
+                                if (classity.name == self.assignment.subject) {
+                                    classity.assignmentnumber -= 1
+                                }
+                            }
+                                                        
+                            do {
+                                try self.managedObjectContext.save()
+                                print("Class made")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                        }
+                    }
+                }).animation(.spring())
+        }.padding(10)
     }
 }
 
@@ -110,25 +181,26 @@ struct DetailView: View {
             Text("Tolerance: " + String(classcool.tolerance))
             Spacer()
             
-            List {
+            ScrollView {
                 ForEach(assignmentlist) { assignment in
                     if (assignment.subject == self.classcool.name && assignment.completed == false) {
                         IndividualAssignmentView(assignment: assignment)
                     }
-                }.onDelete { indexSet in
-                    for index in indexSet {
-                        self.managedObjectContext.delete(self.assignmentlist[index])
-                    }
-                    
-                    self.classcool.assignmentnumber -= 1
-                    
-                    do {
-                        try self.managedObjectContext.save()
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                    print("Assignment has been deleted")
-                }
+                }.animation(.spring())
+//                .onDelete { indexSet in
+//                    for index in indexSet {
+//                        self.managedObjectContext.delete(self.assignmentlist[index])
+//                    }
+//
+//                    self.classcool.assignmentnumber -= 1
+//
+//                    do {
+//                        try self.managedObjectContext.save()
+//                    } catch {
+//                        print(error.localizedDescription)
+//                    }
+//                    print("Assignment has been deleted")
+//                }
             }
         }
     }
@@ -205,7 +277,7 @@ struct ClassesView: View {
                                     newAssignment.subject = classname
                                     newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
                                     newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
-                                    newAssignment.grade = 0
+                                    newAssignment.grade = Int64.random(in: 1...8)
                                     newAssignment.completed = false
                                     newAssignment.type = assignmenttypes.randomElement()!
 

@@ -118,7 +118,7 @@ struct IndividualAssignmentFilterView: View {
                         self.dragoffset.width = 0
                     }
                     self.isDragged = true
-                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width*3/4)
+                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width*2/3)
                     {
                         
                         self.deleted = true

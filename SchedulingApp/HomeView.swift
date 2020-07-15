@@ -98,7 +98,7 @@ struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Subassignmentnew.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentname, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
@@ -150,11 +150,35 @@ struct HomeBodyView: View {
             //                            SubAssignmentView(subassignment: subassignment)
             //                    }
             //                }
-                Text("SubAssignments bubbles go here")
+                Text("SubAssignments: " + String(subassignmentlist.count))
+              
+                ScrollView {
+                    ForEach(subassignmentlist) {
+                        subassignment in
+                        IndividualSubassignmentView(subassignment: subassignment)
+                    }
+                }
             }
+            
+
             
             Spacer()
         }
+    }
+}
+
+struct IndividualSubassignmentView: View {
+    var subassignment: Subassignmentnew
+    
+    var body: some View {
+        VStack {
+            Text(subassignment.assignmentname)
+            Spacer()
+            Text(subassignment.startdatetime.description)
+            Text(subassignment.enddatetime.description)
+            Spacer()
+        }
+
     }
 }
 

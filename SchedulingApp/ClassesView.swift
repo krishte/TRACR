@@ -80,6 +80,10 @@ struct IndividualAssignmentView: View {
     
     var classlist: FetchedResults<Classcool>
     
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
     var body: some View {
         ZStack {
             VStack {
@@ -105,7 +109,7 @@ struct IndividualAssignmentView: View {
 
                 Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
                 Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                Text("Due date: " + String(assignment.duedate.description) ).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
                 Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 
@@ -145,6 +149,12 @@ struct IndividualAssignmentView: View {
                             for classity in self.classlist {
                                 if (classity.name == self.assignment.subject) {
                                     classity.assignmentnumber -= 1
+                                }
+                            }
+                            for (index, element) in self.subassignmentlist.enumerated() {
+                                if (element.assignmentname == self.assignment.name)
+                                {
+                                    self.managedObjectContext.delete(self.subassignmentlist[index])
                                 }
                             }
                                                         
@@ -217,6 +227,9 @@ struct ClassesView: View {
     
     var assignmentlist: FetchedResults<Assignment>
 
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
     var body: some View {
         NavigationView{
             List {
@@ -229,7 +242,14 @@ struct ClassesView: View {
                         for (index2, element) in self.assignmentlist.enumerated() {
                             if (element.subject == self.classlist[index].name) {
                                 self.managedObjectContext.delete(self.assignmentlist[index2])
+                                for (index3, element2) in self.subassignmentlist.enumerated() {
+                                    if (element2.assignmentname == element.name)
+                                    {
+                                        self.managedObjectContext.delete(self.subassignmentlist[index3])
+                                    }
+                                }
                             }
+
                         }
                     
                         self.managedObjectContext.delete(self.classlist[index])
@@ -269,11 +289,11 @@ struct ClassesView: View {
                             
                             for classname in classnames {
                                 let randomint = Int.random(in: 1...5)
-                                for i in 0..<randomint {
+                                for i in 0 ..< randomint {
                                     let newAssignment = Assignment(context: self.managedObjectContext)
                                     newAssignment.name = classname + " assignment " + String(i)
                                     newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
-                                    newAssignment.totaltime = Int64.random(in: 5...20)
+                                    newAssignment.totaltime = Int64.random(in: 2...10)
                                     newAssignment.subject = classname
                                     newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
                                     newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
@@ -287,7 +307,46 @@ struct ClassesView: View {
                                             newAssignment.color = classity.color
                                             do {
                                                 try self.managedObjectContext.save()
-                                                print("Class made")
+                                                print("Class number changed")
+                                            } catch {
+                                                print(error.localizedDescription)
+                                            }
+                                        }
+                                    }
+                                    let newrandomint = Int.random(in: 2...5)
+                                    var hoursleft = newAssignment.timeleft
+                                    for j in 0..<newrandomint {
+                                        if (hoursleft == 0)
+                                        {
+                                            break
+                                        }
+                                        else if (hoursleft == 1 || j == newrandomint-1)
+                                        {
+                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+                                            newSubassignment.assignmentname = newAssignment.name
+                                            let randomDate = Double.random(in:100000 ... 1000000)
+                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
+                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*hoursleft))
+                                            hoursleft = 0
+                                            do {
+                                                try self.managedObjectContext.save()
+                                                print("new Subassignment")
+                                            } catch {
+                                                print(error.localizedDescription)
+                                            }
+                                        }
+                                        else
+                                        {
+                                            let thirdrandomint = Int64.random(in: 1...2)
+                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+                                            newSubassignment.assignmentname = newAssignment.name
+                                            let randomDate = Double.random(in:100000 ... 1000000)
+                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
+                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*thirdrandomint))
+                                            hoursleft -= thirdrandomint
+                                            do {
+                                                try self.managedObjectContext.save()
+                                                print("new Subassignment")
                                             } catch {
                                                 print(error.localizedDescription)
                                             }

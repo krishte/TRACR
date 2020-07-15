@@ -11,6 +11,6 @@ import Foundation
 import CoreData
 
 @objc(Subassignmentnew)
-public class Subassignmentnew: NSManagedObject {
+public class Subassignmentnew: NSManagedObject, Identifiable {
 
 }

@@ -47,6 +47,9 @@ struct IndividualAssignmentFilterView: View {
     
     let isExpanded: Bool
     
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
     var body: some View {
         ZStack {
             VStack {
@@ -119,7 +122,12 @@ struct IndividualAssignmentFilterView: View {
                                     classity.assignmentnumber -= 1
                                 }
                             }
-                                                        
+                            for (index, element) in self.subassignmentlist.enumerated() {
+                                if (element.assignmentname == self.assignment.name)
+                                {
+                                    self.managedObjectContext.delete(self.subassignmentlist[index])
+                                }
+                            }
                             do {
                                 try self.managedObjectContext.save()
                                 print("Class made")

@@ -127,17 +127,17 @@ struct HomeBodyView: View {
     var body: some View {
         VStack {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) {
+                HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
                     ForEach(datenumbersfromtoday.indices) { datenumberindex in
                         ZStack {
-                            Circle().fill(datenumberindex == self.nthdayfromnow ? Color("datenumberred") : Color.white).frame(width: 50, height: 50)
-                            Circle().stroke(Color.black).frame(width: 50, height: 50)
-                            Text(self.datenumbersfromtoday[datenumberindex]).font(.system(size: 20)).fontWeight(.regular)
+                            Circle().fill(datenumberindex == self.nthdayfromnow ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                            Circle().stroke(Color.black).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                            Text(self.datenumbersfromtoday[datenumberindex]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
                         }.onTapGesture {
                             self.nthdayfromnow = datenumberindex
                         }
                     }
-                }.padding(.horizontal, 15).frame(height: 55)
+                }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29)).frame(height: 1.1 * (UIScreen.main.bounds.size.width / 29) * 3)
             }
             
             Text(daytitlesfromtoday[self.nthdayfromnow]).font(.title).fontWeight(.medium).padding(.top, 5).padding(.bottom, 15)

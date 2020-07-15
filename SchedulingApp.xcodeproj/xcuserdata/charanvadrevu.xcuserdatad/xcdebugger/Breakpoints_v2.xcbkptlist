@@ -7,54 +7,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AD97C5C4-B76A-4BA2-963D-BB6E0F3E5958"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SchedulingApp/FilterView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "13"
-            endingLineNumber = "13"
-            landmarkName = "DropDown"
-            landmarkType = "14">
-            <Locations>
-               <Location
-                  uuid = "AD97C5C4-B76A-4BA2-963D-BB6E0F3E5958 - 755ac14cbaa5fb1f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SchedulingApp.FilterView.body.getter : some"
-                  moduleName = "SchedulingApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/charanvadrevu/Desktop/Tracr/SchedulingApp/FilterView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "13"
-                  endingLineNumber = "13"
-                  offsetFromSymbolStart = "8">
-               </Location>
-               <Location
-                  uuid = "AD97C5C4-B76A-4BA2-963D-BB6E0F3E5958 - 8fabbf7a1f0bc7b7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (SwiftUI.GeometryProxy) -&gt; SwiftUI.NavigationView&lt;&lt;&lt;opaque return type of (extension in SwiftUI):SwiftUI.View.navigationBarItems&lt;A where A1: SwiftUI.View&gt;(leading: A1) -&gt; some&gt;&gt;.0&gt; in SchedulingApp.FilterView.body.getter : some"
-                  moduleName = "SchedulingApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/charanvadrevu/Desktop/Tracr/SchedulingApp/FilterView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "14"
-                  endingLineNumber = "14"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "1C6CA4BE-97F3-4644-AF19-23816A622CDB"
             shouldBeEnabled = "No"
             ignoreCount = "0"

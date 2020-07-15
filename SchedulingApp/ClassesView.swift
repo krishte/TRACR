@@ -12,7 +12,6 @@ import SwiftUI
 struct AssignmentPeakView: View {
     let datedisplay, color, name: String
     
-
     init(assignment: Assignment) {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd/MM/yy"
@@ -34,8 +33,7 @@ struct ClassView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
     
-    @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
@@ -51,8 +49,7 @@ struct ClassView: View {
                     if classcool.assignmentnumber == 0 {
                         Text("No Assignments").font(.body).fontWeight(.light)
                     }
-                    else
-                    {
+                    else {
                         Text(String(classcool.assignmentnumber)).font(.title).fontWeight(.bold)
                     }
                 }.padding(.horizontal, 25)
@@ -75,25 +72,22 @@ struct IndividualAssignmentView: View {
     
     var body: some View {
         VStack {
-              Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-              Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-              Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-              Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-                Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+            Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+            Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+            Text("Due date: " + assignment.duedate.description).frame(width:  UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+            Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+            Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
 
-                ZStack {
-                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
-                    HStack {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
-                        Spacer()
-                    }
-                   
-                    
+            ZStack {
+                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
+                
+                HStack {
+                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
+                    Spacer()
                 }
-            }.padding(10).background(Color(assignment.color)).cornerRadius(20)
-
-        }
-
+            }
+        }.padding(10).background(Color(assignment.color)).cornerRadius(20)
+    }
 }
 
 
@@ -101,13 +95,11 @@ struct DetailView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
     
-    @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
-    @FetchRequest(entity: Classcool.entity(),
-                  sortDescriptors: [])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
     
@@ -119,23 +111,22 @@ struct DetailView: View {
             Spacer()
             
             List {
-                ForEach(assignmentlist) {
-                    assignment in
-                    if (assignment.subject == self.classcool.name && assignment.completed == false)
-                    {
+                ForEach(assignmentlist) { assignment in
+                    if (assignment.subject == self.classcool.name && assignment.completed == false) {
                         IndividualAssignmentView(assignment: assignment)
                     }
                 }.onDelete { indexSet in
                     for index in indexSet {
                         self.managedObjectContext.delete(self.assignmentlist[index])
                     }
+                    
                     self.classcool.assignmentnumber -= 1
                     
-                      do {
-                       try self.managedObjectContext.save()
-                      } catch {
-                       print(error.localizedDescription)
-                       }
+                    do {
+                        try self.managedObjectContext.save()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
                     print("Assignment has been deleted")
                 }
             }
@@ -144,55 +135,49 @@ struct DetailView: View {
 }
 
 struct ClassesView: View {
-
-    
     @Environment(\.managedObjectContext) var managedObjectContext
 
-    @FetchRequest(entity: Classcool.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
     
-    @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
     
     var assignmentlist: FetchedResults<Assignment>
 
     var body: some View {
-         NavigationView{
+        NavigationView{
             List {
-                ForEach(self.classlist) {
-                  classcool in
-                  NavigationLink(destination: DetailView(classcool: classcool )) {
-                    ClassView(classcool:classcool )
-                  }
-                }.onDelete { indexSet in
-                for index in indexSet {
-                    for (index2, element) in self.assignmentlist.enumerated() {
-                        if (element.subject == self.classlist[index].name)
-                        {
-                            self.managedObjectContext.delete(self.assignmentlist[index2])
-                        }
+                ForEach(self.classlist) { classcool in
+                    NavigationLink(destination: DetailView(classcool: classcool )) {
+                        ClassView(classcool: classcool)
                     }
-                    self.managedObjectContext.delete(self.classlist[index])
+                }.onDelete { indexSet in
+                    for index in indexSet {
+                        for (index2, element) in self.assignmentlist.enumerated() {
+                            if (element.subject == self.classlist[index].name) {
+                                self.managedObjectContext.delete(self.assignmentlist[index2])
+                            }
+                        }
+                    
+                        self.managedObjectContext.delete(self.classlist[index])
+                    }
+                    
+                    do {
+                        try self.managedObjectContext.save()
+                        print("Class made")
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                    
+                    print("Class deleted")
                 }
-              do {
-               try self.managedObjectContext.save()
-               print("Class made")
-              } catch {
-               print(error.localizedDescription)
-               }
-            print("Class deleted")
-        }
-                }
-             .navigationBarItems(
+            }.navigationBarItems(
                 leading:
                     HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
                         Button(action: {
-                            
                             let classnames = ["German", "Math", "English", "Music", "History"]
                             let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
-            
             
                             for classname in classnames {
                                 let newClass = Classcool(context: self.managedObjectContext)
@@ -201,12 +186,13 @@ struct ClassesView: View {
                                 newClass.name = classname
                                 newClass.assignmentnumber = 0
                                 newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+                                
                                 do {
-                                   try self.managedObjectContext.save()
-                                   print("Class made")
-                                  } catch {
-                                   print(error.localizedDescription)
-                                   }
+                                    try self.managedObjectContext.save()
+                                    print("Class made")
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
                             }
                             
                             for classname in classnames {
@@ -224,40 +210,37 @@ struct ClassesView: View {
                                     newAssignment.type = assignmenttypes.randomElement()!
 
                                     for classity in self.classlist {
-                                        if (classity.name == newAssignment.subject)
-                                        {
+                                        if (classity.name == newAssignment.subject) {
                                             classity.assignmentnumber += 1
                                             newAssignment.color = classity.color
                                             do {
-                                             try self.managedObjectContext.save()
-                                             print("Class made")
+                                                try self.managedObjectContext.save()
+                                                print("Class made")
                                             } catch {
-                                             print(error.localizedDescription)
-                                             }
+                                                print(error.localizedDescription)
+                                            }
                                         }
                                     }
-                                    do {
-                                      try self.managedObjectContext.save()
-                                      print("Class made")
-                                     } catch {
-                                      print(error.localizedDescription)
-                                      }
                                     
+                                    do {
+                                        try self.managedObjectContext.save()
+                                        print("Class made")
+                                    } catch {
+                                        print(error.localizedDescription)
+                                    }
                                 }
                             }
-                           
-                            
-                        }) {
+                        })
+                        {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }.padding(.leading, 2.0);
+                        }
                     
-                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4);
+                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
 
                         Button(action: {print("add button clicked")}) {
                             Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
                     }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
-                
          }
     }
 }

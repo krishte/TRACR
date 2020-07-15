@@ -121,7 +121,7 @@ struct DetailView: View {
             List {
                 ForEach(assignmentlist) {
                     assignment in
-                    if (assignment.subject == self.classcool.name)
+                    if (assignment.subject == self.classcool.name && assignment.completed == false)
                     {
                         IndividualAssignmentView(assignment: assignment)
                     }

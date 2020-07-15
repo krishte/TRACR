@@ -15,7 +15,6 @@ struct DropDown: View {
     var filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
     var body: some View {
         VStack {
-
             Form {
                 Section {
                     Picker(selection: $selectedFilter, label: Text("Sort by: ")) {
@@ -24,16 +23,13 @@ struct DropDown: View {
                                Text(self.filters[$0])
                             }
                         }
-
                     }
                 }
             }.frame(height: 50)
             
             AssignmentsView(selectedFilter: self.filters[selectedFilter])
-            
         }
     }
-
 }
 
 struct IndividualAssignmentFilterView: View {
@@ -45,12 +41,12 @@ struct IndividualAssignmentFilterView: View {
     @State var isDragged: Bool = false
     @State var deleted: Bool = false
     @State var deleteonce: Bool = true
-    @FetchRequest(entity: Classcool.entity(),
-                  sortDescriptors: [])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
-
+    
     let isExpanded: Bool
+    
     var body: some View {
         ZStack {
             VStack {
@@ -77,6 +73,7 @@ struct IndividualAssignmentFilterView: View {
                     Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
                     Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
                 }
+                    
                 else {
                     Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
                     Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
@@ -146,33 +143,32 @@ struct AssignmentsView: View {
     var classlist: FetchedResults<Classcool>
     
     init(selectedFilter:String){
-        if (selectedFilter == "Due date")
-        {
+        if (selectedFilter == "Due date") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
         }
-        else if (selectedFilter == "Total time")
-        {
+            
+        else if (selectedFilter == "Total time") {
            self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.totaltime, ascending: true)])
         }
-        else if (selectedFilter == "Class")
-        {
+            
+        else if (selectedFilter == "Class") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
         }
-        else if (selectedFilter == "Name")
-        {
+            
+        else if (selectedFilter == "Name") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.name, ascending: true)])
         }
-        else if (selectedFilter == "Time left")
-        {
+            
+        else if (selectedFilter == "Time left") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.timeleft, ascending: true)])
         }
-        else
-        {
+            
+        else {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.type, ascending: true)])
         }
@@ -185,24 +181,18 @@ struct AssignmentsView: View {
             selection.insert(singularassignment)
         }
     }
+    
     var body: some View {
         VStack {
-            
             ScrollView {
-                ForEach(self.assignmentlist) {
-                    assignment in
-                    if (assignment.completed == false)
-                    {
+                ForEach(self.assignmentlist) { assignment in
+                    if (assignment.completed == false) {
                         VStack {
-                         IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment)).onTapGesture {
-                                self.selectDeselect(assignment)
-                            }.animation(.spring()).shadow(radius: 10)
+                            IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment)).onTapGesture {
+                                    self.selectDeselect(assignment)
+                                }.animation(.spring()).shadow(radius: 10)
                         }
-
                     }
-
-
-                   
                 }.animation(.spring())
 //                .onDelete { indexSet in
 //                    for index in indexSet {
@@ -228,24 +218,17 @@ struct AssignmentsView: View {
             }
         }
     }
-    
-    
 }
-struct FilterView: View {
-    
 
+struct FilterView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-    @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
-    @FetchRequest(entity: Classcool.entity(),
-                  sortDescriptors: [])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
-    
-    
     
     var body: some View {
         NavigationView{

@@ -63,8 +63,6 @@ struct IndividualAssignmentFilterView: View {
                         HStack {
                             Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
                         }
-
-                        
                         HStack {
                             Spacer()
                             if (self.dragoffset.width < -110)

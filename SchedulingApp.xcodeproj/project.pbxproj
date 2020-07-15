@@ -25,8 +25,8 @@
 		56A66ED224B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A66ED024B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift */; };
 		56FBB03724BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FBB03524BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift */; };
 		56FBB03824BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FBB03624BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift */; };
-		CFDB39DF24B206F40055C48A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */; };
 		CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39E224B8845A0055C48A /* Colors.xcassets */; };
+		CFDB3AA524BF4BE00055C48A /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFDB3AA424BF4BE00055C48A /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,8 +71,8 @@
 		56A66ED024B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Classcool+CoreDataProperties.swift"; path = "SchedulingApp/Classcool+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		56FBB03524BA1DBC00194CE5 /* Subassignment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignment+CoreDataClass.swift"; path = "SchedulingApp/Subassignment+CoreDataClass.swift"; sourceTree = "<group>"; };
 		56FBB03624BA1DBC00194CE5 /* Subassignment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignment+CoreDataProperties.swift"; path = "SchedulingApp/Subassignment+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CFDB39E224B8845A0055C48A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		CFDB3AA424BF4BE00055C48A /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,12 +129,12 @@
 		561880A824AB4A8500558F29 /* SchedulingApp */ = {
 			isa = PBXGroup;
 			children = (
+				CFDB3AA424BF4BE00055C48A /* Launch Screen.storyboard */,
 				561880A924AB4A8500558F29 /* AppDelegate.swift */,
 				561880AB24AB4A8500558F29 /* SceneDelegate.swift */,
 				561880AD24AB4A8500558F29 /* ContentView.swift */,
 				561880AF24AB4A8600558F29 /* Assets.xcassets */,
 				CFDB39E224B8845A0055C48A /* Colors.xcassets */,
-				CFDB39DE24B206F40055C48A /* LaunchScreen.storyboard */,
 				561880B724AB4A8600558F29 /* Info.plist */,
 				561880B124AB4A8600558F29 /* Preview Content */,
 				561880D924AB753700558F29 /* HomeView.swift */,
@@ -279,9 +279,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CFDB39DF24B206F40055C48A /* LaunchScreen.storyboard in Resources */,
 				CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */,
 				561880B324AB4A8600558F29 /* Preview Assets.xcassets in Resources */,
+				CFDB3AA524BF4BE00055C48A /* Launch Screen.storyboard in Resources */,
 				561880B024AB4A8600558F29 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

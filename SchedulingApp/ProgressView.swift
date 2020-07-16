@@ -32,7 +32,7 @@ struct ClassProgressView: View {
                    }
                    else
                    {
-                       Text(String(getAverageGrade())).font(.title).fontWeight(.bold)
+                       Text("\(getAverageGrade(), specifier: "%.1f")").font(.title).fontWeight(.bold)
                    }
                 }.padding(.horizontal, 25)
                 
@@ -53,7 +53,7 @@ struct ClassProgressView: View {
         var gradesum: Double = 0
         var gradenum: Double = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name)
+            if (assignment.subject == classcool.name && assignment.completed == true)
             {
                 gradesum += Double(assignment.grade)
                 gradenum += 1
@@ -64,6 +64,28 @@ struct ClassProgressView: View {
             return 0;
         }
         return (gradesum/gradenum)
+    }
+}
+
+struct IndividualAssignemntProgressView: View {
+    var assignment: Assignment
+    
+    var body: some View {
+        VStack {
+            Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+            Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+            Text("Due date: " + assignment.duedate.description).frame(width:  UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+            Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+            Text("Grade: " + String(assignment.grade)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+
+            ZStack {
+                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
+                
+                HStack {
+                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
+                }
+            }
+        }.padding(10).background(Color(assignment.color)).cornerRadius(20)
     }
 }
 
@@ -83,16 +105,38 @@ struct DetailProgressView: View {
     
     var body: some View {
         VStack {
+            Text(classcool.name).font(.title).fontWeight(.bold)
+            Spacer()
+            Text("Average grade: \(getAverageGrade(), specifier: "%.1f")")
+            Spacer()
+            
             List {
                 ForEach(assignmentlist) {
                     assignment in
                     if (assignment.subject == self.classcool.name && assignment.completed == true)
                     {
-                        IndividualAssignmentView(assignment: assignment)
+                        IndividualAssignemntProgressView(assignment: assignment)
                     }
                 }
             }
         }
+    }
+    func getAverageGrade() -> Double
+    {
+        var gradesum: Double = 0
+        var gradenum: Double = 0
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.name && assignment.completed == true)
+            {
+                gradesum += Double(assignment.grade)
+                gradenum += 1
+            }
+        }
+        if (gradesum == 0)
+        {
+            return 0;
+        }
+        return (gradesum/gradenum)
     }
 }
 

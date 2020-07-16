@@ -11,6 +11,7 @@ import SwiftUI
 struct DropDown: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State private var selectedFilter = 0
+    @State private var showCompleted = false
     
     var filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
     var body: some View {
@@ -24,10 +25,13 @@ struct DropDown: View {
                             }
                         }
                     }
+                    Toggle(isOn: $showCompleted) {
+                        Text("Show Completed Assignments")
+                    }
                 }
-            }.frame(height: 50)
+            }.frame(height: 90).disabled(true)
             
-            AssignmentsView(selectedFilter: self.filters[selectedFilter])
+            AssignmentsView(selectedFilter: self.filters[selectedFilter], value: showCompleted)
         }
     }
 }
@@ -88,8 +92,16 @@ struct IndividualAssignmentFilterView: View {
                 ZStack {
                     RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
                     HStack {
+                        if (assignment.progress == 100)
+                        {
+                         RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
+                        }
+                        else
+                        {
                         RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
-                        Spacer()
+                            Spacer()
+                        }
+
                     }
                 }
             }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
@@ -147,13 +159,13 @@ struct AssignmentsView: View {
 
     var assignmentlistrequest: FetchRequest<Assignment>
     var assignmentlist: FetchedResults<Assignment>{assignmentlistrequest.wrappedValue}
-    
+    var showCompleted: Bool
     @FetchRequest(entity: Classcool.entity(),
                   sortDescriptors: [])
-    
+
     var classlist: FetchedResults<Classcool>
     
-    init(selectedFilter:String){
+    init(selectedFilter:String, value: Bool){
         if (selectedFilter == "Due date") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
@@ -183,6 +195,7 @@ struct AssignmentsView: View {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.type, ascending: true)])
         }
+        self.showCompleted = value
     }
     
     private func selectDeselect(_ singularassignment: Assignment) {
@@ -197,7 +210,8 @@ struct AssignmentsView: View {
         VStack {
             ScrollView {
                 ForEach(self.assignmentlist) { assignment in
-                    if (assignment.completed == false) {
+
+                    if (assignment.completed == self.showCompleted) {
                         VStack {
                             IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment)).onTapGesture {
                                     self.selectDeselect(assignment)

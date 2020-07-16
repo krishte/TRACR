@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct NewAssignmentModalView: View {
+     @Environment(\.managedObjectContext) var managedObjectContext
     var body: some View {
         Text("new assignment")
     }
@@ -18,13 +19,7 @@ struct NewClassModalView: View {
      @Environment(\.managedObjectContext) var managedObjectContext
      @State private var classname: String = ""
      @State private var classtolerance: Int64 = 5
-    
-    init() {
-        self.classname = ""
-        self.classtolerance = 5
 
-        
-    }
 
 
     var body: some View {
@@ -51,11 +46,11 @@ struct NewClassModalView: View {
                         newClass.name = self.classname
                         newClass.assignmentnumber = 0
                         newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-//                        do {
-//                         try self.managedObjectContext.save()
-//                        } catch {
-//                         print(error.localizedDescription)
-//                         }
+                        do {
+                         try self.managedObjectContext.save()
+                        } catch {
+                         print(error.localizedDescription)
+                         }
                         
                     }) {
                         Text("Add Class")
@@ -67,24 +62,28 @@ struct NewClassModalView: View {
 }
 
 struct NewOccupiedtimeModalView: View {
+     @Environment(\.managedObjectContext) var managedObjectContext
     var body: some View {
         Text("new occupied time")
     }
 }
 
 struct NewFreetimeModalView: View {
+     @Environment(\.managedObjectContext) var managedObjectContext
     var body: some View {
         Text("new free time")
     }
 }
 
 struct NewGradeModalView: View {
+     @Environment(\.managedObjectContext) var managedObjectContext
     var body: some View {
         Text("new grade")
     }
 }
 
 struct SubAssignmentView: View {
+     @Environment(\.managedObjectContext) var managedObjectContext
     var subassignment: Subassignmentnew
     
     var body: some View {
@@ -98,7 +97,7 @@ struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Subassignmentnew.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentname, ascending: true)])
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
@@ -183,6 +182,7 @@ struct IndividualSubassignmentView: View {
 }
 
 struct HomeView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
     @State var NewOccupiedtimePresenting = false
@@ -206,24 +206,24 @@ struct HomeView: View {
                             Button(action: {self.NewAssignmentPresenting.toggle()}) {
                                 Text("Assignment")
                                 Image(systemName: "paperclip")
-                            }.sheet(isPresented: $NewAssignmentPresenting, content: {NewAssignmentModalView()})
+                            }.sheet(isPresented: $NewAssignmentPresenting, content: {NewAssignmentModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                             Button(action: {self.NewClassPresenting.toggle()}) {
                                 Text("Class")
                                 Image(systemName: "list.bullet")
                             }.sheet(isPresented: $NewClassPresenting, content: {
-                                NewClassModalView()})
+                                NewClassModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                             Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
                                 Text("Occupied Time")
                                 Image(systemName: "clock.fill")
-                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: {NewOccupiedtimeModalView()})
+                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: {NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                             Button(action: {self.NewFreetimePresenting.toggle()}) {
                                 Text("Free Time")
                                 Image(systemName: "clock")
-                            }.sheet(isPresented: $NewFreetimePresenting, content: {NewFreetimeModalView()})
+                            }.sheet(isPresented: $NewFreetimePresenting, content: {NewFreetimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                             Button(action: {self.NewGradePresenting.toggle()}) {
                                 Text("Grade")
                                 Image(systemName: "percent")
-                            }.sheet(isPresented: $NewGradePresenting, content: {NewGradeModalView()})
+                            }.sheet(isPresented: $NewGradePresenting, content: {NewGradeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                         }.padding().background(Color("add_overlay_bg")).overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color("add_overlay_border"), lineWidth: 1)

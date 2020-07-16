@@ -51,13 +51,15 @@ struct IndividualAssignmentFilterView: View {
     
     let isExpanded: Bool
     
+    let isCompleted: Bool
+    
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     var body: some View {
         ZStack {
             VStack {
-                if (isDragged) {
+                if (isDragged && !self.isCompleted) {
                     ZStack {
                         HStack {
                             Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
@@ -106,48 +108,56 @@ struct IndividualAssignmentFilterView: View {
                 }
             }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
-                    self.dragoffset = value.translation
-                    self.isDragged = true
+                    if (!self.isCompleted)
+                    {
+                        self.dragoffset = value.translation
+                        self.isDragged = true
 
-                    if (self.dragoffset.width > 0) {
-                        self.dragoffset = CGSize.zero
-                        self.dragoffset.width = 0
-                    }
-                                        
-                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
-                        self.deleted = true
-                    }
-                }
-                .onEnded { value in
-                    self.dragoffset = .zero
-                    self.isDragged = false
-                    if (self.deleted == true) {
-                        if (self.deleteonce == true) {
-                            self.deleteonce = false
-                            self.assignment.completed = true
-                            self.assignment.timeleft = 0
-                            self.assignment.progress = 100
-                            
-
-                            for classity in self.classlist {
-                                if (classity.name == self.assignment.subject) {
-                                    classity.assignmentnumber -= 1
-                                }
-                            }
-                            for (index, element) in self.subassignmentlist.enumerated() {
-                                if (element.assignmentname == self.assignment.name)
-                                {
-                                    self.managedObjectContext.delete(self.subassignmentlist[index])
-                                }
-                            }
-                            do {
-                                try self.managedObjectContext.save()
-                                print("Class made")
-                            } catch {
-                                print(error.localizedDescription)
-                            }
+                        if (self.dragoffset.width > 0) {
+                            self.dragoffset = CGSize.zero
+                            self.dragoffset.width = 0
+                        }
+                                            
+                        if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
+                            self.deleted = true
                         }
                     }
+
+                }
+                .onEnded { value in
+                    if (!self.isCompleted)
+                    {
+                        self.dragoffset = .zero
+                         self.isDragged = false
+                         if (self.deleted == true) {
+                             if (self.deleteonce == true) {
+                                 self.deleteonce = false
+                                 self.assignment.completed = true
+                                 self.assignment.timeleft = 0
+                                 self.assignment.progress = 100
+                                 
+
+                                 for classity in self.classlist {
+                                     if (classity.name == self.assignment.subject) {
+                                         classity.assignmentnumber -= 1
+                                     }
+                                 }
+                                 for (index, element) in self.subassignmentlist.enumerated() {
+                                     if (element.assignmentname == self.assignment.name)
+                                     {
+                                         self.managedObjectContext.delete(self.subassignmentlist[index])
+                                     }
+                                 }
+                                 do {
+                                     try self.managedObjectContext.save()
+                                     print("Assignment completed")
+                                 } catch {
+                                     print(error.localizedDescription)
+                                 }
+                             }
+                         }
+                    }
+ 
                 }).animation(.spring())
         }.padding(10)
     }
@@ -209,16 +219,16 @@ struct AssignmentsView: View {
     var body: some View {
         VStack {
             ScrollView {
-                ForEach(self.assignmentlist) { assignment in
+                ForEach(assignmentlist) { assignment in
 
                     if (assignment.completed == self.showCompleted) {
                         VStack {
-                            IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment)).onTapGesture {
+                            IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment), isCompleted: self.showCompleted).onTapGesture {
                                     self.selectDeselect(assignment)
                                 }.animation(.spring()).shadow(radius: 10)
                         }
                     }
-                }.animation(.spring())
+                }//.animation(.spring())
 //                .onDelete { indexSet in
 //                    for index in indexSet {
 //                        for classity in self.classlist {

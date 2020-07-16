@@ -29,7 +29,7 @@ struct DropDown: View {
                         Text("Show Completed Assignments")
                     }
                 }
-            }.frame(height: 90).disabled(true)
+            }.frame(height: 90)
             
             AssignmentsView(selectedFilter: self.filters[selectedFilter], value: showCompleted)
         }

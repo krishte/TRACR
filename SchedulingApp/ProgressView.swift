@@ -109,7 +109,10 @@ struct DetailProgressView: View {
             Spacer()
             Text("Average grade: \(getAverageGrade(), specifier: "%.1f")")
             Spacer()
-            
+            if (getAverageGrade() != 0)
+            {
+                
+            }
             List {
                 ForEach(assignmentlist) {
                     assignment in

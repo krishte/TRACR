@@ -19,13 +19,7 @@ struct NewClassModalView: View {
      @Environment(\.managedObjectContext) var managedObjectContext
      @State private var classname: String = ""
      @State private var classtolerance: Int64 = 5
-    
-    init() {
-        self.classname = ""
-        self.classtolerance = 5
 
-        
-    }
 
 
     var body: some View {
@@ -103,7 +97,7 @@ struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Subassignmentnew.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentname, ascending: true)])
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     

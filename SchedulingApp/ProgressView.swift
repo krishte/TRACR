@@ -116,11 +116,11 @@ struct DetailProgressView: View {
                         RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.green).frame(width:UIScreen.main.bounds.size.width-20, height: 300)
                         
                         VStack(spacing: 0) {
-                            Spacer()
-                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).padding(0)
-                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).padding(0)
-                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).padding(0)
-                            Rectangle().fill(Color.green).frame(width: screensize, height: 80).padding(0)
+                           Spacer()
+//                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+//                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+//                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+//                            Rectangle().fill(Color.green).frame(width: screensize, height: 80).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
                         }
                         HStack {
                             ForEach(assignmentlist) {

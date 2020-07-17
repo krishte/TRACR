@@ -241,13 +241,13 @@ struct ClassesView: View {
                     for index in indexSet {
                         for (index2, element) in self.assignmentlist.enumerated() {
                             if (element.subject == self.classlist[index].name) {
-                                self.managedObjectContext.delete(self.assignmentlist[index2])
                                 for (index3, element2) in self.subassignmentlist.enumerated() {
                                     if (element2.assignmentname == element.name)
                                     {
                                         self.managedObjectContext.delete(self.subassignmentlist[index3])
                                     }
                                 }
+                                self.managedObjectContext.delete(self.assignmentlist[index2])
                             }
 
                         }
@@ -335,6 +335,7 @@ struct ClassesView: View {
                                             let randomDate = Double.random(in:100000 ... 1000000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*hoursleft))
+                                            newSubassignment.color = newAssignment.color
                                             hoursleft = 0
                                             do {
                                                 try self.managedObjectContext.save()
@@ -351,6 +352,7 @@ struct ClassesView: View {
                                             let randomDate = Double.random(in:100000 ... 1000000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*thirdrandomint))
+                                            newSubassignment.color = newAssignment.color
                                             hoursleft -= thirdrandomint
                                             do {
                                                 try self.managedObjectContext.save()

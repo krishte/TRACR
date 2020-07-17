@@ -20,5 +20,6 @@ extension Subassignmentnew {
     @NSManaged public var assignmentname: String
     @NSManaged public var startdatetime: Date
     @NSManaged public var enddatetime: Date
+    @NSManaged public var color: String
 
 }

@@ -296,7 +296,7 @@ struct ClassesView: View {
                             }
                             
                             for classname in classnames {
-                                let randomint = Int.random(in: 1...5)
+                                let randomint = Int.random(in: 1...10)
                                 for i in 0 ..< randomint {
                                     let newAssignment = Assignment(context: self.managedObjectContext)
                                     newAssignment.name = classname + " assignment " + String(i)
@@ -305,7 +305,7 @@ struct ClassesView: View {
                                     newAssignment.subject = classname
                                     newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
                                     newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
-                                    newAssignment.grade = Int64.random(in: 1...8)
+                                    newAssignment.grade = Int64.random(in: 1...7)
                                     newAssignment.completed = false
                                     newAssignment.type = assignmenttypes.randomElement()!
 

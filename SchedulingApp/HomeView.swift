@@ -194,47 +194,37 @@ struct HomeView: View {
             HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
                 Button(action: {print("settings button clicked")}) {
                     Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                }.padding(.leading, 2.0);
+                }
             
-                Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4);
+                Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
 
                 Button(action: {self.NewAssignmentPresenting.toggle()}){
                     Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                 }.contextMenu{
-                    VStack(alignment: .trailing) {
-                        VStack(alignment: .trailing, spacing: 10) {
-                            Button(action: {self.NewAssignmentPresenting.toggle()}) {
-                                Text("Assignment")
-                                Image(systemName: "paperclip")
-                            }.sheet(isPresented: $NewAssignmentPresenting, content: {NewAssignmentModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewClassPresenting.toggle()}) {
-                                Text("Class")
-                                Image(systemName: "list.bullet")
-                            }.sheet(isPresented: $NewClassPresenting, content: {
-                                NewClassModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                Text("Occupied Time")
-                                Image(systemName: "clock.fill")
-                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: {NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewFreetimePresenting.toggle()}) {
-                                Text("Free Time")
-                                Image(systemName: "clock")
-                            }.sheet(isPresented: $NewFreetimePresenting, content: {NewFreetimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewGradePresenting.toggle()}) {
-                                Text("Grade")
-                                Image(systemName: "percent")
-                            }.sheet(isPresented: $NewGradePresenting, content: {NewGradeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                        }.padding().background(Color("add_overlay_bg")).overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color("add_overlay_border"), lineWidth: 1)
-                        ).shadow(color: Color.black.opacity(0.1), radius: 20, x: -7, y: 7).padding(.leading, 61)
-                        Spacer()
-                    }
+                    Button(action: {self.NewAssignmentPresenting.toggle()}) {
+                        Text("Assignment")
+                        Image(systemName: "paperclip")
+                    }.sheet(isPresented: $NewAssignmentPresenting, content: {NewAssignmentModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    Button(action: {self.NewClassPresenting.toggle()}) {
+                        Text("Class")
+                        Image(systemName: "list.bullet")
+                    }.sheet(isPresented: $NewClassPresenting, content: {
+                        NewClassModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                        Text("Occupied Time")
+                        Image(systemName: "clock.fill")
+                    }.sheet(isPresented: $NewOccupiedtimePresenting, content: {NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    Button(action: {self.NewFreetimePresenting.toggle()}) {
+                        Text("Free Time")
+                        Image(systemName: "clock")
+                    }.sheet(isPresented: $NewFreetimePresenting, content: {NewFreetimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    Button(action: {self.NewGradePresenting.toggle()}) {
+                        Text("Grade")
+                        Image(systemName: "percent")
+                    }.sheet(isPresented: $NewGradePresenting, content: {NewGradeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                 }
             }.padding(.bottom, 18)
             HomeBodyView()
-            
-            
         }
     }
 }

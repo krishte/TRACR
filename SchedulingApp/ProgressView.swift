@@ -102,18 +102,48 @@ struct DetailProgressView: View {
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
-    
+    let screensize = UIScreen.main.bounds.size.width-20
     var body: some View {
         VStack {
             Text(classcool.name).font(.title).fontWeight(.bold)
             Spacer()
             Text("Average grade: \(getAverageGrade(), specifier: "%.1f")")
             Spacer()
-            if (getAverageGrade() != 0)
-            {
-                
-            }
-            List {
+            ScrollView {
+                if (getAverageGrade() != 0)
+                 {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.green).frame(width:UIScreen.main.bounds.size.width-20, height: 300)
+                        
+                        VStack(spacing: 0) {
+                            Spacer()
+                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).padding(0)
+                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).padding(0)
+                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).padding(0)
+                            Rectangle().fill(Color.green).frame(width: screensize, height: 80).padding(0)
+                        }
+                        HStack {
+                            ForEach(assignmentlist) {
+                                assignment in
+                                if (assignment.subject == self.classcool.name && assignment.completed == true)
+                                {
+
+                                    VStack {
+                                        Spacer()
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(Color.blue)
+                                            .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
+                                        Text(assignment.duedate.description)
+                                            .font(.footnote)
+                                            .frame(width: self.getCompletedNumber(),height: 20)
+                                    }
+
+                                }
+                            }
+                        }
+
+                    }
+                 }
                 ForEach(assignmentlist) {
                     assignment in
                     if (assignment.subject == self.classcool.name && assignment.completed == true)
@@ -140,6 +170,18 @@ struct DetailProgressView: View {
             return 0;
         }
         return (gradesum/gradenum)
+    }
+    func getCompletedNumber() -> CGFloat
+    {
+        var numberofcompleted: Double = 0
+        
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.name && assignment.completed == true)
+            {
+                numberofcompleted += 1
+            }
+        }
+        return CGFloat(CGFloat(screensize/CGFloat(numberofcompleted)) - 10)
     }
 }
 

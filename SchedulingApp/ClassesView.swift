@@ -268,8 +268,16 @@ struct ClassesView: View {
                 leading:
                     HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
                         Button(action: {
-                            let classnames = ["German", "Math", "English", "Music", "History"]
+                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literatue SL", "English A: Language and Literatue HL"]
+                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
+                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
+                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
+                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
+                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
+                            let extendedessay = "Extended Essay"
+                            let tok = "Theory of Knowledge"
                             let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
+                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
             
                             for classname in classnames {
                                 let newClass = Classcool(context: self.managedObjectContext)

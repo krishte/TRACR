@@ -221,14 +221,14 @@ struct AssignmentsView: View {
             ScrollView {
                 ForEach(assignmentlist) { assignment in
 
-                    if (assignment.completed == self.showCompleted) {
+                  if (assignment.completed == self.showCompleted) {
                         VStack {
                             IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment), isCompleted: self.showCompleted).onTapGesture {
                                     self.selectDeselect(assignment)
                                 }.animation(.spring()).shadow(radius: 10)
                         }
                     }
-                }//.animation(.spring())
+                }.animation(.spring())
 //                .onDelete { indexSet in
 //                    for index in indexSet {
 //                        for classity in self.classlist {

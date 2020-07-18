@@ -27,7 +27,6 @@ struct NewClassModalView: View {
     @State private var classnameindex = 0
     @State private var classlevelindex = 0
     @State private var classtolerance: Int64 = 5
-    @State private var classattentionspan: Int64 = 5
 
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
     
@@ -116,12 +115,6 @@ struct NewClassModalView: View {
                         label: {
                             Text("Tolerance: \(classtolerance)")
                     })
-                    
-                    Stepper(value: $classattentionspan,
-                        in: 1...10,
-                        label: {
-                            Text("Attention Span: \(classattentionspan)")
-                    })
                 }
                 
                 Section {
@@ -191,7 +184,7 @@ struct NewClassModalView: View {
                             let newClass = Classcool(context: self.managedObjectContext)
                             print(self.classtolerance)
                             print(self.classnameindex)
-                            newClass.attentionspan = self.classattentionspan
+                            newClass.attentionspan = Int64(Int.random(in: 1...10))
                             newClass.tolerance = self.classtolerance
                             newClass.name = testname
                             newClass.assignmentnumber = 0

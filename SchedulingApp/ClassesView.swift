@@ -9,25 +9,25 @@
 import SwiftUI
 
 
-struct AssignmentPeakView: View {
-    let datedisplay, color, name: String
-    
-    init(assignment: Assignment) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yy"
-        self.datedisplay = formatter.string(from: assignment.duedate)
-        self.color = assignment.color
-        self.name = assignment.name
-    }
-    
-    var body: some View {
-        HStack {
-            Text(self.name).fontWeight(.medium)
-            Spacer()
-            Text(self.datedisplay).fontWeight(.light)
-        }.padding(.horizontal, 25).padding(.top, 15)
-    }
-}
+//struct AssignmentPeakView: View {
+//    let datedisplay, color, name: String
+//
+//    init(assignment: Assignment) {
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "dd/MM/yy"
+//        self.datedisplay = formatter.string(from: assignment.duedate)
+//        self.color = assignment.color
+//        self.name = assignment.name
+//    }
+//
+//    var body: some View {
+//        HStack {
+//            Text(self.name).fontWeight(.medium)
+//            Spacer()
+//            Text(self.datedisplay).fontWeight(.light)
+//        }.padding(.horizontal, 25).padding(.top, 15)
+//    }
+//}
 
 struct ClassView: View {
     var classcool: Classcool
@@ -241,13 +241,14 @@ struct ClassesView: View {
                     for index in indexSet {
                         for (index2, element) in self.assignmentlist.enumerated() {
                             if (element.subject == self.classlist[index].name) {
-                                self.managedObjectContext.delete(self.assignmentlist[index2])
                                 for (index3, element2) in self.subassignmentlist.enumerated() {
                                     if (element2.assignmentname == element.name)
                                     {
                                         self.managedObjectContext.delete(self.subassignmentlist[index3])
                                     }
                                 }
+                                self.managedObjectContext.delete(self.assignmentlist[index2])
+
                             }
 
                         }

@@ -16,47 +16,207 @@ struct NewAssignmentModalView: View {
 }
 
 struct NewClassModalView: View {
-     @Environment(\.managedObjectContext) var managedObjectContext
-     @State private var classname: String = ""
-     @State private var classtolerance: Int64 = 5
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    
+    var classlist: FetchedResults<Classcool>
 
+    @Binding var NewClassPresenting: Bool
+    @State private var classgroupnameindex = 0
+    @State private var classnameindex = 0
+    @State private var classlevelindex = 0
+    @State private var classtolerance: Int64 = 5
 
-
+    let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
+    
+    let groups = [["English A: Literature", "English A: Language and Literatue"], ["German B", "French B", "German A: Literature", "German A: Language and Literatue", "French A: Literature", "French A: Language and Literatue"], ["Geography", "History", "Economics", "Psychology", "Global Politics"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Environmental Systems and Societies", "Sport Science"], ["Mathematics: Analysis and Approaches", "Mathematics: Applications and Interpretation"], ["Music", "Visual Arts", "Theatre" ], ["Extended Essay"], ["Theory of Knowledge"]]
+    
+    let colorsa = ["one", "two", "three", "four", "five"]
+    let colorsb = ["six", "seven", "eight", "nine", "ten"]
+    let colorsc = ["eleven", "twelve", "thirteen", "fourteen", "fifteen"]
+    
+    @State private var coloraselectedindex: Int? = 0
+    @State private var colorbselectedindex: Int?
+    @State private var colorcselectedindex: Int?
+    
+    @State private var createclassallowed = true
+    @State private var showingAlert = false
+    
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Firstname", text: $classname)
+                    Picker(selection: $classgroupnameindex, label: Text("Subject Group: ")) {
+                        ForEach(0 ..< subjectgroups.count, id: \.self) { indexg in
+                            Text(self.subjectgroups[indexg]).tag(indexg)
+                        }
+                    }
+                    
+                        if classgroupnameindex == 0 {
+                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                ForEach(0 ..< groups[0].count, id: \.self) { index1 in
+                                    Text(self.groups[0][index1]).tag(index1)
+                                }
+                            }
+                        }
+                                
+                        else if classgroupnameindex == 1 {
+                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                ForEach(0 ..< groups[1].count, id: \.self) { index2 in
+                                    Text(self.groups[1][index2]).tag(index2)
+                                }
+                            }
+                        }
+                                
+                        else if classgroupnameindex == 2 {
+                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                ForEach(0 ..< groups[2].count, id: \.self) { index2 in
+                                    Text(self.groups[2][index2]).tag(index2)
+                                }
+                            }
+                        }
+                                
+                        else if classgroupnameindex == 3 {
+                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                ForEach(0 ..< groups[3].count, id: \.self) { index3 in
+                                    Text(self.groups[3][index3]).tag(index3)
+                                }
+                            }
+                        }
+                                
+                        else if classgroupnameindex == 4 {
+                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                ForEach(0 ..< groups[4].count, id: \.self) { index4 in
+                                    Text(self.groups[4][index4]).tag(index4)
+                                }
+                            }
+                        }
+                                
+                        else if classgroupnameindex == 5 {
+                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                ForEach(0 ..< groups[5].count, id: \.self) { index5 in
+                                    Text(self.groups[5][index5]).tag(index5)
+                                }
+                            }
+                        }
+                    
+                    if classgroupnameindex != 6 && classgroupnameindex != 7 {
+                        Picker(selection: $classlevelindex, label: Text("Level")) {
+                            Text("SL").tag(0)
+                            Text("HL").tag(1)
+                        }.pickerStyle(SegmentedPickerStyle())
+                    }
                 }
+                
                 Section {
                     Stepper(value: $classtolerance,
                         in: 1...10,
                         label: {
                             Text("Tolerance: \(classtolerance)")
                     })
-                    
                 }
+                
+                Section {
+                    HStack {
+                        Text("Color:")
+                        
+                        Spacer()
+                        
+                        VStack(spacing: 10) {
+                            HStack(spacing: 10) {
+                                ForEach(0 ..< 5) { colorindexa in
+                                    ZStack{
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsa[colorindexa])).frame(width: 25, height: 25)
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                            , lineWidth: (self.coloraselectedindex == colorindexa ? 3 : 1)).frame(width: 25, height: 25)
+                                    }.onTapGesture {
+                                        self.coloraselectedindex = colorindexa
+                                        self.colorbselectedindex = nil
+                                        self.colorcselectedindex = nil
+                                    }
+                                }
+                            }
+                            HStack(spacing: 10) {
+                                ForEach(0 ..< 5) { colorindexb in
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsb[colorindexb])).frame(width: 25, height: 25)
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                        , lineWidth: (self.colorbselectedindex == colorindexb ? 3 : 1)).frame(width: 25, height: 25)
+                                    }.onTapGesture {
+                                        self.coloraselectedindex = nil
+                                        self.colorbselectedindex = colorindexb
+                                        self.colorcselectedindex = nil
+                                    }
+                                }
+                            }
+                            HStack(spacing: 10) {
+                                ForEach(0 ..< 5) { colorindexc in
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsc[colorindexc])).frame(width: 25, height: 25)
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                    , lineWidth: (self.colorcselectedindex == colorindexc ? 3 : 1)).frame(width: 25, height: 25)
+                                    }.onTapGesture {
+                                        self.coloraselectedindex = nil
+                                        self.colorbselectedindex = nil
+                                        self.colorcselectedindex = colorindexc
+                                    }
+                                }
+                            }
+                        }
+                    }.padding(.vertical, 10)
+                }
+                
                 Section {
                     Button(action: {
-                        let newClass = Classcool(context: self.managedObjectContext)
-                        print(self.classtolerance)
-                        print(self.classname)
-                        newClass.attentionspan = Int64.random(in: 0 ... 10)
-                        newClass.tolerance = self.classtolerance
-                        newClass.name = self.classname
-                        newClass.assignmentnumber = 0
-                        newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-                        do {
-                         try self.managedObjectContext.save()
-                        } catch {
-                         print(error.localizedDescription)
-                         }
+                        let testname = self.classgroupnameindex != 6 && self.classgroupnameindex != 7 ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])"
                         
+                        self.createclassallowed = true
+                        
+                        for classity in self.classlist {
+                            if classity.name == testname {
+                                print("sdfds")
+                                self.createclassallowed = false
+                            }
+                        }
+
+                        if self.createclassallowed {
+                            let newClass = Classcool(context: self.managedObjectContext)
+                            print(self.classtolerance)
+                            print(self.classnameindex)
+                            newClass.attentionspan = Int64(Int.random(in: 1...10))
+                            newClass.tolerance = self.classtolerance
+                            newClass.name = testname
+                            newClass.assignmentnumber = 0
+                            if self.coloraselectedindex != nil {
+                                newClass.color = self.colorsa[self.coloraselectedindex!]
+                            }
+                            else if self.colorbselectedindex != nil {
+                                newClass.color = self.colorsb[self.colorbselectedindex!]
+                            }
+                            else if self.colorcselectedindex != nil {
+                                newClass.color = self.colorsc[self.colorcselectedindex!]
+                            }
+
+                            do {
+                                try self.managedObjectContext.save()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                            self.NewClassPresenting = false
+                        }
+                            
+                        else {
+                            print("Class with Same Name Exists; Change Name")
+                            self.showingAlert = true
+                        }
                     }) {
                         Text("Add Class")
-                    }
+                    }.alert(isPresented: $showingAlert) {
+                        Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))}
                 }
-            }.navigationBarTitle("Add Class")
+            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
         }
     }
 }
@@ -198,30 +358,30 @@ struct HomeView: View {
             
                 Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
 
-                Button(action: {self.NewAssignmentPresenting.toggle()}){
+                Button(action: {self.NewAssignmentPresenting.toggle()}) {
                     Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                 }.contextMenu{
                     Button(action: {self.NewAssignmentPresenting.toggle()}) {
                         Text("Assignment")
                         Image(systemName: "paperclip")
-                    }.sheet(isPresented: $NewAssignmentPresenting, content: {NewAssignmentModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                     Button(action: {self.NewClassPresenting.toggle()}) {
                         Text("Class")
                         Image(systemName: "list.bullet")
                     }.sheet(isPresented: $NewClassPresenting, content: {
-                        NewClassModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                        NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                     Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
                         Text("Occupied Time")
                         Image(systemName: "clock.fill")
-                    }.sheet(isPresented: $NewOccupiedtimePresenting, content: {NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                     Button(action: {self.NewFreetimePresenting.toggle()}) {
                         Text("Free Time")
                         Image(systemName: "clock")
-                    }.sheet(isPresented: $NewFreetimePresenting, content: {NewFreetimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                     Button(action: {self.NewGradePresenting.toggle()}) {
                         Text("Grade")
                         Image(systemName: "percent")
-                    }.sheet(isPresented: $NewGradePresenting, content: {NewGradeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
                 }
             }.padding(.bottom, 18)
             HomeBodyView()

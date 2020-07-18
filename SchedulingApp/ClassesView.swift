@@ -9,25 +9,25 @@
 import SwiftUI
 
 
-struct AssignmentPeakView: View {
-    let datedisplay, color, name: String
-    
-    init(assignment: Assignment) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd/MM/yy"
-        self.datedisplay = formatter.string(from: assignment.duedate)
-        self.color = assignment.color
-        self.name = assignment.name
-    }
-    
-    var body: some View {
-        HStack {
-            Text(self.name).fontWeight(.medium)
-            Spacer()
-            Text(self.datedisplay).fontWeight(.light)
-        }.padding(.horizontal, 25).padding(.top, 15)
-    }
-}
+//struct AssignmentPeakView: View {
+//    let datedisplay, color, name: String
+//
+//    init(assignment: Assignment) {
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "dd/MM/yy"
+//        self.datedisplay = formatter.string(from: assignment.duedate)
+//        self.color = assignment.color
+//        self.name = assignment.name
+//    }
+//
+//    var body: some View {
+//        HStack {
+//            Text(self.name).fontWeight(.medium)
+//            Spacer()
+//            Text(self.datedisplay).fontWeight(.light)
+//        }.padding(.horizontal, 25).padding(.top, 15)
+//    }
+//}
 
 struct ClassView: View {
     var classcool: Classcool
@@ -391,7 +391,7 @@ struct ClassesView: View {
                         Button(action: {print("add button clicked")}) {
                             Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
-                    }.padding(.top, -11.0)).navigationBarTitle(Text("Classes"))
+                    }).navigationBarTitle(Text("Classes"))
          }
     }
 }

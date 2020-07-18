@@ -12,7 +12,11 @@ struct DropDown: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State private var selectedFilter = 0
     @State private var showCompleted = false
-    
+
+    init() {
+        UITableView.appearance().tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: Double.leastNonzeroMagnitude))
+    }
+
     var filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
     var body: some View {
         VStack {

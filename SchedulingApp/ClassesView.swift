@@ -33,9 +33,9 @@ struct ClassView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
     
-    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
-    
-    var assignmentlist: FetchedResults<Assignment>
+//    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+//
+//    var assignmentlist: FetchedResults<Assignment>
     
     var body: some View {
         ZStack {
@@ -71,19 +71,29 @@ struct IndividualAssignmentView: View {
     @ObservedObject var assignment: Assignment
     @Environment(\.managedObjectContext) var managedObjectContext
     @State var dragoffset = CGSize.zero
+    var formatter: DateFormatter
+    var assignmentdate: String
     
     
     @State var isDragged: Bool = false
     @State var deleted: Bool = false
     @State var deleteonce: Bool = true
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
-    
     var classlist: FetchedResults<Classcool>
     
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
+    init(assignment2: Assignment)
+    {
+        formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm E, d MMM y"
+        assignment = assignment2
+        assignmentdate = formatter.string(from: assignment2.duedate)
+        
+    }
+
     var body: some View {
         ZStack {
             VStack {
@@ -109,7 +119,7 @@ struct IndividualAssignmentView: View {
 
                 Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
                 Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                Text("Due date: " + String(assignment.duedate.description) ).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                Text("Due date: "  + assignmentdate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
                 Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 
@@ -193,8 +203,8 @@ struct DetailView: View {
             
             ScrollView {
                 ForEach(assignmentlist) { assignment in
-                    if (assignment.subject == self.classcool.name && assignment.completed == false) {
-                        IndividualAssignmentView(assignment: assignment)
+                    if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.name && assignment.completed == false) {
+                        IndividualAssignmentView(assignment2: assignment)
                     }
                 }.animation(.spring())
 //                .onDelete { indexSet in
@@ -248,7 +258,6 @@ struct ClassesView: View {
                                     }
                                 }
                                 self.managedObjectContext.delete(self.assignmentlist[index2])
-
                             }
 
                         }
@@ -336,6 +345,7 @@ struct ClassesView: View {
                                             let randomDate = Double.random(in:100000 ... 1000000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*hoursleft))
+                                            newSubassignment.color = newAssignment.color
                                             hoursleft = 0
                                             do {
                                                 try self.managedObjectContext.save()
@@ -352,6 +362,7 @@ struct ClassesView: View {
                                             let randomDate = Double.random(in:100000 ... 1000000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*thirdrandomint))
+                                            newSubassignment.color = newAssignment.color
                                             hoursleft -= thirdrandomint
                                             do {
                                                 try self.managedObjectContext.save()

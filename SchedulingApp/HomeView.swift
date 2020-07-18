@@ -264,6 +264,9 @@ struct HomeBodyView: View {
     var datesfromtoday: [Date] = []
     var daytitlesfromtoday: [String] = []
     var datenumbersfromtoday: [String] = []
+    var formatteryear: DateFormatter
+    var formattermonth: DateFormatter
+    var formatterday: DateFormatter
     
     @State var nthdayfromnow: Int = 0
     
@@ -273,7 +276,16 @@ struct HomeBodyView: View {
         
         let datenumberformatter = DateFormatter()
         datenumberformatter.dateFormat = "d"
-
+        
+        formatteryear = DateFormatter()
+        formatteryear.dateFormat = "yyyy"
+        
+        formattermonth = DateFormatter()
+        formattermonth.dateFormat = "MM"
+        
+        formatterday = DateFormatter()
+        formatterday.dateFormat = "dd"
+        
         for eachdayfromtoday in 0...27 {
             self.datesfromtoday.append(eachdayfromtoday == 0 ? Date() : Date(timeIntervalSinceNow: TimeInterval((86400 * eachdayfromtoday))))
             
@@ -313,30 +325,69 @@ struct HomeBodyView: View {
               
                 ScrollView {
                     ForEach(subassignmentlist) {
+                        
                         subassignment in
-                        IndividualSubassignmentView(subassignment: subassignment)
-                    }
+                        
+                        if ( Calendar.current.isDate(self.datesfromtoday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day))
+                        {
+                            VStack {
+                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).shadow(radius: 10)
+                                
+                            }.padding(10)
+                        }
+
+
+                    }.animation(.spring())
                 }
             }
             
 
             
-            Spacer()
+          
+        }
+    }
+    
+    func isSameDay(date1: Date, date2: Date) -> Bool {
+        let diff = Calendar.current.dateComponents([.day], from: date1, to: date2)
+        if diff.day == 0 {
+            return true
+        } else {
+            return false
         }
     }
 }
 
 struct IndividualSubassignmentView: View {
-    var subassignment: Subassignmentnew
+
+    @Environment(\.managedObjectContext) var managedObjectContext
     
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    
+    var assignmentlist: FetchedResults<Assignment>
+    var starttime, endtime, color, name: String
+    var actualstartdatetime: Date
+
+    
+    init(subassignment2: Subassignmentnew)
+    {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        self.starttime = formatter.string(from: subassignment2.startdatetime)
+        self.endtime = formatter.string(from: subassignment2.enddatetime)
+        self.color = subassignment2.color
+        self.name = subassignment2.assignmentname
+        self.actualstartdatetime = subassignment2.startdatetime
+
+    }
+        
     var body: some View {
         VStack {
-            Text(subassignment.assignmentname)
-            Spacer()
-            Text(subassignment.startdatetime.description)
-            Text(subassignment.enddatetime.description)
-            Spacer()
-        }
+            Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+            Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+         //   Text(self.actualstartdatetime.description)
+
+
+        }.padding(10).background(Color(color)).cornerRadius(20)
 
     }
 }

@@ -48,6 +48,7 @@ struct IndividualAssignmentFilterView: View {
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
+    var formatter: DateFormatter
     
     let isExpanded: Bool
     
@@ -56,6 +57,19 @@ struct IndividualAssignmentFilterView: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    var assignmentduedate: String
+    
+    init(isExpanded2: Bool, isCompleted2: Bool, assignment2: Assignment)
+    {
+        isExpanded = isExpanded2
+        isCompleted = isCompleted2
+        formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm E, d MMM y"
+        assignment = assignment2
+        assignmentduedate = formatter.string(from: assignment2.duedate)
+        
+    }
     var body: some View {
         ZStack {
             VStack {
@@ -80,13 +94,13 @@ struct IndividualAssignmentFilterView: View {
             VStack {
                 if (!isExpanded) {
                     Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                    Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
                 }
                     
                 else {
                     Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
                     Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                    Text("Due date: " + assignment.duedate.description).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
                     Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                     Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 }
@@ -223,7 +237,7 @@ struct AssignmentsView: View {
 
                   if (assignment.completed == self.showCompleted) {
                         VStack {
-                            IndividualAssignmentFilterView(assignment: assignment, isExpanded: self.selection.contains(assignment), isCompleted: self.showCompleted).onTapGesture {
+                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment).onTapGesture {
                                     self.selectDeselect(assignment)
                                 }.animation(.spring()).shadow(radius: 10)
                         }

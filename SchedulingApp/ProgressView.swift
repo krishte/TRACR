@@ -69,12 +69,21 @@ struct ClassProgressView: View {
 
 struct IndividualAssignemntProgressView: View {
     var assignment: Assignment
+    var formatter: DateFormatter
+    var assignmentdate: String
     
+    init (assignment2: Assignment)
+    {
+        formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm E, d MMM y"
+        assignment = assignment2
+        assignmentdate = formatter.string(from: assignment2.duedate)
+    }
     var body: some View {
         VStack {
             Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
             Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-            Text("Due date: " + assignment.duedate.description).frame(width:  UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+            Text("Due date: " + self.assignmentdate).frame(width:  UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
             Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
             Text("Grade: " + String(assignment.grade)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
 
@@ -103,6 +112,16 @@ struct DetailProgressView: View {
     
     var classlist: FetchedResults<Classcool>
     let screensize = UIScreen.main.bounds.size.width-20
+    var formatter: DateFormatter
+    
+    init(classcool2: Classcool)
+    {
+        classcool = classcool2
+        formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .none
+        
+    }
     var body: some View {
         VStack {
             Text(classcool.name).font(.title).fontWeight(.bold)
@@ -113,7 +132,7 @@ struct DetailProgressView: View {
                 if (getAverageGrade() != 0)
                  {
                     ZStack {
-                        RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.green).frame(width:UIScreen.main.bounds.size.width-20, height: 300)
+                        RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.green).frame(width:UIScreen.main.bounds.size.width-30, height: 300)
                         
                         VStack(spacing: 0) {
                            Spacer()
@@ -133,7 +152,7 @@ struct DetailProgressView: View {
                                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                                             .fill(Color.blue)
                                             .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
-                                        Text(assignment.duedate.description)
+                                        Text( self.formatter.string(from: assignment.duedate))
                                             .font(.footnote)
                                             .frame(width: self.getCompletedNumber(),height: 20)
                                     }
@@ -148,7 +167,7 @@ struct DetailProgressView: View {
                     assignment in
                     if (assignment.subject == self.classcool.name && assignment.completed == true)
                     {
-                        IndividualAssignemntProgressView(assignment: assignment)
+                        IndividualAssignemntProgressView(assignment2: assignment)
                     }
                 }
             }
@@ -181,7 +200,7 @@ struct DetailProgressView: View {
                 numberofcompleted += 1
             }
         }
-        return CGFloat(CGFloat(screensize/CGFloat(numberofcompleted)) - 10)
+        return CGFloat(CGFloat((screensize-30)/CGFloat(numberofcompleted)) - 10)
     }
 }
 
@@ -197,7 +216,7 @@ struct ProgressView: View {
             List {
                 ForEach(classlist) {
                     classcool in
-                    NavigationLink(destination: DetailProgressView(classcool: classcool )) {
+                    NavigationLink(destination: DetailProgressView(classcool2: classcool )) {
                       ClassProgressView(classcool:classcool )
                     }
                 }

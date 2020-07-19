@@ -346,6 +346,8 @@ struct ClassesView: View {
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*hoursleft))
                                             newSubassignment.color = newAssignment.color
+                                            newSubassignment.assignmentduedate = newAssignment.duedate
+                                            print(newSubassignment.assignmentduedate.description)
                                             hoursleft = 0
                                             do {
                                                 try self.managedObjectContext.save()
@@ -363,6 +365,8 @@ struct ClassesView: View {
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*thirdrandomint))
                                             newSubassignment.color = newAssignment.color
+                                            newSubassignment.assignmentduedate = newAssignment.duedate
+                                            print(newSubassignment.assignmentduedate.description)
                                             hoursleft -= thirdrandomint
                                             do {
                                                 try self.managedObjectContext.save()

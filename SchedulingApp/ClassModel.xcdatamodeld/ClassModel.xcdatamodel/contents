@@ -20,6 +20,7 @@
         <attribute name="tolerance" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <entity name="Subassignmentnew" representedClassName="Subassignmentnew" syncable="YES">
+        <attribute name="assignmentduedate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="assignmentname" optional="YES" attributeType="String"/>
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="enddatetime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -28,6 +29,6 @@
     <elements>
         <element name="Assignment" positionX="27" positionY="18" width="128" height="193"/>
         <element name="Classcool" positionX="0" positionY="9" width="128" height="118"/>
-        <element name="Subassignmentnew" positionX="0" positionY="72" width="128" height="103"/>
+        <element name="Subassignmentnew" positionX="0" positionY="72" width="128" height="118"/>
     </elements>
 </model>

@@ -471,7 +471,7 @@ struct IndividualSubassignmentView: View {
                             }
                             do {
                                 try self.managedObjectContext.save()
-                                print("Class made")
+                                print("Class made ")
                             } catch {
                                 print(error.localizedDescription)
                             }

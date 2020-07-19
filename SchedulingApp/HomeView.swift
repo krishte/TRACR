@@ -330,14 +330,13 @@ struct HomeBodyView: View {
                         
                         if ( Calendar.current.isDate(self.datesfromtoday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day))
                         {
-                            VStack {
-                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).shadow(radius: 10)
+                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring())//.shadow(radius: 10)
                                 
-                            }.padding(10)
+
                         }
 
 
-                    }.animation(.spring())
+                        }.animation(.spring())
                 }
             }
             
@@ -364,9 +363,21 @@ struct IndividualSubassignmentView: View {
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
-    var starttime, endtime, color, name: String
-    var actualstartdatetime: Date
-
+    
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    var starttime, endtime, color, name, duedate: String
+    var actualstartdatetime, actualenddatetime, actualduedate: Date
+    @State var isDragged: Bool = false
+    @State var deleted: Bool = false
+    @State var deleteonce: Bool = true
+    @State var dragoffset = CGSize.zero
     
     init(subassignment2: Subassignmentnew)
     {
@@ -374,21 +385,100 @@ struct IndividualSubassignmentView: View {
         formatter.dateFormat = "HH:mm"
         self.starttime = formatter.string(from: subassignment2.startdatetime)
         self.endtime = formatter.string(from: subassignment2.enddatetime)
+        let formatter2 = DateFormatter()
+        formatter2.dateStyle = .short
+        formatter2.timeStyle = .none
         self.color = subassignment2.color
         self.name = subassignment2.assignmentname
         self.actualstartdatetime = subassignment2.startdatetime
+        self.actualenddatetime = subassignment2.enddatetime
+        self.actualduedate = subassignment2.assignmentduedate
+        self.duedate = formatter2.string(from: subassignment2.assignmentduedate)
 
     }
         
     var body: some View {
-        VStack {
-            Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-            Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-         //   Text(self.actualstartdatetime.description)
+        ZStack {
+            VStack {
+               if (isDragged) {
+                   ZStack {
+                       HStack {
+                           Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
+                       }
+                       HStack {
+                           Spacer()
+                           if (self.dragoffset.width < -110) {
+                               Text("Complete").foregroundColor(Color.white).frame(width:100)
+                           }
+                           else {
+                               Text("Complete").foregroundColor(Color.white).frame(width:100).offset(x: self.dragoffset.width + 110)
+                           }
+                       }
+                   }
+               }
+           }
+            VStack {
+                Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+                Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+             //   Text(self.actualstartdatetime.description)
 
 
-        }.padding(10).background(Color(color)).cornerRadius(20)
+                }.padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+                .onChanged { value in
+                    self.dragoffset = value.translation
+                    self.isDragged = true
 
+                    if (self.dragoffset.width > 0) {
+                        self.dragoffset = CGSize.zero
+                        self.dragoffset.width = 0
+                    }
+                                        
+                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
+                        self.deleted = true
+                    }
+                }
+                .onEnded { value in
+                    self.dragoffset = .zero
+                    self.isDragged = false
+                    if (self.deleted == true) {
+                        if (self.deleteonce == true) {
+                            self.deleteonce = false
+                            for (_, element) in self.assignmentlist.enumerated() {
+                                if (element.name == self.name)
+                                {
+                                    let diffComponents = Calendar.current.dateComponents([.hour], from: self.actualstartdatetime, to: self.actualenddatetime)
+                                    let hours = diffComponents.hour!
+                                    element.timeleft -= Int64(hours)
+                                    element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                                    if (element.timeleft == 0)
+                                    {
+                                        element.completed = true
+                                        for classity in self.classlist {
+                                            if (classity.name == element.subject)
+                                            {
+                                                classity.assignmentnumber -= 1
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            for (index, element) in self.subassignmentlist.enumerated() {
+                                if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name)
+                                {
+                                    self.managedObjectContext.delete(self.subassignmentlist[index])
+                                }
+                            }
+                            do {
+                                try self.managedObjectContext.save()
+                                print("Class made ")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                        }
+                    }
+                }).animation(.spring())
+        }.padding(10)
     }
 }
 

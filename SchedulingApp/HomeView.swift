@@ -9,9 +9,108 @@
 import SwiftUI
 
 struct NewAssignmentModalView: View {
-     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    var classlist: FetchedResults<Classcool>
+    @Binding var NewAssignmentPresenting: Bool
+    @State var nameofassignment: String = ""
+    @State private var selectedclass = 0
+    @State private var assignmenttype = 0
+    @State private var hours = 0
+    @State private var minutes = 0
+    @State var selectedDate = Date()
+    let assignmenttypes = ["Exam", "Essay", "Presentation", "Test", "Study"]
+    let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+    let minutelist = [0,5 , 10 , 15 , 20 , 25 , 30 , 35 , 40 , 45 , 50 , 55]
     var body: some View {
-        Text("new assignment")
+        NavigationView {
+            Form {
+                Section {
+                    TextField("Assignment Name", text: $nameofassignment)
+                }
+                Section {
+                    Picker(selection: $selectedclass, label: Text("Class")) {
+                        ForEach(0 ..< classlist.count) {
+                            Text(self.classlist[$0].name)
+                        }
+                    }
+                }
+                Section {
+                    Picker(selection: $assignmenttype, label: Text("Type"))
+                    {
+                        ForEach(0 ..< assignmenttypes.count)
+                        {
+                            Text(self.assignmenttypes[$0])
+                        }
+                    }
+                }
+                Section {
+                    Text("Total time")
+                    
+//                    TextField("Hours", text: $hours)
+//                    .keyboardType(.numberPad)
+//                    TextField("Minutes", text: $minutes)
+//                    .keyboardType(.numberPad)
+                    HStack {
+                        VStack {
+                            Picker(selection: $hours, label: Text("Hour")) {
+                                ForEach(0 ..< hourlist.count) {
+                                    Text(String(self.hourlist[$0]) + " hours")
+                                 }
+                             }.pickerStyle(WheelPickerStyle())
+                        }.frame(minWidth: 100, maxWidth: .infinity)
+                        .clipped()
+                        
+                        VStack {
+                            Picker(selection: $minutes, label: Text("Minutes")) {
+                                ForEach(0 ..< minutelist.count) {
+                                    Text(String(self.minutelist[$0]) + " mins")
+                                }
+                            }.pickerStyle(WheelPickerStyle())
+                        }.frame(minWidth: 100, maxWidth: .infinity)
+                        .clipped()
+                    }
+                }
+
+                Section {
+                    DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                }
+                Section {
+                    Button(action: {
+                        let newAssignment = Assignment(context: self.managedObjectContext)
+                        newAssignment.completed = false
+                        newAssignment.grade = 0
+                        newAssignment.subject = self.classlist[self.selectedclass].name
+                        newAssignment.name = self.nameofassignment
+                        newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                        newAssignment.progress = 0
+                        newAssignment.duedate = self.selectedDate
+                        print(self.hours)
+                        print(self.minutes)
+                        newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                        newAssignment.timeleft = newAssignment.totaltime
+                        for classity in self.classlist {
+                            if (classity.name == newAssignment.subject)
+                            {
+                                newAssignment.color = classity.color
+                                classity.assignmentnumber += 1
+                            }
+                        }
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                        
+                        self.NewAssignmentPresenting = false
+                    }) {
+                        Text("Add Assignment")
+                    }
+                }
+                
+            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Assignment", displayMode: .inline)
+        }
     }
 }
 
@@ -214,7 +313,43 @@ struct NewClassModalView: View {
                     }) {
                         Text("Add Class")
                     }.alert(isPresented: $showingAlert) {
-                        Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))}
+                        Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
+                        
+                    }
+                    
+                    
+                }
+                Section {
+                    Text("Preview")
+                    ZStack {
+                    if self.coloraselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color(self.colorsa[self.coloraselectedindex!]))
+                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                        
+                    }
+                    else if self.colorbselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color( self.colorsb[self.colorbselectedindex!]))
+                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                        
+                    }
+                    else if self.colorcselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color(self.colorsc[self.colorcselectedindex!]))
+                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                        
+                    }
+
+                    VStack {
+                        HStack {
+                            Text(self.classgroupnameindex != 6 && self.classgroupnameindex != 7 ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])").font(.title).fontWeight(.bold)
+                            Spacer()
+                            Text("No Assignments").font(.body).fontWeight(.light)
+                            }
+                        }.padding(.horizontal, 25)
+                        
+                    }
                 }
             }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
         }
@@ -330,7 +465,7 @@ struct HomeBodyView: View {
                         
                         if ( Calendar.current.isDate(self.datesfromtoday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day))
                         {
-                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring())//.shadow(radius: 10)
+                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).shadow(radius: 10)
                                 
 
                         }
@@ -418,7 +553,7 @@ struct IndividualSubassignmentView: View {
                }
            }
             VStack {
-                Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+                Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
                 Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
              //   Text(self.actualstartdatetime.description)
@@ -505,7 +640,7 @@ struct HomeView: View {
                     Button(action: {self.NewAssignmentPresenting.toggle()}) {
                         Text("Assignment")
                         Image(systemName: "paperclip")
-                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                     Button(action: {self.NewClassPresenting.toggle()}) {
                         Text("Class")
                         Image(systemName: "list.bullet")

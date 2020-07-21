@@ -24,12 +24,12 @@ struct NewAssignmentModalView: View {
     @State var selectedDate = Date()
     let assignmenttypes = ["Exam", "Essay", "Presentation", "Test", "Study"]
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
-    let minutelist = [0,5 , 10 , 15 , 20 , 25 , 30 , 35 , 40 , 45 , 50 , 55]
+    let minutelist = [0, 5 , 10 , 15 , 20 , 25 , 30 , 35 , 40 , 45 , 50 , 55]
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Assignment Name", text: $nameofassignment)
+                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.default)
                 }
                 Section {
                     Picker(selection: $selectedclass, label: Text("Class")) {
@@ -57,27 +57,38 @@ struct NewAssignmentModalView: View {
                     HStack {
                         VStack {
                             Picker(selection: $hours, label: Text("Hour")) {
-                                ForEach(0 ..< hourlist.count) {
-                                    Text(String(self.hourlist[$0]) + " hours")
+                                ForEach(hourlist.indices) { hourindex in
+                                    Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
                                  }
                              }.pickerStyle(WheelPickerStyle())
                         }.frame(minWidth: 100, maxWidth: .infinity)
                         .clipped()
                         
                         VStack {
-                            Picker(selection: $minutes, label: Text("Minutes")) {
-                                ForEach(0 ..< minutelist.count) {
-                                    Text(String(self.minutelist[$0]) + " mins")
-                                }
-                            }.pickerStyle(WheelPickerStyle())
+                            if hours == 0 {
+                                Picker(selection: $minutes, label: Text("Minutes")) {
+                                    ForEach(minutelist[1...].indices) { minuteindex in
+                                        Text(String(self.minutelist[minuteindex]) + " mins")
+                                    }
+                                }.pickerStyle(WheelPickerStyle())
+                            }
+                            
+                            else {
+                                Picker(selection: $minutes, label: Text("Minutes")) {
+                                    ForEach(minutelist.indices) { minuteindex in
+                                        Text(String(self.minutelist[minuteindex]) + " mins")
+                                    }
+                                }.pickerStyle(WheelPickerStyle())
+                            }
                         }.frame(minWidth: 100, maxWidth: .infinity)
                         .clipped()
                     }
                 }
-
+                
                 Section {
                     DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
+                
                 Section {
                     Button(action: {
                         let newAssignment = Assignment(context: self.managedObjectContext)
@@ -93,8 +104,7 @@ struct NewAssignmentModalView: View {
                         newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
                         newAssignment.timeleft = newAssignment.totaltime
                         for classity in self.classlist {
-                            if (classity.name == newAssignment.subject)
-                            {
+                            if (classity.name == newAssignment.subject) {
                                 newAssignment.color = classity.color
                                 classity.assignmentnumber += 1
                             }
@@ -399,18 +409,17 @@ struct NewFreetimeModalView: View {
                         newFreetime.startdatetime = self.selectedstartdatetime
                         newFreetime.enddatetime = self.selectedenddatetime
                         
-                        if (self.selectedrepeat == 0)
-                        {
+                        if (self.selectedrepeat == 0) {
                             newFreetime.dayrepeat = false
                             newFreetime.weekrepeat = false
                         }
-                        else if (self.selectedrepeat == 1)
-                        {
+                            
+                        else if (self.selectedrepeat == 1) {
                             newFreetime.dayrepeat = true
                             newFreetime.weekrepeat = false
                         }
-                        else
-                        {
+                            
+                        else {
                             newFreetime.dayrepeat = false
                             newFreetime.weekrepeat = true
                         }
@@ -444,14 +453,13 @@ struct NewGradeModalView: View {
                 Section {
                     Picker(selection: $selectedassignment, label: Text("Assignment")) {
                         ForEach(0 ..< assignmentlist.count) {
-                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0)
-                            {
+                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0) {
                                 Text(self.assignmentlist[$0].name)
                             }
-
                         }
                     }
                 }
+                
                 Section {
                     VStack {
                         HStack {
@@ -486,15 +494,6 @@ struct NewGradeModalView: View {
             }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Grade", displayMode: .inline)
         }
         
-    }
-}
-
-struct SubAssignmentView: View {
-     @Environment(\.managedObjectContext) var managedObjectContext
-    var subassignment: Subassignmentnew
-    
-    var body: some View {
-        Text("hello")
     }
 }
 
@@ -584,6 +583,83 @@ struct WeeklyBlockView: View {
     }
 }
 
+//ZStack(info: everything(class name, subassignment name, duedate, start and end times, progress bar))
+//Click on ‘x’ in the top right corner to dismiss, or click outside
+
+//@NSManaged public var assignmentname: String
+//@NSManaged public var startdatetime: Date
+//@NSManaged public var enddatetime: Date
+//@NSManaged public var color: String
+//@NSManaged public var assignmentduedate: Date
+
+struct PopUpView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+        
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+        
+    var assignmentlist: FetchedResults<Assignment>
+    
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    var starttime, endtime, color, name, duedate: String
+    var actualstartdatetime, actualenddatetime, actualduedate: Date
+    @State var isDragged: Bool = false
+    @State var deleted: Bool = false
+    @State var deleteonce: Bool = true
+    @State var dragoffset = CGSize.zero
+        
+    @Binding var showPopUpView: Bool
+    
+    init(subassignment2: Subassignmentnew, showPopUpView: Binding<Bool>) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        self.starttime = formatter.string(from: subassignment2.startdatetime)
+        self.endtime = formatter.string(from: subassignment2.enddatetime)
+        let formatter2 = DateFormatter()
+        formatter2.dateStyle = .short
+        formatter2.timeStyle = .none
+        self.color = subassignment2.color
+        self.name = subassignment2.assignmentname
+        self.actualstartdatetime = subassignment2.startdatetime
+        self.actualenddatetime = subassignment2.enddatetime
+        self.actualduedate = subassignment2.assignmentduedate
+        self.duedate = formatter2.string(from: subassignment2.assignmentduedate)
+        self._showPopUpView = showPopUpView
+    }
+        
+    var body: some View {
+        ZStack {
+            VStack {
+                ZStack {
+                    HStack {
+                        Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
+                    }
+                }
+            }
+            
+            VStack {
+                Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                }.padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width)
+            
+            Button(action: {self.showPopUpView = false}) {
+                HStack {
+                    Spacer()
+                    Image(systemName: "xmark.circle").resizable().scaledToFit().frame(width: 20).foregroundColor(.black)
+                }
+            }
+        }.frame(width: UIScreen.main.bounds.size.width-20)
+    }
+}
+
+
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
@@ -605,6 +681,9 @@ struct HomeBodyView: View {
     let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
+    
+    @State var showPopUpView = false
+    @State var PopUpSubassignment: Subassignmentnew!
     
     init() {
         daytitleformatter = DateFormatter()
@@ -634,27 +713,40 @@ struct HomeBodyView: View {
     }
     
     var body: some View {
-        VStack {
-            HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
-                ForEach(self.daysoftheweekabr.indices) { dayofthweekabrindex in
-                    Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)
+        ZStack {
+            VStack {
+                HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+                    ForEach(self.daysoftheweekabr.indices) { dayofthweekabrindex in
+                        Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)
+                    }
+                }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
+                
+                PageViewController(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
+                UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
+                UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
+                UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
+                
+                Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
+                
+                VStack {
+                    ScrollView {
+                        ForEach(subassignmentlist) { subassignment in
+                            if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).onTapGesture {
+                                    self.showPopUpView = true
+                                    self.PopUpSubassignment = subassignment
+                                }
+                            }
+                        }.animation(.spring())
+                    }
                 }
-            }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
-            
-            PageViewController(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
-            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
-            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
-            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
-            
-            Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
+            }.onTapGesture {
+                self.showPopUpView = false
+            }
             
             VStack {
-                ScrollView {
-                    ForEach(subassignmentlist) { subassignment in
-                        if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring())//.shadow(radius: 10)
-                        }
-                    }.animation(.spring())
+                if showPopUpView {
+                    PopUpView(subassignment2: PopUpSubassignment, showPopUpView: $showPopUpView)
                 }
             }
         }
@@ -692,8 +784,7 @@ struct IndividualSubassignmentView: View {
     @State var deleteonce: Bool = true
     @State var dragoffset = CGSize.zero
     
-    init(subassignment2: Subassignmentnew)
-    {
+    init(subassignment2: Subassignmentnew) {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         self.starttime = formatter.string(from: subassignment2.startdatetime)
@@ -707,7 +798,6 @@ struct IndividualSubassignmentView: View {
         self.actualenddatetime = subassignment2.enddatetime
         self.actualduedate = subassignment2.assignmentduedate
         self.duedate = formatter2.string(from: subassignment2.assignmentduedate)
-
     }
         
     var body: some View {

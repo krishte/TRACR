@@ -41,7 +41,7 @@ struct ClassView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
                 .fill(Color(classcool.color))
-                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120))
             VStack {
                 HStack {
                     Text(classcool.name).font(.title).fontWeight(.bold)

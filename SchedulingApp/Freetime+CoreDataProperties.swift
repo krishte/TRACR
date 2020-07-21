@@ -17,8 +17,9 @@ extension Freetime {
         return NSFetchRequest<Freetime>(entityName: "Freetime")
     }
 
-    @NSManaged public var startdatetiome: Date
+    @NSManaged public var startdatetime: Date
     @NSManaged public var enddatetime: Date
-    @NSManaged public var dateoffreetimedness: Date?
+    @NSManaged public var weekrepeat: Bool
+    @NSManaged public var dayrepeat: Bool
 
 }

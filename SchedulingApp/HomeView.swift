@@ -338,6 +338,7 @@ struct WeeklyBlockView: View {
                     self.nthdayfromnow = self.datenumberindices[index]
                 }
             }
+            
         }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
     }
 }

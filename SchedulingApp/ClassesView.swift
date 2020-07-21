@@ -240,6 +240,7 @@ struct ClassesView: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    @State var stored:Double = 0
     var body: some View {
         NavigationView{
             List {
@@ -333,6 +334,7 @@ struct ClassesView: View {
                                     }
                                     let newrandomint = Int.random(in: 2...5)
                                     var hoursleft = newAssignment.timeleft
+
                                     for j in 0..<newrandomint {
                                         if (hoursleft == 0)
                                         {
@@ -342,9 +344,10 @@ struct ClassesView: View {
                                         {
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in:100000 ... 1000000)
+                                            let randomDate = Double.random(in:self.stored ... (self.stored+100000))
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*hoursleft))
+                                            self.stored  += 20000
                                             newSubassignment.color = newAssignment.color
                                             newSubassignment.assignmentduedate = newAssignment.duedate
                                             print(newSubassignment.assignmentduedate.description)
@@ -361,9 +364,10 @@ struct ClassesView: View {
                                             let thirdrandomint = Int64.random(in: 1...2)
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in:100000 ... 1000000)
+                                            let randomDate = Double.random(in:self.stored ... (self.stored+100000))
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*thirdrandomint))
+                                            self.stored += 20000
                                             newSubassignment.color = newAssignment.color
                                             newSubassignment.assignmentduedate = newAssignment.duedate
                                             print(newSubassignment.assignmentduedate.description)

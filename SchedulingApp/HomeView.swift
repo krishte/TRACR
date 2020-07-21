@@ -745,8 +745,44 @@ struct HomeBodyView: View {
             }
             
             VStack {
-                if showPopUpView {
-                    PopUpView(subassignment2: PopUpSubassignment, showPopUpView: $showPopUpView)
+                ScrollView {
+                    ZStack {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                ForEach((0...24), id: \.self) { hour in
+                                    //ZStack {
+                                        HStack {
+                                            Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
+                                            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+
+                                        }
+
+                                    //}
+                                }.frame(width:  50 , height:50)
+                                
+                            }
+                           // Spacer()
+                        }
+                        HStack {
+                            Spacer()
+                            VStack {
+                                Spacer().frame(height:30)
+                                
+                                ForEach(subassignmentlist) { subassignment in
+
+
+                                        if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring())//.shadow(radius: 10)
+                                        }
+                                    
+
+                                }.animation(.spring())
+                                Spacer()
+                            }
+
+                            
+                        }
+                    }.animation(.spring())
                 }
             }
         }
@@ -783,8 +819,9 @@ struct IndividualSubassignmentView: View {
     @State var deleted: Bool = false
     @State var deleteonce: Bool = true
     @State var dragoffset = CGSize.zero
-    
-    init(subassignment2: Subassignmentnew) {
+    var subassignmentlength: Int
+    init(subassignment2: Subassignmentnew)
+    {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         self.starttime = formatter.string(from: subassignment2.startdatetime)
@@ -798,36 +835,42 @@ struct IndividualSubassignmentView: View {
         self.actualenddatetime = subassignment2.enddatetime
         self.actualduedate = subassignment2.assignmentduedate
         self.duedate = formatter2.string(from: subassignment2.assignmentduedate)
+        let diffComponents = Calendar.current.dateComponents([.minute], from: self.actualstartdatetime, to: self.actualenddatetime)
+        subassignmentlength = diffComponents.minute!
+        print(subassignmentlength)
+
     }
         
     var body: some View {
         ZStack {
+            
             VStack {
                if (isDragged) {
                    ZStack {
                        HStack {
-                           Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
+                        Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20, height: 50 +  CGFloat(((subassignmentlength-60)/60)*50)).offset(x: UIScreen.main.bounds.size.width-30+self.dragoffset.width)
                        }
                        HStack {
                            Spacer()
                            if (self.dragoffset.width < -110) {
-                               Text("Complete").foregroundColor(Color.white).frame(width:100)
+                               Text("Complete").foregroundColor(Color.white).frame(width:120)
                            }
                            else {
-                               Text("Complete").foregroundColor(Color.white).frame(width:100).offset(x: self.dragoffset.width + 110)
+                               Text("Complete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width + 110)
                            }
                        }
                    }
                }
            }
             VStack {
-                Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-                Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-             //   Text(self.actualstartdatetime.description)
+                Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-80, height: 30, alignment: .topLeading)
+//                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+//                Text(self.actualstartdatetime.description)
+//                Text(self.actualenddatetime.description)
 
 
-                }.padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.frame(height: 30 + CGFloat(((subassignmentlength-60)/60)*50)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
                     self.isDragged = true
@@ -881,7 +924,7 @@ struct IndividualSubassignmentView: View {
                         }
                     }
                 }).animation(.spring())
-        }.frame(width: UIScreen.main.bounds.size.width-20).padding(10)
+            }.frame(width: UIScreen.main.bounds.size.width-40)
     }
 }
 

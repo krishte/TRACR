@@ -108,19 +108,23 @@ struct IndividualAssignmentFilterView: View {
                     Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                     Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
                 }
-
+                
                 ZStack {
+                    
                     RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
                     HStack {
-                        if (assignment.progress == 100)
-                        {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height: 20, alignment: .leading)
-                        }
-                        else
-                        {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height:20, alignment: .leading)
-                            Spacer()
-                        }
+                            if (assignment.progress == 100)
+                            {
+
+                                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height: 20, alignment: .leading)
+                            }
+                            else
+                            {
+                                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height:20, alignment: .leading)
+                                Spacer()
+                            }
+                        
+
 
                     }
                 }
@@ -177,7 +181,7 @@ struct IndividualAssignmentFilterView: View {
                     }
  
                 }).animation(.spring())
-        }.padding(10)
+        }.frame(width: UIScreen.main.bounds.size.width-20).padding(10)
     }
 }
 

@@ -53,7 +53,7 @@ struct ClassProgressView: View {
         var gradesum: Double = 0
         var gradenum: Double = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true)
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
             {
                 gradesum += Double(assignment.grade)
                 gradenum += 1
@@ -111,6 +111,7 @@ struct DetailProgressView: View {
                   sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
+    @State var selectedtimeframe = 0
     let screensize = UIScreen.main.bounds.size.width-20
     var formatter: DateFormatter
     
@@ -131,37 +132,48 @@ struct DetailProgressView: View {
             ScrollView {
                 if (getAverageGrade() != 0)
                  {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.green).frame(width:UIScreen.main.bounds.size.width-30, height: 300)
-                        
-                        VStack(spacing: 0) {
-                           Spacer()
-//                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-//                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-//                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-//                            Rectangle().fill(Color.green).frame(width: screensize, height: 80).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-                        }
-                        HStack {
-                            ForEach(assignmentlist) {
-                                assignment in
-                                if (assignment.subject == self.classcool.name && assignment.completed == true)
-                                {
+                    VStack {
+                        Picker(selection: $selectedtimeframe, label: Text(""))
+                        {
+                            Text("Auto").tag(0)
+                            Text("Week").tag(1)
+                            Text("Month").tag(2)
+                            Text("Year").tag(3)
+                        }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
+                        ZStack {
+                            Rectangle().fill(Color.gray).frame(width:UIScreen.main.bounds.size.width, height: 300)
+                            
+                            VStack(spacing: 0) {
+                               Spacer()
+    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 80).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+                            }
+                            HStack {
+                                ForEach(assignmentlist) {
+                                    assignment in
+                                    
+                                    if (self.graphableAssignment(assignment: assignment))
+                                    {
 
-                                    VStack {
-                                        Spacer()
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(Color.blue)
-                                            .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
-                                        Text( self.formatter.string(from: assignment.duedate))
-                                            .font(.footnote)
-                                            .frame(width: self.getCompletedNumber(),height: 20)
+                                        VStack {
+                                            Spacer()
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .fill(Color.blue)
+                                                .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
+                                            //Text( self.formatter.string(from: assignment.duedate))
+                                              //  .font(.footnote)
+                                               // .frame(width: self.getCompletedNumber(),height: 20)
+                                        }
+
                                     }
-
                                 }
                             }
-                        }
 
+                        }
                     }
+
                  }
                 ForEach(assignmentlist) {
                     assignment in
@@ -178,7 +190,7 @@ struct DetailProgressView: View {
         var gradesum: Double = 0
         var gradenum: Double = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true)
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
             {
                 gradesum += Double(assignment.grade)
                 gradenum += 1
@@ -195,12 +207,20 @@ struct DetailProgressView: View {
         var numberofcompleted: Double = 0
         
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true)
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
             {
                 numberofcompleted += 1
             }
         }
         return CGFloat(CGFloat((screensize-30)/CGFloat(numberofcompleted)) - 10)
+    }
+    func graphableAssignment(assignment: Assignment) -> Bool
+    {
+        if (assignment.subject == self.classcool.name && assignment.completed == true && assignment.grade != 0)
+        {
+            return true;
+        }
+        return false;
     }
 }
 

@@ -357,7 +357,8 @@ struct NewClassModalView: View {
 }
 
 struct NewOccupiedtimeModalView: View {
-     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var managedObjectContext
+
     var body: some View {
         Text("new occupied time")
     }
@@ -365,15 +366,122 @@ struct NewOccupiedtimeModalView: View {
 
 struct NewFreetimeModalView: View {
      @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [])
+    var freetimelist: FetchedResults<Freetime>
+    @Binding var NewFreetimePresenting: Bool
+    @State private var selectedstartdatetime = Date()
+    @State private var selectedenddatetime = Date()
+    let repeats = ["None", "Daily", "Weekly"]
+    @State private var selectedrepeat = 0
     var body: some View {
-        Text("new free time")
+        NavigationView {
+            Form {
+                Section {
+                    DatePicker("Select start date and time", selection: $selectedstartdatetime, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                }
+                Section {
+                    DatePicker("Select end date and time", selection: $selectedenddatetime, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                }
+                Section {
+                    Picker(selection: $selectedrepeat, label: Text("Repeat")) {
+                        ForEach(0 ..< repeats.count) {
+                            Text(String(self.repeats[$0]))
+                        }
+                    }
+                }
+                Section {
+                    Button(action: {
+                        let newFreetime = Freetime(context: self.managedObjectContext)
+                        newFreetime.startdatetime = self.selectedstartdatetime
+                        newFreetime.enddatetime = self.selectedenddatetime
+                        
+                        if (self.selectedrepeat == 0)
+                        {
+                            newFreetime.dayrepeat = false
+                            newFreetime.weekrepeat = false
+                        }
+                        else if (self.selectedrepeat == 1)
+                        {
+                            newFreetime.dayrepeat = true
+                            newFreetime.weekrepeat = false
+                        }
+                        else
+                        {
+                            newFreetime.dayrepeat = false
+                            newFreetime.weekrepeat = true
+                        }
+
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                        
+                        self.NewFreetimePresenting = false
+                    }) {
+                        Text("Add Free Time")
+                    }
+                }
+            }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
+        }
     }
 }
 
 struct NewGradeModalView: View {
-     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
+    var assignmentlist: FetchedResults<Assignment>
+    @State private var selectedassignment = 0
+    @State private var assignmentgrade: Double = 4
+    @Binding var NewGradePresenting: Bool
     var body: some View {
-        Text("new grade")
+        NavigationView {
+            Form {
+                Section {
+                    Picker(selection: $selectedassignment, label: Text("Assignment")) {
+                        ForEach(0 ..< assignmentlist.count) {
+                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0)
+                            {
+                                Text(self.assignmentlist[$0].name)
+                            }
+
+                        }
+                    }
+                }
+                Section {
+                    VStack {
+                        HStack {
+                            Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                            Spacer()
+                        }.frame(height: 30)
+                        Slider(value: $assignmentgrade, in: 1...7)
+                    }
+
+                }
+                Section {
+                    Button(action: {
+                        for assignment in self.assignmentlist {
+                            if (assignment.name == self.assignmentlist[self.selectedassignment].name)
+                            {
+                                assignment.grade =  Int64(self.assignmentgrade.rounded(.down))
+
+                            }
+                        }
+                     
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                        
+                        self.NewGradePresenting = false
+                    }) {
+                        Text("Add Grade")
+                    }
+                }
+            }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Grade", displayMode: .inline)
+        }
+        
     }
 }
 
@@ -382,9 +490,7 @@ struct SubAssignmentView: View {
     var subassignment: Subassignmentnew
     
     var body: some View {
-        VStack{
-            Text("subassignment")
-        }
+        Text("hello")
     }
 }
 
@@ -613,7 +719,7 @@ struct IndividualSubassignmentView: View {
                         }
                     }
                 }).animation(.spring())
-        }.padding(10)
+        }.frame(width: UIScreen.main.bounds.size.width-20).padding(10)
     }
 }
 
@@ -653,11 +759,11 @@ struct HomeView: View {
                     Button(action: {self.NewFreetimePresenting.toggle()}) {
                         Text("Free Time")
                         Image(systemName: "clock")
-                    }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                     Button(action: {self.NewGradePresenting.toggle()}) {
                         Text("Grade")
                         Image(systemName: "percent")
-                    }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                 }
             }.padding(.bottom, 18)
             HomeBodyView()

@@ -6,6 +6,8 @@
 //  Copyright © 2020 Tejas Krishnan. All rights reserved.
 //
 
+import Foundation
+import UIKit
 import SwiftUI
 
 struct NewAssignmentModalView: View {
@@ -125,7 +127,7 @@ struct NewClassModalView: View {
     @State private var classgroupnameindex = 0
     @State private var classnameindex = 0
     @State private var classlevelindex = 0
-    @State private var classtolerance: Int64 = 5
+    @State private var classtolerancedouble: Double = 5.5
 
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
     
@@ -154,48 +156,48 @@ struct NewClassModalView: View {
                     
                         if classgroupnameindex == 0 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[0].count, id: \.self) { index1 in
-                                    Text(self.groups[0][index1]).tag(index1)
+                                ForEach(0 ..< groups[0].count, id: \.self) { index in
+                                    Text(self.groups[0][index]).tag(index)
                                 }
                             }
                         }
                                 
                         else if classgroupnameindex == 1 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[1].count, id: \.self) { index2 in
-                                    Text(self.groups[1][index2]).tag(index2)
+                                ForEach(0 ..< groups[1].count, id: \.self) { index in
+                                    Text(self.groups[1][index]).tag(index)
                                 }
                             }
                         }
                                 
                         else if classgroupnameindex == 2 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[2].count, id: \.self) { index2 in
-                                    Text(self.groups[2][index2]).tag(index2)
+                                ForEach(0 ..< groups[2].count, id: \.self) { index in
+                                    Text(self.groups[2][index]).tag(index)
                                 }
                             }
                         }
                                 
                         else if classgroupnameindex == 3 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[3].count, id: \.self) { index3 in
-                                    Text(self.groups[3][index3]).tag(index3)
+                                ForEach(0 ..< groups[3].count, id: \.self) { index in
+                                    Text(self.groups[3][index]).tag(index)
                                 }
                             }
                         }
                                 
                         else if classgroupnameindex == 4 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[4].count, id: \.self) { index4 in
-                                    Text(self.groups[4][index4]).tag(index4)
+                                ForEach(0 ..< groups[4].count, id: \.self) { index in
+                                    Text(self.groups[4][index]).tag(index)
                                 }
                             }
                         }
                                 
                         else if classgroupnameindex == 5 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[5].count, id: \.self) { index5 in
-                                    Text(self.groups[5][index5]).tag(index5)
+                                ForEach(0 ..< groups[5].count, id: \.self) { index in
+                                    Text(self.groups[5][index]).tag(index)
                                 }
                             }
                         }
@@ -209,11 +211,13 @@ struct NewClassModalView: View {
                 }
                 
                 Section {
-                    Stepper(value: $classtolerance,
-                        in: 1...10,
-                        label: {
-                            Text("Tolerance: \(classtolerance)")
-                    })
+                    VStack {
+                        HStack {
+                            Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
+                            Spacer()
+                        }.frame(height: 30)
+                        Slider(value: $classtolerancedouble, in: 1...10)
+                    }
                 }
                 
                 Section {
@@ -281,10 +285,10 @@ struct NewClassModalView: View {
 
                         if self.createclassallowed {
                             let newClass = Classcool(context: self.managedObjectContext)
-                            print(self.classtolerance)
+                            print(Int(self.classtolerancedouble))
                             print(self.classnameindex)
                             newClass.attentionspan = Int64(Int.random(in: 1...10))
-                            newClass.tolerance = self.classtolerance
+                            newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
                             newClass.name = testname
                             newClass.assignmentnumber = 0
                             if self.coloraselectedindex != nil {
@@ -494,6 +498,92 @@ struct SubAssignmentView: View {
     }
 }
 
+extension Calendar {
+    static let gregorian = Calendar(identifier: .gregorian)
+}
+
+extension Date {
+    var startOfWeek: Date? {
+        return Calendar.gregorian.date(from: Calendar.gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))
+    }
+}
+
+struct PageViewController: UIViewControllerRepresentable {
+    @Binding var nthdayfromnow: Int
+    var viewControllers: [UIViewController]
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    func makeUIViewController(context: Context) -> UIPageViewController {
+        let pageViewController = UIPageViewController(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal)
+        
+        pageViewController.dataSource = context.coordinator
+        
+        return pageViewController
+    }
+    
+    func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+        pageViewController.setViewControllers([viewControllers[Int(Double(self.nthdayfromnow / 7).rounded(.down))]], direction: .forward, animated: true)
+    }
+    
+    class Coordinator: NSObject, UIPageViewControllerDataSource {
+        var parent: PageViewController
+
+        init(_ pageViewController: PageViewController) {
+            self.parent = pageViewController
+        }
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+            guard let index = parent.viewControllers.firstIndex(of: viewController) else {
+                 return nil
+             }
+            
+            if index == 0 {
+                return nil
+            }
+ 
+            return parent.viewControllers[index - 1]
+        }
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+            guard let index = parent.viewControllers.firstIndex(of: viewController) else {
+                return nil
+            }
+            
+            if index + 1 == parent.viewControllers.count {
+                return nil
+            }
+            
+            return parent.viewControllers[index + 1]
+        }
+    }
+}
+
+struct WeeklyBlockView: View {
+    @Binding var nthdayfromnow: Int
+    let datenumberindices: [Int]
+    let datenumbersfromlastmonday: [String]
+    
+    var body: some View {
+        HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+            ForEach(self.datenumberindices.indices) { index in
+                ZStack {
+                    Circle().fill(self.datenumberindices[index] == self.nthdayfromnow ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+            //                            Circle().stroke(Color.black).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                    Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
+                }.onTapGesture {
+                    self.nthdayfromnow = self.datenumberindices[index]
+                }
+            }
+            
+        }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
+    }
+}
+
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
@@ -502,20 +592,25 @@ struct HomeBodyView: View {
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
-    var datesfromtoday: [Date] = []
-    var daytitlesfromtoday: [String] = []
-    var datenumbersfromtoday: [String] = []
+    var datesfromlastmonday: [Date] = []
+    var daytitlesfromlastmonday: [String] = []
+    var datenumbersfromlastmonday: [String] = []
+    
+    var daytitleformatter: DateFormatter
+    var datenumberformatter: DateFormatter
     var formatteryear: DateFormatter
     var formattermonth: DateFormatter
     var formatterday: DateFormatter
     
-    @State var nthdayfromnow: Int = 0
+    let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    
+    @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
     
     init() {
-        let daytitleformatter = DateFormatter()
+        daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
         
-        let datenumberformatter = DateFormatter()
+        datenumberformatter = DateFormatter()
         datenumberformatter.dateFormat = "d"
         
         formatteryear = DateFormatter()
@@ -526,64 +621,42 @@ struct HomeBodyView: View {
         
         formatterday = DateFormatter()
         formatterday.dateFormat = "dd"
+
+        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
         
-        for eachdayfromtoday in 0...27 {
-            self.datesfromtoday.append(eachdayfromtoday == 0 ? Date() : Date(timeIntervalSinceNow: TimeInterval((86400 * eachdayfromtoday))))
+        for eachdayfromlastmonday in 0...27 {
+            self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
             
-            self.daytitlesfromtoday.append(daytitleformatter.string(from: Date(timeIntervalSinceNow: TimeInterval((86400 * eachdayfromtoday)))))
+            self.daytitlesfromlastmonday.append(daytitleformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
             
-            self.datenumbersfromtoday.append(datenumberformatter.string(from: Date(timeIntervalSinceNow: TimeInterval((86400 * eachdayfromtoday)))))
+            self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
     }
     
     var body: some View {
         VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
-                    ForEach(datenumbersfromtoday.indices) { datenumberindex in
-                        ZStack {
-                            Circle().fill(datenumberindex == self.nthdayfromnow ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
-                            Circle().stroke(Color.black).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
-                            Text(self.datenumbersfromtoday[datenumberindex]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
-                        }.onTapGesture {
-                            self.nthdayfromnow = datenumberindex
-                        }
-                    }
-                }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29)).frame(height: 1.1 * (UIScreen.main.bounds.size.width / 29) * 3)
-            }
+            HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+                ForEach(self.daysoftheweekabr.indices) { dayofthweekabrindex in
+                    Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)
+                }
+            }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
             
-            Text(daytitlesfromtoday[self.nthdayfromnow]).font(.title).fontWeight(.medium).padding(.top, 5).padding(.bottom, 15)
+            PageViewController(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
+            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
+            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
+            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
+            
+            Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
             VStack {
-            //THE SUBASSIGNMENT BUBBLES GO HERE
-            //                ForEach(subassignmentlist) {
-            //                    subassignment in
-            //                    if (subassignment.end.timeIntervalSinceDate() == self.classcool.name) {
-            //                            SubAssignmentView(subassignment: subassignment)
-            //                    }
-            //                }
-                Text("SubAssignments: " + String(subassignmentlist.count))
-              
                 ScrollView {
-                    ForEach(subassignmentlist) {
-                        
-                        subassignment in
-                        
-                        if ( Calendar.current.isDate(self.datesfromtoday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day))
-                        {
-                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).shadow(radius: 10)
-                                
-
+                    ForEach(subassignmentlist) { subassignment in
+                        if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring())//.shadow(radius: 10)
                         }
-
-
-                        }.animation(.spring())
+                    }.animation(.spring())
                 }
             }
-            
-
-            
-          
         }
     }
     
@@ -598,7 +671,6 @@ struct HomeBodyView: View {
 }
 
 struct IndividualSubassignmentView: View {
-
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])

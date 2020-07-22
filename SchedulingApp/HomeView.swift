@@ -768,7 +768,7 @@ struct IndividualSubassignmentView: View {
            }
             VStack {
                 Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
-                Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-80, height: 30, alignment: .topLeading)
+                Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
 //                Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)

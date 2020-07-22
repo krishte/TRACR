@@ -175,13 +175,13 @@ struct DetailProgressView: View {
                     }
 
                  }
-                ForEach(assignmentlist) {
-                    assignment in
-                    if (assignment.subject == self.classcool.name && assignment.completed == true)
-                    {
-                        IndividualAssignemntProgressView(assignment2: assignment)
-                    }
-                }
+//                ForEach(assignmentlist) {
+//                    assignment in
+//                    if (assignment.subject == self.classcool.name && assignment.completed == true)
+//                    {
+//                        IndividualAssignemntProgressView(assignment2: assignment)
+//                    }
+//                }
             }
         }
     }

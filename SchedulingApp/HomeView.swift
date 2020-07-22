@@ -683,15 +683,18 @@ struct HomeBodyView: View {
                             VStack {
                                 Spacer().frame(height:30)
                                 
-                                ForEach(subassignmentlist) { subassignment in
+                                ZStack(alignment: .topTrailing) {
+                                    ForEach(subassignmentlist) { subassignment in
 
 
-                                        if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                            IndividualSubassignmentView(subassignment2: subassignment).animation(.spring())//.shadow(radius: 10)
-                                        }
+                                            if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).padding(.top, 50)//.shadow(radius: 10)
+                                            }
+                                        
+
+                                    }.animation(.spring())
                                     
-
-                                }.animation(.spring())
+                                }
                                 Spacer()
                             }
 

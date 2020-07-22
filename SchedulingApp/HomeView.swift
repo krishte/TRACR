@@ -29,7 +29,7 @@ struct NewAssignmentModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Assignment Name", text: $nameofassignment)
+                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.default)
                 }
                 Section {
                     Picker(selection: $selectedclass, label: Text("Class")) {
@@ -57,23 +57,34 @@ struct NewAssignmentModalView: View {
                     HStack {
                         VStack {
                             Picker(selection: $hours, label: Text("Hour")) {
-                                ForEach(0 ..< hourlist.count) {
-                                    Text(String(self.hourlist[$0]) + " hours")
+                                ForEach(hourlist.indices) { hourindex in
+                                    Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
                                  }
                              }.pickerStyle(WheelPickerStyle())
                         }.frame(minWidth: 100, maxWidth: .infinity)
                         .clipped()
                         
                         VStack {
-                            Picker(selection: $minutes, label: Text("Minutes")) {
-                                ForEach(0 ..< minutelist.count) {
-                                    Text(String(self.minutelist[$0]) + " mins")
-                                }
-                            }.pickerStyle(WheelPickerStyle())
+                            if hours == 0 {
+                                Picker(selection: $minutes, label: Text("Minutes")) {
+                                    ForEach(minutelist[1...].indices) { minuteindex in
+                                        Text(String(self.minutelist[minuteindex]) + " mins")
+                                    }
+                                }.pickerStyle(WheelPickerStyle())
+                            }
+                            
+                            else {
+                                Picker(selection: $minutes, label: Text("Minutes")) {
+                                    ForEach(minutelist.indices) { minuteindex in
+                                        Text(String(self.minutelist[minuteindex]) + " mins")
+                                    }
+                                }.pickerStyle(WheelPickerStyle())
+                            }
                         }.frame(minWidth: 100, maxWidth: .infinity)
                         .clipped()
                     }
                 }
+
 
                 Section {
                     DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])

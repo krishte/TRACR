@@ -135,10 +135,8 @@ struct DetailProgressView: View {
                     VStack {
                         Picker(selection: $selectedtimeframe, label: Text(""))
                         {
-                            Text("Auto").tag(0)
-                            Text("Week").tag(1)
-                            Text("Month").tag(2)
-                            Text("Year").tag(3)
+                            Text("Month").tag(0)
+                            Text("Year").tag(1)
                         }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
                         ZStack {
                             Rectangle().fill(Color.gray).frame(width:UIScreen.main.bounds.size.width, height: 300)
@@ -150,26 +148,31 @@ struct DetailProgressView: View {
     //                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
     //                            Rectangle().fill(Color.green).frame(width: screensize, height: 80).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
                             }
-                            HStack {
-                                ForEach(assignmentlist) {
-                                    assignment in
-                                    
-                                    if (self.graphableAssignment(assignment: assignment))
-                                    {
+                            ScrollView(.horizontal)
+                            {
+                                HStack {
+                                    Spacer()
+                                    ForEach(assignmentlist) {
+                                        assignment in
+                                        
+                                        if (self.graphableAssignment(assignment: assignment))
+                                        {
 
-                                        VStack {
-                                            Spacer()
-                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                .fill(Color.blue)
-                                                .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
-                                            //Text( self.formatter.string(from: assignment.duedate))
-                                              //  .font(.footnote)
-                                               // .frame(width: self.getCompletedNumber(),height: 20)
+                                            VStack {
+                                                Spacer()
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    .fill(Color.blue)
+                                                    .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
+                                                //Text( self.formatter.string(from: assignment.duedate))
+                                                  //  .font(.footnote)
+                                                   // .frame(width: self.getCompletedNumber(),height: 20)
+                                            }
+
                                         }
-
                                     }
                                 }
                             }
+
 
                         }
                     }

@@ -388,7 +388,27 @@ struct ClassesView: View {
                                         print(error.localizedDescription)
                                     }
                                 }
+                                
                             }
+//                            for i in (0...4)
+//                            {
+//                                
+//                                let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+//                                newSubassignment.assignmentname = self.assignmentlist[0].name
+//                                let randomDate = (i*i) * 3600
+//                                print(randomDate)
+//                                newSubassignment.startdatetime = Date(timeIntervalSince1970: TimeInterval(1595466000 + randomDate))
+//                                newSubassignment.enddatetime = Date(timeIntervalSince1970: TimeInterval(1595466000 + randomDate + (i+1)*3600))
+//                            
+//                                newSubassignment.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+//                                newSubassignment.assignmentduedate = Date(timeIntervalSince1970: TimeInterval(1595466000 + randomDate + 3600))
+//                                do {
+//                                    try self.managedObjectContext.save()
+//                                    print("new Subassignment")
+//                                } catch {
+//                                    print(error.localizedDescription)
+//                                        }
+//                            }
                         })
                         {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)

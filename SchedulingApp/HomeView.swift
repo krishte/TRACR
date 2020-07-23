@@ -172,7 +172,7 @@ struct NewClassModalView: View {
                                 }
                             }
                         }
-                                
+
                         else if classgroupnameindex == 1 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
                                 ForEach(0 ..< groups[1].count, id: \.self) { index in
@@ -914,7 +914,13 @@ struct HomeView: View {
     @State var NewOccupiedtimePresenting = false
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
-
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    @State var noClassesAlert = false
+    
     var body: some View {
         VStack {
             HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
@@ -924,13 +930,15 @@ struct HomeView: View {
             
                 Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
 
-                Button(action: {self.NewAssignmentPresenting.toggle()}) {
+                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
                     Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                 }.contextMenu{
-                    Button(action: {self.NewAssignmentPresenting.toggle()}) {
+                    Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
                         Text("Assignment")
                         Image(systemName: "paperclip")
-                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                        Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                    }
                     Button(action: {self.NewClassPresenting.toggle()}) {
                         Text("Class")
                         Image(systemName: "list.bullet")

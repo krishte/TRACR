@@ -791,32 +791,34 @@ struct IndividualSubassignmentView: View {
             VStack {
                if (isDragged) {
                    ZStack {
-                       HStack {
-                        Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: UIScreen.main.bounds.size.width-30+self.dragoffset.width)
-                       }
-                       HStack {
-                           Spacer()
-                           if (self.dragoffset.width < -110) {
-                               Text("Complete").foregroundColor(Color.white).frame(width:120)
-                           }
-                           else {
-                               Text("Complete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width + 110)
-                           }
-                       }
-                   }
-               }
+                        HStack {
+                            Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +    CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: UIScreen.main.bounds.size.width-30+self.dragoffset.width)
+                        }
+                        HStack {
+                            Spacer()
+                            if (self.dragoffset.width < -110) {
+                                Text("Complete").foregroundColor(Color.white).frame(width:120)
+                            }
+                            else {
+                                Text("Complete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width + 110)
+                            }
+                        }
+                    }
+                }
                 if (isDraggedleft) {
                     ZStack {
                         HStack {
-                         Rectangle().fill(Color.blue) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
+                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
                         }
                         HStack {
                             
                             if (self.dragoffset.width > 150) {
-                                Text("Incomplete").foregroundColor(Color.white).frame(width:120).offset(x: -150)
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -150)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -190)
                             }
                             else {
-                                Text("Incomplete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-300)
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-300)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width-340)
                             }
                             
                         }

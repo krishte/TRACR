@@ -616,7 +616,8 @@ struct HomeBodyView: View {
     let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
-    
+    var hourformatter: DateFormatter
+    var minuteformatter: DateFormatter
     init() {
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
@@ -632,7 +633,10 @@ struct HomeBodyView: View {
         
         formatterday = DateFormatter()
         formatterday.dateFormat = "dd"
-
+        hourformatter = DateFormatter()
+        minuteformatter = DateFormatter()
+        self.hourformatter.dateFormat = "HH"
+        self.minuteformatter.dateFormat = "mm"
         let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
         
         for eachdayfromlastmonday in 0...27 {
@@ -662,7 +666,7 @@ struct HomeBodyView: View {
             VStack {
                 ScrollView {
                     ZStack {
-                        HStack {
+                        HStack(alignment: .top) {
                             VStack(alignment: .leading) {
                                 ForEach((0...24), id: \.self) { hour in
                                     //ZStack {
@@ -678,17 +682,18 @@ struct HomeBodyView: View {
                             }
                            // Spacer()
                         }
-                        HStack {
+                        HStack(alignment: .top) {
                             Spacer()
                             VStack {
-                                Spacer().frame(height:30)
+                                Spacer().frame(height:25)
                                 
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
 
 
                                             if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).padding(.top, 50)//.shadow(radius: 10)
+                                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
+                                                //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }
                                         
 
@@ -716,6 +721,15 @@ struct HomeBodyView: View {
     }
 }
 
+struct SubassignmentAddTimeAction: View {
+    var subassignment: Subassignmentnew
+    
+    var body: some View {
+        Text("hello")
+    }
+    
+}
+
 struct IndividualSubassignmentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     
@@ -734,16 +748,24 @@ struct IndividualSubassignmentView: View {
     var starttime, endtime, color, name, duedate: String
     var actualstartdatetime, actualenddatetime, actualduedate: Date
     @State var isDragged: Bool = false
+    @State var isDraggedleft: Bool = false
     @State var deleted: Bool = false
     @State var deleteonce: Bool = true
+    @State var incompleted: Bool = false
+    @State var incompletedonce: Bool = true
     @State var dragoffset = CGSize.zero
     var subassignmentlength: Int
+    var subassignment: Subassignmentnew
+    
     init(subassignment2: Subassignmentnew)
     {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.starttime = formatter.string(from: subassignment2.startdatetime)
         self.endtime = formatter.string(from: subassignment2.enddatetime)
+        print(starttime)
+        print(endtime)
         let formatter2 = DateFormatter()
         formatter2.dateStyle = .short
         formatter2.timeStyle = .none
@@ -755,7 +777,9 @@ struct IndividualSubassignmentView: View {
         self.duedate = formatter2.string(from: subassignment2.assignmentduedate)
         let diffComponents = Calendar.current.dateComponents([.minute], from: self.actualstartdatetime, to: self.actualenddatetime)
         subassignmentlength = diffComponents.minute!
-        print(subassignmentlength)
+        subassignment = subassignment2
+        //print(subassignmentlength)
+
 
     }
         
@@ -766,7 +790,7 @@ struct IndividualSubassignmentView: View {
                if (isDragged) {
                    ZStack {
                        HStack {
-                        Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20, height: 50 +  CGFloat(((subassignmentlength-60)/60)*50)).offset(x: UIScreen.main.bounds.size.width-30+self.dragoffset.width)
+                        Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: UIScreen.main.bounds.size.width-30+self.dragoffset.width)
                        }
                        HStack {
                            Spacer()
@@ -779,35 +803,70 @@ struct IndividualSubassignmentView: View {
                        }
                    }
                }
+                if (isDraggedleft) {
+                    ZStack {
+                        HStack {
+                         Rectangle().fill(Color.blue) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
+                        }
+                        HStack {
+                            
+                            if (self.dragoffset.width > 150) {
+                                Text("Incomplete").foregroundColor(Color.white).frame(width:120).offset(x: -150)
+                            }
+                            else {
+                                Text("Incomplete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-300)
+                            }
+                            
+                        }
+                    }
+                }
            }
             VStack {
                 Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                 Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
-//                Text(self.actualstartdatetime.description)
+               // Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)
 
 
-            }.frame(height: 30 + CGFloat(((subassignmentlength-60)/60)*50)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.frame(height: 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
-                    self.isDragged = true
+                    //self.isDragged = true
 
-                    if (self.dragoffset.width > 0) {
-                        self.dragoffset = CGSize.zero
-                        self.dragoffset.width = 0
+                    if (self.dragoffset.width < 0) {
+                        self.isDraggedleft = false
+                        self.isDragged = true
+                    }
+                    else if (self.dragoffset.width > 0) {
+                        self.isDragged = false
+                        self.isDraggedleft = true
                     }
                                         
                     if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
                         self.deleted = true
                     }
+                    else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+                        self.incompleted = true
+                    }
                 }
                 .onEnded { value in
                     self.dragoffset = .zero
-                    self.isDragged = false
+                    //self.isDragged = false
+                    //self.isDraggedleft = false
+                    if (self.incompleted == true)
+                    {
+                        if (self.incompletedonce == true)
+                        {
+                            self.incompletedonce = false
+                            print("incompleted")
+                            //SubassignmentAddTimeAction(subassignment: self.subassignment)
+                        }
+                    }
                     if (self.deleted == true) {
                         if (self.deleteonce == true) {
                             self.deleteonce = false
+                            
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name)
                                 {

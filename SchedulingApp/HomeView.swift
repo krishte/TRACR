@@ -361,6 +361,7 @@ struct NewClassModalView: View {
                             Text(self.classgroupnameindex != 6 && self.classgroupnameindex != 7 ? "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
                             
                             Spacer()
+                            
                             Text("No Assignments").font(.body).fontWeight(.light)
                             }
                         }.padding(.horizontal, 25)

@@ -358,7 +358,8 @@ struct NewClassModalView: View {
 
                     VStack {
                         HStack {
-                            Text(self.classgroupnameindex != 6 && self.classgroupnameindex != 7 ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])").font(.title).fontWeight(.bold)
+                            Text(self.classgroupnameindex != 6 && self.classgroupnameindex != 7 ? "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                            
                             Spacer()
                             Text("No Assignments").font(.body).fontWeight(.light)
                             }

@@ -44,7 +44,7 @@ struct ClassView: View {
                 .frame(width: UIScreen.main.bounds.size.width - 40, height: (120))
             VStack {
                 HStack {
-                    Text(classcool.name).font(.title).fontWeight(.bold)
+                    Text(classcool.name).font(.system(size: 22 + CGFloat(50 / classcool.name.count))).fontWeight(.bold)
                     Spacer()
                     if classcool.assignmentnumber == 0 {
                         Text("No Assignments").font(.body).fontWeight(.light)

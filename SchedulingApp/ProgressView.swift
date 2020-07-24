@@ -192,7 +192,7 @@ struct DetailProgressView: View {
                         if (getgradenum())
                         {
                             VStack {
-                                Text("Change in Average Grade: \(getChangeInAverageGrade(), specifier: "%.2f")").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width-30 ,height: 100, alignment: .topLeading)
+                                Text("Chnge in Average Grade: \(getChangeInAverageGrade(), specifier: "%.2f")").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width-30 ,height: 100, alignment: .topLeading)
                             }.padding(10).background(Color(classcool.color)).cornerRadius(20)
                             Spacer()
                             VStack {

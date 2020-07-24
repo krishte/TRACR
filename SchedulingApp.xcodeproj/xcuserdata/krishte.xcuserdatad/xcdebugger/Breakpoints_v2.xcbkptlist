@@ -30,8 +30,8 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "205"
-            endingLineNumber = "205"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
             landmarkName = "body"
             landmarkType = "24">
             <Locations>
@@ -78,8 +78,8 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "333"
-            endingLineNumber = "333"
+            startingLineNumber = "350"
+            endingLineNumber = "350"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>

@@ -141,15 +141,17 @@ struct DetailProgressView: View {
                         ZStack {
                             VStack {
                                 Rectangle().fill(Color.gray).frame(width:UIScreen.main.bounds.size.width, height: 300)
-                            }
+                            }.offset(y: 20)
                             
-//                            VStack(spacing: 0) {
-//                               Spacer()
-//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-//                            }
+                            VStack(alignment: .leading,spacing: 0) {
+                                
+                                Spacer()
+                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
+                            }.offset(x: -10, y: -15)
                             HStack {
                                 ScrollView(.horizontal)
                                 {
@@ -163,9 +165,10 @@ struct DetailProgressView: View {
 
                                                 VStack {
                                                     Spacer()
-                                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    Rectangle()
                                                         .fill(Color.blue)
                                                         .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
+
                                                     //Text( self.formatter.string(from: assignment.duedate))
                                                       //  .font(.footnote)
                                                        // .frame(width: self.getCompletedNumber(),height: 20)
@@ -177,27 +180,38 @@ struct DetailProgressView: View {
                                     
                                 }
                                 VStack {
-                                    Spacer()
-                                    Text("8").frame(width: 20).padding(.top, 35)
-                                    Text("6").frame(width: 20).padding(.top, 35)
-                                    Text("4").frame(width: 20).padding(.top, 35)
-                                    Text("2").frame(width: 20).padding(.top, 35)
-                                    Text("0").frame(width: 20).padding(.top, 35)
-                                }
-                            }
+                                   // Spacer()
+                                    Text("8").frame(width: 20).padding(.top, 40)
+                                    Text("6").frame(width: 20).padding(.top, 40)
+                                    Text("4").frame(width: 20).padding(.top, 40)
+                                    Text("2").frame(width: 20).padding(.top, 40)
+                                    Text("0").frame(width: 20).padding(.top, 40)
+                                }.offset(y: 10)
+                            }.offset(y: -16)
 
 
                         }
                         
+                        Spacer().frame(height: 40)
                         if (getgradenum())
                         {
-                            VStack {
-                                Text("Chnge in Average Grade: \(getChangeInAverageGrade(), specifier: "%.2f")").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width-30 ,height: 100, alignment: .topLeading)
-                            }.padding(10).background(Color(classcool.color)).cornerRadius(20)
-                            Spacer()
-                            VStack {
-                                Text("Last Assignment Compared to Average Grade: \(Double(getLastAssignmentGrade())-getAverageGrade(), specifier: "%.2f")").padding(10).font(.title).frame(width: UIScreen.main.bounds.size.width-30, height: 100, alignment: .topLeading)
-                            }.padding(10).background(Color(classcool.color)).cornerRadius(20)
+                            HStack {
+                                VStack {
+                                    Text("Average").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
+                                    Text("\(getAverageGrade(), specifier: "%.2f")").font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
+                                    if (getChangeInAverageGrade() >= 0)
+                                    {
+                                        Text("+\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
+                                    }
+                                    else
+                                    {
+                                        Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
+                                    }
+                                }.padding(10).background(Color(classcool.color)).cornerRadius(20)
+                                VStack {
+                                    Text("Last Assignment Compared to Average Grade: \(Double(getLastAssignmentGrade())-getAverageGrade(), specifier: "%.2f")").padding(10).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30, height: UIScreen.main.bounds.size.width/2-30, alignment: .topLeading)
+                                }.padding(10).background(Color(classcool.color)).cornerRadius(20)
+                            }
 
                         }
                         
@@ -297,12 +311,21 @@ struct DetailProgressView: View {
 }
 
 struct ProgressView: View {
-    
+    @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Classcool.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
+    var assignmentlist: FetchedResults<Assignment>
     
+    @State var NewAssignmentPresenting = false
+    @State var NewClassPresenting = false
+    @State var NewOccupiedtimePresenting = false
+    @State var NewFreetimePresenting = false
+    @State var NewGradePresenting = false
+    @State var noClassesAlert = false
+    @State var noAssignmentsAlert = false
     var body: some View {
          NavigationView{
             List {
@@ -322,8 +345,37 @@ struct ProgressView: View {
                     
                         Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4);
 
-                        Button(action: {print("add button clicked")}) {
+                        Button(action: {
+                            self.assignmentlist.count > 0 ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+                            
+                        }) {
                             Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }.contextMenu{
+                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                                Text("Assignment")
+                                Image(systemName: "paperclip")
+                            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                            }
+                            Button(action: {self.NewClassPresenting.toggle()}) {
+                                Text("Class")
+                                Image(systemName: "list.bullet")
+                            }.sheet(isPresented: $NewClassPresenting, content: {
+                                NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                Text("Occupied Time")
+                                Image(systemName: "clock.fill")
+                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                            Button(action: {self.NewFreetimePresenting.toggle()}) {
+                                Text("Free Time")
+                                Image(systemName: "clock")
+                            }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                            Button(action: {self.NewGradePresenting.toggle()}) {
+                                Text("Grade")
+                                Image(systemName: "percent")
+                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                                Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
+                            }
                         }
                 }.padding(.top, -11.0)).navigationBarTitle("Progress")
          }

@@ -40,8 +40,8 @@ struct ClassView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
-                .fill(Color(classcool.color))
-                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120))
+                .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 10)
             VStack {
                 HStack {
                     Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
@@ -64,6 +64,16 @@ struct ClassView: View {
 //                }
             }
         }
+    }
+    func getNextColor(currentColor: String) -> Color {
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
+        for color in colorlist {
+            if (color == currentColor)
+            {
+                return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
+            }
+        }
+        return Color("one")
     }
 }
 
@@ -425,6 +435,13 @@ struct ClassesView: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @State var NewAssignmentPresenting = false
+    @State var NewClassPresenting = false
+    @State var NewOccupiedtimePresenting = false
+    @State var NewFreetimePresenting = false
+    @State var NewGradePresenting = false
+    @State var noClassesAlert = false
     @State var stored:Double = 0
     var body: some View {
         NavigationView{
@@ -601,8 +618,37 @@ struct ClassesView: View {
                     
                         Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
 
-                        Button(action: {print("add button clicked")}) {
+                        Button(action: {
+                            
+                            
+                            self.NewClassPresenting.toggle()
+                            
+                        }) {
                             Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }.contextMenu{
+                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                                Text("Assignment")
+                                Image(systemName: "paperclip")
+                            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                            }
+                            Button(action: {self.NewClassPresenting.toggle()}) {
+                                Text("Class")
+                                Image(systemName: "list.bullet")
+                            }.sheet(isPresented: $NewClassPresenting, content: {
+                                NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                Text("Occupied Time")
+                                Image(systemName: "clock.fill")
+                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                            Button(action: {self.NewFreetimePresenting.toggle()}) {
+                                Text("Free Time")
+                                Image(systemName: "clock")
+                            }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                            Button(action: {self.NewGradePresenting.toggle()}) {
+                                Text("Grade")
+                                Image(systemName: "percent")
+                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                         }
                     }).navigationBarTitle(Text("Classes"))
          }

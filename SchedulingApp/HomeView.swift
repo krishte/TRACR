@@ -641,12 +641,12 @@ struct TimeGridSubView: View {
                                             IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
                                             //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                         }
-                                }//.animation(.spring())
+                                }.animation(.spring())
                             }
                             Spacer()
                         }
                     }
-                }//.animation(.spring())
+                }.animation(.spring())
             }
         }.offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 50, coordinateSpace: .local).onChanged { value in
             self.dragoffset = value.translation
@@ -754,7 +754,7 @@ struct HomeBodyView: View {
                 }
                 
                 TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: 0)
-            }.animation(.linear(duration: 0.05))
+            }.animation(.spring())
         }
     }
     

@@ -114,7 +114,7 @@ struct DetailProgressView: View {
     @State var selectedtimeframe = 0
     let screensize = UIScreen.main.bounds.size.width-20
     var formatter: DateFormatter
-    
+   // let gradedict:[String:[Double]]
     init(classcool2: Classcool)
     {
         classcool = classcool2
@@ -139,42 +139,68 @@ struct DetailProgressView: View {
                             Text("Year").tag(1)
                         }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
                         ZStack {
-                            Rectangle().fill(Color.gray).frame(width:UIScreen.main.bounds.size.width, height: 300)
-                            
-                            VStack(spacing: 0) {
-                               Spacer()
-    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-    //                            Rectangle().fill(Color.green).frame(width: screensize, height: 80).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+                            VStack {
+                                Rectangle().fill(Color.gray).frame(width:UIScreen.main.bounds.size.width, height: 300)
                             }
-                            ScrollView(.horizontal)
-                            {
-                                HStack {
-                                    Spacer()
-                                    ForEach(assignmentlist) {
-                                        assignment in
-                                        
-                                        if (self.graphableAssignment(assignment: assignment))
-                                        {
+                            
+//                            VStack(spacing: 0) {
+//                               Spacer()
+//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+//                                Rectangle().fill(Color.green).frame(width: screensize, height: 60).overlay(Rectangle().stroke(Color.black, lineWidth: 2))
+//                            }
+                            HStack {
+                                ScrollView(.horizontal)
+                                {
+                                    HStack {
+                                        Spacer()
+                                        ForEach(assignmentlist) {
+                                            assignment in
+                                            
+                                            if (self.graphableAssignment(assignment: assignment))
+                                            {
 
-                                            VStack {
-                                                Spacer()
-                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                                    .fill(Color.blue)
-                                                    .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
-                                                //Text( self.formatter.string(from: assignment.duedate))
-                                                  //  .font(.footnote)
-                                                   // .frame(width: self.getCompletedNumber(),height: 20)
+                                                VStack {
+                                                    Spacer()
+                                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                        .fill(Color.blue)
+                                                        .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
+                                                    //Text( self.formatter.string(from: assignment.duedate))
+                                                      //  .font(.footnote)
+                                                       // .frame(width: self.getCompletedNumber(),height: 20)
+                                                }
+
                                             }
-
                                         }
                                     }
+                                    
+                                }
+                                VStack {
+                                    Spacer()
+                                    Text("8").frame(width: 20).padding(.top, 35)
+                                    Text("6").frame(width: 20).padding(.top, 35)
+                                    Text("4").frame(width: 20).padding(.top, 35)
+                                    Text("2").frame(width: 20).padding(.top, 35)
+                                    Text("0").frame(width: 20).padding(.top, 35)
                                 }
                             }
 
 
                         }
+                        
+                        if (getgradenum())
+                        {
+                            VStack {
+                                Text("Chnge in Average Grade: \(getChangeInAverageGrade(), specifier: "%.2f")").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width-30 ,height: 100, alignment: .topLeading)
+                            }.padding(10).background(Color(classcool.color)).cornerRadius(20)
+                            Spacer()
+                            VStack {
+                                Text("Last Assignment Compared to Average Grade: \(Double(getLastAssignmentGrade())-getAverageGrade(), specifier: "%.2f")").padding(10).font(.title).frame(width: UIScreen.main.bounds.size.width-30, height: 100, alignment: .topLeading)
+                            }.padding(10).background(Color(classcool.color)).cornerRadius(20)
+
+                        }
+                        
                     }
 
                  }
@@ -204,6 +230,49 @@ struct DetailProgressView: View {
             return 0;
         }
         return (gradesum/gradenum)
+    }
+    func getLastAssignmentGrade() -> Int64
+    {
+        var gradeval: Int64 = 0
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
+            {
+                gradeval = assignment.grade
+            }
+        }
+        return gradeval
+    }
+    func getgradenum() -> Bool
+    {
+        var gradenum: Int = 0
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
+            {
+                gradenum += 1
+            }
+        }
+        if (gradenum >= 2)
+        {
+            return true
+        }
+        return false
+    }
+    func getChangeInAverageGrade() -> Double
+    {
+        var gradesum: Double = 0
+        var gradenum: Double = 0
+        var lastgrade: Double = 0
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
+            {
+                gradesum += Double(assignment.grade)
+                gradenum += 1
+                lastgrade = Double(assignment.grade)
+            }
+        }
+        gradesum -= lastgrade
+        gradenum -= 1
+        return getAverageGrade() - gradesum/gradenum
     }
     func getCompletedNumber() -> CGFloat
     {

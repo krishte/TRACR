@@ -209,7 +209,7 @@ struct DetailProgressView: View {
                                     }
                                 }.padding(10).background(Color(classcool.color)).cornerRadius(20)
                                 VStack {
-                                    Text("Last Assignment Compared to Average Grade: \(Double(getLastAssignmentGrade())-getAverageGrade(), specifier: "%.2f")").padding(10).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30, height: UIScreen.main.bounds.size.width/2-30, alignment: .topLeading)
+                                    Text("Last Assignment Compared to Average: \(Double(getLastAssignmentGrade())-getAverageGrade(), specifier: "%.2f")").padding(10).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30, height: UIScreen.main.bounds.size.width/2-30, alignment: .topLeading)
                                 }.padding(10).background(Color(classcool.color)).cornerRadius(20)
                             }
 

@@ -597,14 +597,88 @@ struct WeeklyBlockView: View {
     }
 }
 
-struct HomeBodyView: View {
+struct TimeGridSubView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    var datesfromlastmonday: [Date]
     
+    @Binding var nthdayfromnow: Int
+    @Binding var dragoffset: CGSize
+    @Binding var pageChanged: Bool
+    
+    var dayChange: Int
+    
+    @State var nextPage = false
+    @State var previousPage = false
+    
+    var body: some View {
+        VStack {
+            ScrollView {
+                ZStack {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading) {
+                            ForEach((0...24), id: \.self) { hour in
+                                HStack {
+                                    Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
+                                    Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                }
+                            }.frame(width:  50 , height:50)
+                        }
+                    }
+                    HStack(alignment: .top) {
+                        Spacer()
+                        VStack {
+                            Spacer().frame(height:25)
+                            
+                            ZStack(alignment: .topTrailing) {
+                                ForEach(subassignmentlist) { subassignment in
+                                    if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow + self.dayChange != -1 ? (self.nthdayfromnow + self.dayChange != 28 ? self.nthdayfromnow + self.dayChange : 27) : 0], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                            IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
+                                            //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                                        }
+                                }//.animation(.spring())
+                            }
+                            Spacer()
+                        }
+                    }
+                }//.animation(.spring())
+            }
+        }.offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 50, coordinateSpace: .local).onChanged { value in
+            self.dragoffset = value.translation
+                                
+            if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 2/3) && self.nthdayfromnow != 27 && self.pageChanged != true {
+                self.pageChanged = true
+                self.nextPage = true
+                self.previousPage = false
+            }
+                
+            else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 2/3) && self.nthdayfromnow != 0 && self.pageChanged != true {
+                self.pageChanged = true
+                self.previousPage = true
+                self.nextPage = false
+            }
+        }
+        .onEnded { value in
+            self.dragoffset = .zero
+            
+            if self.nextPage && self.pageChanged {
+                self.nthdayfromnow += 1
+            }
+            
+            else if self.previousPage && self.pageChanged {
+                self.nthdayfromnow += -1
+            }
+            
+            self.pageChanged = false
+        })
+    }
+}
+
+struct HomeBodyView: View {
     var datesfromlastmonday: [Date] = []
     var daytitlesfromlastmonday: [String] = []
     var datenumbersfromlastmonday: [String] = []
@@ -620,6 +694,10 @@ struct HomeBodyView: View {
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
     var hourformatter: DateFormatter
     var minuteformatter: DateFormatter
+    
+    @State var dragoffset = CGSize.zero
+    @State var pageChanged = false
+
     init() {
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
@@ -665,51 +743,17 @@ struct HomeBodyView: View {
             
             Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
-            VStack {
-                ScrollView {
-                    ZStack {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading) {
-                                ForEach((0...24), id: \.self) { hour in
-                                    //ZStack {
-                                        HStack {
-                                            Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
-                                            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
-
-                                        }
-
-                                    //}
-                                }.frame(width:  50 , height:50)
-                                
-                            }
-                           // Spacer()
-                        }
-                        HStack(alignment: .top) {
-                            Spacer()
-                            VStack {
-                                Spacer().frame(height:25)
-                                
-                                ZStack(alignment: .topTrailing) {
-                                    ForEach(subassignmentlist) { subassignment in
-
-
-                                            if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
-                                                //was +122 but had to subtract 2*60.35 to account for GMT + 2
-                                            }
-                                        
-
-                                    }.animation(.spring())
-                                    
-                                }
-                                Spacer()
-                            }
-
-                            
-                        }
-                    }.animation(.spring())
+            ZStack {
+                if self.nthdayfromnow > 0 {
+                    TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: -1).offset(x: -UIScreen.main.bounds.size.width)
                 }
-            }
+                
+                if self.nthdayfromnow < 27 {
+                    TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: 1).offset(x: UIScreen.main.bounds.size.width)
+                }
+                
+                TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: 0)
+            }.animation(.linear(duration: 0.1))
         }
     }
     
@@ -729,7 +773,6 @@ struct SubassignmentAddTimeAction: View {
     var body: some View {
         Text("hello")
     }
-    
 }
 
 struct IndividualSubassignmentView: View {
@@ -833,7 +876,7 @@ struct IndividualSubassignmentView: View {
 //                Text(self.actualenddatetime.description)
 
 
-            }.frame(height: 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.frame(height: 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 25, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
                     //self.isDragged = true

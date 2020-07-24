@@ -172,7 +172,7 @@ struct NewClassModalView: View {
                                 }
                             }
                         }
-                                
+
                         else if classgroupnameindex == 1 {
                             Picker(selection: $classnameindex, label: Text("Subject: ")) {
                                 ForEach(0 ..< groups[1].count, id: \.self) { index in
@@ -597,14 +597,88 @@ struct WeeklyBlockView: View {
     }
 }
 
-struct HomeBodyView: View {
+struct TimeGridSubView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    var datesfromlastmonday: [Date]
     
+    @Binding var nthdayfromnow: Int
+    @Binding var dragoffset: CGSize
+    @Binding var pageChanged: Bool
+    
+    var dayChange: Int
+    
+    @State var nextPage = false
+    @State var previousPage = false
+    
+    var body: some View {
+        VStack {
+            ScrollView {
+                ZStack {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading) {
+                            ForEach((0...24), id: \.self) { hour in
+                                HStack {
+                                    Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
+                                    Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                }
+                            }.frame(width:  50 , height:50)
+                        }
+                    }
+                    HStack(alignment: .top) {
+                        Spacer()
+                        VStack {
+                            Spacer().frame(height:25)
+                            
+                            ZStack(alignment: .topTrailing) {
+                                ForEach(subassignmentlist) { subassignment in
+                                    if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow + self.dayChange != -1 ? (self.nthdayfromnow + self.dayChange != 28 ? self.nthdayfromnow + self.dayChange : 27) : 0], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                            IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
+                                            //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                                        }
+                                }//.animation(.spring())
+                            }
+                            Spacer()
+                        }
+                    }
+                }//.animation(.spring())
+            }
+        }.offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 50, coordinateSpace: .local).onChanged { value in
+            self.dragoffset = value.translation
+                                
+            if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 2/3) && self.nthdayfromnow != 27 && self.pageChanged != true {
+                self.pageChanged = true
+                self.nextPage = true
+                self.previousPage = false
+            }
+                
+            else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 2/3) && self.nthdayfromnow != 0 && self.pageChanged != true {
+                self.pageChanged = true
+                self.previousPage = true
+                self.nextPage = false
+            }
+        }
+        .onEnded { value in
+            self.dragoffset = .zero
+            
+            if self.nextPage && self.pageChanged {
+                self.nthdayfromnow += 1
+            }
+            
+            else if self.previousPage && self.pageChanged {
+                self.nthdayfromnow += -1
+            }
+            
+            self.pageChanged = false
+        })
+    }
+}
+
+struct HomeBodyView: View {
     var datesfromlastmonday: [Date] = []
     var daytitlesfromlastmonday: [String] = []
     var datenumbersfromlastmonday: [String] = []
@@ -620,6 +694,10 @@ struct HomeBodyView: View {
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
     var hourformatter: DateFormatter
     var minuteformatter: DateFormatter
+    
+    @State var dragoffset = CGSize.zero
+    @State var pageChanged = false
+
     init() {
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
@@ -665,51 +743,17 @@ struct HomeBodyView: View {
             
             Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
-            VStack {
-                ScrollView {
-                    ZStack {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading) {
-                                ForEach((0...24), id: \.self) { hour in
-                                    //ZStack {
-                                        HStack {
-                                            Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
-                                            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
-
-                                        }
-
-                                    //}
-                                }.frame(width:  50 , height:50)
-                                
-                            }
-                           // Spacer()
-                        }
-                        HStack(alignment: .top) {
-                            Spacer()
-                            VStack {
-                                Spacer().frame(height:25)
-                                
-                                ZStack(alignment: .topTrailing) {
-                                    ForEach(subassignmentlist) { subassignment in
-
-
-                                            if ( Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                                IndividualSubassignmentView(subassignment2: subassignment).animation(.spring()).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
-                                                //was +122 but had to subtract 2*60.35 to account for GMT + 2
-                                            }
-                                        
-
-                                    }.animation(.spring())
-                                    
-                                }
-                                Spacer()
-                            }
-
-                            
-                        }
-                    }.animation(.spring())
+            ZStack {
+                if self.nthdayfromnow > 0 {
+                    TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: -1).offset(x: -UIScreen.main.bounds.size.width)
                 }
-            }
+                
+                if self.nthdayfromnow < 27 {
+                    TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: 1).offset(x: UIScreen.main.bounds.size.width)
+                }
+                
+                TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: 0)
+            }.animation(.linear(duration: 0.1))
         }
     }
     
@@ -729,7 +773,6 @@ struct SubassignmentAddTimeAction: View {
     var body: some View {
         Text("hello")
     }
-    
 }
 
 struct IndividualSubassignmentView: View {
@@ -791,32 +834,34 @@ struct IndividualSubassignmentView: View {
             VStack {
                if (isDragged) {
                    ZStack {
-                       HStack {
-                        Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: UIScreen.main.bounds.size.width-30+self.dragoffset.width)
-                       }
-                       HStack {
-                           Spacer()
-                           if (self.dragoffset.width < -110) {
-                               Text("Complete").foregroundColor(Color.white).frame(width:120)
-                           }
-                           else {
-                               Text("Complete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width + 110)
-                           }
-                       }
-                   }
-               }
+                        HStack {
+                            Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +    CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: UIScreen.main.bounds.size.width-30+self.dragoffset.width)
+                        }
+                        HStack {
+                            Spacer()
+                            if (self.dragoffset.width < -110) {
+                                Text("Complete").foregroundColor(Color.white).frame(width:120)
+                            }
+                            else {
+                                Text("Complete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width + 110)
+                            }
+                        }
+                    }
+                }
                 if (isDraggedleft) {
                     ZStack {
                         HStack {
-                         Rectangle().fill(Color.blue) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
+                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
                         }
                         HStack {
                             
                             if (self.dragoffset.width > 150) {
-                                Text("Incomplete").foregroundColor(Color.white).frame(width:120).offset(x: -150)
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -150)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -190)
                             }
                             else {
-                                Text("Incomplete").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-300)
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-300)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width-340)
                             }
                             
                         }
@@ -831,7 +876,7 @@ struct IndividualSubassignmentView: View {
 //                Text(self.actualenddatetime.description)
 
 
-            }.frame(height: 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.frame(height: 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 25, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
                     //self.isDragged = true
@@ -914,7 +959,13 @@ struct HomeView: View {
     @State var NewOccupiedtimePresenting = false
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
-
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    @State var noClassesAlert = false
+    
     var body: some View {
         VStack {
             HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
@@ -924,13 +975,15 @@ struct HomeView: View {
             
                 Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
 
-                Button(action: {self.NewAssignmentPresenting.toggle()}) {
+                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
                     Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                 }.contextMenu{
-                    Button(action: {self.NewAssignmentPresenting.toggle()}) {
+                    Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
                         Text("Assignment")
                         Image(systemName: "paperclip")
-                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                        Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                    }
                     Button(action: {self.NewClassPresenting.toggle()}) {
                         Text("Class")
                         Image(systemName: "list.bullet")

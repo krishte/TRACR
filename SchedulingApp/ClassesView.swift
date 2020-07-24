@@ -196,7 +196,7 @@ struct DetailView: View {
     
     var body: some View {
         VStack {
-            Text(classcool.name).font(.title).fontWeight(.bold)
+            Text(classcool.name).font(.system(size: 22 + CGFloat(50 / classcool.name.count))).fontWeight(.bold)
             Spacer()
             Text("Tolerance: " + String(classcool.tolerance))
             Spacer()

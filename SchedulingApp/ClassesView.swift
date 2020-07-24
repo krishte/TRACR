@@ -44,7 +44,7 @@ struct ClassView: View {
                 .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 10)
             VStack {
                 HStack {
-                    Text(classcool.name).font(.system(size: 22 + CGFloat(50 / classcool.name.count))).fontWeight(.bold)
+                    Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
                     Spacer()
                     if classcool.assignmentnumber == 0 {
                         Text("No Assignments").font(.body).fontWeight(.light)
@@ -191,8 +191,189 @@ struct IndividualAssignmentView: View {
     }
 }
 
+struct EditClassModalView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    @State var classnamechanged: String
+    @Binding var EditClassPresenting: Bool
+    
+    @State private var classtolerancedouble: Double = 5.5
+    
+    let colorsa = ["one", "two", "three", "four", "five"]
+    let colorsb = ["six", "seven", "eight", "nine", "ten"]
+    let colorsc = ["eleven", "twelve", "thirteen", "fourteen", "fifteen"]
+    
+    @State private var coloraselectedindex: Int? = 0
+    @State private var colorbselectedindex: Int?
+    @State private var colorcselectedindex: Int?
+    
+    @State private var createclassallowed = true
+    @State private var showingAlert = false
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section {
+                    TextField("Class Name", text: $classnamechanged)
+                }
+                
+                Section {
+                    VStack {
+                        HStack {
+                            Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
+                            Spacer()
+                        }.frame(height: 30)
+                        Slider(value: $classtolerancedouble, in: 1...10)
+                    }
+                }
+                
+                Section {
+                    HStack {
+                        Text("Color:")
+                        
+                        Spacer()
+                        
+                        VStack(spacing: 10) {
+                            HStack(spacing: 10) {
+                                ForEach(0 ..< 5) { colorindexa in
+                                    ZStack{
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsa[colorindexa])).frame(width: 25, height: 25)
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                            , lineWidth: (self.coloraselectedindex == colorindexa ? 3 : 1)).frame(width: 25, height: 25)
+                                    }.onTapGesture {
+                                        self.coloraselectedindex = colorindexa
+                                        self.colorbselectedindex = nil
+                                        self.colorcselectedindex = nil
+                                    }
+                                }
+                            }
+                            HStack(spacing: 10) {
+                                ForEach(0 ..< 5) { colorindexb in
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsb[colorindexb])).frame(width: 25, height: 25)
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                        , lineWidth: (self.colorbselectedindex == colorindexb ? 3 : 1)).frame(width: 25, height: 25)
+                                    }.onTapGesture {
+                                        self.coloraselectedindex = nil
+                                        self.colorbselectedindex = colorindexb
+                                        self.colorcselectedindex = nil
+                                    }
+                                }
+                            }
+                            HStack(spacing: 10) {
+                                ForEach(0 ..< 5) { colorindexc in
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsc[colorindexc])).frame(width: 25, height: 25)
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                    , lineWidth: (self.colorcselectedindex == colorindexc ? 3 : 1)).frame(width: 25, height: 25)
+                                    }.onTapGesture {
+                                        self.coloraselectedindex = nil
+                                        self.colorbselectedindex = nil
+                                        self.colorcselectedindex = colorindexc
+                                    }
+                                }
+                            }
+                        }
+                    }.padding(.vertical, 10)
+                }
+                
+                Section {
+                    Button(action: {
+                        let testname = self.classnamechanged
+                        
+                        self.createclassallowed = true
+                        
+                        for classity in self.classlist {
+                            if classity.name == testname {
+                                print("sdfds")
+                                self.createclassallowed = false
+                            }
+                        }
+
+                        if self.createclassallowed {
+                            let newClass = Classcool(context: self.managedObjectContext)
+                            print(Int(self.classtolerancedouble))
+                            newClass.attentionspan = Int64(Int.random(in: 1...10))
+                            newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
+                            newClass.name = testname
+                            newClass.assignmentnumber = 0
+                            if self.coloraselectedindex != nil {
+                                newClass.color = self.colorsa[self.coloraselectedindex!]
+                            }
+                            else if self.colorbselectedindex != nil {
+                                newClass.color = self.colorsb[self.colorbselectedindex!]
+                            }
+                            else if self.colorcselectedindex != nil {
+                                newClass.color = self.colorsc[self.colorcselectedindex!]
+                            }
+
+                            do {
+                                try self.managedObjectContext.save()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                            self.EditClassPresenting = false
+                        }
+                            
+                        else {
+                            print("Class with Same Name Exists; Change Name")
+                            self.showingAlert = true
+                        }
+                    }) {
+                        Text("Add Class")
+                    }.alert(isPresented: $showingAlert) {
+                        Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
+                    }
+                }
+                Section {
+                    Text("Preview")
+                    ZStack {
+                    if self.coloraselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color(self.colorsa[self.coloraselectedindex!]))
+                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                        
+                    }
+                    else if self.colorbselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color( self.colorsb[self.colorbselectedindex!]))
+                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                        
+                    }
+                    else if self.colorcselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(Color(self.colorsc[self.colorcselectedindex!]))
+                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                        
+                    }
+
+                    VStack {
+                        HStack {
+                            Text(self.classnamechanged).font(.system(size: 22)).fontWeight(.bold)
+                            
+                            Spacer()
+                        //change this stuff
+                            Text("No Assignments").font(.body).fontWeight(.light)
+                            
+                            }
+                        }.padding(.horizontal, 25)
+                        
+                    }
+                }
+            }.navigationBarItems(trailing: Button(action: {self.EditClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Class", displayMode: .inline)
+        }
+    }
+}
+
+
 
 struct DetailView: View {
+    @State var EditClassPresenting = false
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
     
@@ -232,7 +413,11 @@ struct DetailView: View {
 //                    print("Assignment has been deleted")
 //                }
             }
-        }
+        }.sheet(isPresented: $EditClassPresenting, content: { EditClassModalView(classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).navigationBarItems(trailing: Button(action: {
+            self.EditClassPresenting.toggle()
+        })
+            { Text("Edit") }
+        )
     }
 }
 

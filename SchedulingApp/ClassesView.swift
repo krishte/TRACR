@@ -39,24 +39,22 @@ struct ClassView: View {
     
     var body: some View {
         ZStack {
-            if (classcool.color != "")
-            {
+            if (classcool.color != "") {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)
                     .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
                     .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 10)
             }
 
-            VStack {
-                HStack {
-                    Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
-                    Spacer()
-                    if classcool.assignmentnumber == 0 {
-                        Text("No Assignments").font(.body).fontWeight(.light)
-                    }
-                    else {
-                        Text(String(classcool.assignmentnumber)).font(.title).fontWeight(.bold)
-                    }
-                }.padding(.horizontal, 25)
+            HStack {
+                Text(classcool.name).font(.system(size: 24)).fontWeight(.bold).frame(height: 120)
+                Spacer()
+                if classcool.assignmentnumber == 0 {
+                    Text("No Assignments").font(.body).fontWeight(.light)
+                }
+                else {
+                    Text(String(classcool.assignmentnumber)).font(.title).fontWeight(.bold)
+                }
+            }.padding(.horizontal, 25)
                 
 //                VStack {
 //                    ForEach(assignmentlist) {
@@ -66,7 +64,6 @@ struct ClassView: View {
 //                            }
 //                    }
 //                }
-            }
         }
     }
     func getNextColor(currentColor: String) -> Color {
@@ -529,7 +526,7 @@ struct ClassesView: View {
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
     @State var noClassesAlert = false
-    @State var stored:Double = 0
+    @State var stored: Double = 0
     var body: some View {
         NavigationView{
             List {
@@ -537,7 +534,7 @@ struct ClassesView: View {
                     NavigationLink(destination: DetailView(classcool: classcool )) {
                         ClassView(classcool: classcool)
                     }
-                }.onDelete { indexSet in
+                    }.onDelete { indexSet in
                     for index in indexSet {
                         for (index2, element) in self.assignmentlist.enumerated() {
                             if (element.subject == self.classlist[index].name) {

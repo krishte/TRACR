@@ -19,7 +19,13 @@ extension Freetime {
 
     @NSManaged public var startdatetime: Date
     @NSManaged public var enddatetime: Date
-    @NSManaged public var weekrepeat: Bool
-    @NSManaged public var dayrepeat: Bool
+    @NSManaged public var monday: Bool
+    @NSManaged public var tuesday: Bool
+    @NSManaged public var wednesday: Bool
+    @NSManaged public var thursday: Bool
+    @NSManaged public var friday: Bool
+    @NSManaged public var saturday: Bool
+    @NSManaged public var sunday: Bool
+
 
 }

@@ -30,7 +30,7 @@ import SwiftUI
 //}
 
 struct ClassView: View {
-    var classcool: Classcool
+    @ObservedObject var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
     
 //    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
@@ -39,9 +39,13 @@ struct ClassView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
-                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 10)
+            if (classcool.color != "")
+            {
+                RoundedRectangle(cornerRadius: 25, style: .continuous)
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+                    .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 10)
+            }
+
             VStack {
                 HStack {
                     Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
@@ -86,8 +90,11 @@ struct IndividualAssignmentView: View {
     
     
     @State var isDragged: Bool = false
+    @State var isDraggedleft: Bool = false
     @State var deleted: Bool = false
     @State var deleteonce: Bool = true
+    @State var incompleted: Bool = false
+    @State var incompletedonce: Bool = true
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     var classlist: FetchedResults<Classcool>
     
@@ -123,6 +130,25 @@ struct IndividualAssignmentView: View {
                         }
                     }
                 }
+                if (isDraggedleft) {
+                    ZStack {
+                        HStack {
+                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: -UIScreen.main.bounds.size.width+10+self.dragoffset.width)
+                        }
+                        HStack {
+                            
+                            if (self.dragoffset.width > 150) {
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -110)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -150)
+                            }
+                            else {
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-260)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width-300)
+                            }
+                            
+                        }
+                    }
+                }
             }
             
             VStack {
@@ -144,24 +170,38 @@ struct IndividualAssignmentView: View {
             }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
-                    self.isDragged = true
-
-                    if (self.dragoffset.width > 0) {
-                        self.dragoffset = CGSize.zero
-                        self.dragoffset.width = 0
+                    if (self.dragoffset.width < 0) {
+                        self.isDraggedleft = false
+                        self.isDragged = true
+                    }
+                    else if (self.dragoffset.width > 0) {
+                        self.isDragged = false
+                        self.isDraggedleft = true
                     }
                                         
                     if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
                         self.deleted = true
                     }
+                    else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+                        self.incompleted = true
+                    }
                 }
                 .onEnded { value in
                     self.dragoffset = .zero
-                    self.isDragged = false
+                    //self.isDragged = false
+                    if (self.incompleted == true)
+                    {
+                        if (self.incompletedonce == true)
+                        {
+                            self.incompletedonce = false;
+                            print("incompleted")
+                        }
+                    }
                     if (self.deleted == true) {
                         if (self.deleteonce == true) {
                             self.deleteonce = false
                             self.assignment.completed = true
+                            self.assignment.totaltime -= self.assignment.timeleft
                             self.assignment.timeleft = 0
                             self.assignment.progress = 100
                             
@@ -169,6 +209,7 @@ struct IndividualAssignmentView: View {
                             for classity in self.classlist {
                                 if (classity.name == self.assignment.subject) {
                                     classity.assignmentnumber -= 1
+                                    print("assignment number channged")
                                 }
                             }
                             for (index, element) in self.subassignmentlist.enumerated() {
@@ -198,10 +239,17 @@ struct EditClassModalView: View {
     
     var classlist: FetchedResults<Classcool>
     
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
+    
+    var assignmentlist: FetchedResults<Assignment>
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    @State var currentclassname: String
     @State var classnamechanged: String
     @Binding var EditClassPresenting: Bool
     
-    @State private var classtolerancedouble: Double = 5.5
+    @State var classtolerancedouble: Double
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -288,34 +336,51 @@ struct EditClassModalView: View {
                         self.createclassallowed = true
                         
                         for classity in self.classlist {
-                            if classity.name == testname {
+                            if classity.name == testname && classity.name != self.currentclassname {
                                 print("sdfds")
                                 self.createclassallowed = false
                             }
                         }
 
                         if self.createclassallowed {
-                            let newClass = Classcool(context: self.managedObjectContext)
-                            print(Int(self.classtolerancedouble))
-                            newClass.attentionspan = Int64(Int.random(in: 1...10))
-                            newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
-                            newClass.name = testname
-                            newClass.assignmentnumber = 0
-                            if self.coloraselectedindex != nil {
-                                newClass.color = self.colorsa[self.coloraselectedindex!]
+                            for classity in self.classlist {
+                                if (classity.name == self.currentclassname)
+                                {
+                                    classity.name = testname
+                                    classity.tolerance  = Int64(self.classtolerancedouble.rounded(.down))
+                                    if self.coloraselectedindex != nil {
+                                        classity.color = self.colorsa[self.coloraselectedindex!]
+                                    }
+                                    else if self.colorbselectedindex != nil {
+                                        classity.color = self.colorsb[self.colorbselectedindex!]
+                                    }
+                                    else if self.colorcselectedindex != nil {
+                                        classity.color = self.colorsc[self.colorcselectedindex!]
+                                    }
+                                    
+                                    for assignment in self.assignmentlist {
+                                        if (assignment.subject == self.currentclassname)
+                                        {
+                                            assignment.subject = testname
+                                            assignment.color = classity.color
+                                            for subassignment in self.subassignmentlist {
+                                                if (subassignment.assignmentname == assignment.name)
+                                                {
+                                                    subassignment.color = classity.color
+                                                }
+                                            }
+                                        }
+                                    }
+                                    do {
+                                        try self.managedObjectContext.save()
+                                    } catch {
+                                        print(error.localizedDescription)
+                                    }
+                                }
                             }
-                            else if self.colorbselectedindex != nil {
-                                newClass.color = self.colorsb[self.colorbselectedindex!]
-                            }
-                            else if self.colorcselectedindex != nil {
-                                newClass.color = self.colorsc[self.colorcselectedindex!]
-                            }
+                           
 
-                            do {
-                                try self.managedObjectContext.save()
-                            } catch {
-                                print(error.localizedDescription)
-                            }
+
                             
                             self.EditClassPresenting = false
                         }
@@ -325,7 +390,7 @@ struct EditClassModalView: View {
                             self.showingAlert = true
                         }
                     }) {
-                        Text("Add Class")
+                        Text("Save Changes")
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
@@ -333,24 +398,24 @@ struct EditClassModalView: View {
                 Section {
                     Text("Preview")
                     ZStack {
-                    if self.coloraselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color(self.colorsa[self.coloraselectedindex!]))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
-                        
-                    }
-                    else if self.colorbselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color( self.colorsb[self.colorbselectedindex!]))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
-                        
-                    }
-                    else if self.colorcselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color(self.colorsc[self.colorcselectedindex!]))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
-                        
-                    }
+                        if self.coloraselectedindex != nil {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                            
+                        }
+                        else if self.colorbselectedindex != nil {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                            
+                        }
+                        else if self.colorcselectedindex != nil {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                            
+                        }
 
                     VStack {
                         HStack {
@@ -368,13 +433,25 @@ struct EditClassModalView: View {
             }.navigationBarItems(trailing: Button(action: {self.EditClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Class", displayMode: .inline)
         }
     }
+    func getNextColor(currentColor: String) -> Color {
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
+        for color in colorlist {
+            if (color == currentColor)
+            {
+                return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
+            }
+        }
+        return Color("one")
+    }
+    
 }
 
 
 
 struct DetailView: View {
     @State var EditClassPresenting = false
-    var classcool: Classcool
+    @ObservedObject var classcool: Classcool
+    @State private var selection: Set<Assignment> = []
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
@@ -384,6 +461,14 @@ struct DetailView: View {
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
+    
+    private func selectDeselect(_ singularassignment: Assignment) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
     
     var body: some View {
         VStack {
@@ -395,9 +480,11 @@ struct DetailView: View {
             ScrollView {
                 ForEach(assignmentlist) { assignment in
                     if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.name && assignment.completed == false) {
-                        IndividualAssignmentView(assignment2: assignment)
+                        IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment).shadow(radius: 10).onTapGesture {
+                            self.selectDeselect(assignment)
+                        }
                     }
-                }.animation(.spring())
+                    }.animation(.spring())
 //                .onDelete { indexSet in
 //                    for index in indexSet {
 //                        self.managedObjectContext.delete(self.assignmentlist[index])
@@ -413,7 +500,7 @@ struct DetailView: View {
 //                    print("Assignment has been deleted")
 //                }
             }
-        }.sheet(isPresented: $EditClassPresenting, content: { EditClassModalView(classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).navigationBarItems(trailing: Button(action: {
+        }.sheet(isPresented: $EditClassPresenting, content: { EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name,  EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5).environment(\.managedObjectContext, self.managedObjectContext)}).navigationBarItems(trailing: Button(action: {
             self.EditClassPresenting.toggle()
         })
             { Text("Edit") }
@@ -546,7 +633,7 @@ struct ClassesView: View {
                                         {
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in:self.stored ... (self.stored+100000))
+                                             let randomDate = Double.random(in:100000 ... 1700000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*hoursleft))
                                             self.stored  += 20000
@@ -566,7 +653,7 @@ struct ClassesView: View {
                                             let thirdrandomint = Int64.random(in: 1...2)
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in:self.stored ... (self.stored+100000))
+                                            let randomDate = Double.random(in:100000 ... 1700000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*thirdrandomint))
                                             self.stored += 20000

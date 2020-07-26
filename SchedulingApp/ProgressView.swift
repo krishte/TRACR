@@ -23,6 +23,7 @@ struct ClassProgressView: View {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
                 .fill(Color(classcool.color))
                 .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                .shadow(radius: 10)
             VStack {
                 HStack {
                     Text(classcool.name).font(.title).fontWeight(.bold)
@@ -207,10 +208,19 @@ struct DetailProgressView: View {
                                     {
                                         Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
                                     }
-                                }.padding(10).background(Color(classcool.color)).cornerRadius(20)
+                                }.padding(10).background(Color(classcool.color)).cornerRadius(20).shadow(radius: 10)
                                 VStack {
-                                    Text("Last Assignment Compared to Average: \(Double(getLastAssignmentGrade())-getAverageGrade(), specifier: "%.2f")").padding(10).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30, height: UIScreen.main.bounds.size.width/2-30, alignment: .topLeading)
-                                }.padding(10).background(Color(classcool.color)).cornerRadius(20)
+                                    Text("Last Assignment").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
+                                    Text(String(getLastAssignmentGrade())).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
+                                    if (Double(getLastAssignmentGrade()) - getAverageGrade() >= 0.0)
+                                    {
+                                        Text("+\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
+                                    }
+                                    else
+                                    {
+                                        Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
+                                    }
+                                }.padding(10).background(Color(classcool.color)).cornerRadius(20).shadow(radius: 10)
                             }
 
                         }
@@ -254,6 +264,7 @@ struct DetailProgressView: View {
                 gradeval = assignment.grade
             }
         }
+        print(gradeval)
         return gradeval
     }
     func getgradenum() -> Bool

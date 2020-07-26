@@ -30,10 +30,10 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "215"
-            endingLineNumber = "215"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "263"
+            endingLineNumber = "263"
+            landmarkName = "EditClassModalView"
+            landmarkType = "14">
             <Locations>
                <Location
                   uuid = "E1AF0232-FD54-4E86-B75A-39B67A2BD233 - a8ec8cb54d0a1c12"
@@ -78,8 +78,8 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
+            startingLineNumber = "416"
+            endingLineNumber = "416"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>

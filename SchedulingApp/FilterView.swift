@@ -47,8 +47,11 @@ struct IndividualAssignmentFilterView: View {
     
     
     @State var isDragged: Bool = false
+    @State var isDraggedleft: Bool = false
     @State var deleted: Bool = false
     @State var deleteonce: Bool = true
+    @State var incompleted: Bool = false
+    @State var incompletedonce: Bool = true
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
@@ -93,6 +96,27 @@ struct IndividualAssignmentFilterView: View {
                         }
                     }
                 }
+                if (isDraggedleft)
+                {
+                       ZStack {
+                        HStack {
+                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: -UIScreen.main.bounds.size.width+10+self.dragoffset.width)
+                        }
+                        HStack {
+                            
+                            if (self.dragoffset.width > 150) {
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -110)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -150)
+                            }
+                            else {
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-260)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width-300)
+                            }
+                            
+                        }
+                    }
+                    
+                }
             }
             
             VStack {
@@ -130,31 +154,63 @@ struct IndividualAssignmentFilterView: View {
                 }
             }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
+                    //self.dragoffset = value.translation
+
                     if (!self.isCompleted)
                     {
                         self.dragoffset = value.translation
-                        self.isDragged = true
-
-                        if (self.dragoffset.width > 0) {
-                            self.dragoffset = CGSize.zero
-                            self.dragoffset.width = 0
+                        if (self.dragoffset.width < 0) {
+                            self.isDraggedleft = false
+                            self.isDragged = true
+                        }
+                        else if (self.dragoffset.width > 0) {
+                            self.isDragged = false
+                            self.isDraggedleft = true
                         }
                                             
                         if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
                             self.deleted = true
                         }
+                        else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+                            self.incompleted = true
+                        }
                     }
+                    else
+                    {
+                        self.dragoffset=value.translation
+                        if (self.dragoffset.width > 0) {
+                            self.isDragged = false
+                            self.isDraggedleft = true
+                        }
+                        else
+                        {
+                            self.dragoffset = CGSize.zero
+                        }
+                        if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+                            self.incompleted = true
+                        }
+                    }
+
 
                 }
                 .onEnded { value in
                     if (!self.isCompleted)
                     {
                         self.dragoffset = .zero
-                         self.isDragged = false
+                        // self.isDragged = false
+                        if (self.incompleted == true)
+                        {
+                            if (self.incompletedonce == true)
+                            {
+                                self.incompletedonce = false;
+                                print("incompleted")
+                            }
+                        }
                          if (self.deleted == true) {
                              if (self.deleteonce == true) {
                                  self.deleteonce = false
                                  self.assignment.completed = true
+                                self.assignment.totaltime -= self.assignment.timeleft
                                  self.assignment.timeleft = 0
                                  self.assignment.progress = 100
                                  
@@ -178,6 +234,18 @@ struct IndividualAssignmentFilterView: View {
                                  }
                              }
                          }
+                    }
+                    else
+                    {
+                        self.dragoffset = .zero
+                        if (self.incompleted == true)
+                        {
+                            if (self.incompletedonce == true)
+                            {
+                                self.incompletedonce = false;
+                                print("incompleted")
+                            }
+                        }
                     }
  
                 }).animation(.spring())

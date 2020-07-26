@@ -100,8 +100,8 @@ struct NewAssignmentModalView: View {
                         newAssignment.type = self.assignmenttypes[self.assignmenttype]
                         newAssignment.progress = 0
                         newAssignment.duedate = self.selectedDate
-                        print(self.hours)
-                        print(self.minutes)
+//                        print(self.hours)
+//                        print(self.minutes)
                         newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
                         newAssignment.timeleft = newAssignment.totaltime
                         for classity in self.classlist {
@@ -290,15 +290,15 @@ struct NewClassModalView: View {
                         
                         for classity in self.classlist {
                             if classity.name == testname {
-                                print("sdfds")
+                                // print("sdfds")
                                 self.createclassallowed = false
                             }
                         }
 
                         if self.createclassallowed {
                             let newClass = Classcool(context: self.managedObjectContext)
-                            print(Int(self.classtolerancedouble))
-                            print(self.classnameindex)
+                            //print(Int(self.classtolerancedouble))
+                            //print(self.classnameindex)
                             newClass.attentionspan = Int64(Int.random(in: 1...10))
                             newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
                             newClass.name = testname
@@ -340,19 +340,19 @@ struct NewClassModalView: View {
                     ZStack {
                     if self.coloraselectedindex != nil {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color(self.colorsa[self.coloraselectedindex!]))
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
                             .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
                         
                     }
                     else if self.colorbselectedindex != nil {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color( self.colorsb[self.colorbselectedindex!]))
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
                             .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
                         
                     }
                     else if self.colorcselectedindex != nil {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(Color(self.colorsc[self.colorcselectedindex!]))
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
                             .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
                         
                     }
@@ -372,6 +372,16 @@ struct NewClassModalView: View {
             }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
         }
     }
+    func getNextColor(currentColor: String) -> Color {
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
+        for color in colorlist {
+            if (color == currentColor)
+            {
+                return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
+            }
+        }
+        return Color("one")
+    }
 }
 
 struct NewOccupiedtimeModalView: View {
@@ -382,8 +392,17 @@ struct NewOccupiedtimeModalView: View {
     }
 }
 
+//struct RepeatView: View {
+//    var isChecked: Bool
+//    var body: some View {
+//        Text("hello")
+//    }
+//}
+
 struct NewFreetimeModalView: View {
-    @Environment(\.managedObjectContext) var managedObjectContext
+     @Environment(\.managedObjectContext) var managedObjectContext
+    @State var repeatlist: [String] = ["Every Monday", "Every Tuesday", "Every Wednesday", "Every Thursday", "Every Friday", "Every Saturday", "Every Sunday"]
+    @State private var selection: Set<String> = []
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [])
     var freetimelist: FetchedResults<Freetime>
     @Binding var NewFreetimePresenting: Bool
@@ -391,6 +410,16 @@ struct NewFreetimeModalView: View {
     @State private var selectedenddatetime = Date()
     let repeats = ["None", "Daily", "Weekly"]
     @State private var selectedrepeat = 0
+    
+    
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -401,10 +430,26 @@ struct NewFreetimeModalView: View {
                     DatePicker("Select end date and time", selection: $selectedenddatetime, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
                 Section {
-                    Picker(selection: $selectedrepeat, label: Text("Repeat")) {
-                        ForEach(0 ..< repeats.count) {
-                            Text(String(self.repeats[$0]))
-                        }
+                    NavigationLink(destination:
+                        List {
+                            ForEach(self.repeatlist,  id: \.self) {
+                                repeatoption in
+                                VStack(alignment: .leading) {
+                                    HStack {
+                                        Text(repeatoption).onTapGesture {
+                                            self.selectDeselect(repeatoption)
+                                        }
+                                        if (self.selection.contains(repeatoption))
+                                        {
+                                            Spacer()
+                                            Image(systemName: "checkmark").foregroundColor(.blue)
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                        }) {
+                        Text("Repeat")
                     }
                 }
                 Section {
@@ -412,21 +457,40 @@ struct NewFreetimeModalView: View {
                         let newFreetime = Freetime(context: self.managedObjectContext)
                         newFreetime.startdatetime = self.selectedstartdatetime
                         newFreetime.enddatetime = self.selectedenddatetime
-                        
-                        if (self.selectedrepeat == 0)
+                        newFreetime.monday = false
+                        newFreetime.tuesday = false
+                        newFreetime.wednesday = false
+                        newFreetime.thursday = false
+                        newFreetime.friday = false
+                        newFreetime.saturday = false
+                        newFreetime.sunday = false
+                        if (self.selection.contains("Every Monday"))
                         {
-                            newFreetime.dayrepeat = false
-                            newFreetime.weekrepeat = false
+                            newFreetime.monday = true
                         }
-                        else if (self.selectedrepeat == 1)
+                        if (self.selection.contains("Every Tuesday"))
                         {
-                            newFreetime.dayrepeat = true
-                            newFreetime.weekrepeat = false
+                            newFreetime.tuesday = false
                         }
-                        else
+                        if (self.selection.contains("Every Wednesday"))
                         {
-                            newFreetime.dayrepeat = false
-                            newFreetime.weekrepeat = true
+                            newFreetime.wednesday = false
+                        }
+                        if (self.selection.contains("Every Thursday"))
+                        {
+                            newFreetime.thursday = false
+                        }
+                        if (self.selection.contains("Every Friday"))
+                        {
+                            newFreetime.friday = false
+                        }
+                        if (self.selection.contains("Every Saturday"))
+                        {
+                            newFreetime.saturday = false
+                        }
+                        if (self.selection.contains("Every Sunday"))
+                        {
+                            newFreetime.sunday = false
                         }
 
                         do {
@@ -443,6 +507,7 @@ struct NewFreetimeModalView: View {
             }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
         }
     }
+
 }
 
 struct NewGradeModalView: View {
@@ -761,8 +826,8 @@ struct IndividualSubassignmentView: View {
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.starttime = formatter.string(from: subassignment2.startdatetime)
         self.endtime = formatter.string(from: subassignment2.enddatetime)
-        print(starttime)
-        print(endtime)
+//        print(starttime)
+//        print(endtime)
         let formatter2 = DateFormatter()
         formatter2.dateStyle = .short
         formatter2.timeStyle = .none
@@ -862,7 +927,7 @@ struct IndividualSubassignmentView: View {
                             //SubassignmentAddTimeAction(subassignment: self.subassignment)
                         }
                     }
-                    if (self.deleted == true) {
+                    else if (self.deleted == true) {
                         if (self.deleteonce == true) {
                             self.deleteonce = false
                             
@@ -893,7 +958,7 @@ struct IndividualSubassignmentView: View {
                             }
                             do {
                                 try self.managedObjectContext.save()
-                                print("Class made ")
+                                print("Subassignment completed")
                             } catch {
                                 print(error.localizedDescription)
                             }

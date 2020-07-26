@@ -24,8 +24,8 @@ struct NewAssignmentModalView: View {
     @State private var minutes = 0
     @State var selectedDate = Date()
     let assignmenttypes = ["Exam", "Essay", "Presentation", "Test", "Study"]
-    let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
-    let minutelist = [0, 5 , 10 , 15 , 20 , 25 , 30 , 35 , 40 , 45 , 50 , 55]
+    let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+    let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
     var body: some View {
         NavigationView {
             Form {
@@ -587,8 +587,9 @@ extension Date {
     }
 }
 
-struct PageViewController: UIViewControllerRepresentable {
+struct PageViewControllerWeeks: UIViewControllerRepresentable {
     @Binding var nthdayfromnow: Int
+
     var viewControllers: [UIViewController]
 
     func makeCoordinator() -> Coordinator {
@@ -610,16 +611,16 @@ struct PageViewController: UIViewControllerRepresentable {
     }
     
     class Coordinator: NSObject, UIPageViewControllerDataSource {
-        var parent: PageViewController
+        var parent: PageViewControllerWeeks
 
-        init(_ pageViewController: PageViewController) {
+        init(_ pageViewController: PageViewControllerWeeks) {
             self.parent = pageViewController
         }
         
         func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
             guard let index = parent.viewControllers.firstIndex(of: viewController) else {
                  return nil
-             }
+            }
             
             if index == 0 {
                 return nil
@@ -644,107 +645,41 @@ struct PageViewController: UIViewControllerRepresentable {
 
 struct WeeklyBlockView: View {
     @Binding var nthdayfromnow: Int
+    
     let datenumberindices: [Int]
     let datenumbersfromlastmonday: [String]
     
+    
     var body: some View {
-        HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
-            ForEach(self.datenumberindices.indices) { index in
-                ZStack {
-                    Circle().fill(self.datenumberindices[index] == self.nthdayfromnow ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
-            //                            Circle().stroke(Color.black).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
-                    Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
-                }.onTapGesture {
-                    self.nthdayfromnow = self.datenumberindices[index]
+        ZStack {
+            HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+                ForEach(self.datenumberindices.indices) { index in
+                    ZStack {
+                        Circle().fill(self.datenumberindices[index] == self.nthdayfromnow ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                        Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
+                    }.onTapGesture {
+                        self.nthdayfromnow = self.datenumberindices[index]
+                    }
                 }
-            }
-            
-        }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
+                
+            }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
+
+//            HStack {
+//                Rectangle().frame(width: 5).foregroundColor(Color("datenumberred"))
+//                Spacer()
+//            }
+        }
     }
 }
 
-struct TimeGridSubView: View {
+struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
-    var datesfromlastmonday: [Date]
     
-    @Binding var nthdayfromnow: Int
-    @Binding var dragoffset: CGSize
-    @Binding var pageChanged: Bool
-    
-    var dayChange: Int
-    
-    @State var nextPage = false
-    @State var previousPage = false
-    
-    var body: some View {
-        VStack {
-            ScrollView {
-                ZStack {
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading) {
-                            ForEach((0...24), id: \.self) { hour in
-                                HStack {
-                                    Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
-                                    Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
-                                }
-                            }.frame(width:  50 , height:50)
-                        }
-                    }
-                    HStack(alignment: .top) {
-                        Spacer()
-                        VStack {
-                            Spacer().frame(height:25)
-                            
-                            ZStack(alignment: .topTrailing) {
-                                ForEach(subassignmentlist) { subassignment in
-                                    if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow + self.dayChange != -1 ? (self.nthdayfromnow + self.dayChange != 28 ? self.nthdayfromnow + self.dayChange : 27) : 0], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                            IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
-                                            //was +122 but had to subtract 2*60.35 to account for GMT + 2
-                                        }
-                                }.animation(.spring())
-                            }
-                            Spacer()
-                        }
-                    }
-                }.animation(.spring())
-            }
-        }.offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 50, coordinateSpace: .local).onChanged { value in
-            self.dragoffset = value.translation
-                                
-            if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 2/3) && self.nthdayfromnow != 27 && self.pageChanged != true {
-                self.pageChanged = true
-                self.nextPage = true
-                self.previousPage = false
-            }
-                
-            else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 2/3) && self.nthdayfromnow != 0 && self.pageChanged != true {
-                self.pageChanged = true
-                self.previousPage = true
-                self.nextPage = false
-            }
-        }
-        .onEnded { value in
-            self.dragoffset = .zero
-            
-            if self.nextPage && self.pageChanged {
-                self.nthdayfromnow += 1
-            }
-            
-            else if self.previousPage && self.pageChanged {
-                self.nthdayfromnow += -1
-            }
-            
-            self.pageChanged = false
-        })
-    }
-}
-
-struct HomeBodyView: View {
     var datesfromlastmonday: [Date] = []
     var daytitlesfromlastmonday: [String] = []
     var datenumbersfromlastmonday: [String] = []
@@ -757,13 +692,10 @@ struct HomeBodyView: View {
     
     let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
-    @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
+    @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
     var hourformatter: DateFormatter
     var minuteformatter: DateFormatter
     
-    @State var dragoffset = CGSize.zero
-    @State var pageChanged = false
-
     init() {
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
@@ -783,7 +715,8 @@ struct HomeBodyView: View {
         minuteformatter = DateFormatter()
         self.hourformatter.dateFormat = "HH"
         self.minuteformatter.dateFormat = "mm"
-        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
+        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
+        
         
         for eachdayfromlastmonday in 0...27 {
             self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
@@ -802,24 +735,42 @@ struct HomeBodyView: View {
                 }
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
             
-            PageViewController(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
-            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
-            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)),
-            UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
+            PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
             
             Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
-            ZStack {
-                if self.nthdayfromnow > 0 {
-                    TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: -1).offset(x: -UIScreen.main.bounds.size.width)
+            VStack {
+                ScrollView {
+                    ZStack {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading) {
+                                ForEach((0...24), id: \.self) { hour in
+                                    HStack {
+                                        Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
+                                        Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                    }
+                                }.frame(height: 50)
+                            }
+                        }
+                        HStack(alignment: .top) {
+                            Spacer()
+                            VStack {
+                                Spacer().frame(height:25)
+
+                                ZStack(alignment: .topTrailing) {
+                                    ForEach(subassignmentlist) { subassignment in
+                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                                IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
+                                                //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                                            }
+                                    }.animation(.spring())
+                                }
+                                Spacer()
+                            }
+                        }
+                    }.animation(.spring())
                 }
-                
-                if self.nthdayfromnow < 27 {
-                    TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: 1).offset(x: UIScreen.main.bounds.size.width)
-                }
-                
-                TimeGridSubView(datesfromlastmonday: self.datesfromlastmonday, nthdayfromnow: $nthdayfromnow, dragoffset: $dragoffset, pageChanged: $pageChanged, dayChange: 0)
-            }.animation(.spring())
+            }
         }
     }
     

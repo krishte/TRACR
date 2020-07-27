@@ -400,7 +400,7 @@ struct NewOccupiedtimeModalView: View {
 //}
 
 struct NewFreetimeModalView: View {
-     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var managedObjectContext
     @State var repeatlist: [String] = ["Every Monday", "Every Tuesday", "Every Wednesday", "Every Thursday", "Every Friday", "Every Saturday", "Every Sunday"]
     @State private var selection: Set<String> = []
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [])
@@ -420,6 +420,67 @@ struct NewFreetimeModalView: View {
         }
     }
     
+    private func repetitionTextCreator(_ selections: Set<String>) -> String {
+        var repetitionText = ""
+        var weekdays = false
+        var weekends = false
+        
+        if (self.selection.contains("Every Monday")) {
+            repetitionText += "Monday, "
+        }
+        if (self.selection.contains("Every Tuesday")) {
+            repetitionText += "Tuesday, "
+        }
+        if (self.selection.contains("Every Wednesday")) {
+            repetitionText += "Wednesday, "
+        }
+        if (self.selection.contains("Every Thursday")) {
+            repetitionText += "Thursday, "
+        }
+        if (self.selection.contains("Every Friday")) {
+            repetitionText += "Friday, "
+        }
+        if (self.selection.contains("Every Saturday")) {
+            repetitionText += "Saturday, "
+        }
+        if (self.selection.contains("Every Sunday")) {
+            repetitionText += "Sunday, "
+        }
+        //individual days, daily, weekdays, weekends
+        
+        if repetitionText.contains("Monday, Tuesday, Wednesday, Thursday, Friday") {
+            weekdays = true
+        }
+        
+        if repetitionText.contains("Saturday, Sunday") {
+            weekends = true
+        }
+                
+        if weekdays || weekends {
+            if weekdays && weekends {
+                repetitionText = "Daily  "
+            }
+            
+            else if weekdays {
+                repetitionText = repetitionText.replacingOccurrences(of: "Monday, Tuesday, Wednesday, Thursday, Friday", with: "Weekdays")
+            }
+            
+            else if weekends {
+                repetitionText = repetitionText.replacingOccurrences(of: "Saturday, Sunday", with: "Weekends")
+            }
+        }
+            
+        if repetitionText == "" {
+            repetitionText = "Never"
+        }
+            
+        else {
+            repetitionText = String(repetitionText.dropLast().dropLast())
+        }
+        
+        return repetitionText
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -436,20 +497,21 @@ struct NewFreetimeModalView: View {
                                 repeatoption in
                                 VStack(alignment: .leading) {
                                     HStack {
-                                        Text(repeatoption).onTapGesture {
-                                            self.selectDeselect(repeatoption)
+                                        Button(action: {self.selectDeselect(repeatoption)}) {
+                                            Text(repeatoption).foregroundColor(.black)
                                         }
-                                        if (self.selection.contains(repeatoption))
-                                        {
+                                        if (self.selection.contains(repeatoption)) {
                                             Spacer()
                                             Image(systemName: "checkmark").foregroundColor(.blue)
                                         }
-                                        
                                     }
                                 }
                             }
                         }) {
-                        Text("Repeat")
+                            Text("Repeat")
+                            Spacer()
+                            
+                            Text(repetitionTextCreator(self.selection)).foregroundColor(.gray)
                     }
                 }
                 Section {
@@ -464,32 +526,26 @@ struct NewFreetimeModalView: View {
                         newFreetime.friday = false
                         newFreetime.saturday = false
                         newFreetime.sunday = false
-                        if (self.selection.contains("Every Monday"))
-                        {
+                        
+                        if (self.selection.contains("Every Monday")) {
                             newFreetime.monday = true
                         }
-                        if (self.selection.contains("Every Tuesday"))
-                        {
+                        if (self.selection.contains("Every Tuesday")) {
                             newFreetime.tuesday = false
                         }
-                        if (self.selection.contains("Every Wednesday"))
-                        {
+                        if (self.selection.contains("Every Wednesday")) {
                             newFreetime.wednesday = false
                         }
-                        if (self.selection.contains("Every Thursday"))
-                        {
+                        if (self.selection.contains("Every Thursday")) {
                             newFreetime.thursday = false
                         }
-                        if (self.selection.contains("Every Friday"))
-                        {
+                        if (self.selection.contains("Every Friday")) {
                             newFreetime.friday = false
                         }
-                        if (self.selection.contains("Every Saturday"))
-                        {
+                        if (self.selection.contains("Every Saturday")) {
                             newFreetime.saturday = false
                         }
-                        if (self.selection.contains("Every Sunday"))
-                        {
+                        if (self.selection.contains("Every Sunday")) {
                             newFreetime.sunday = false
                         }
 

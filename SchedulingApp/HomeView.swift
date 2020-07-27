@@ -48,13 +48,9 @@ struct NewAssignmentModalView: View {
                         }
                     }
                 }
+                
                 Section {
                     Text("Total time")
-                    
-//                    TextField("Hours", text: $hours)
-//                    .keyboardType(.numberPad)
-//                    TextField("Minutes", text: $minutes)
-//                    .keyboardType(.numberPad)
                     HStack {
                         VStack {
                             Picker(selection: $hours, label: Text("Hour")) {
@@ -408,19 +404,19 @@ struct NewFreetimeModalView: View {
     @State private var selectedrepeat = 0
     var formatter: DateFormatter
     
+    init(NewFreetimePresenting: Binding<Bool>) {
+        self._NewFreetimePresenting = NewFreetimePresenting
+        formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+    }
+    
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
             selection.remove(singularassignment)
         } else {
             selection.insert(singularassignment)
         }
-    }
-    init(NewFreetimePresenting: Binding<Bool>)
-    {
-        self._NewFreetimePresenting = NewFreetimePresenting
-        formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
     }
     
     private func repetitionTextCreator(_ selections: Set<String>) -> String {
@@ -449,7 +445,6 @@ struct NewFreetimeModalView: View {
         if (self.selection.contains("Every Sunday")) {
             repetitionText += "Sunday, "
         }
-        //individual days, daily, weekdays, weekends
         
         if repetitionText.contains("Monday, Tuesday, Wednesday, Thursday, Friday") {
             weekdays = true
@@ -667,15 +662,6 @@ struct NewGradeModalView: View {
     }
 }
 
-struct SubAssignmentView: View {
-     @Environment(\.managedObjectContext) var managedObjectContext
-    var subassignment: Subassignmentnew
-    
-    var body: some View {
-        Text("hello")
-    }
-}
-
 extension Calendar {
     static let gregorian = Calendar(identifier: .gregorian)
 }
@@ -748,7 +734,6 @@ struct WeeklyBlockView: View {
     let datenumberindices: [Int]
     let datenumbersfromlastmonday: [String]
     
-    
     var body: some View {
         ZStack {
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
@@ -770,6 +755,15 @@ struct WeeklyBlockView: View {
         }
     }
 }
+
+struct SubassignmentAddTimeAction: View {
+    var subassignment: Subassignmentnew
+    //do stuff
+    var body: some View {
+        Text("sdfdsf")
+    }
+}
+
 
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -814,6 +808,7 @@ struct HomeBodyView: View {
         minuteformatter = DateFormatter()
         self.hourformatter.dateFormat = "HH"
         self.minuteformatter.dateFormat = "mm"
+        
         let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
         
         
@@ -838,6 +833,15 @@ struct HomeBodyView: View {
             
             Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
+            ZStack {
+                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color("one"))//replace color with subassignment color (gradient of subassignment colors, maybe)
+                HStack {
+                    Text("The Preview p.1 Goes Here")
+                    Spacer()
+                    Text("The Preview p.2 Goes Here")
+                }
+            }.frame(width: UIScreen.main.bounds.size.width-50, height: 100)
+            
             VStack {
                 ScrollView {
                     ZStack {
@@ -851,10 +855,11 @@ struct HomeBodyView: View {
                                 }.frame(height: 50)
                             }
                         }
+                        
                         HStack(alignment: .top) {
                             Spacer()
                             VStack {
-                                Spacer().frame(height:25)
+                                Spacer().frame(height: 25)
 
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
@@ -866,6 +871,13 @@ struct HomeBodyView: View {
                                 }
                                 Spacer()
                             }
+                        }
+                        
+                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(), toGranularity: .day)) {
+                            HStack(spacing: 0) {
+                                Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
+                                Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
+                            }.padding(.top, CGFloat(Date().timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 50 + 20)
                         }
                     }.animation(.spring())
                 }
@@ -880,14 +892,6 @@ struct HomeBodyView: View {
         } else {
             return false
         }
-    }
-}
-
-struct SubassignmentAddTimeAction: View {
-    var subassignment: Subassignmentnew
-    
-    var body: some View {
-        Text("hello")
     }
 }
 
@@ -918,8 +922,7 @@ struct IndividualSubassignmentView: View {
     var subassignmentlength: Int
     var subassignment: Subassignmentnew
     
-    init(subassignment2: Subassignmentnew)
-    {
+    init(subassignment2: Subassignmentnew) {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
@@ -940,13 +943,10 @@ struct IndividualSubassignmentView: View {
         subassignmentlength = diffComponents.minute!
         subassignment = subassignment2
         //print(subassignmentlength)
-
-
     }
         
     var body: some View {
         ZStack {
-            
             VStack {
                if (isDragged) {
                    ZStack {
@@ -969,8 +969,8 @@ struct IndividualSubassignmentView: View {
                         HStack {
                             Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
                         }
+                        
                         HStack {
-                            
                             if (self.dragoffset.width > 150) {
                                 Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -150)
                                 Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -190)
@@ -979,20 +979,18 @@ struct IndividualSubassignmentView: View {
                                 Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-300)
                                 Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width-340)
                             }
-                            
                         }
                     }
                 }
-           }
+            }
             VStack {
                 Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                 Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                Spacer()
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                // Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)
-
-
-            }.frame(height: 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(10).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 25, coordinateSpace: .local)
+            }.frame(height: 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 25, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
                     //self.isDragged = true
@@ -1017,15 +1015,14 @@ struct IndividualSubassignmentView: View {
                     self.dragoffset = .zero
                     //self.isDragged = false
                     //self.isDraggedleft = false
-                    if (self.incompleted == true)
-                    {
-                        if (self.incompletedonce == true)
-                        {
+                    if (self.incompleted == true) {
+                        if (self.incompletedonce == true) {
                             self.incompletedonce = false
                             print("incompleted")
-                            //SubassignmentAddTimeAction(subassignment: self.subassignment)
+                            SubassignmentAddTimeAction(subassignment: self.subassignment)
                         }
                     }
+                        
                     else if (self.deleted == true) {
                         if (self.deleteonce == true) {
                             self.deleteonce = false

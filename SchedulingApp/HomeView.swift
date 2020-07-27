@@ -329,10 +329,7 @@ struct NewClassModalView: View {
                         Text("Add Class")
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
-                        
                     }
-                    
-                    
                 }
                 Section {
                     Text("Preview")
@@ -742,9 +739,6 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
             
             return parent.viewControllers[index + 1]
         }
-        
-        
-        
     }
 }
 
@@ -1056,8 +1050,7 @@ struct IndividualSubassignmentView: View {
                                 }
                             }
                             for (index, element) in self.subassignmentlist.enumerated() {
-                                if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name)
-                                {
+                                if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name) {
                                     self.managedObjectContext.delete(self.subassignmentlist[index])
                                 }
                             }

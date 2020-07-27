@@ -233,20 +233,19 @@ struct EditClassModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
-    
     var classlist: FetchedResults<Classcool>
     
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
-    
     var assignmentlist: FetchedResults<Assignment>
-    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    
     @State var currentclassname: String
     @State var classnamechanged: String
     @Binding var EditClassPresenting: Bool
-    
     @State var classtolerancedouble: Double
+    var classassignmentnumber: Int
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -404,25 +403,29 @@ struct EditClassModalView: View {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
                                 .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
                                 .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
-                            
                         }
 
-                    VStack {
-                        HStack {
-                            Text(self.classnamechanged).font(.system(size: 22)).fontWeight(.bold)
-                            
-                            Spacer()
-                        //change this stuff
-                            Text("No Assignments").font(.body).fontWeight(.light)
-                            
+                        VStack {
+                            HStack {
+                                Text(self.classnamechanged).font(.system(size: 22)).fontWeight(.bold)
+                                
+                                Spacer()
+                                
+                                if classassignmentnumber == 0 {
+                                    Text("No Assignments").font(.body).fontWeight(.light)
+                                }
+                                    
+                                else {
+                                    Text(String(classassignmentnumber)).font(.title).fontWeight(.bold)
+                                }
                             }
                         }.padding(.horizontal, 25)
-                        
                     }
                 }
             }.navigationBarItems(trailing: Button(action: {self.EditClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Class", displayMode: .inline)
         }
     }
+    
     func getNextColor(currentColor: String) -> Color {
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
         for color in colorlist {
@@ -433,10 +436,7 @@ struct EditClassModalView: View {
         }
         return Color("one")
     }
-    
 }
-
-
 
 struct DetailView: View {
     @State var EditClassPresenting = false
@@ -480,7 +480,7 @@ struct DetailView: View {
             self.EditClassPresenting = true
         })
         { Text("Edit").frame(height: 100, alignment: .trailing) }
-        ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name,  EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5).environment(\.managedObjectContext, self.managedObjectContext)})
+        ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber))})
     }
 }
 
@@ -601,12 +601,10 @@ struct ClassesView: View {
                                     var hoursleft = newAssignment.timeleft
 
                                     for j in 0..<newrandomint {
-                                        if (hoursleft == 0)
-                                        {
+                                        if (hoursleft == 0) {
                                             break
                                         }
-                                        else if (hoursleft == 1 || j == newrandomint-1)
-                                        {
+                                        else if (hoursleft == 1 || j == newrandomint-1) {
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
                                              let randomDate = Double.random(in:100000 ... 1700000)

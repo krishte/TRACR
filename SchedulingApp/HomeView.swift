@@ -666,7 +666,7 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
         pageViewController.setViewControllers([viewControllers[Int(Double(self.nthdayfromnow / 7).rounded(.down))]], direction: .forward, animated: true)
     }
     
-    class Coordinator: NSObject, UIPageViewControllerDataSource {
+    class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
         var parent: PageViewControllerWeeks
 
         init(_ pageViewController: PageViewControllerWeeks) {
@@ -696,6 +696,9 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
             
             return parent.viewControllers[index + 1]
         }
+        
+        
+        
     }
 }
 

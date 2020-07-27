@@ -534,7 +534,7 @@ struct NewFreetimeModalView: View {
                                     
                                     do {
                                         try self.managedObjectContext.save()
-                                        print("Class made")
+                                        print("Classmade")
                                     } catch {
                                         print(error.localizedDescription)
                                     }

@@ -126,22 +126,30 @@ struct DetailProgressView: View {
     }
     var body: some View {
         VStack {
-            Text(classcool.name).font(.title).fontWeight(.bold)
+            Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
             Spacer()
             Text("Average grade: \(getAverageGrade(), specifier: "%.1f")")
-            Spacer()
-            ScrollView {
+            Spacer().frame(height: 20)
+            Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 4).background(Color("graphbackground"))
+            ScrollView(showsIndicators: false) {
                 if (getAverageGrade() != 0)
                  {
                     VStack {
-                        Picker(selection: $selectedtimeframe, label: Text(""))
+//                        Picker(selection: $selectedtimeframe, label: Text(""))
+//                        {
+//                            Text("Month").tag(0)
+//                            Text("Year").tag(1)
+//                        }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
+                        //Divider()
+                        //Spacer()
+                        if (getgradenum())
                         {
-                            Text("Month").tag(0)
-                            Text("Year").tag(1)
-                        }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
+                            
+                            Text(getFirstAssignmentDate() + " - " + getLastAssignmentDate()).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, height: 40, alignment: .topLeading).offset(y: 30)
+                        }
                         ZStack {
                             VStack {
-                                Rectangle().fill(Color.gray).frame(width:UIScreen.main.bounds.size.width, height: 300)
+                                Rectangle().fill(Color("graphbackground")).frame(width:UIScreen.main.bounds.size.width, height: 300)
                             }.offset(y: 20)
                             
                             VStack(alignment: .leading,spacing: 0) {
@@ -154,7 +162,8 @@ struct DetailProgressView: View {
                                 Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
                             }.offset(x: -10, y: -15)
                             HStack {
-                                ScrollView(.horizontal)
+                                //Spacer()
+                                ScrollView(.horizontal, showsIndicators: false)
                                 {
                                     HStack {
                                         Spacer()
@@ -180,14 +189,17 @@ struct DetailProgressView: View {
                                     }
                                     
                                 }
-                                VStack {
-                                   // Spacer()
-                                    Text("8").frame(width: 20).padding(.top, 40)
-                                    Text("6").frame(width: 20).padding(.top, 40)
-                                    Text("4").frame(width: 20).padding(.top, 40)
-                                    Text("2").frame(width: 20).padding(.top, 40)
-                                    Text("0").frame(width: 20).padding(.top, 40)
-                                }.offset(y: 10)
+                                ZStack {
+                                    Rectangle().fill(Color.black).frame(width: 1.5, height: 245).offset(x: -10,y:30).padding(0)
+                                    VStack {
+                                       // Spacer()
+                                        Text("8").frame(width: 20).padding(.top, 40)
+                                        Text("6").frame(width: 20).padding(.top, 40)
+                                        Text("4").frame(width: 20).padding(.top, 40)
+                                        Text("2").frame(width: 20).padding(.top, 40)
+                                        Text("0").frame(width: 20).padding(.top, 40)
+                                    }.offset(y: 10)
+                                }
                             }.offset(y: -16)
 
 
@@ -227,7 +239,7 @@ struct DetailProgressView: View {
                         
                     }
 
-                 }
+                }
 //                ForEach(assignmentlist) {
 //                    assignment in
 //                    if (assignment.subject == self.classcool.name && assignment.completed == true)
@@ -254,6 +266,25 @@ struct DetailProgressView: View {
             return 0;
         }
         return (gradesum/gradenum)
+    }
+    func getFirstAssignmentDate() -> String
+    {
+        var formattertitle: DateFormatter
+        formattertitle = DateFormatter()
+        formattertitle.dateFormat = "MMMM yyyy"
+        return formattertitle.string(from: assignmentlist[0].duedate)
+    }
+    func getLastAssignmentDate() -> String
+    {
+        var storedDate: Date
+        storedDate = Date()
+        var formattertitle: DateFormatter
+        formattertitle = DateFormatter()
+        formattertitle.dateFormat = "MMMM yyyy"
+        for assignment in assignmentlist {
+            storedDate = assignment.duedate
+        }
+        return formattertitle.string(from: storedDate)
     }
     func getLastAssignmentGrade() -> Int64
     {
@@ -308,6 +339,10 @@ struct DetailProgressView: View {
             {
                 numberofcompleted += 1
             }
+        }
+        if (CGFloat(CGFloat((screensize-30)/CGFloat(numberofcompleted)) - 10) < CGFloat((screensize-30)/40))
+        {
+            return CGFloat((screensize-30)/40)
         }
         return CGFloat(CGFloat((screensize-30)/CGFloat(numberofcompleted)) - 10)
     }

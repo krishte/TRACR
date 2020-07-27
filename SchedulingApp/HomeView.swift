@@ -410,7 +410,7 @@ struct NewFreetimeModalView: View {
     @State private var selectedenddatetime = Date()
     let repeats = ["None", "Daily", "Weekly"]
     @State private var selectedrepeat = 0
-    
+    var formatter: DateFormatter
     
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
@@ -418,6 +418,13 @@ struct NewFreetimeModalView: View {
         } else {
             selection.insert(singularassignment)
         }
+    }
+    init(NewFreetimePresenting: Binding<Bool>)
+    {
+        self._NewFreetimePresenting = NewFreetimePresenting
+        formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
     }
     
     var body: some View {
@@ -470,31 +477,33 @@ struct NewFreetimeModalView: View {
                         }
                         if (self.selection.contains("Every Tuesday"))
                         {
-                            newFreetime.tuesday = false
+                            newFreetime.tuesday = true
                         }
                         if (self.selection.contains("Every Wednesday"))
                         {
-                            newFreetime.wednesday = false
+                            newFreetime.wednesday = true
                         }
                         if (self.selection.contains("Every Thursday"))
                         {
-                            newFreetime.thursday = false
+                            newFreetime.thursday = true
                         }
                         if (self.selection.contains("Every Friday"))
                         {
-                            newFreetime.friday = false
+                            newFreetime.friday = true
                         }
                         if (self.selection.contains("Every Saturday"))
                         {
-                            newFreetime.saturday = false
+                            newFreetime.saturday = true
                         }
                         if (self.selection.contains("Every Sunday"))
                         {
-                            newFreetime.sunday = false
+                            newFreetime.sunday = true
                         }
 
                         do {
                             try self.managedObjectContext.save()
+                            print("object saved")
+                            print(newFreetime.monday)
                         } catch {
                             print(error.localizedDescription)
                         }
@@ -504,6 +513,38 @@ struct NewFreetimeModalView: View {
                         Text("Add Free Time")
                     }
                 }
+                //ScrollView {
+                    Section(header: Text("Monday")) {
+                        List {
+                            VStack {
+                                Text(String(freetimelist.count))
+                                ForEach(freetimelist) {
+                                    freetime in
+                                    if (freetime.monday)
+                                    {
+                                        Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                                    }
+                                }.onDelete { indexSet in
+                                    for index in indexSet {
+                                        
+                                    
+                                        self.managedObjectContext.delete(self.freetimelist[index])
+                                        //master function call
+                                    }
+                                    
+                                    do {
+                                        try self.managedObjectContext.save()
+                                        print("Class made")
+                                    } catch {
+                                        print(error.localizedDescription)
+                                    }
+                                    
+                                    print("Class deleted")
+                                }
+                            }
+                        }
+                    }
+                //}
             }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
         }
     }

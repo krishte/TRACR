@@ -469,7 +469,7 @@ struct DetailView: View {
     
     var body: some View {
         VStack {
-            Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
+            Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
             Spacer()
             Text("Tolerance: " + String(classcool.tolerance))
             Spacer()

@@ -877,7 +877,7 @@ struct HomeBodyView: View {
                             HStack(spacing: 0) {
                                 Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
                                 Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
-                            }.padding(.top, CGFloat(Date(timeIntervalSinceNow: TimeInterval(7200)).timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 120.7 - 1207)
+                            }.padding(.top, CGFloat(Date().timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 120.7 - 1207)
                         }
                     }.animation(.spring())
                 }

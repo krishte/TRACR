@@ -45,8 +45,7 @@ struct ContentView: View {
             
             ProgressView().tabItem {
                 Image(systemName: "chart.bar").resizable().scaledToFit()
-                Text("Progress")
-                    
+                Text("Progress")                    
             }
         }
     }

@@ -877,7 +877,7 @@ struct HomeBodyView: View {
                             HStack(spacing: 0) {
                                 Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
                                 Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
-                            }.padding(.top, CGFloat(Date().timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 50 + 20)
+                            }.padding(.top, CGFloat(Date(timeIntervalSinceNow: TimeInterval(7200)).timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 120.7 - 1207)
                         }
                     }.animation(.spring())
                 }
@@ -1028,8 +1028,7 @@ struct IndividualSubassignmentView: View {
                             self.deleteonce = false
                             
                             for (_, element) in self.assignmentlist.enumerated() {
-                                if (element.name == self.name)
-                                {
+                                if (element.name == self.name) {
                                     let diffComponents = Calendar.current.dateComponents([.hour], from: self.actualstartdatetime, to: self.actualenddatetime)
                                     let hours = diffComponents.hour!
                                     element.timeleft -= Int64(hours)
@@ -1060,7 +1059,7 @@ struct IndividualSubassignmentView: View {
                         }
                     }
                 }).animation(.spring())
-            }.frame(width: UIScreen.main.bounds.size.width-40)
+        }.frame(width: UIScreen.main.bounds.size.width-40)
     }
 }
 

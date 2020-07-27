@@ -341,8 +341,7 @@ struct EditClassModalView: View {
 
                         if self.createclassallowed {
                             for classity in self.classlist {
-                                if (classity.name == self.currentclassname)
-                                {
+                                if (classity.name == self.currentclassname) {
                                     classity.name = testname
                                     classity.tolerance  = Int64(self.classtolerancedouble.rounded(.down))
                                     if self.coloraselectedindex != nil {
@@ -356,13 +355,11 @@ struct EditClassModalView: View {
                                     }
                                     
                                     for assignment in self.assignmentlist {
-                                        if (assignment.subject == self.currentclassname)
-                                        {
+                                        if (assignment.subject == self.currentclassname) {
                                             assignment.subject = testname
                                             assignment.color = classity.color
                                             for subassignment in self.subassignmentlist {
-                                                if (subassignment.assignmentname == assignment.name)
-                                                {
+                                                if (subassignment.assignmentname == assignment.name) {
                                                     subassignment.color = classity.color
                                                 }
                                             }
@@ -375,10 +372,6 @@ struct EditClassModalView: View {
                                     }
                                 }
                             }
-                           
-
-
-                            
                             self.EditClassPresenting = false
                         }
                             
@@ -482,26 +475,12 @@ struct DetailView: View {
                         }
                     }
                     }.animation(.spring())
-//                .onDelete { indexSet in
-//                    for index in indexSet {
-//                        self.managedObjectContext.delete(self.assignmentlist[index])
-//                    }
-//
-//                    self.classcool.assignmentnumber -= 1
-//
-//                    do {
-//                        try self.managedObjectContext.save()
-//                    } catch {
-//                        print(error.localizedDescription)
-//                    }
-//                    print("Assignment has been deleted")
-//                }
             }
-        }.sheet(isPresented: $EditClassPresenting, content: { EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name,  EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5).environment(\.managedObjectContext, self.managedObjectContext)}).navigationBarItems(trailing: Button(action: {
-            self.EditClassPresenting.toggle()
+        }.navigationBarItems(trailing: Button(action: {
+            self.EditClassPresenting = true
         })
-            { Text("Edit") }
-        )
+        { Text("Edit").frame(height: 100, alignment: .trailing) }
+        ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name,  EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5).environment(\.managedObjectContext, self.managedObjectContext)})
     }
 }
 

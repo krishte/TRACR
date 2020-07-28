@@ -402,15 +402,17 @@ struct NewOccupiedtimeModalView: View {
 struct NewFreetimeModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State var repeatlist: [String] = ["Every Monday", "Every Tuesday", "Every Wednesday", "Every Thursday", "Every Friday", "Every Saturday", "Every Sunday"]
-    @State private var selection: Set<String> = []
+    @State private var selection: Set<String> = ["None"]
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [])
     var freetimelist: FetchedResults<Freetime>
     @Binding var NewFreetimePresenting: Bool
     @State private var selectedstartdatetime = Date()
     @State private var selectedenddatetime = Date()
+    @State private var selectedDate = Date()
     let repeats = ["None", "Daily", "Weekly"]
     @State private var selectedrepeat = 0
     var formatter: DateFormatter
+    var formatter2: DateFormatter
     
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
@@ -425,13 +427,20 @@ struct NewFreetimeModalView: View {
         formatter = DateFormatter()
         formatter.dateStyle = .none
         formatter.timeStyle = .short
+        formatter2 = DateFormatter()
+        formatter2.dateStyle = .short
+        formatter2.timeStyle = .none
     }
     
     private func repetitionTextCreator(_ selections: Set<String>) -> String {
         var repetitionText = ""
         var weekdays = false
         var weekends = false
-        
+        if (self.selection.contains("None"))
+        {
+            repetitionText = "None"
+            return repetitionText
+        }
         if (self.selection.contains("Every Monday")) {
             repetitionText += "Monday, "
         }
@@ -490,127 +499,496 @@ struct NewFreetimeModalView: View {
     
     var body: some View {
         NavigationView {
-            Form {
-                Section {
-                    DatePicker("Select start date and time", selection: $selectedstartdatetime, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-                }
-                Section {
-                    DatePicker("Select end date and time", selection: $selectedenddatetime, in: Date()..., displayedComponents: [.date, .hourAndMinute])
-                }
-                Section {
-                    NavigationLink(destination:
-                        List {
-                            ForEach(self.repeatlist,  id: \.self) {
-                                repeatoption in
-                                VStack(alignment: .leading) {
-                                    HStack {
-                                        Button(action: {self.selectDeselect(repeatoption)}) {
-                                            Text(repeatoption).foregroundColor(.black)
+            VStack {
+                Form {
+                    Section {
+                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date()..., displayedComponents:  .hourAndMinute)
+                    }
+                    Section {
+                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute)
+                    }
+                    Section {
+                        NavigationLink(destination:
+                            List {
+                                HStack {
+                                     Button(action: {
+                                         
+                                        if (self.selection.count != 1)
+                                        {
+                                            self.selection.removeAll()
+                                            self.selectDeselect("None")
                                         }
-                                        if (self.selection.contains(repeatoption)) {
-                                            Spacer()
-                                            Image(systemName: "checkmark").foregroundColor(.blue)
+                                         
+                                     }) {
+                                         Text("None").foregroundColor(.black)
+                                     }
+                                     if (self.selection.contains("None")) {
+                                         Spacer()
+                                         Image(systemName: "checkmark").foregroundColor(.blue)
+                                     }
+                                 }
+                                ForEach(self.repeatlist,  id: \.self) {
+                                    repeatoption in
+                                    VStack(alignment: .leading) {
+                                        HStack {
+                                            Button(action: {self.selectDeselect(repeatoption)
+                                                
+                                                if (self.selection.count==0)
+                                                {
+                                                    self.selectDeselect("None")
+                                                }
+                                                else if (self.selection.contains("None"))
+                                                {
+                                                    self.selectDeselect("None")
+                                                }
+                                                
+                                            }) {
+                                                Text(repeatoption).foregroundColor(.black)
+                                            }
+                                            if (self.selection.contains(repeatoption)) {
+                                                Spacer()
+                                                Image(systemName: "checkmark").foregroundColor(.blue)
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        }) {
-                            Text("Repeat")
-                            Spacer()
-                            
-                            Text(repetitionTextCreator(self.selection)).foregroundColor(.gray)
+                            }) {
+                                Text("Repeat")
+                                Spacer()
+                                
+                                Text(repetitionTextCreator(self.selection)).foregroundColor(.gray)
+                        }
                     }
-                }
-                Section {
-                    Button(action: {
-                        let newFreetime = Freetime(context: self.managedObjectContext)
-                        newFreetime.startdatetime = self.selectedstartdatetime
-                        newFreetime.enddatetime = self.selectedenddatetime
-                        newFreetime.monday = false
-                        newFreetime.tuesday = false
-                        newFreetime.wednesday = false
-                        newFreetime.thursday = false
-                        newFreetime.friday = false
-                        newFreetime.saturday = false
-                        newFreetime.sunday = false
-                        
-                        if (self.selection.contains("Every Monday")) {
-                            newFreetime.monday = true
-                        }
-                        if (self.selection.contains("Every Tuesday"))
+                    Section {
+                        if (selection.contains("None"))
                         {
-                            newFreetime.tuesday = true
+                            DatePicker("Select date", selection: $selectedDate, in: Date()..., displayedComponents: .date)
                         }
-                        if (self.selection.contains("Every Wednesday"))
-                        {
-                            newFreetime.wednesday = true
-                        }
-                        if (self.selection.contains("Every Thursday"))
-                        {
-                            newFreetime.thursday = true
-                        }
-                        if (self.selection.contains("Every Friday"))
-                        {
-                            newFreetime.friday = true
-                        }
-                        if (self.selection.contains("Every Saturday"))
-                        {
-                            newFreetime.saturday = true
-                        }
-                        if (self.selection.contains("Every Sunday"))
-                        {
-                            newFreetime.sunday = true
-                        }
+                    }
+                    Section {
+                        Button(action: {
+                            let newFreetime = Freetime(context: self.managedObjectContext)
 
-                        do {
-                            try self.managedObjectContext.save()
-                            print("object saved")
-                            print(newFreetime.monday)
-                        } catch {
-                            print(error.localizedDescription)
+                            if (self.selection.contains("None"))
+                            {
+                                let calendar = Calendar.current
+                                 let dateComponents = calendar.dateComponents([.day, .month, .year], from: self.selectedDate)
+                                 let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: self.selectedstartdatetime)
+                                 
+                                 var newComponents = DateComponents()
+                                 newComponents.timeZone = .current
+                                 newComponents.day = dateComponents.day
+                                 newComponents.month = dateComponents.month
+                                 newComponents.year = dateComponents.year
+                                 newComponents.hour = timeComponents.hour
+                                 newComponents.minute = timeComponents.minute
+                                 newComponents.second = timeComponents.second
+                                 
+                                newFreetime.startdatetime = calendar.date(from: newComponents)!
+                                
+                                
+                                let timeComponents2 = calendar.dateComponents([.hour, .minute, .second], from: self.selectedenddatetime)
+                                
+                                var newComponents2 = DateComponents()
+                                newComponents.day = dateComponents.day
+                                newComponents.month = dateComponents.month
+                                newComponents.year = dateComponents.year
+                                newComponents2.hour = timeComponents2.hour
+                                newComponents2.minute = timeComponents2.minute
+                                newComponents2.second = timeComponents2.second
+                                
+                                newFreetime.enddatetime = calendar.date(from: newComponents2)!
+                            }
+ 
+                            else {
+                                newFreetime.startdatetime = self.selectedstartdatetime
+                                newFreetime.enddatetime = self.selectedenddatetime
+                            }
+                            newFreetime.monday = false
+                            newFreetime.tuesday = false
+                            newFreetime.wednesday = false
+                            newFreetime.thursday = false
+                            newFreetime.friday = false
+                            newFreetime.saturday = false
+                            newFreetime.sunday = false
+                            
+                            if (self.selection.contains("Every Monday")) {
+                                newFreetime.monday = true
+                            }
+                            if (self.selection.contains("Every Tuesday"))
+                            {
+                                newFreetime.tuesday = true
+                            }
+                            if (self.selection.contains("Every Wednesday"))
+                            {
+                                newFreetime.wednesday = true
+                            }
+                            if (self.selection.contains("Every Thursday"))
+                            {
+                                newFreetime.thursday = true
+                            }
+                            if (self.selection.contains("Every Friday"))
+                            {
+                                newFreetime.friday = true
+                            }
+                            if (self.selection.contains("Every Saturday"))
+                            {
+                                newFreetime.saturday = true
+                            }
+                            if (self.selection.contains("Every Sunday"))
+                            {
+                                newFreetime.sunday = true
+                            }
+
+                            do {
+                                try self.managedObjectContext.save()
+                                print("object saved")
+                                print(newFreetime.monday)
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                            self.NewFreetimePresenting = false
+                        }) {
+                            Text("Add Free Time")
                         }
-                        
-                        self.NewFreetimePresenting = false
-                    }) {
-                        Text("Add Free Time")
+                    }
+                }.frame(height: 700)
+                List {
+                    NavigationLink(destination: FreetimeDetailView()) {
+                        Text("View Free times")
                     }
                 }
-                //ScrollView {
-                    Section(header: Text("Monday")) {
-                        List {
-                            VStack {
-                                Text(String(freetimelist.count))
-                                ForEach(freetimelist) {
-                                    freetime in
-                                    if (freetime.monday)
-                                    {
-                                        Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
-                                    }
-                                }.onDelete { indexSet in
-                                    for index in indexSet {
-                                        
-                                    
-                                        self.managedObjectContext.delete(self.freetimelist[index])
-                                        //master function call
-                                    }
-                                    
-                                    do {
-                                        try self.managedObjectContext.save()
-                                        print("Classmade")
-                                    } catch {
-                                        print(error.localizedDescription)
-                                    }
-                                    
-                                    print("Class deleted")
-                                }
-                            }
-                        }
-                    }
-                //}
+
+                
             }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
+            
         }
     }
 
+}
+
+struct FreetimeDetailView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+    var formatter: DateFormatter
+    var formatter2: DateFormatter
+    @State private var selection: Set<String> = []
+
+    
+    init() {
+        formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        formatter2 = DateFormatter()
+        formatter2.dateStyle = .short
+        formatter2.timeStyle = .none
+    }
+    
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+    
+    var body: some View {
+        List {
+            Text(String(freetimelist.count))
+            Group {
+                Button(action: {self.selectDeselect("Monday")}) {
+                    HStack {
+                        Text("Monday").foregroundColor(.black).fontWeight(.bold)
+                        Spacer()
+                        Image(systemName: selection.contains("Monday") ? "chevron.down" : "chevron.up")
+                    }.padding(10).background(Color("one")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+                }
+                if (selection.contains("Monday"))
+                {
+                    ForEach(freetimelist)
+                    {
+                        freetime in
+                        if (freetime.monday)
+                        {
+                            Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                        }
+                    }
+                    .onDelete { indexSet in
+                         for index in indexSet {
+                            self.freetimelist[index].monday = false
+                            if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
+                            {
+                                self.managedObjectContext.delete(self.freetimelist[index])
+                            }
+                         }
+
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                         print("Freetime deleted")
+                    }
+                }
+                Button(action: {self.selectDeselect("Tuesday")}) {
+                   HStack {
+                       Text("Tuesday").foregroundColor(.black).fontWeight(.bold)
+                       Spacer()
+                       Image(systemName: selection.contains("Tuesday") ? "chevron.down" : "chevron.up")
+                   }.padding(10).background(Color("two")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+               }
+                if (selection.contains("Tuesday"))
+                {
+                    ForEach(freetimelist)
+                     {
+                         freetime in
+                         if (freetime.tuesday)
+                         {
+                             Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                         }
+                     }
+                     .onDelete { indexSet in
+                          for index in indexSet {
+                              self.freetimelist[index].tuesday = false
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
+                              {
+                                  self.managedObjectContext.delete(self.freetimelist[index])
+                              }
+                            
+                            }
+
+
+                          do {
+                              try self.managedObjectContext.save()
+                          } catch {
+                              print(error.localizedDescription)
+                          }
+                          print("Freetime deleted")
+                     }
+                }
+                Button(action: {self.selectDeselect("Wednesday")}) {
+                   HStack {
+                       Text("Wednesday").foregroundColor(.black).fontWeight(.bold)
+                       Spacer()
+                       Image(systemName: selection.contains("Wednesday") ? "chevron.down" : "chevron.up")
+                   }.padding(10).background(Color("three")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+               }
+                if (selection.contains("Wednesday"))
+                {
+                    ForEach(freetimelist)
+                    {
+                        freetime in
+                        if (freetime.wednesday)
+                        {
+                            Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                        }
+                    }
+                    .onDelete { indexSet in
+                         for index in indexSet {
+                              self.freetimelist[index].wednesday = false
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
+                              {
+                                  self.managedObjectContext.delete(self.freetimelist[index])
+                              }
+                            
+                            }
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                         print("Freetime deleted")
+                    }
+                }
+                Button(action: {self.selectDeselect("Thursday")}) {
+                       HStack {
+                           Text("Thursday").foregroundColor(.black).fontWeight(.bold)
+                           Spacer()
+                           Image(systemName: selection.contains("Thursday") ? "chevron.down" : "chevron.up")
+                       }.padding(10).background(Color("four")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+                   }
+                if (selection.contains("Thursday"))
+                {
+                    ForEach(freetimelist)
+                    {
+                        freetime in
+                        if (freetime.thursday)
+                        {
+                            Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                        }
+                    }
+                    .onDelete { indexSet in
+                         for index in indexSet {
+                              self.freetimelist[index].thursday = false
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
+                              {
+                                  self.managedObjectContext.delete(self.freetimelist[index])
+                              }
+                            
+                        }
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                         print("Freetime deleted")
+                    }
+                }
+                Button(action: {self.selectDeselect("Friday")}) {
+                       HStack {
+                           Text("Friday").foregroundColor(.black).fontWeight(.bold)
+                           Spacer()
+                           Image(systemName: selection.contains("Friday") ? "chevron.down" : "chevron.up")
+                       }.padding(10).background(Color("five")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+                   }
+                if (selection.contains("Friday"))
+                {
+                    ForEach(freetimelist)
+                    {
+                        freetime in
+                        if (freetime.friday)
+                        {
+                            Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                        }
+                    }
+                    .onDelete { indexSet in
+                         for index in indexSet {
+                              self.freetimelist[index].friday = false
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
+                              {
+                                  self.managedObjectContext.delete(self.freetimelist[index])
+                              }
+                            
+                            }
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                         print("Freetime deleted")
+                    }
+                }
+
+            }
+            Group {
+                Button(action: {self.selectDeselect("Saturday")}) {
+                       HStack {
+                           Text("Saturday").foregroundColor(.black).fontWeight(.bold)
+                           Spacer()
+                           Image(systemName: selection.contains("Saturday") ? "chevron.down" : "chevron.up")
+                       }.padding(10).background(Color("six")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+                   }
+                if (selection.contains("Saturday"))
+                {
+                    ForEach(freetimelist)
+                    {
+                        freetime in
+                        if (freetime.saturday)
+                        {
+                            Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                        }
+                    }
+                    .onDelete { indexSet in
+                         for index in indexSet {
+                              self.freetimelist[index].saturday = false
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
+                              {
+                                  self.managedObjectContext.delete(self.freetimelist[index])
+                              }
+                            
+                            }
+
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                         print("Freetime deleted")
+                    }
+                }
+                
+                Button(action: {self.selectDeselect("Sunday")}) {
+                       HStack {
+                           Text("Sunday").foregroundColor(.black).fontWeight(.bold)
+                           Spacer()
+                           Image(systemName: selection.contains("Sunday") ? "chevron.down" : "chevron.up")
+                       }.padding(10).background(Color("seven")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+                   }
+                if (selection.contains("Sunday"))
+                {
+                    ForEach(freetimelist)
+                    {
+                        freetime in
+                        if (freetime.sunday)
+                        {
+                            Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                        }
+                    }
+                    .onDelete { indexSet in
+                         for index in indexSet {
+                              self.freetimelist[index].sunday = false
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
+                              {
+                                  self.managedObjectContext.delete(self.freetimelist[index])
+                              }
+                            
+                            }
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                         print("Freetime deleted")
+                    }
+                }
+                Spacer()
+                Button(action: {self.selectDeselect("One-off Dates")}) {
+                       HStack {
+                           Text("One-off Dates").foregroundColor(.black).fontWeight(.bold)
+                           Spacer()
+                           Image(systemName: selection.contains("One-off Dates") ? "chevron.down" : "chevron.up")
+                       }.padding(10).background(Color("eight")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
+                   }
+                if (selection.contains("One-off Dates"))
+                {
+                    ForEach(freetimelist)
+                    {
+                        freetime in
+                        if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday)
+                        {
+                            HStack {
+                                Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
+                                Spacer()
+                                Text(self.formatter2.string(from: freetime.startdatetime))
+                            }
+                        }
+                    }
+                    .onDelete { indexSet in
+                         for index in indexSet {
+                             self.managedObjectContext.delete(self.freetimelist[index])
+                         }
+
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                         print("Freetime deleted")
+                    }
+                }
+            }
+        }
+    }
 }
 
 struct NewGradeModalView: View {

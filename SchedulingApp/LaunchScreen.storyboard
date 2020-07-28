@@ -39,7 +39,7 @@
     <resources>
         <image name="Tracr" width="800" height="310"/>
         <namedColor name="three">
-            <color red="0.42800000309944153" green="0.7839999794960022" blue="0.94300001859664917" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.35294117647058826" green="0.8901960784313725" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

@@ -577,9 +577,9 @@ struct ClassesView: View {
                                     let newAssignment = Assignment(context: self.managedObjectContext)
                                     newAssignment.name = classname + " assignment " + String(i)
                                     newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
-                                    newAssignment.totaltime = Int64.random(in: 2...10)
+                                    newAssignment.totaltime = Int64.random(in: 2...10)*60
                                     newAssignment.subject = classname
-                                    newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime)
+                                    newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime/60)*60
                                     newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
                                     newAssignment.grade = Int64.random(in: 1...7)
                                     newAssignment.completed = false
@@ -597,24 +597,26 @@ struct ClassesView: View {
                                             }
                                         }
                                     }
+                                    
                                     let newrandomint = Int.random(in: 2...5)
-                                    var hoursleft = newAssignment.timeleft
+                                    var minutesleft = newAssignment.timeleft
 
-                                    for j in 0..<newrandomint {
-                                        if (hoursleft == 0) {
+                                    for j in 0 ..< newrandomint {
+                                        if (minutesleft == 0) {
                                             break
                                         }
-                                        else if (hoursleft == 1 || j == newrandomint-1) {
+                                            
+                                        else if (minutesleft == 60 || j == (newrandomint - 1)) {
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
-                                             let randomDate = Double.random(in:100000 ... 1700000)
+                                            let randomDate = Double.random(in: 100000 ... 1700000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
-                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*hoursleft))
+                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*minutesleft))
                                             self.stored  += 20000
                                             newSubassignment.color = newAssignment.color
                                             newSubassignment.assignmentduedate = newAssignment.duedate
                                             print(newSubassignment.assignmentduedate.description)
-                                            hoursleft = 0
+                                            minutesleft = 0
                                             do {
                                                 try self.managedObjectContext.save()
                                                 print("new Subassignment")
@@ -622,19 +624,19 @@ struct ClassesView: View {
                                                 print(error.localizedDescription)
                                             }
                                         }
-                                        else
-                                        {
-                                            let thirdrandomint = Int64.random(in: 1...2)
+                                            
+                                        else {
+                                            let thirdrandomint = Int64.random(in: 1...2)*60
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
                                             let randomDate = Double.random(in:100000 ... 1700000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
-                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(3600*thirdrandomint))
+                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*thirdrandomint))
                                             self.stored += 20000
                                             newSubassignment.color = newAssignment.color
                                             newSubassignment.assignmentduedate = newAssignment.duedate
                                             print(newSubassignment.assignmentduedate.description)
-                                            hoursleft -= thirdrandomint
+                                            minutesleft -= thirdrandomint
                                             do {
                                                 try self.managedObjectContext.save()
                                                 print("new Subassignment")

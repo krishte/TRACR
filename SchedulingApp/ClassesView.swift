@@ -656,7 +656,7 @@ struct ClassesView: View {
                                 
                             }
 //                            for i in (0...4)
-//                            {
+//                            { 
 //                                
 //                                let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
 //                                newSubassignment.assignmentname = self.assignmentlist[0].name

@@ -246,7 +246,7 @@ struct DetailProgressView: View {
 //                    {
 //                        IndividualAssignemntProgressView(assignment2: assignment)
 //                    }
-//                }
+//                
             }
         }
     }

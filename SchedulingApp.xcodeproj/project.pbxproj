@@ -27,7 +27,6 @@
 		56A66ED224B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A66ED024B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift */; };
 		56FD9B0524BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */; };
 		56FD9B0624BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0424BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift */; };
-		CF9BF18E24CF2CC9007D1EDB /* tet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF9BF18D24CF2CC9007D1EDB /* tet.swift */; };
 		CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39E224B8845A0055C48A /* Colors.xcassets */; };
 		CFDB3AA524BF4BE00055C48A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFDB3AA424BF4BE00055C48A /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
@@ -76,7 +75,6 @@
 		56A66ED024B7D4CE00CCD161 /* Classcool+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Classcool+CoreDataProperties.swift"; path = "SchedulingApp/Classcool+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignmentnew+CoreDataClass.swift"; path = "SchedulingApp/Subassignmentnew+CoreDataClass.swift"; sourceTree = "<group>"; };
 		56FD9B0424BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignmentnew+CoreDataProperties.swift"; path = "SchedulingApp/Subassignmentnew+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		CF9BF18D24CF2CC9007D1EDB /* tet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = tet.swift; sourceTree = "<group>"; };
 		CFDB39E224B8845A0055C48A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		CFDB3AA424BF4BE00055C48A /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -146,7 +144,6 @@
 				561880B724AB4A8600558F29 /* Info.plist */,
 				561880B124AB4A8600558F29 /* Preview Content */,
 				561880D924AB753700558F29 /* HomeView.swift */,
-				CF9BF18D24CF2CC9007D1EDB /* tet.swift */,
 				561880DB24AB759500558F29 /* ClassesView.swift */,
 				561880DD24AB75A600558F29 /* FilterView.swift */,
 				561880DF24AB75B100558F29 /* ProgressView.swift */,
@@ -320,7 +317,6 @@
 				561880DA24AB753700558F29 /* HomeView.swift in Sources */,
 				561880AC24AB4A8500558F29 /* SceneDelegate.swift in Sources */,
 				561880AE24AB4A8500558F29 /* ContentView.swift in Sources */,
-				CF9BF18E24CF2CC9007D1EDB /* tet.swift in Sources */,
 				561880E024AB75B100558F29 /* ProgressView.swift in Sources */,
 				561880DE24AB75A600558F29 /* FilterView.swift in Sources */,
 				56A66ECE24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift in Sources */,

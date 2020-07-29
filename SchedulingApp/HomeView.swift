@@ -782,8 +782,7 @@ struct SubassignmentAddTimeAction: View {
             //and shows the new time left
             
             HStack {
-                Text("\(self.subassignmentname)").font(.system(size: 18)).lineLimit(2)
-                Spacer()
+                Text("\(self.subassignmentname)").font(.system(size: 18)).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
             }
             
             HStack {
@@ -843,7 +842,7 @@ struct SubassignmentAddTimeAction: View {
                 })
                 { Text("Add Time to Assignment").font(.system(size: 20)) }
             }
-        }.padding(.all, 25).frame(maxHeight: 350).background(Color.white).cornerRadius(25).padding(.all, 14)
+        }.padding(.all, 25).frame(maxHeight: 365).background(Color.white).cornerRadius(25).padding(.all, 14)
     }
 }
 

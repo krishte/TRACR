@@ -12,6 +12,8 @@ import SwiftUI
 
 struct NewAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var changingDate: DisplayedDate
+
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     var classlist: FetchedResults<Classcool>
@@ -26,6 +28,12 @@ struct NewAssignmentModalView: View {
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation", "Exam"]
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    
+    init(NewAssignmentPresenting: Binding<Bool>)
+    {
+        self._NewAssignmentPresenting = NewAssignmentPresenting
+       // selectedDate = changingDate.displayedDate
+    }
     var body: some View {
         NavigationView {
             Form {
@@ -404,7 +412,6 @@ struct NewFreetimeModalView: View {
     let repeats = ["None", "Daily", "Weekly"]
     @State private var selectedrepeat = 0
     var formatter: DateFormatter
-    var formatter2: DateFormatter
     
     init(NewFreetimePresenting: Binding<Bool>) {
         self._NewFreetimePresenting = NewFreetimePresenting
@@ -490,7 +497,7 @@ struct NewFreetimeModalView: View {
             VStack {
                 Form {
                     Section {
-                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date()..., displayedComponents:  .hourAndMinute)
+                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)
                     }
                     Section {
                         DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute)
@@ -1105,7 +1112,8 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
 
 struct WeeklyBlockView: View {
     @Binding var nthdayfromnow: Int
-    
+    @EnvironmentObject var changingDate: DisplayedDate
+
     let datenumberindices: [Int]
     let datenumbersfromlastmonday: [String]
     
@@ -1118,6 +1126,7 @@ struct WeeklyBlockView: View {
                         Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
                     }.onTapGesture {
                         self.nthdayfromnow = self.datenumberindices[index]
+                    
                     }
                 }
                 
@@ -1142,11 +1151,18 @@ struct SubassignmentAddTimeAction: View {
 
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var changingDate: DisplayedDate
+
 
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @FetchRequest(entity: Assignment.entity(),
+                  sortDescriptors: [])
+    
+    var assignmentlist: FetchedResults<Assignment>
     
     var datesfromlastmonday: [Date] = []
     var daytitlesfromlastmonday: [String] = []
@@ -1157,12 +1173,15 @@ struct HomeBodyView: View {
     var formatteryear: DateFormatter
     var formattermonth: DateFormatter
     var formatterday: DateFormatter
+    var timeformatter: DateFormatter
     
     let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
     var hourformatter: DateFormatter
     var minuteformatter: DateFormatter
+    var shortdateformatter: DateFormatter
+    @State var subassignmentassignmentname: String = ""
     
     init() {
         daytitleformatter = DateFormatter()
@@ -1183,6 +1202,13 @@ struct HomeBodyView: View {
         minuteformatter = DateFormatter()
         self.hourformatter.dateFormat = "HH"
         self.minuteformatter.dateFormat = "mm"
+        timeformatter = DateFormatter()
+        timeformatter.dateFormat = "HH:mm"
+        timeformatter.timeZone = TimeZone(secondsFromGMT: 0)
+        shortdateformatter = DateFormatter()
+        shortdateformatter.timeStyle = .none
+        shortdateformatter.dateStyle = .short
+
         
         let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
         
@@ -1194,6 +1220,8 @@ struct HomeBodyView: View {
             
             self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
+
+
     }
     
     var body: some View {
@@ -1209,13 +1237,42 @@ struct HomeBodyView: View {
             Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
             ZStack {
-                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color("one"))//replace color with subassignment color (gradient of subassignment colors, maybe)
+                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color("one")).shadow(radius: 10)//replace color with subassignment color (gradient of subassignment colors, maybe)
                 HStack {
-                    Text("The Preview p.1 Goes Here")
-                    Spacer()
-                    Text("The Preview p.2 Goes Here")
-                }
-            }.frame(width: UIScreen.main.bounds.size.width-50, height: 100)
+                    VStack(alignment: .leading) {
+                        if (subassignmentlist.count == 0)
+                        {
+                            Text("No Upcoming Subassignments")
+                        }
+                        else
+                        {
+                            Text("In " + String(Calendar.current
+                                .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
+                                .minute!) + " minutes: ").frame(width: 150, alignment: .topLeading)
+                            Spacer()
+                            Text(subassignmentlist[0].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:40)
+                            Text(timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)).font(.system(size: 15))
+                        }
+                    }.frame(width: 150)
+                    Spacer().frame(width: 10)
+                    Divider().frame(width: 2).background(Color.black)
+                    Spacer().frame(width: 10)
+                    VStack(alignment: .leading) {
+                        ForEach(self.assignmentlist)
+                        {
+                            assignment in
+                            if (assignment.name == self.subassignmentassignmentname)
+                            {
+                                Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height:40, alignment: .topLeading)
+                                Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12))
+                                Text("Type: " + assignment.type).font(.system(size: 12))
+                                UpcomingSubassignmentProgressBar(assignment: assignment)
+                                
+                            }
+                        }
+                    }.frame(width: 150)
+                }.padding(10)
+                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100)//.padding(10)
             
             VStack {
                 ScrollView {
@@ -1239,7 +1296,9 @@ struct HomeBodyView: View {
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
                                         if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                                IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
+                                            IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                                self.subassignmentassignmentname = subassignment.assignmentname
+                                            }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }
                                     }.animation(.spring())
@@ -1266,6 +1325,22 @@ struct HomeBodyView: View {
             return true
         } else {
             return false
+        }
+    }
+}
+struct UpcomingSubassignmentProgressBar: View {
+    @ObservedObject var assignment: Assignment
+    
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  150, height: 10)
+            HStack {
+                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*150), height:10, alignment: .leading).animation(.spring())
+                if (assignment.progress != 100)
+                {
+                    Spacer()
+                }
+            }
         }
     }
 }
@@ -1440,6 +1515,8 @@ struct IndividualSubassignmentView: View {
 
 struct HomeView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var changingDate: DisplayedDate
+
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
     @State var NewOccupiedtimePresenting = false
@@ -1451,6 +1528,10 @@ struct HomeView: View {
     var classlist: FetchedResults<Classcool>
     
     @State var noClassesAlert = false
+    
+    init() {
+      //  self.changingDate.displayedDate = Date()
+    }
     
     var body: some View {
         VStack {
@@ -1489,7 +1570,7 @@ struct HomeView: View {
                     }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                 }
             }.padding(.bottom, 18)
-            HomeBodyView()
+            HomeBodyView().environmentObject(self.changingDate)
         }
     }
 }
@@ -1499,6 +1580,6 @@ struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
              let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
           
-          return HomeView().environment(\.managedObjectContext, context)
+          return HomeView().environment(\.managedObjectContext, context).environmentObject(DisplayedDate())
     }
 }

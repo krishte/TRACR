@@ -26,7 +26,7 @@ struct ClassProgressView: View {
                 .shadow(radius: 10)
             VStack {
                 HStack {
-                    Text(classcool.name).font(.title).fontWeight(.bold)
+                    Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
                     Spacer()
                    if getAverageGrade() == 0 {
                        Text("No Grades").font(.body).fontWeight(.light)

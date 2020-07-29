@@ -8,8 +8,13 @@
 
 import SwiftUI
 
+class DisplayedDate: ObservableObject {
+    @Published var score: Int = 0
+}
+
 struct ContentView: View {
-    
+    @EnvironmentObject var changingDate: DisplayedDate
+
     
     init() {
         if #available(iOS 14.0, *) {
@@ -21,6 +26,7 @@ struct ContentView: View {
 
         // To remove all separators including the actual ones:
         UITableView.appearance().separatorStyle = .none
+//        changingDate.score = 1
     }
     
     
@@ -28,7 +34,7 @@ struct ContentView: View {
         
         TabView {
                 
-            HomeView().tabItem {
+            HomeView().environmentObject(changingDate).tabItem {
                 Image(systemName: "house").resizable().scaledToFill()
                 Text("Home").font(.body)
             }

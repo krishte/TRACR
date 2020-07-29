@@ -1246,7 +1246,7 @@ struct HomeBodyView: View {
                         }
                         else
                         {
-                            Text("In " + String(Calendar.current
+                            Text("In bug fix" + String(Calendar.current
                                 .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
                                 .minute!) + " minutes: ").frame(width: 150, alignment: .topLeading)
                             Spacer()

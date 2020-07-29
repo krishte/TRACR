@@ -1715,7 +1715,7 @@ struct HomeView: View {
             
             VStack {
                 Spacer()
-                //subassignment: self.subassignmenttoaddtime,
+                
                 SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).animation(.spring()).offset(y: self.verticaloffset)
             }.background((self.verticaloffset <= 100 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
         }

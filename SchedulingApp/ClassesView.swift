@@ -358,7 +358,7 @@ struct ClassesView: View {
                 }
             }.navigationBarItems(
                 leading:
-                    HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                         Button(action: {
                             let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
                             let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
@@ -476,7 +476,7 @@ struct ClassesView: View {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
                     
-                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
+                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5)
 
                         Button(action: {
                             self.NewClassPresenting.toggle()

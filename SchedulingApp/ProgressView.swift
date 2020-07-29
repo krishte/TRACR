@@ -340,12 +340,12 @@ struct ProgressView: View {
             }
              .navigationBarItems(
                 leading:
-                    HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                         Button(action: {print("settings button clicked")}) {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }.padding(.leading, 2.0);
                     
-                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4);
+                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
 
                         Button(action: {
                             self.assignmentlist.count > 0 ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
@@ -379,7 +379,7 @@ struct ProgressView: View {
                                 Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
                             }
                         }
-                }.padding(.top, -11.0)).navigationBarTitle("Progress")
+                }.padding(.top, 0)).navigationBarTitle("Progress")
          }
     }
 }

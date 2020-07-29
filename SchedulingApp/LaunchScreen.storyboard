@@ -16,17 +16,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="Tracr" translatesAutoresizingMaskIntoConstraints="NO" id="L02-AX-kJ9">
-                                <rect key="frame" x="113" y="194" width="189" height="300"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="Tracr" translatesAutoresizingMaskIntoConstraints="NO" id="NlJ-wu-qE7">
+                                <rect key="frame" x="122" y="288" width="170" height="120"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="300" id="yyn-dX-JaI"/>
+                                    <constraint firstAttribute="width" constant="170" id="5yg-ep-dvw"/>
+                                    <constraint firstAttribute="height" constant="120" id="zZR-9D-eDu"/>
                                 </constraints>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" name="three"/>
                         <constraints>
-                            <constraint firstItem="L02-AX-kJ9" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-104" id="7lY-nN-eOJ"/>
-                            <constraint firstItem="L02-AX-kJ9" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="x7U-vS-Kdv"/>
+                            <constraint firstItem="NlJ-wu-qE7" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-100" id="4g0-MJ-PHR"/>
+                            <constraint firstItem="NlJ-wu-qE7" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="N9y-wv-d8k"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                     </view>
@@ -39,7 +40,7 @@
     <resources>
         <image name="Tracr" width="81.666664123535156" height="54.333332061767578"/>
         <namedColor name="three">
-            <color red="0.42745098039215684" green="0.78823529411764703" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.3843137254901961" green="0.78823529411764703" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

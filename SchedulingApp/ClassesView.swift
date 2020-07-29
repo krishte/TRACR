@@ -480,7 +480,7 @@ struct DetailView: View {
             self.EditClassPresenting = true
         })
         { Text("Edit").frame(height: 100, alignment: .trailing) }
-        ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber))})
+        ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber)).environment(\.managedObjectContext, self.managedObjectContext)})
     }
 }
 
@@ -713,8 +713,8 @@ struct ClassesView: View {
                                 Image(systemName: "percent")
                             }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                         }
-                    }).navigationBarTitle(Text("Classes"))
-         }
+            }).navigationBarTitle(Text("Classes"), displayMode: .large)
+        }
     }
 }
 

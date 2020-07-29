@@ -26,7 +26,7 @@ struct ClassProgressView: View {
                 .shadow(radius: 10)
             VStack {
                 HStack {
-                    Text(classcool.name).font(.title).fontWeight(.bold)
+                    Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
                     Spacer()
                    if getAverageGrade() == 0 {
                        Text("No Grades").font(.body).fontWeight(.light)
@@ -210,7 +210,7 @@ struct DetailProgressView: View {
                         {
                             HStack {
                                 VStack {
-                                    Text("Average").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
+                                    Text("Average").padding(10).font(.title).background(Color("four")).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
                                     Text("\(getAverageGrade(), specifier: "%.2f")").font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
                                     if (getChangeInAverageGrade() >= 0)
                                     {
@@ -220,9 +220,9 @@ struct DetailProgressView: View {
                                     {
                                         Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
                                     }
-                                }.padding(10).background(Color(classcool.color)).cornerRadius(20).shadow(radius: 10)
+                                }.padding(10).background(Color("four")).cornerRadius(20).shadow(radius: 10)
                                 VStack {
-                                    Text("Last Assignment").padding(10).font(.title).background(Color(classcool.color)).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
+                                    Text("Last Assignment vs. Average").padding(10).font(.title).background(Color("four")).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
                                     Text(String(getLastAssignmentGrade())).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
                                     if (Double(getLastAssignmentGrade()) - getAverageGrade() >= 0.0)
                                     {
@@ -232,7 +232,7 @@ struct DetailProgressView: View {
                                     {
                                         Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
                                     }
-                                }.padding(10).background(Color(classcool.color)).cornerRadius(20).shadow(radius: 10)
+                                }.padding(10).background(Color("four")).cornerRadius(20).shadow(radius: 10)
                             }
 
                         }
@@ -246,7 +246,7 @@ struct DetailProgressView: View {
 //                    {
 //                        IndividualAssignemntProgressView(assignment2: assignment)
 //                    }
-//                }
+//                
             }
         }
     }

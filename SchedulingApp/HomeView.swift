@@ -280,8 +280,6 @@ struct HomeBodyView: View {
             
             self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
-
-
     }
     
     var body: some View {
@@ -392,6 +390,8 @@ struct HomeBodyView: View {
         }
     }
 }
+
+
 struct UpcomingSubassignmentProgressBar: View {
     @ObservedObject var assignment: Assignment
     
@@ -408,6 +408,7 @@ struct UpcomingSubassignmentProgressBar: View {
         }
     }
 }
+
 
 struct IndividualSubassignmentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext

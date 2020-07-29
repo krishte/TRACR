@@ -1295,9 +1295,14 @@ struct HomeBodyView: View {
 
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
+                                        //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
                                         if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
                                             IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
+                                                for subassignment in self.subassignmentlist {
+                                                    print(subassignment.startdatetime.description)
+                                                }
+                                                print(self.datesfromlastmonday[self.nthdayfromnow].description)
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }

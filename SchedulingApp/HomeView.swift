@@ -648,12 +648,12 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             VStack {
-                HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                     Button(action: {print("settings button clicked")}) {
                         Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                     }
-                
-                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
+                    
+                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5)
 
                     Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
                         Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)

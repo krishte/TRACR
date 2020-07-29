@@ -682,7 +682,7 @@ struct HomeView: View {
                             Image(systemName: "percent")
                         }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                     }
-                }.padding(.bottom, 0)
+                }.padding(.top, -5)
                 
                 HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).environmentObject(self.changingDate)
             }
@@ -690,7 +690,7 @@ struct HomeView: View {
             VStack {
                 Spacer()
                 
-                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).animation(.linear).offset(y: self.verticaloffset)
+                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
             }.background((self.verticaloffset <= 100 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
         }
     }

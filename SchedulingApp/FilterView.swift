@@ -169,7 +169,7 @@ struct FilterView: View {
                                 Image(systemName: "percent")
                             }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                         }
-                }.padding(.top, -11.0)).navigationBarTitle("Assignment List")
+                }.padding(.top, 0)).navigationBarTitle("Assignment List")
          }
     }
 }

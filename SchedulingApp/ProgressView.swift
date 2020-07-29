@@ -379,7 +379,7 @@ struct ProgressView: View {
                                 Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
                             }
                         }
-                }.padding(.top, -11.0)).navigationBarTitle("Progress")
+                }.padding(.top, 0)).navigationBarTitle("Progress")
          }
     }
 }

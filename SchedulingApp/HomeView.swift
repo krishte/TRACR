@@ -438,32 +438,32 @@ struct NewFreetimeModalView: View {
             return repetitionText
         }
         if (self.selection.contains("Every Monday")) {
-            repetitionText += "Monday, "
+            repetitionText += "Mondays, "
         }
         if (self.selection.contains("Every Tuesday")) {
-            repetitionText += "Tuesday, "
+            repetitionText += "Tuesdays, "
         }
         if (self.selection.contains("Every Wednesday")) {
-            repetitionText += "Wednesday, "
+            repetitionText += "Wednesdays, "
         }
         if (self.selection.contains("Every Thursday")) {
-            repetitionText += "Thursday, "
+            repetitionText += "Thursdays, "
         }
         if (self.selection.contains("Every Friday")) {
-            repetitionText += "Friday, "
+            repetitionText += "Fridays, "
         }
         if (self.selection.contains("Every Saturday")) {
-            repetitionText += "Saturday, "
+            repetitionText += "Saturdays, "
         }
         if (self.selection.contains("Every Sunday")) {
-            repetitionText += "Sunday, "
+            repetitionText += "Sundays, "
         }
         
-        if repetitionText.contains("Monday, Tuesday, Wednesday, Thursday, Friday") {
+        if repetitionText.contains("Mondays, Tuesdays, Wednesdays, Thursdays, Fridays") {
             weekdays = true
         }
         
-        if repetitionText.contains("Saturday, Sunday") {
+        if repetitionText.contains("Saturdays, Sundays") {
             weekends = true
         }
                 
@@ -473,11 +473,11 @@ struct NewFreetimeModalView: View {
             }
             
             else if weekdays {
-                repetitionText = repetitionText.replacingOccurrences(of: "Monday, Tuesday, Wednesday, Thursday, Friday", with: "Weekdays")
+                repetitionText = repetitionText.replacingOccurrences(of: "Mondays, Tuesdays, Wednesdays, Thursdays, Fridays", with: "Weekdays")
             }
             
             else if weekends {
-                repetitionText = repetitionText.replacingOccurrences(of: "Saturday, Sunday", with: "Weekends")
+                repetitionText = repetitionText.replacingOccurrences(of: "Saturdays, Sundays", with: "Weekends")
             }
         }
             
@@ -1139,12 +1139,94 @@ struct WeeklyBlockView: View {
         }
     }
 }
-
+ 
 struct SubassignmentAddTimeAction: View {
-    var subassignment: Subassignmentnew
-    //do stuff
-    var body: some View {
-        Text("sdfdsf")
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    
+    var assignmentlist: FetchedResults<Assignment>
+    
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @Binding var offsetvar: CGFloat
+    @Binding var subassignmentname: String
+    @Binding var addhours: Int
+    @Binding var addminutes: Int
+    
+    let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+    let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    
+    var body : some View {
+        VStack(spacing: 15) {
+            //shows current time left of assignment, gives picker for adding time
+            //which defaults to the length of the original subassignment (if possible)
+            //and shows the new time left
+            
+            HStack {
+                Text("\(self.subassignmentname)").font(.system(size: 18)).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+            }
+            
+            HStack {
+                VStack {
+                    Picker(selection: $addhours, label: Text("Hour")) {
+                        ForEach(hourlist.indices) { hourindex in
+                            Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
+                         }
+                     }.pickerStyle(WheelPickerStyle())
+                }.frame(minWidth: 100, maxWidth: .infinity)
+                .clipped()
+                
+                VStack {
+                    if addhours == 0 {
+                        Picker(selection: $addminutes, label: Text("Minutes")) {
+                            ForEach(minutelist[1...].indices) { minuteindex in
+                                Text(String(self.minutelist[minuteindex]) + " mins")
+                            }
+                        }.pickerStyle(WheelPickerStyle())
+                    }
+                    
+                    else {
+                        Picker(selection: $addminutes, label: Text("Minutes")) {
+                            ForEach(minutelist.indices) { minuteindex in
+                                Text(String(self.minutelist[minuteindex]) + " mins")
+                            }
+                        }.pickerStyle(WheelPickerStyle())
+                    }
+                }.frame(minWidth: 100, maxWidth: .infinity)
+                .clipped()
+            }
+            
+            HStack {
+                Button(action: {
+                    for (_, element) in self.assignmentlist.enumerated() {
+                        if (element.name == self.subassignmentname) {
+                            element.timeleft += Int64(60*self.hourlist[self.addhours] + self.minutelist[self.addminutes])
+                            element.totaltime += Int64(60*self.hourlist[self.addhours] + self.minutelist[self.addminutes])
+                            element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                        }
+                    }
+                    
+                    for (index, element) in self.subassignmentlist.enumerated() {
+                        if (element.assignmentname == self.subassignmentname) {
+                            self.managedObjectContext.delete(self.subassignmentlist[index])
+                        }
+                    }
+                    
+                    do {
+                        try self.managedObjectContext.save()
+                        print("Subassignment time added")
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                    
+                    self.offsetvar = UIScreen.main.bounds.size.width
+                })
+                { Text("Add Time to Assignment").font(.system(size: 20)) }
+            }
+        }.padding(.all, 25).frame(maxHeight: 365).background(Color.white).cornerRadius(25).padding(.all, 14)
     }
 }
 
@@ -1183,7 +1265,18 @@ struct HomeBodyView: View {
     var shortdateformatter: DateFormatter
     @State var subassignmentassignmentname: String = ""
     
-    init() {
+    @Binding var verticaloffset: CGFloat
+    @Binding var subassignmentname: String
+    
+    @Binding var addhours: Int
+    @Binding var addminutes: Int
+    
+    init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>) {
+        self._verticaloffset = verticaloffset
+        self._subassignmentname = subassignmentname
+        self._addhours = addhours
+        self._addminutes = addminutes
+        
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
         
@@ -1211,7 +1304,6 @@ struct HomeBodyView: View {
 
         
         let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
-        
         
         for eachdayfromlastmonday in 0...27 {
             self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
@@ -1296,7 +1388,7 @@ struct HomeBodyView: View {
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
                                         if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                            IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
@@ -1317,6 +1409,7 @@ struct HomeBodyView: View {
                 }
             }
         }
+        
     }
     
     func isSameDay(date1: Date, date2: Date) -> Bool {
@@ -1369,10 +1462,21 @@ struct IndividualSubassignmentView: View {
     @State var incompleted: Bool = false
     @State var incompletedonce: Bool = true
     @State var dragoffset = CGSize.zero
-    var subassignmentlength: Int
-    var subassignment: Subassignmentnew
     
-    init(subassignment2: Subassignmentnew) {
+    var subassignmentlength: Int
+
+    var subassignment: Subassignmentnew
+    @Binding var verticaloffset: CGFloat
+    @Binding var subassignmentname: String
+    @Binding var addhours: Int
+    @Binding var addminutes: Int
+    
+    init(subassignment2: Subassignmentnew, verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>) {
+        self._verticaloffset = verticaloffset
+        self._subassignmentname = subassignmentname
+        self._addhours = addhours
+        self._addminutes = addminutes
+        
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
@@ -1433,6 +1537,7 @@ struct IndividualSubassignmentView: View {
                     }
                 }
             }
+            
             VStack {
                 Text(self.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                 Text(self.starttime + " - " + self.endtime).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
@@ -1469,7 +1574,37 @@ struct IndividualSubassignmentView: View {
                         if (self.incompletedonce == true) {
                             self.incompletedonce = false
                             print("incompleted")
-                            SubassignmentAddTimeAction(subassignment: self.subassignment)
+                            
+                            self.verticaloffset = 0
+                            self.subassignmentname = self.name
+                            
+                            for (_, element) in self.assignmentlist.enumerated() {
+                                if (element.name == self.name) {
+                                    let diffComponents = Calendar.current.dateComponents([.minute], from: self.actualstartdatetime, to: self.actualenddatetime)
+                                    let minutes = diffComponents.minute!
+                                    
+                                    self.addhours = Int(minutes / 60)
+                                    self.addminutes = Int((minutes - (self.addhours * 60)) / 5)
+                                    
+                                    element.timeleft -= Int64(minutes)
+                                    element.totaltime -= Int64(minutes)
+                                    element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                                }
+                            }
+                            
+                            for (index, element) in self.subassignmentlist.enumerated() {
+                                if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name) {
+                                    self.managedObjectContext.delete(self.subassignmentlist[index])
+                                }
+                            }
+                            
+                            do {
+                                try self.managedObjectContext.save()
+                                print("Subassignment time added")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
                         }
                     }
                         
@@ -1479,16 +1614,14 @@ struct IndividualSubassignmentView: View {
                             
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
-                                    let diffComponents = Calendar.current.dateComponents([.hour], from: self.actualstartdatetime, to: self.actualenddatetime)
-                                    let hours = diffComponents.hour!
-                                    element.timeleft -= Int64(hours)
+                                    let diffComponents = Calendar.current.dateComponents([.minute], from: self.actualstartdatetime, to: self.actualenddatetime)
+                                    let minutes = diffComponents.minute!
+                                    element.timeleft -= Int64(minutes)
                                     element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
-                                    if (element.timeleft == 0)
-                                    {
+                                    if (element.timeleft == 0) {
                                         element.completed = true
                                         for classity in self.classlist {
-                                            if (classity.name == element.subject)
-                                            {
+                                            if (classity.name == element.subject) {
                                                 classity.assignmentnumber -= 1
                                             }
                                         }
@@ -1529,48 +1662,62 @@ struct HomeView: View {
     
     @State var noClassesAlert = false
     
+    @State var verticaloffset: CGFloat = UIScreen.main.bounds.height
+    @State var subassignmentname = "SubAssignmentNameBlank"
+    @State var addhours = 0
+    @State var addminutes = 0
+
     init() {
       //  self.changingDate.displayedDate = Date()
     }
     
     var body: some View {
-        VStack {
-            HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
-                Button(action: {print("settings button clicked")}) {
-                    Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                }
-            
-                Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
-
-                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                    Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                }.contextMenu{
-                    Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                        Text("Assignment")
-                        Image(systemName: "paperclip")
-                    }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                        Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+        ZStack {
+            VStack {
+                HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                    Button(action: {print("settings button clicked")}) {
+                        Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                     }
-                    Button(action: {self.NewClassPresenting.toggle()}) {
-                        Text("Class")
-                        Image(systemName: "list.bullet")
-                    }.sheet(isPresented: $NewClassPresenting, content: {
-                        NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                    Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                        Text("Occupied Time")
-                        Image(systemName: "clock.fill")
-                    }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                    Button(action: {self.NewFreetimePresenting.toggle()}) {
-                        Text("Free Time")
-                        Image(systemName: "clock")
-                    }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                    Button(action: {self.NewGradePresenting.toggle()}) {
-                        Text("Grade")
-                        Image(systemName: "percent")
-                    }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                }
-            }.padding(.bottom, 18)
-            HomeBodyView().environmentObject(self.changingDate)
+                
+                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
+
+                    Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                        Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                    }.contextMenu{
+                        Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                            Text("Assignment")
+                            Image(systemName: "paperclip")
+                        }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                            Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                        }
+                        Button(action: {self.NewClassPresenting.toggle()}) {
+                            Text("Class")
+                            Image(systemName: "list.bullet")
+                        }.sheet(isPresented: $NewClassPresenting, content: {
+                            NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                        Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                            Text("Occupied Time")
+                            Image(systemName: "clock.fill")
+                        }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                        Button(action: {self.NewFreetimePresenting.toggle()}) {
+                            Text("Free Time")
+                            Image(systemName: "clock")
+                        }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                        Button(action: {self.NewGradePresenting.toggle()}) {
+                            Text("Grade")
+                            Image(systemName: "percent")
+                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                    }
+                }.padding(.bottom, 18)
+                
+                HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).environmentObject(self.changingDate)
+            }
+            
+            VStack {
+                Spacer()
+                //subassignment: self.subassignmenttoaddtime,
+                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).animation(.spring()).offset(y: self.verticaloffset)
+            }.background((self.verticaloffset <= 100 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
         }
     }
 }

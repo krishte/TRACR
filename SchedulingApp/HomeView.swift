@@ -425,32 +425,32 @@ struct NewFreetimeModalView: View {
         var weekends = false
         
         if (self.selection.contains("Every Monday")) {
-            repetitionText += "Monday, "
+            repetitionText += "Mondays, "
         }
         if (self.selection.contains("Every Tuesday")) {
-            repetitionText += "Tuesday, "
+            repetitionText += "Tuesdays, "
         }
         if (self.selection.contains("Every Wednesday")) {
-            repetitionText += "Wednesday, "
+            repetitionText += "Wednesdays, "
         }
         if (self.selection.contains("Every Thursday")) {
-            repetitionText += "Thursday, "
+            repetitionText += "Thursdays, "
         }
         if (self.selection.contains("Every Friday")) {
-            repetitionText += "Friday, "
+            repetitionText += "Fridays, "
         }
         if (self.selection.contains("Every Saturday")) {
-            repetitionText += "Saturday, "
+            repetitionText += "Saturdays, "
         }
         if (self.selection.contains("Every Sunday")) {
-            repetitionText += "Sunday, "
+            repetitionText += "Sundays, "
         }
         
-        if repetitionText.contains("Monday, Tuesday, Wednesday, Thursday, Friday") {
+        if repetitionText.contains("Mondays, Tuesdays, Wednesdays, Thursdays, Fridays") {
             weekdays = true
         }
         
-        if repetitionText.contains("Saturday, Sunday") {
+        if repetitionText.contains("Saturdays, Sundays") {
             weekends = true
         }
                 
@@ -460,11 +460,11 @@ struct NewFreetimeModalView: View {
             }
             
             else if weekdays {
-                repetitionText = repetitionText.replacingOccurrences(of: "Monday, Tuesday, Wednesday, Thursday, Friday", with: "Weekdays")
+                repetitionText = repetitionText.replacingOccurrences(of: "Mondays, Tuesdays, Wednesdays, Thursdays, Fridays", with: "Weekdays")
             }
             
             else if weekends {
-                repetitionText = repetitionText.replacingOccurrences(of: "Saturday, Sunday", with: "Weekends")
+                repetitionText = repetitionText.replacingOccurrences(of: "Saturdays, Sundays", with: "Weekends")
             }
         }
             

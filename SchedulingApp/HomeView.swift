@@ -236,6 +236,8 @@ struct HomeBodyView: View {
     
     @Binding var addhours: Int
     @Binding var addminutes: Int
+    @State var selectedColor: String = "one"
+    
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>) {
         self._verticaloffset = verticaloffset
@@ -267,11 +269,13 @@ struct HomeBodyView: View {
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
-
+        shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
+        self.selectedColor  = "one"
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
-        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
+        let lastmondaydate = Date(timeInterval: TimeInterval(86400 + timezoneOffset), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400+timezoneOffset+1), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400 + timezoneOffset+1), since: Date().startOfWeek!)
         
-        print(lastmondaydate.description)
+       // print(lastmondaydate.description)
         
         for eachdayfromlastmonday in 0...27 {
             self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
@@ -280,6 +284,10 @@ struct HomeBodyView: View {
             
             self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
+//        for i in 0...27
+//        {
+//            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
+//        }
     }
     
     var body: some View {
@@ -295,7 +303,11 @@ struct HomeBodyView: View {
             Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
             ZStack {
-                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color("one")).shadow(radius: 10)//replace color with subassignment color (gradient of subassignment colors, maybe)
+                if (subassignmentlist.count > 0)
+                {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                }
+                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradient of subassignment colors, maybe)
                 HStack {
                     VStack(alignment: .leading) {
                         if (subassignmentlist.count == 0) {
@@ -303,7 +315,7 @@ struct HomeBodyView: View {
                         }
                         else {
                             Text("In " + String(Calendar.current
-                                .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
+                                .dateComponents([.minute], from: Date(timeIntervalSinceNow: Double(TimeZone.current.secondsFromGMT())), to: subassignmentlist[0].startdatetime)
                                 .minute!) + " minutes: ").frame(width: 150, alignment: .topLeading)
                             Spacer()
                             Text(subassignmentlist[0].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:40)
@@ -352,15 +364,19 @@ struct HomeBodyView: View {
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
                                         //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
-                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+//                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                        if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow]))
+                                        {
                                             IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
-                                                for subassignment in self.subassignmentlist {
-                                                    print(subassignment.startdatetime.description)
-                                                }
-                                                print(self.datesfromlastmonday[self.nthdayfromnow].description)
-                                                print(Date().description)
+                                                self.selectedColor = subassignment.color
                                                 
+//                                                for subassignment in self.subassignmentlist {
+//                                                    print(subassignment.startdatetime.description)
+//                                                }
+                                                
+                                                print(self.datesfromlastmonday[self.nthdayfromnow].description)
+                                                print(subassignment.startdatetime.description)
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }

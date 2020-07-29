@@ -68,37 +68,6 @@ struct ClassProgressView: View {
     }
 }
 
-struct IndividualAssignemntProgressView: View {
-    var assignment: Assignment
-    var formatter: DateFormatter
-    var assignmentdate: String
-    
-    init (assignment2: Assignment)
-    {
-        formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm E, d MMM y"
-        assignment = assignment2
-        assignmentdate = formatter.string(from: assignment2.duedate)
-    }
-    var body: some View {
-        VStack {
-            Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-            Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-            Text("Due date: " + self.assignmentdate).frame(width:  UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-            Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-            Text("Grade: " + String(assignment.grade)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-
-            ZStack {
-                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
-                
-                HStack {
-                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
-                }
-            }
-        }.padding(10).background(Color(assignment.color)).cornerRadius(20)
-    }
-}
-
 struct DetailProgressView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -116,14 +85,14 @@ struct DetailProgressView: View {
     let screensize = UIScreen.main.bounds.size.width-20
     var formatter: DateFormatter
    // let gradedict:[String:[Double]]
-    init(classcool2: Classcool)
-    {
+    init(classcool2: Classcool) {
         classcool = classcool2
         formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .none
         
     }
+    
     var body: some View {
         VStack {
             Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
@@ -132,8 +101,7 @@ struct DetailProgressView: View {
             Spacer().frame(height: 20)
             Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 4).background(Color("graphbackground"))
             ScrollView(showsIndicators: false) {
-                if (getAverageGrade() != 0)
-                 {
+                if (getAverageGrade() != 0) {
                     VStack {
 //                        Picker(selection: $selectedtimeframe, label: Text(""))
 //                        {
@@ -142,8 +110,7 @@ struct DetailProgressView: View {
 //                        }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
                         //Divider()
                         //Spacer()
-                        if (getgradenum())
-                        {
+                        if (getgradenum()) {
                             
                             Text(getFirstAssignmentDate() + " - " + getLastAssignmentDate()).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, height: 40, alignment: .topLeading).offset(y: 30)
                         }
@@ -250,32 +217,27 @@ struct DetailProgressView: View {
             }
         }
     }
-    func getAverageGrade() -> Double
-    {
+    func getAverageGrade() -> Double {
         var gradesum: Double = 0
         var gradenum: Double = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
-            {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
                 gradesum += Double(assignment.grade)
                 gradenum += 1
             }
         }
-        if (gradesum == 0)
-        {
+        if (gradesum == 0) {
             return 0;
         }
         return (gradesum/gradenum)
     }
-    func getFirstAssignmentDate() -> String
-    {
+    func getFirstAssignmentDate() -> String {
         var formattertitle: DateFormatter
         formattertitle = DateFormatter()
         formattertitle.dateFormat = "MMMM yyyy"
         return formattertitle.string(from: assignmentlist[0].duedate)
     }
-    func getLastAssignmentDate() -> String
-    {
+    func getLastAssignmentDate() -> String {
         var storedDate: Date
         storedDate = Date()
         var formattertitle: DateFormatter
@@ -286,35 +248,32 @@ struct DetailProgressView: View {
         }
         return formattertitle.string(from: storedDate)
     }
-    func getLastAssignmentGrade() -> Int64
-    {
+    
+    func getLastAssignmentGrade() -> Int64 {
         var gradeval: Int64 = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
-            {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
                 gradeval = assignment.grade
             }
         }
         print(gradeval)
         return gradeval
     }
-    func getgradenum() -> Bool
-    {
+    
+    func getgradenum() -> Bool {
         var gradenum: Int = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
-            {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
                 gradenum += 1
             }
         }
-        if (gradenum >= 2)
-        {
+        if (gradenum >= 2) {
             return true
         }
         return false
     }
-    func getChangeInAverageGrade() -> Double
-    {
+    
+    func getChangeInAverageGrade() -> Double{
         var gradesum: Double = 0
         var gradenum: Double = 0
         var lastgrade: Double = 0
@@ -330,26 +289,22 @@ struct DetailProgressView: View {
         gradenum -= 1
         return getAverageGrade() - gradesum/gradenum
     }
-    func getCompletedNumber() -> CGFloat
-    {
+    func getCompletedNumber() -> CGFloat {
         var numberofcompleted: Double = 0
         
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
-            {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
                 numberofcompleted += 1
             }
         }
-        if (CGFloat(CGFloat((screensize-30)/CGFloat(numberofcompleted)) - 10) < CGFloat((screensize-30)/40))
-        {
+        if (CGFloat(CGFloat((screensize-30)/CGFloat(numberofcompleted)) - 10) < CGFloat((screensize-30)/40)){
             return CGFloat((screensize-30)/40)
         }
         return CGFloat(CGFloat((screensize-30)/CGFloat(numberofcompleted)) - 10)
     }
-    func graphableAssignment(assignment: Assignment) -> Bool
-    {
-        if (assignment.subject == self.classcool.name && assignment.completed == true && assignment.grade != 0)
-        {
+    
+    func graphableAssignment(assignment: Assignment) -> Bool{
+        if (assignment.subject == self.classcool.name && assignment.completed == true && assignment.grade != 0) {
             return true;
         }
         return false;
@@ -372,6 +327,7 @@ struct ProgressView: View {
     @State var NewGradePresenting = false
     @State var noClassesAlert = false
     @State var noAssignmentsAlert = false
+    
     var body: some View {
          NavigationView{
             List {

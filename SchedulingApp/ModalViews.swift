@@ -5,7 +5,6 @@ import SwiftUI
 struct NewAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var changingDate: DisplayedDate
-
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     var classlist: FetchedResults<Classcool>

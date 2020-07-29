@@ -28,6 +28,7 @@
 		56FD9B0524BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */; };
 		56FD9B0624BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0424BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift */; };
 		CFADF84424D1D249001A92D5 /* ModalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFADF84324D1D249001A92D5 /* ModalViews.swift */; };
+		CFADF84624D1D45E001A92D5 /* AssignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFADF84524D1D45E001A92D5 /* AssignmentView.swift */; };
 		CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39E224B8845A0055C48A /* Colors.xcassets */; };
 		CFDB3AA524BF4BE00055C48A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFDB3AA424BF4BE00055C48A /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
@@ -77,6 +78,7 @@
 		56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignmentnew+CoreDataClass.swift"; path = "SchedulingApp/Subassignmentnew+CoreDataClass.swift"; sourceTree = "<group>"; };
 		56FD9B0424BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Subassignmentnew+CoreDataProperties.swift"; path = "SchedulingApp/Subassignmentnew+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		CFADF84324D1D249001A92D5 /* ModalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViews.swift; sourceTree = "<group>"; };
+		CFADF84524D1D45E001A92D5 /* AssignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentView.swift; sourceTree = "<group>"; };
 		CFDB39E224B8845A0055C48A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		CFDB3AA424BF4BE00055C48A /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -149,6 +151,7 @@
 				CFADF84324D1D249001A92D5 /* ModalViews.swift */,
 				561880DB24AB759500558F29 /* ClassesView.swift */,
 				561880DD24AB75A600558F29 /* FilterView.swift */,
+				CFADF84524D1D45E001A92D5 /* AssignmentView.swift */,
 				561880DF24AB75B100558F29 /* ProgressView.swift */,
 				56A66EBC24B77D5000CCD161 /* ClassModel.xcdatamodeld */,
 			);
@@ -329,6 +332,7 @@
 				56A66EBE24B77D5000CCD161 /* ClassModel.xcdatamodeld in Sources */,
 				5621A72D24C49A0D008ADB07 /* Freetime+CoreDataClass.swift in Sources */,
 				561880DC24AB759500558F29 /* ClassesView.swift in Sources */,
+				CFADF84624D1D45E001A92D5 /* AssignmentView.swift in Sources */,
 				56FD9B0624BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift in Sources */,
 				56A66ECD24B7D47A00CCD161 /* Assignment+CoreDataClass.swift in Sources */,
 				56FD9B0524BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift in Sources */,

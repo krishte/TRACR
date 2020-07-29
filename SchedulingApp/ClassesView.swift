@@ -8,34 +8,9 @@
 
 import SwiftUI
 
-
-//struct AssignmentPeakView: View {
-//    let datedisplay, color, name: String
-//
-//    init(assignment: Assignment) {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "dd/MM/yy"
-//        self.datedisplay = formatter.string(from: assignment.duedate)
-//        self.color = assignment.color
-//        self.name = assignment.name
-//    }
-//
-//    var body: some View {
-//        HStack {
-//            Text(self.name).fontWeight(.medium)
-//            Spacer()
-//            Text(self.datedisplay).fontWeight(.light)
-//        }.padding(.horizontal, 25).padding(.top, 15)
-//    }
-//}
-
 struct ClassView: View {
     @ObservedObject var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
-    
-//    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
-//
-//    var assignmentlist: FetchedResults<Assignment>
     
     var body: some View {
         ZStack {
@@ -55,17 +30,9 @@ struct ClassView: View {
                     Text(String(classcool.assignmentnumber)).font(.title).fontWeight(.bold)
                 }
             }.padding(.horizontal, 25)
-                
-//                VStack {
-//                    ForEach(assignmentlist) {
-//                        assignment in
-//                            if (assignment.subject == self.classcool.name) {
-//                                AssignmentPeakView(assignment: assignment)
-//                            }
-//                    }
-//                }
         }
     }
+    
     func getNextColor(currentColor: String) -> Color {
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
         for color in colorlist {
@@ -75,157 +42,6 @@ struct ClassView: View {
             }
         }
         return Color("one")
-    }
-}
-
-struct IndividualAssignmentView: View {
-    @ObservedObject var assignment: Assignment
-    @Environment(\.managedObjectContext) var managedObjectContext
-    @State var dragoffset = CGSize.zero
-    var formatter: DateFormatter
-    var assignmentdate: String
-    
-    
-    @State var isDragged: Bool = false
-    @State var isDraggedleft: Bool = false
-    @State var deleted: Bool = false
-    @State var deleteonce: Bool = true
-    @State var incompleted: Bool = false
-    @State var incompletedonce: Bool = true
-    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
-    var classlist: FetchedResults<Classcool>
-    
-    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
-    
-    var subassignmentlist: FetchedResults<Subassignmentnew>
-    
-    init(assignment2: Assignment)
-    {
-        formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm E, d MMM y"
-        assignment = assignment2
-        assignmentdate = formatter.string(from: assignment2.duedate)
-        
-    }
-
-    var body: some View {
-        ZStack {
-            VStack {
-                if (isDragged) {
-                    ZStack {
-                        HStack {
-                            Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
-                        }
-                        HStack {
-                            Spacer()
-                            if (self.dragoffset.width < -110) {
-                                Text("Complete").foregroundColor(Color.white).frame(width:100)
-                            }
-                            else {
-                                Text("Complete").foregroundColor(Color.white).frame(width:100).offset(x: self.dragoffset.width + 110)
-                            }
-                        }
-                    }
-                }
-                if (isDraggedleft) {
-                    ZStack {
-                        HStack {
-                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: -UIScreen.main.bounds.size.width+10+self.dragoffset.width)
-                        }
-                        HStack {
-                            
-                            if (self.dragoffset.width > 150) {
-                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -110)
-                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -150)
-                            }
-                            else {
-                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-260)
-                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width-300)
-                            }
-                            
-                        }
-                    }
-                }
-            }
-            
-            VStack {
-
-                Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                Text("Due date: "  + assignmentdate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-                Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-                Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-                
-
-                ZStack {
-                    RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
-                    HStack {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)), alignment: .leading)
-                        Spacer()
-                    }
-                }
-            }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
-                .onChanged { value in
-                    self.dragoffset = value.translation
-                    if (self.dragoffset.width < 0) {
-                        self.isDraggedleft = false
-                        self.isDragged = true
-                    }
-                    else if (self.dragoffset.width > 0) {
-                        self.isDragged = false
-                        self.isDraggedleft = true
-                    }
-                                        
-                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
-                        self.deleted = true
-                    }
-                    else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
-                        self.incompleted = true
-                    }
-                }
-                .onEnded { value in
-                    self.dragoffset = .zero
-                    //self.isDragged = false
-                    if (self.incompleted == true)
-                    {
-                        if (self.incompletedonce == true)
-                        {
-                            self.incompletedonce = false;
-                            print("incompleted")
-                        }
-                    }
-                    if (self.deleted == true) {
-                        if (self.deleteonce == true) {
-                            self.deleteonce = false
-                            self.assignment.completed = true
-                            self.assignment.totaltime -= self.assignment.timeleft
-                            self.assignment.timeleft = 0
-                            self.assignment.progress = 100
-                            
-
-                            for classity in self.classlist {
-                                if (classity.name == self.assignment.subject) {
-                                    classity.assignmentnumber -= 1
-                                    print("assignment number channged")
-                                }
-                            }
-                            for (index, element) in self.subassignmentlist.enumerated() {
-                                if (element.assignmentname == self.assignment.name)
-                                {
-                                    self.managedObjectContext.delete(self.subassignmentlist[index])
-                                }
-                            }
-                                                        
-                            do {
-                                try self.managedObjectContext.save()
-                                print("Class made")
-                            } catch {
-                                print(error.localizedDescription)
-                            }
-                        }
-                    }
-                }).animation(.spring())
-        }.padding(10)
     }
 }
 
@@ -655,25 +471,6 @@ struct ClassesView: View {
                                 }
                                 
                             }
-//                            for i in (0...4)
-//                            { 
-//                                
-//                                let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
-//                                newSubassignment.assignmentname = self.assignmentlist[0].name
-//                                let randomDate = (i*i) * 3600
-//                                print(randomDate)
-//                                newSubassignment.startdatetime = Date(timeIntervalSince1970: TimeInterval(1595466000 + randomDate))
-//                                newSubassignment.enddatetime = Date(timeIntervalSince1970: TimeInterval(1595466000 + randomDate + (i+1)*3600))
-//                            
-//                                newSubassignment.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-//                                newSubassignment.assignmentduedate = Date(timeIntervalSince1970: TimeInterval(1595466000 + randomDate + 3600))
-//                                do {
-//                                    try self.managedObjectContext.save()
-//                                    print("new Subassignment")
-//                                } catch {
-//                                    print(error.localizedDescription)
-//                                        }
-//                            }
                         })
                         {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
@@ -682,10 +479,7 @@ struct ClassesView: View {
                         Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
 
                         Button(action: {
-                            
-                            
                             self.NewClassPresenting.toggle()
-                            
                         }) {
                             Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }.contextMenu{
@@ -723,6 +517,5 @@ struct ClassesView_Previews: PreviewProvider {
       let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         
         return ClassesView().environment(\.managedObjectContext, context)
-
     }
 }

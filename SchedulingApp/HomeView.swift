@@ -782,7 +782,7 @@ struct SubassignmentAddTimeAction: View {
             //and shows the new time left
             
             HStack {
-                Text("\(self.subassignmentname)").font(.system(size: 18))
+                Text("\(self.subassignmentname)").font(.system(size: 18)).lineLimit(2)
                 Spacer()
             }
             

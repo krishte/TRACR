@@ -26,6 +26,7 @@ struct ContentView: View {
 
         // To remove all separators including the actual ones:
         UITableView.appearance().separatorStyle = .none
+        UITableView.appearance().backgroundColor = .clear
 //        changingDate.score = 1
     }
     

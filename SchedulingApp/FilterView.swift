@@ -132,12 +132,12 @@ struct FilterView: View {
             }
             .navigationBarItems(
                 leading:
-                    HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                         Button(action: {print("settings button clicked")}) {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }.padding(.leading, 2.0);
                     
-                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4);
+                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
 
                         Button(action: {
                             self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
@@ -169,7 +169,7 @@ struct FilterView: View {
                                 Image(systemName: "percent")
                             }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                         }
-                }.padding(.top, -11.0)).navigationBarTitle("Assignment List")
+                }.padding(.top, 0)).navigationBarTitle("Assignment List")
          }
     }
 }

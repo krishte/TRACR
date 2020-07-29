@@ -226,6 +226,7 @@ struct HomeBodyView: View {
     let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
+    
     var hourformatter: DateFormatter
     var minuteformatter: DateFormatter
     var shortdateformatter: DateFormatter
@@ -268,10 +269,7 @@ struct HomeBodyView: View {
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
 
-        
         let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
-        
-        print(lastmondaydate.description)
         
         for eachdayfromlastmonday in 0...27 {
             self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
@@ -280,6 +278,16 @@ struct HomeBodyView: View {
             
             self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
+    }
+    
+    func upcomingDisplayTime() -> String {
+        var returntext = ""
+        
+        returntext = "In " + String(Calendar.current
+        .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
+        .minute!) + " minutes: "
+        
+        return returntext
     }
     
     var body: some View {
@@ -302,33 +310,30 @@ struct HomeBodyView: View {
                             Text("No Upcoming Subassignments")
                         }
                         else {
-                            Text("In " + String(Calendar.current
-                                .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
-                                .minute!) + " minutes: ").frame(width: 150, alignment: .topLeading)
+                            Text(self.upcomingDisplayTime()).frame(width: 150, alignment: .topLeading)
                             Spacer()
                             Text(subassignmentlist[0].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:40)
                             Text(timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)).font(.system(size: 15))
                         }
-                    }.frame(width: 150)
-                    Spacer().frame(width: 10)
-                    Divider().frame(width: 2).background(Color.black)
-                    Spacer().frame(width: 10)
-                    VStack(alignment: .leading) {
-                        ForEach(self.assignmentlist)
-                        {
-                            assignment in
-                            if (assignment.name == self.subassignmentassignmentname)
-                            {
-                                Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height:40, alignment: .topLeading)
-                                Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12))
-                                Text("Type: " + assignment.type).font(.system(size: 12))
-                                UpcomingSubassignmentProgressBar(assignment: assignment)
-                                
+                    }.frame(width: self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60 : 150)
+                    
+                    if self.subassignmentassignmentname != "" {
+                        Spacer().frame(width: 10)
+                        Divider().frame(width: 1).background(Color.black)
+                        Spacer().frame(width: 10)
+                        VStack(alignment: .leading) {
+                            ForEach(self.assignmentlist) { assignment in
+                                if (assignment.name == self.subassignmentassignmentname) {
+                                    Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 40, alignment: .topLeading)
+                                    Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12))
+                                    Text("Type: " + assignment.type).font(.system(size: 12))
+                                    UpcomingSubassignmentProgressBar(assignment: assignment)
+                                }
                             }
-                        }
-                    }.frame(width: 150)
+                        }.frame(width: 150)
+                    }
                 }.padding(10)
-                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100)//.padding(10)
+            }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).animation(.spring())//.padding(10)
             
             VStack {
                 ScrollView {
@@ -648,12 +653,12 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             VStack {
-                HStack(spacing: UIScreen.main.bounds.size.width / 4.2) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                     Button(action: {print("settings button clicked")}) {
                         Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                     }
-                
-                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 4)
+                    
+                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5)
 
                     Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
                         Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
@@ -682,7 +687,7 @@ struct HomeView: View {
                             Image(systemName: "percent")
                         }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                     }
-                }.padding(.bottom, 0)
+                }.padding(.top, -5)
                 
                 HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).environmentObject(self.changingDate)
             }
@@ -690,8 +695,8 @@ struct HomeView: View {
             VStack {
                 Spacer()
                 
-                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).animation(.linear).offset(y: self.verticaloffset)
-            }.background((self.verticaloffset <= 100 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
+                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
+            }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
         }
     }
 }

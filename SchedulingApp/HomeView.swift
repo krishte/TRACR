@@ -1305,6 +1305,7 @@ struct HomeBodyView: View {
         
         let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
         
+        print(lastmondaydate.description)
         for eachdayfromlastmonday in 0...27 {
             self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
             
@@ -1338,7 +1339,7 @@ struct HomeBodyView: View {
                         }
                         else
                         {
-                            Text("In bug fix" + String(Calendar.current
+                            Text("In " + String(Calendar.current
                                 .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
                                 .minute!) + " minutes: ").frame(width: 150, alignment: .topLeading)
                             Spacer()
@@ -1395,6 +1396,8 @@ struct HomeBodyView: View {
                                                     print(subassignment.startdatetime.description)
                                                 }
                                                 print(self.datesfromlastmonday[self.nthdayfromnow].description)
+                                                print(Date().description)
+                                                
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }

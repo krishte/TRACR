@@ -307,7 +307,7 @@ struct HomeBodyView: View {
                 {
                     RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                 }
-                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradient of subassignment colors, maybe)
+                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradientof subassignment colors, maybe)
                 HStack {
                     VStack(alignment: .leading) {
                         if (subassignmentlist.count == 0) {

@@ -1708,7 +1708,7 @@ struct HomeView: View {
                             Image(systemName: "percent")
                         }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
                     }
-                }.padding(.bottom, 18)
+                }.padding(.bottom, 0)
                 
                 HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).environmentObject(self.changingDate)
             }

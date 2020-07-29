@@ -16,10 +16,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="Tracr" translatesAutoresizingMaskIntoConstraints="NO" id="L02-AX-kJ9">
-                                <rect key="frame" x="-193" y="294" width="800" height="100"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="Tracr" translatesAutoresizingMaskIntoConstraints="NO" id="L02-AX-kJ9">
+                                <rect key="frame" x="113" y="194" width="189" height="300"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="100" id="yyn-dX-JaI"/>
+                                    <constraint firstAttribute="height" constant="300" id="yyn-dX-JaI"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -37,9 +37,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Tracr" width="800" height="310"/>
+        <image name="Tracr" width="81.666664123535156" height="54.333332061767578"/>
         <namedColor name="three">
-            <color red="0.26666666666666666" green="0.8901960784313725" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.42745098039215684" green="0.78823529411764703" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

@@ -1388,13 +1388,9 @@ struct HomeBodyView: View {
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
                                         if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-<<<<<<< SchedulingApp/HomeView.swift
-                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3)
-=======
-                                            IndividualSubassignmentView(subassignment2: subassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                             }
->>>>>>> SchedulingApp/HomeView.swift
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }
                                     }.animation(.spring())
@@ -1666,16 +1662,14 @@ struct HomeView: View {
     
     @State var noClassesAlert = false
     
-<<<<<<< SchedulingApp/HomeView.swift
     @State var verticaloffset: CGFloat = UIScreen.main.bounds.height
     @State var subassignmentname = "SubAssignmentNameBlank"
     @State var addhours = 0
     @State var addminutes = 0
-=======
+
     init() {
       //  self.changingDate.displayedDate = Date()
     }
->>>>>>> SchedulingApp/HomeView.swift
     
     var body: some View {
         ZStack {

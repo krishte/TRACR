@@ -127,10 +127,6 @@ struct SubassignmentAddTimeAction: View {
     
     var body : some View {
         VStack(spacing: 15) {
-            //shows current time left of assignment, gives picker for adding time
-            //which defaults to the length of the original subassignment (if possible)
-            //and shows the new time left
-            
             HStack {
                 Text("\(self.subassignmentname)").font(.system(size: 18)).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
             }
@@ -142,6 +138,8 @@ struct SubassignmentAddTimeAction: View {
                             Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
                          }
                      }.pickerStyle(WheelPickerStyle())
+//                    Button(action: {print("sdfdsfdsf")})
+//                    { Text(" + Add Even More Time") }
                 }.frame(minWidth: 100, maxWidth: .infinity)
                 .clipped()
                 
@@ -314,8 +312,7 @@ struct HomeBodyView: View {
             Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
             
             ZStack {
-                if (subassignmentlist.count > 0)
-                {
+                if (subassignmentlist.count > 0) {
                     RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                 }
                 RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradientof subassignment colors, maybe)
@@ -325,12 +322,13 @@ struct HomeBodyView: View {
                             Text("No Upcoming Subassignments")
                         }
                         else {
+                            Text("Next Upcoming Task:").fontWeight(.semibold)
                             Text(self.upcomingDisplayTime()).frame(width: 150, alignment: .topLeading)
-                            Spacer()
+                            
                             Text(subassignmentlist[0].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:40)
                             Text(timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)).font(.system(size: 15))
                         }
-                    }.frame(width: self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60 : 150)
+                    }.frame(width: UIScreen.main.bounds.size.width-60)
                     
                     if self.subassignmentassignmentname != "" {
                         Spacer().frame(width: 10)
@@ -348,6 +346,7 @@ struct HomeBodyView: View {
                         }.frame(width: 150)
                     }
                 }.padding(10)
+                
             }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).animation(.spring())//.padding(10)
             
             VStack {
@@ -373,8 +372,7 @@ struct HomeBodyView: View {
                                     ForEach(subassignmentlist) { subassignment in
                                         //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
 //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                        if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow]))
-                                        {
+                                        if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
                                             IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                                 self.selectedColor = subassignment.color
@@ -578,8 +576,7 @@ struct IndividualSubassignmentView: View {
                             
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
-                                    let diffComponents = Calendar.current.dateComponents([.minute], from: self.actualstartdatetime, to: self.actualenddatetime)
-                                    let minutes = diffComponents.minute!
+                                    let minutes = self.subassignmentlength
                                     
                                     self.addhours = Int(minutes / 60)
                                     self.addminutes = Int((minutes - (self.addhours * 60)) / 5)
@@ -612,8 +609,7 @@ struct IndividualSubassignmentView: View {
                             
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
-                                    let diffComponents = Calendar.current.dateComponents([.minute], from: self.actualstartdatetime, to: self.actualenddatetime)
-                                    let minutes = diffComponents.minute!
+                                    let minutes = self.subassignmentlength
                                     element.timeleft -= Int64(minutes)
                                     element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
                                     if (element.timeleft == 0) {

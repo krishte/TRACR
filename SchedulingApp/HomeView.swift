@@ -343,7 +343,7 @@ struct HomeBodyView: View {
                             Text(subassignmentlist[0].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:40)
                             Text(timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)).font(.system(size: 15))
                         }
-                    }.frame(width: UIScreen.main.bounds.size.width-60)
+                    }.frame(width: self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60 : 150)
                     
                     if self.subassignmentassignmentname != "" {
                         Spacer().frame(width: 10)

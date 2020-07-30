@@ -290,13 +290,21 @@ struct HomeBodyView: View {
     }
     
     func upcomingDisplayTime() -> String {
-        var returntext = ""
-        
-        returntext = "In " + String(Calendar.current
+        let minuteval = Calendar.current
         .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
-        .minute!) + " minutes: "
+        .minute!
+
         
-        return returntext
+        if (minuteval > 720 )
+        {
+            return "No Upcoming Subassignments"
+        }
+        if (minuteval >= 60 && minuteval < 120)
+        {
+            return "In 1 hour " + String(minuteval-60) + " mins: "
+        }
+        return "In " + String(minuteval/60) + " hours " + String(minuteval%60) + " mins: "
+        
     }
     
     var body: some View {
@@ -315,10 +323,17 @@ struct HomeBodyView: View {
                 if (subassignmentlist.count > 0) {
                     RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                 }
-                RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradientof subassignment colors, maybe)
+                else
+                {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradientof subassignment colors, maybe)
+                }
                 HStack {
                     VStack(alignment: .leading) {
                         if (subassignmentlist.count == 0) {
+                            Text("No Upcoming Subassignments")
+                        }
+                        else if (self.upcomingDisplayTime() == "No Upcoming Subassignments")
+                        {
                             Text("No Upcoming Subassignments")
                         }
                         else {

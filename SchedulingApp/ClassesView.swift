@@ -425,7 +425,7 @@ struct ClassesView: View {
                                         else if (minutesleft == 60 || j == (newrandomint - 1)) {
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in: 100000 ... 1700000)
+                                            let randomDate = Double.random(in: 10000 ... 1700000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*minutesleft))
                                             self.stored  += 20000
@@ -445,7 +445,7 @@ struct ClassesView: View {
                                             let thirdrandomint = Int64.random(in: 1...2)*60
                                             let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
                                             newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in:100000 ... 1700000)
+                                            let randomDate = Double.random(in:10000 ... 1700000)
                                             newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
                                             newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*thirdrandomint))
                                             self.stored += 20000

@@ -10,6 +10,8 @@ import SwiftUI
 
 struct ClassView: View {
     @ObservedObject var classcool: Classcool
+    @Binding var startedToDelete: Bool
+    
     @Environment(\.managedObjectContext) var managedObjectContext
     
     var body: some View {
@@ -23,7 +25,7 @@ struct ClassView: View {
             HStack {
                 Text(classcool.name).font(.system(size: 24)).fontWeight(.bold).frame(height: 120)
                 Spacer()
-                if classcool.assignmentnumber == 0 {
+                if classcool.assignmentnumber == 0 && !self.startedToDelete {
                     Text("No Assignments").font(.body).fontWeight(.light)
                 }
                 else {
@@ -322,26 +324,29 @@ struct ClassesView: View {
     @State var NewGradePresenting = false
     @State var noClassesAlert = false
     @State var stored: Double = 0
+    
+    @State var startedToDelete = false
+    
     var body: some View {
         NavigationView{
             List {
                 ForEach(self.classlist) { classcool in
                     NavigationLink(destination: DetailView(classcool: classcool )) {
-                        ClassView(classcool: classcool)
+                        ClassView(classcool: classcool, startedToDelete: self.$startedToDelete)
                     }
-                    }.onDelete { indexSet in
+                }.onDelete { indexSet in
+                    self.startedToDelete = true
+                    
                     for index in indexSet {
                         for (index2, element) in self.assignmentlist.enumerated() {
                             if (element.subject == self.classlist[index].name) {
                                 for (index3, element2) in self.subassignmentlist.enumerated() {
-                                    if (element2.assignmentname == element.name)
-                                    {
+                                    if (element2.assignmentname == element.name) {
                                         self.managedObjectContext.delete(self.subassignmentlist[index3])
                                     }
                                 }
                                 self.managedObjectContext.delete(self.assignmentlist[index2])
                             }
-
                         }
                     
                         self.managedObjectContext.delete(self.classlist[index])
@@ -355,6 +360,8 @@ struct ClassesView: View {
                     }
                     
                     print("Class deleted")
+                    
+                    self.startedToDelete = false
                 }
             }.navigationBarItems(
                 leading:

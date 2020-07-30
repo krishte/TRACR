@@ -299,6 +299,10 @@ struct HomeBodyView: View {
         {
             return "No Upcoming Subassignments"
         }
+        if (minuteval < 60)
+        {
+            return "In " + String(minuteval) + " mins: "
+        }
         if (minuteval >= 60 && minuteval < 120)
         {
             return "In 1 hour " + String(minuteval-60) + " mins: "
@@ -343,7 +347,7 @@ struct HomeBodyView: View {
                             Text(subassignmentlist[0].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:40)
                             Text(timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)).font(.system(size: 15))
                         }
-                    }.frame(width: UIScreen.main.bounds.size.width-60)
+                    }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.spring())
                     
                     if self.subassignmentassignmentname != "" {
                         Spacer().frame(width: 10)
@@ -362,7 +366,7 @@ struct HomeBodyView: View {
                     }
                 }.padding(10)
                 
-            }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).animation(.spring())//.padding(10)
+            }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
             
             VStack {
                 ScrollView {

@@ -403,6 +403,7 @@ struct NewFreetimeModalView: View {
     let repeats = ["None", "Daily", "Weekly"]
     @State private var selectedrepeat = 0
     var formatter: DateFormatter
+    @State var daysNum: [Int] = []
     
     init(NewFreetimePresenting: Binding<Bool>) {
         self._NewFreetimePresenting = NewFreetimePresenting
@@ -635,6 +636,9 @@ struct NewFreetimeModalView: View {
                             }
                             
                             self.NewFreetimePresenting = false
+                            
+
+
                         }) {
                             Text("Add Free Time")
                         }
@@ -662,7 +666,6 @@ struct FreetimeDetailView: View {
     var formatter: DateFormatter
     var formatter2: DateFormatter
     @State private var selection: Set<String> = []
-
     
     init() {
         formatter = DateFormatter()
@@ -671,6 +674,7 @@ struct FreetimeDetailView: View {
         formatter2 = DateFormatter()
         formatter2.dateStyle = .short
         formatter2.timeStyle = .none
+        
     }
     
     private func selectDeselect(_ singularassignment: String) {

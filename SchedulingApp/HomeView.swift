@@ -313,6 +313,7 @@ struct HomeBodyView: View {
     
     var body: some View {
         VStack {
+
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
                 ForEach(self.daysoftheweekabr.indices) { dayofthweekabrindex in
                     Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)

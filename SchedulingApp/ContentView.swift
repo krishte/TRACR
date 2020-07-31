@@ -28,11 +28,11 @@ struct ContentView: View {
         UITableView.appearance().separatorStyle = .none
 //        UITableView.appearance().backgroundColor = .clear
 //        changingDate.score = 1
+
     }
     
     
     var body: some View {
-        
         TabView {
                 
             HomeView().environmentObject(changingDate).tabItem {

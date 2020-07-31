@@ -10,21 +10,27 @@ struct NewAssignmentModalView: View {
     var classlist: FetchedResults<Classcool>
     @Binding var NewAssignmentPresenting: Bool
     
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
+    var assignmentslist: FetchedResults<Assignment>
+    
     @State var nameofassignment: String = ""
     @State private var selectedclass = 0
     @State private var assignmenttype = 0
     @State private var hours = 0
     @State private var minutes = 0
     @State var selectedDate = Date()
-    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation", "Exam"]
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
     
-    init(NewAssignmentPresenting: Binding<Bool>)
-    {
+    @State private var createassignmentallowed = true
+    @State private var showingAlert = false
+    
+    init(NewAssignmentPresenting: Binding<Bool>) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
     }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -87,33 +93,50 @@ struct NewAssignmentModalView: View {
                 }
                 Section {
                     Button(action: {
-                        let newAssignment = Assignment(context: self.managedObjectContext)
-                        newAssignment.completed = false
-                        newAssignment.grade = 0
-                        newAssignment.subject = self.classlist[self.selectedclass].name
-                        newAssignment.name = self.nameofassignment
-                        newAssignment.type = self.assignmenttypes[self.assignmenttype]
-                        newAssignment.progress = 0
-                        newAssignment.duedate = self.selectedDate
-//                        print(self.hours)
-//                        print(self.minutes)
-                        newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
-                        newAssignment.timeleft = newAssignment.totaltime
-                        for classity in self.classlist {
-                            if (classity.name == newAssignment.subject) {
-                                newAssignment.color = classity.color
-                                classity.assignmentnumber += 1
+                        self.createassignmentallowed = true
+                        
+                        for assignment in self.assignmentslist {
+                            if assignment.name == self.nameofassignment {
+                                self.createassignmentallowed = false
                             }
                         }
-                        do {
-                            try self.managedObjectContext.save()
-                        } catch {
-                            print(error.localizedDescription)
+
+                        if self.createassignmentallowed {
+                            let newAssignment = Assignment(context: self.managedObjectContext)
+                            newAssignment.completed = false
+                            newAssignment.grade = 0
+                            newAssignment.subject = self.classlist[self.selectedclass].name
+                            newAssignment.name = self.nameofassignment
+                            newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                            newAssignment.progress = 0
+                            newAssignment.duedate = self.selectedDate
+    //                        print(self.hours)
+    //                        print(self.minutes)
+                            newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                            newAssignment.timeleft = newAssignment.totaltime
+                            for classity in self.classlist {
+                                if (classity.name == newAssignment.subject) {
+                                    newAssignment.color = classity.color
+                                    classity.assignmentnumber += 1
+                                }
+                            }
+                            do {
+                                try self.managedObjectContext.save()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                            self.NewAssignmentPresenting = false
                         }
-                        
-                        self.NewAssignmentPresenting = false
+                     
+                        else {
+                            print("Assignment with Same Name Exists; Change Name")
+                            self.showingAlert = true
+                        }
                     }) {
                         Text("Add Assignment")
+                    }.alert(isPresented: $showingAlert) {
+                        Alert(title: Text("Assignment Already Exists"), message: Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
                     }
                 }
                 
@@ -293,7 +316,7 @@ struct NewClassModalView: View {
                             let newClass = Classcool(context: self.managedObjectContext)
                             //print(Int(self.classtolerancedouble))
                             //print(self.classnameindex)
-                            newClass.attentionspan = Int64(Int.random(in: 1...10))
+                            newClass.bulk = Bool.random()
                             newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
                             newClass.name = testname
                             newClass.assignmentnumber = 0

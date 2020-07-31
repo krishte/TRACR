@@ -247,8 +247,7 @@ struct EditClassModalView: View {
     func getNextColor(currentColor: String) -> Color {
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
         for color in colorlist {
-            if (color == currentColor)
-            {
+            if (color == currentColor) {
                 return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
             }
         }

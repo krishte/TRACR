@@ -326,19 +326,17 @@ struct HomeBodyView: View {
             
             ZStack {
                 if (subassignmentlist.count > 0) {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                 }
-                else
-                {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradientof subassignment colors, maybe)
+                else {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradientof subassignment colors, maybe)
                 }
                 HStack {
                     VStack(alignment: .leading) {
                         if (subassignmentlist.count == 0) {
                             Text("No Upcoming Subassignments")
                         }
-                        else if (self.upcomingDisplayTime() == "No Upcoming Subassignments")
-                        {
+                        else if (self.upcomingDisplayTime() == "No Upcoming Subassignments") {
                             Text("No Upcoming Subassignments")
                         }
                         else {

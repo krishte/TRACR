@@ -247,8 +247,7 @@ struct EditClassModalView: View {
     func getNextColor(currentColor: String) -> Color {
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
         for color in colorlist {
-            if (color == currentColor)
-            {
+            if (color == currentColor) {
                 return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
             }
         }
@@ -380,7 +379,7 @@ struct ClassesView: View {
             
                             for classname in classnames {
                                 let newClass = Classcool(context: self.managedObjectContext)
-                                newClass.attentionspan = Int64.random(in: 0 ... 10)
+                                newClass.bulk = Bool.random()
                                 newClass.tolerance = Int64.random(in: 0 ... 10)
                                 newClass.name = classname
                                 newClass.assignmentnumber = 0

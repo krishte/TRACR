@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct MasterStruct:View {
+struct MasterStruct: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
@@ -17,11 +17,8 @@ struct MasterStruct:View {
     
     var assignmentlist: FetchedResults<Assignment>
     
-    
-    
-    
     let types = ["Test", "Homework", "Presentation", "Essay", "Study", "Exam", "Report", "Essay", "Presentation", "Essay"]
-    let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
+    let duedays = [7, 2, 3, 8, 180, 14, 1, 4, 300, 150]
     let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
     let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 240]
     let names = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -33,6 +30,7 @@ struct MasterStruct:View {
     let tolerances = [9, 3, 4, 9, 6, 8, 2, 7]
     let assignmentnumbers = [2, 1, 1, 2, 1, 1, 1, 1]
     let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
+    
     
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: Date())
@@ -48,7 +46,7 @@ struct MasterStruct:View {
          
         for i in (0...7) {
             let newClass = Classcool(context: self.managedObjectContext)
-            newClass.attentionspan = 0
+            newClass.bulk = bulks[i]
             newClass.tolerance = Int64(tolerances[i])
             newClass.name = classnameactual[i]
             newClass.assignmentnumber = 0
@@ -97,6 +95,7 @@ struct MasterStruct:View {
         }
 
     }
+    
     var body: some View {
         EmptyView()
     }

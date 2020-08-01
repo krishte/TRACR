@@ -78,6 +78,8 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
 
 struct WeeklyBlockView: View {
     @Binding var nthdayfromnow: Int
+    @Binding var lastnthdayfromnow: Int
+    @Binding var increased: Bool
     @EnvironmentObject var changingDate: DisplayedDate
 
     let datenumberindices: [Int]
@@ -92,7 +94,16 @@ struct WeeklyBlockView: View {
                         Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
                     }.onTapGesture {
                         self.nthdayfromnow = self.datenumberindices[index]
-                    
+                        
+                        if self.lastnthdayfromnow > self.nthdayfromnow {
+                            self.increased = false
+                        }
+                        
+                        else if self.lastnthdayfromnow < self.nthdayfromnow {
+                            self.increased = true
+                        }
+                        
+                        self.lastnthdayfromnow = self.nthdayfromnow
                     }
                 }
                 
@@ -106,6 +117,52 @@ struct WeeklyBlockView: View {
     }
 }
  
+struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
+    @Binding var increased: Bool
+    
+    var viewControllers: [UIViewController]
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    func makeUIViewController(context: Context) -> UIPageViewController {
+        let pageViewController = UIPageViewController(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal)
+        
+        return pageViewController
+    }
+    
+    func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+        pageViewController.setViewControllers([viewControllers[0]], direction: (self.increased ? .forward : .reverse), animated: true)//reverse/forward based on change
+    }
+    
+    class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+        var parent: DummyPageViewControllerForDates
+
+        init(_ pageViewController: DummyPageViewControllerForDates) {
+            self.parent = pageViewController
+        }
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+            guard parent.viewControllers.firstIndex(of: viewController) != nil else {
+                 return nil
+            }
+            
+            return nil
+        }
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+            guard parent.viewControllers.firstIndex(of: viewController) != nil else {
+                return nil
+            }
+            
+            return nil
+        }
+    }
+}
+
 struct SubassignmentAddTimeAction: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     
@@ -237,12 +294,16 @@ struct HomeBodyView: View {
     @Binding var addminutes: Int
     @State var selectedColor: String = "one"
     
+    @State var lastnthdayfromnow: Int
+    @State var increased = true
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>) {
         self._verticaloffset = verticaloffset
         self._subassignmentname = subassignmentname
         self._addhours = addhours
         self._addminutes = addminutes
+        
+        self._lastnthdayfromnow = self._nthdayfromnow
         
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
@@ -295,41 +356,36 @@ struct HomeBodyView: View {
         .minute!
 
         
-        if (minuteval > 720 )
-        {
+        if (minuteval > 720 ) {
             return "No Upcoming Subassignments"
         }
-        if (minuteval < 60)
-        {
+        if (minuteval < 60) {
             return "In " + String(minuteval) + " mins: "
         }
-        if (minuteval >= 60 && minuteval < 120)
-        {
+        if (minuteval >= 60 && minuteval < 120) {
             return "In 1 hour " + String(minuteval-60) + " mins: "
         }
         return "In " + String(minuteval/60) + " hours " + String(minuteval%60) + " mins: "
-        
     }
     
     var body: some View {
         VStack {
-
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
                 ForEach(self.daysoftheweekabr.indices) { dayofthweekabrindex in
                     Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)
                 }
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
             
-            PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
+            PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
             
-            Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium)
+            DummyPageViewControllerForDates(increased: self.$increased, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(height: 50)
             
             ZStack {
                 if (subassignmentlist.count > 0) {
                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                 }
                 else {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("one")]), startPoint: .leading, endPoint: .trailing))//replace color with subassignment color (gradientof subassignment colors, maybe)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("datenumberred"), Color("datenumberred")]), startPoint: .leading, endPoint: .trailing))
                 }
                 HStack {
                     VStack(alignment: .leading) {
@@ -420,7 +476,6 @@ struct HomeBodyView: View {
                 }
             }
         }
-        
     }
     
     func isSameDay(date1: Date, date2: Date) -> Bool {
@@ -442,8 +497,7 @@ struct UpcomingSubassignmentProgressBar: View {
             RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  150, height: 10)
             HStack {
                 RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*150), height:10, alignment: .leading).animation(.spring())
-                if (assignment.progress != 100)
-                {
+                if (assignment.progress != 100) {
                     Spacer()
                 }
             }

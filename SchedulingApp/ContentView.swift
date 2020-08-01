@@ -34,7 +34,6 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-                
             HomeView().environmentObject(changingDate).tabItem {
                 Image(systemName: "house").resizable().scaledToFill()
                 Text("Home").font(.body)
@@ -57,10 +56,6 @@ struct ContentView: View {
         }
     }
 }
-    
-
-    
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

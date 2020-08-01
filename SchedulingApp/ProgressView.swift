@@ -311,6 +311,17 @@ struct DetailProgressView: View {
     }
 }
 
+
+struct SettingsView: View {
+    var body: some View {
+        List {
+            Text("Preferences")
+            Text("Preferences bla")
+        }.navigationBarTitle("Settings")
+    }
+}
+    
+    
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Classcool.entity(),
@@ -328,57 +339,64 @@ struct ProgressView: View {
     @State var noClassesAlert = false
     @State var noAssignmentsAlert = false
     
+    @State var showingSettingsView = false
+    
     var body: some View {
-         NavigationView{
-            List {
-                ForEach(classlist) {
-                    classcool in
-                    NavigationLink(destination: DetailProgressView(classcool2: classcool )) {
-                      ClassProgressView(classcool:classcool )
+         NavigationView {
+            ZStack {
+                NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
+                { EmptyView() }
+                
+                List {
+                    ForEach(classlist) {
+                        classcool in
+                        NavigationLink(destination: DetailProgressView(classcool2: classcool)) {
+                          ClassProgressView(classcool: classcool)
+                        }
                     }
                 }
             }
-             .navigationBarItems(
+            .navigationBarItems(
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
-                        Button(action: {print("settings button clicked")}) {
-                            Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }.padding(.leading, 2.0);
-                    
-                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
+                    Button(action: {self.showingSettingsView = true}) {
+                        Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                    }.padding(.leading, 2.0);
+                
+                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
 
-                        Button(action: {
-                            self.assignmentlist.count > 0 ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
-                            
-                        }) {
-                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }.contextMenu{
-                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                                Text("Assignment")
-                                Image(systemName: "paperclip")
-                            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-                            }
-                            Button(action: {self.NewClassPresenting.toggle()}) {
-                                Text("Class")
-                                Image(systemName: "list.bullet")
-                            }.sheet(isPresented: $NewClassPresenting, content: {
-                                NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                Text("Occupied Time")
-                                Image(systemName: "clock.fill")
-                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewFreetimePresenting.toggle()}) {
-                                Text("Free Time")
-                                Image(systemName: "clock")
-                            }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewGradePresenting.toggle()}) {
-                                Text("Grade")
-                                Image(systemName: "percent")
-                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-                                Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
-                            }
+                    Button(action: {
+                        self.assignmentlist.count > 0 ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+                        
+                    }) {
+                        Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                    }.contextMenu{
+                        Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                            Text("Assignment")
+                            Image(systemName: "paperclip")
+                        }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                            Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                         }
+                        Button(action: {self.NewClassPresenting.toggle()}) {
+                            Text("Class")
+                            Image(systemName: "list.bullet")
+                        }.sheet(isPresented: $NewClassPresenting, content: {
+                            NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                        Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                            Text("Occupied Time")
+                            Image(systemName: "clock.fill")
+                        }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                        Button(action: {self.NewFreetimePresenting.toggle()}) {
+                            Text("Free Time")
+                            Image(systemName: "clock")
+                        }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                        Button(action: {self.NewGradePresenting.toggle()}) {
+                            Text("Grade")
+                            Image(systemName: "percent")
+                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                            Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
+                        }
+                    }
                 }.padding(.top, 0)).navigationBarTitle("Progress")
          }
     }

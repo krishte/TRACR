@@ -27,7 +27,7 @@ struct MasterStruct {
     
     
     let types = ["Test", "Homework", "Presentation", "Essay", "Study", "Exam", "Report", "Essay", "Presentation", "Essay"]
-    let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
+    let duedays = [7, 2, 3, 8, 180, 14, 1, 4, 300, 150]
     let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
     let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 2400]
     let names = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -39,6 +39,7 @@ struct MasterStruct {
     let tolerances = [9, 3, 4, 9, 6, 8, 2, 7]
     let assignmentnumbers = [2, 1, 1, 2, 1, 1, 1, 1]
     let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
+    
     
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: Date() + 7200)
@@ -164,6 +165,7 @@ struct MasterStruct {
 //        }
 
     }
+    
     var body: some View {
         EmptyView()
     }

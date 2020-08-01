@@ -689,6 +689,7 @@ struct FreetimeDetailView: View {
     var formatter: DateFormatter
     var formatter2: DateFormatter
     @State private var selection: Set<String> = []
+    var daylist = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "One-off Dates"]
     
     init() {
         formatter = DateFormatter()
@@ -710,7 +711,7 @@ struct FreetimeDetailView: View {
     
     var body: some View {
         List {
-            Text(String(freetimelist.count))
+            //Text(String(freetimelist.count))
             Group {
                 Button(action: {self.selectDeselect("Monday")}) {
                     HStack {
@@ -1000,7 +1001,23 @@ struct FreetimeDetailView: View {
                     }
                 }
             }
-        }
+        }.navigationBarItems(trailing: Button(action: {
+            
+            if (self.selection.count < 8)
+            {
+                for dayname in self.daylist {
+                    if (!self.selection.contains(dayname))
+                    {
+                        self.selection.insert(dayname)
+                    }
+                }
+            }
+            else
+            {
+                self.selection.removeAll()
+            }
+            
+        }, label: {selection.count == 8 ? Text("Shrink All"): Text("Expand All")})).navigationBarTitle("Add Grade", displayMode: .inline)
     }
 }
 

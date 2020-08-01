@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct MasterStruct:View {
+struct MasterStruct {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
@@ -17,13 +17,19 @@ struct MasterStruct:View {
     
     var assignmentlist: FetchedResults<Assignment>
     
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
     
     
     
     let types = ["Test", "Homework", "Presentation", "Essay", "Study", "Exam", "Report", "Essay", "Presentation", "Essay"]
     let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
     let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
-    let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 240]
+    let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 2400]
     let names = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     let classnames = ["Math", "Math", "German", "English", "Physics" , "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
     let colors = ["one", "one", "two", "three" , "four", "four", "five", "six", "seven", "eight"]
@@ -35,7 +41,7 @@ struct MasterStruct:View {
     let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
     
     var startOfDay: Date {
-        return Calendar.current.startOfDay(for: Date())
+        return Calendar.current.startOfDay(for: Date() + 7200)
     }
     
     init() {
@@ -45,56 +51,117 @@ struct MasterStruct:View {
     
     func master() -> Void {
         print("epic success")
-         
-        for i in (0...7) {
-            let newClass = Classcool(context: self.managedObjectContext)
-            newClass.attentionspan = 0
-            newClass.tolerance = Int64(tolerances[i])
-            newClass.name = classnameactual[i]
-            newClass.assignmentnumber = 0
-            newClass.color = classcolors[i]
-            
-            do {
-                try self.managedObjectContext.save()
-                print("Class made")
-            } catch {
-                print(error.localizedDescription)
-            }
+        
+        for (index, _) in subassignmentlist.enumerated() {
+             self.managedObjectContext.delete(self.subassignmentlist[index])
         }
-        for i in (0...9) {
-            let newAssignment = Assignment(context: self.managedObjectContext)
-            newAssignment.name = String(names[i])
-            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(7200 + 86400*duedays[i]))
-            if (duetimes[i] == "night")
+        var timemonday = 0
+        var timetuesday = 0
+        var timewednesday = 0
+        var timethursday = 0
+        var timefriday = 0
+        var timesaturday = 0
+        var timesunday = 0
+        var latestDate = Date(timeIntervalSinceNow: 7200)
+        var dateFreeTimeDict = [Date: Int]()
+        
+        
+        for freetime in freetimelist {
+            if (freetime.monday)
             {
-                newAssignment.duedate.addTimeInterval(79200)
+                timemonday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
             }
-            else
+            if (freetime.tuesday)
             {
-                newAssignment.duedate.addTimeInterval(28800)
+                timetuesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+            }
+            if (freetime.wednesday)
+            {
+                timewednesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+            }
+            if (freetime.thursday)
+            {
+                timethursday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+            }
+            if (freetime.friday)
+            {
+                timefriday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+            }
+            if (freetime.saturday)
+            {
+                timesaturday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+            }
+            if (freetime.sunday)
+            {
+                timesunday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
             }
             
-            newAssignment.totaltime = Int64(totaltimes[i])
-            newAssignment.subject = classnames[i]
-            newAssignment.timeleft = newAssignment.totaltime
-            newAssignment.progress = 0
-            newAssignment.grade = 0
-            newAssignment.completed = false
-            newAssignment.type = types[i]
-
-            for classity in self.classlist {
-                if (classity.name == newAssignment.subject) {
-                    classity.assignmentnumber += 1
-                    newAssignment.color = classity.color
-                    do {
-                        try self.managedObjectContext.save()
-                        print("Class number changed")
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
         }
+        var generalfreetimelist = [timemonday, timetuesday, timewednesday, timethursday, timefriday, timesaturday, timesunday]
+        
+        for assignment in assignmentlist {
+            latestDate = max(latestDate, assignment.duedate)
+        }
+        
+        let daystilllatestdate = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: 7200), to: latestDate).day!
+        
+        for i in 0...daystilllatestdate {
+            dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = generalfreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
+            print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, (Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1))
+            
+        }
+        
+        
+        //
+//        for i in (0...7) {
+//            let newClass = Classcool(context: self.managedObjectContext)
+//            newClass.bulk = bulks[i]
+//            newClass.tolerance = Int64(tolerances[i])
+//            newClass.name = classnameactual[i]
+//            newClass.assignmentnumber = 0
+//            newClass.color = classcolors[i]
+//
+//            do {
+//                try self.managedObjectContext.save()
+//                print("Class made")
+//            } catch {
+//                print(error.localizedDescription)
+//            }
+//        }
+//        for i in (0...9) {
+//            let newAssignment = Assignment(context: self.managedObjectContext)
+//            newAssignment.name = String(names[i])
+//            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(7200 + 86400*duedays[i]))
+//            if (duetimes[i] == "night")
+//            {
+//                newAssignment.duedate.addTimeInterval(79200)
+//            }
+//            else
+//            {
+//                newAssignment.duedate.addTimeInterval(28800)
+//            }
+//
+//            newAssignment.totaltime = Int64(totaltimes[i])
+//            newAssignment.subject = classnames[i]
+//            newAssignment.timeleft = newAssignment.totaltime
+//            newAssignment.progress = 0
+//            newAssignment.grade = 0
+//            newAssignment.completed = false
+//            newAssignment.type = types[i]
+//
+//            for classity in self.classlist {
+//                if (classity.name == newAssignment.subject) {
+//                    classity.assignmentnumber += 1
+//                    newAssignment.color = classity.color
+//                    do {
+//                        try self.managedObjectContext.save()
+//                        print("Class number changed")
+//                    } catch {
+//                        print(error.localizedDescription)
+//                    }
+//                }
+//            }
+//        }
 
     }
     var body: some View {

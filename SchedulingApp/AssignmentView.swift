@@ -33,6 +33,7 @@ struct IndividualAssignmentFilterView: View {
         isCompleted = isCompleted2
         formatter = DateFormatter()
         formatter.dateFormat = "HH:mm E, d MMM y"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         assignment = assignment2
         assignmentduedate = formatter.string(from: assignment2.duedate)
     }

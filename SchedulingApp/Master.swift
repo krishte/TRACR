@@ -50,7 +50,7 @@ struct MasterStruct {
     }
     
     func master() -> Void {
-        print("epic success")
+        print("epicsuccess")
         
         for (index, _) in subassignmentlist.enumerated() {
              self.managedObjectContext.delete(self.subassignmentlist[index])

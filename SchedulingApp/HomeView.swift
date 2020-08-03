@@ -90,25 +90,25 @@ struct WeeklyBlockView: View {
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
                 ForEach(self.datenumberindices.indices) { index in
                     ZStack {
-                        Circle().fill(self.datenumberindices[index] == self.nthdayfromnow ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                        Circle().fill(Color("datenumberred")).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).opacity(self.datenumberindices[index] == self.nthdayfromnow ? 1 : 0)
                         Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
                     }.onTapGesture {
-                        self.nthdayfromnow = self.datenumberindices[index]
-                        
-                        if self.lastnthdayfromnow > self.nthdayfromnow {
-                            self.increased = false
+                        withAnimation(.spring()) {
+                            self.nthdayfromnow = self.datenumberindices[index]
+                            
+                            if self.lastnthdayfromnow > self.nthdayfromnow {
+                                self.increased = false
+                            }
+                            
+                            else if self.lastnthdayfromnow < self.nthdayfromnow {
+                                self.increased = true
+                            }
+                            
+                            self.lastnthdayfromnow = self.nthdayfromnow
                         }
-                        
-                        else if self.lastnthdayfromnow < self.nthdayfromnow {
-                            self.increased = true
-                        }
-                        
-                        self.lastnthdayfromnow = self.nthdayfromnow
                     }
                 }
-                
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
-
 //            HStack {
 //                Rectangle().frame(width: 5).foregroundColor(Color("datenumberred"))
 //                Spacer()
@@ -344,8 +344,7 @@ struct HomeBodyView: View {
             
             self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
-//        for i in 0...27
-//        {
+//        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
     }

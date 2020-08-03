@@ -333,7 +333,7 @@ struct ClassesView: View {
     let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
     let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
     let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 240]
-    let names = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    let names = ["Trigonometry Test", "Trigonometry Packet", "German Oral 2", "Othello Essay", "Physics Studying", "Final Exam", "Chemistry IA Final", "McDonalds Macroeconomics Essay", "ToK Final Presentation", "Extended Essay Final Essay"]
     let classnames = ["Math", "Math", "German", "English", "Physics" , "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
     let colors = ["one", "one", "two", "three" , "four", "four", "five", "six", "seven", "eight"]
     
@@ -403,6 +403,7 @@ struct ClassesView: View {
         for (index, _) in subassignmentlist.enumerated() {
              self.managedObjectContext.delete(self.subassignmentlist[index])
         }
+        
         var timemonday = 0
         var timetuesday = 0
         var timewednesday = 0
@@ -426,8 +427,7 @@ struct ClassesView: View {
         print(startOfDay.description)
         
         for freetime in freetimelist {
-            if (freetime.monday)
-            {
+            if (freetime.monday) {
                 timemonday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: startoffreetimemonday))), to: startoffreetimemonday).minute!)
                 {
@@ -437,62 +437,54 @@ struct ClassesView: View {
 //                print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: startoffreetimemonday))).description)
 //                print(startoffreetimemonday.description)
             }
-            if (freetime.tuesday)
-            {
+            if (freetime.tuesday) {
                 timetuesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimetuesday)), to: startoffreetimetuesday).minute!)
                 {
                     startoffreetimetuesday = freetime.startdatetime
                 }
             }
-            if (freetime.wednesday)
-            {
+            if (freetime.wednesday) {
                 timewednesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimewednesday)), to: startoffreetimewednesday).minute!)
                 {
                     startoffreetimewednesday = freetime.startdatetime
                 }
             }
-            if (freetime.thursday)
-            {
+            if (freetime.thursday) {
                 timethursday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimethursday)), to: startoffreetimethursday).minute!)
                 {
                     startoffreetimethursday = freetime.startdatetime
                 }
             }
-            if (freetime.friday)
-            {
+            if (freetime.friday) {
                 timefriday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimefriday)), to: startoffreetimefriday).minute!)
                  {
                      startoffreetimefriday = freetime.startdatetime
                  }
             }
-            if (freetime.saturday)
-            {
+            if (freetime.saturday) {
                 timesaturday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesaturday)), to: startoffreetimesaturday).minute!)
                  {
                      startoffreetimesaturday = freetime.startdatetime
                  }
             }
-            if (freetime.sunday)
-            {
+            if (freetime.sunday) {
                 timesunday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesunday)), to: startoffreetimesunday).minute!)
                  {
                      startoffreetimesunday = freetime.startdatetime
                  }
             }
-            
         }
         var generalfreetimelist = [timesunday, timemonday, timetuesday, timewednesday, timethursday, timefriday, timesaturday]
         var startoffreetimelist = [startoffreetimesunday, startoffreetimemonday, startoffreetimetuesday, startoffreetimewednesday, startoffreetimethursday, startoffreetimefriday, startoffreetimesaturday, startoffreetimesunday]
         
         for (index, element) in generalfreetimelist.enumerated() {
-            if (element % 5 == 4)
-            {
+            if (element % 5 == 4) {
                 generalfreetimelist[index] += 1
             }
         //    print(generalfreetimelist[index])
@@ -535,15 +527,14 @@ struct ClassesView: View {
             {
                 
             }
-            else
-            {
+            else {
                 
             }
         }
-        
     }
+    
     var body: some View {
-        NavigationView{
+        NavigationView {
             List {
                 ForEach(self.classlist) { classcool in
                     NavigationLink(destination: DetailView(classcool: classcool )) {
@@ -563,7 +554,6 @@ struct ClassesView: View {
                                 self.managedObjectContext.delete(self.assignmentlist[index2])
                             }
                         }
-                    
                         self.managedObjectContext.delete(self.classlist[index])
                     }
                     
@@ -694,8 +684,6 @@ struct ClassesView: View {
 //                                        print(error.localizedDescription)
 //                                    }
 //                                }
-                                
-                            
                         })
                         {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)

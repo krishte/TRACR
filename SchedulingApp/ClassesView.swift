@@ -308,7 +308,7 @@ struct ClassesView: View {
     
     var classlist: FetchedResults<Classcool>
     
-    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
@@ -346,62 +346,58 @@ struct ClassesView: View {
     var startOfDay: Date {
         return Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200)))
     }
-    
-//    init() {
-//        print(startOfDay)
-//        master()
-//    }
+
     
     func master() -> Void {
-//                for i in (0...7) {
-//                    let newClass = Classcool(context: self.managedObjectContext)
-//                    newClass.bulk = bulks[i]
-//                    newClass.tolerance = Int64(tolerances[i])
-//                    newClass.name = classnameactual[i]
-//                    newClass.assignmentnumber = 0
-//                    newClass.color = classcolors[i]
-//        
+//        for i in (0...7) {
+//            let newClass = Classcool(context: self.managedObjectContext)
+//            newClass.bulk = bulks[i]
+//            newClass.tolerance = Int64(tolerances[i])
+//            newClass.name = classnameactual[i]
+//            newClass.assignmentnumber = 0
+//            newClass.color = classcolors[i]
+//
+//            do {
+//                try self.managedObjectContext.save()
+//                print("Class made")
+//            } catch {
+//                print(error.localizedDescription)
+//            }
+//        }
+//        for i in (0...9) {
+//            let newAssignment = Assignment(context: self.managedObjectContext)
+//            newAssignment.name = String(names[i])
+//            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
+//            if (duetimes[i] == "night")
+//            {
+//                newAssignment.duedate.addTimeInterval(79200)
+//            }
+//            else
+//            {
+//                newAssignment.duedate.addTimeInterval(28800)
+//            }
+//
+//            newAssignment.totaltime = Int64(totaltimes[i])
+//            newAssignment.subject = classnames[i]
+//            newAssignment.timeleft = newAssignment.totaltime
+//            newAssignment.progress = 0
+//            newAssignment.grade = 0
+//            newAssignment.completed = false
+//            newAssignment.type = types[i]
+//
+//            for classity in self.classlist {
+//                if (classity.name == newAssignment.subject) {
+//                    classity.assignmentnumber += 1
+//                    newAssignment.color = classity.color
 //                    do {
 //                        try self.managedObjectContext.save()
-//                        print("Class made")
+//                        print("Class number changed")
 //                    } catch {
 //                        print(error.localizedDescription)
 //                    }
 //                }
-//                for i in (0...9) {
-//                    let newAssignment = Assignment(context: self.managedObjectContext)
-//                    newAssignment.name = String(names[i])
-//                    newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(7200 + 86400*duedays[i]))
-//                    if (duetimes[i] == "night")
-//                    {
-//                        newAssignment.duedate.addTimeInterval(79200)
-//                    }
-//                    else
-//                    {
-//                        newAssignment.duedate.addTimeInterval(28800)
-//                    }
-//        
-//                    newAssignment.totaltime = Int64(totaltimes[i])
-//                    newAssignment.subject = classnames[i]
-//                    newAssignment.timeleft = newAssignment.totaltime
-//                    newAssignment.progress = 0
-//                    newAssignment.grade = 0
-//                    newAssignment.completed = false
-//                    newAssignment.type = types[i]
-//        
-//                    for classity in self.classlist {
-//                        if (classity.name == newAssignment.subject) {
-//                            classity.assignmentnumber += 1
-//                            newAssignment.color = classity.color
-//                            do {
-//                                try self.managedObjectContext.save()
-//                                print("Class number changed")
-//                            } catch {
-//                                print(error.localizedDescription)
-//                            }
-//                        }
-//                    }
-//                }
+//            }
+//        }
         print("epic success")
         
         for (index, _) in subassignmentlist.enumerated() {
@@ -414,44 +410,85 @@ struct ClassesView: View {
         var timefriday = 0
         var timesaturday = 0
         var timesunday = 0
+        var startoffreetimemonday = Date(timeInterval: 86300, since: startOfDay)
+        var startoffreetimetuesday = Date(timeInterval: 86300, since: startOfDay)
+        var startoffreetimewednesday = Date(timeInterval: 86300, since: startOfDay)
+        var startoffreetimethursday = Date(timeInterval: 86300, since: startOfDay)
+        var startoffreetimefriday = Date(timeInterval: 86300, since: startOfDay)
+        var startoffreetimesaturday = Date(timeInterval: 86300, since: startOfDay)
+        var startoffreetimesunday = Date(timeInterval: 86300, since: startOfDay)
+
         var latestDate = Date(timeIntervalSinceNow: 7200)
         var dateFreeTimeDict = [Date: Int]()
+        var startoffreetimeDict = [Date: Date]()
         //initial subassignment objects are added just as (assignmentname, length of subassignment)
         var subassignmentdict = [Date: (String, Int)]()
-        
+        print(startOfDay.description)
         
         for freetime in freetimelist {
             if (freetime.monday)
             {
                 timemonday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: startoffreetimemonday))), to: startoffreetimemonday).minute!)
+                {
+                    startoffreetimemonday = freetime.startdatetime
+                }
+//                print(Calendar.current.dateComponents([.minute], from: Date(timeInterval: 0, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute!, Calendar.current.dateComponents([.minute], from: Date(timeInterval: 0, since: Calendar.current.startOfDay(for: startoffreetimemonday)), to: startoffreetimemonday).minute!)
+//                print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: startoffreetimemonday))).description)
+//                print(startoffreetimemonday.description)
             }
             if (freetime.tuesday)
             {
                 timetuesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimetuesday)), to: startoffreetimetuesday).minute!)
+                {
+                    startoffreetimetuesday = freetime.startdatetime
+                }
             }
             if (freetime.wednesday)
             {
                 timewednesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimewednesday)), to: startoffreetimewednesday).minute!)
+                {
+                    startoffreetimewednesday = freetime.startdatetime
+                }
             }
             if (freetime.thursday)
             {
                 timethursday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimethursday)), to: startoffreetimethursday).minute!)
+                {
+                    startoffreetimethursday = freetime.startdatetime
+                }
             }
             if (freetime.friday)
             {
                 timefriday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimefriday)), to: startoffreetimefriday).minute!)
+                 {
+                     startoffreetimefriday = freetime.startdatetime
+                 }
             }
             if (freetime.saturday)
             {
                 timesaturday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesaturday)), to: startoffreetimesaturday).minute!)
+                 {
+                     startoffreetimesaturday = freetime.startdatetime
+                 }
             }
             if (freetime.sunday)
             {
                 timesunday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesunday)), to: startoffreetimesunday).minute!)
+                 {
+                     startoffreetimesunday = freetime.startdatetime
+                 }
             }
             
         }
         var generalfreetimelist = [timesunday, timemonday, timetuesday, timewednesday, timethursday, timefriday, timesaturday]
+        var startoffreetimelist = [startoffreetimesunday, startoffreetimemonday, startoffreetimetuesday, startoffreetimewednesday, startoffreetimethursday, startoffreetimefriday, startoffreetimesaturday, startoffreetimesunday]
         
         for (index, element) in generalfreetimelist.enumerated() {
             if (element % 5 == 4)
@@ -461,12 +498,7 @@ struct ClassesView: View {
         //    print(generalfreetimelist[index])
         }
         
-        for freetime in freetimelist {
-            if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday)
-            {
-                generalfreetimelist[(Calendar.current.component(.weekday, from: freetime.startdatetime) - 1)] += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-            }
-        }
+
         
         for assignment in assignmentlist {
             latestDate = max(latestDate, assignment.duedate)
@@ -476,13 +508,30 @@ struct ClassesView: View {
         
         for i in 0...daystilllatestdate {
             dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = generalfreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
-            print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! )
+            startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = startoffreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
+            //print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! )
             
         }
-        
-        
+        for freetime in freetimelist {
+            if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday)
+            {
+                dateFreeTimeDict[Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!), to: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!).minute!)
+                 {
+                    startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)] = freetime.startdatetime
+                 }
+            }
+        }
+//        for i in 0...daystilllatestdate {
+//
+//         //   print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! ,startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]?.description )
+//            
+//        }
         for assignment in assignmentlist {
-            if ("kablloey" == "blahablah")
+            let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: 7200), to: assignment.duedate).day!
+            //print(daystilldue)
+            if ("kablooey" == "blahablah")
             {
                 
             }

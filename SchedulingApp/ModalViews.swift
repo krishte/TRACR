@@ -412,6 +412,50 @@ struct NewOccupiedtimeModalView: View {
 //        Text("hello")
 //    }
 //}
+struct MyDatePicker: UIViewRepresentable {
+
+    @Binding var selection: Date
+    @Binding var starttime: Date
+    let minuteInterval: Int
+    let displayedComponents: DatePickerComponents
+
+    func makeCoordinator() -> Coordinator {
+        return Coordinator(self)
+    }
+
+    func makeUIView(context: UIViewRepresentableContext<MyDatePicker>) -> UIDatePicker {
+        let picker = UIDatePicker()
+        // listen to changes coming from the date picker, and use them to update the state variable
+        picker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged), for: .valueChanged)
+        picker.minuteInterval = minuteInterval
+        picker.minimumDate = starttime
+        return picker
+    }
+
+    func updateUIView(_ picker: UIDatePicker, context: UIViewRepresentableContext<MyDatePicker>) {
+        picker.date = selection
+
+        switch displayedComponents {
+        case .hourAndMinute:
+            picker.datePickerMode = .time
+        case [.hourAndMinute, .date]:
+            picker.datePickerMode = .dateAndTime
+        default:
+            break
+        }
+    }
+
+    class Coordinator {
+        let datePicker: MyDatePicker
+        init(_ datePicker: MyDatePicker) {
+            self.datePicker = datePicker
+        }
+
+        @objc func dateChanged(_ sender: UIDatePicker) {
+            datePicker.selection = sender.date
+        }
+    }
+}
 
 struct NewFreetimeModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -427,6 +471,7 @@ struct NewFreetimeModalView: View {
     @State private var selectedrepeat = 0
     var formatter: DateFormatter
     @State var daysNum: [Int] = []
+    @State private var starttime = Date(timeIntervalSince1970: 0)
     
     init(NewFreetimePresenting: Binding<Bool>) {
         self._NewFreetimePresenting = NewFreetimePresenting
@@ -506,17 +551,24 @@ struct NewFreetimeModalView: View {
         
         return repetitionText
     }
-    
+    @State private var hour = 1
+    @State private var minute = 0
+
+    let minutes = [0, 15, 30, 45]
+
     var body: some View {
         NavigationView {
             VStack {
                 Form {
                     Section {
-                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)
+                       // MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, minuteInterval: 5, displayedComponents: .hourAndMinute)
+                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute).pickerStyle(WheelPickerStyle())
                     }
                     Section {
-                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute)
+                    //    MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, minuteInterval: 5, displayedComponents: .hourAndMinute)
+                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute).pickerStyle(WheelPickerStyle())
                     }
+
                     Section {
                         NavigationLink(destination:
                             List {
@@ -1017,7 +1069,7 @@ struct FreetimeDetailView: View {
                 self.selection.removeAll()
             }
             
-        }, label: {selection.count == 8 ? Text("Shrink All"): Text("Expand All")})).navigationBarTitle("Add Grade", displayMode: .inline)
+        }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("Add Grade", displayMode: .inline)
     }
 }
 

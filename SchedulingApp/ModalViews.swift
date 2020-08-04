@@ -45,10 +45,8 @@ struct NewAssignmentModalView: View {
                     }
                 }
                 Section {
-                    Picker(selection: $assignmenttype, label: Text("Type"))
-                    {
-                        ForEach(0 ..< assignmenttypes.count)
-                        {
+                    Picker(selection: $assignmenttype, label: Text("Type")) {
+                        ForEach(0 ..< assignmenttypes.count) {
                             Text(self.assignmenttypes[$0])
                         }
                     }
@@ -91,6 +89,7 @@ struct NewAssignmentModalView: View {
                 Section {
                     DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
+                
                 Section {
                     Button(action: {
                         self.createassignmentallowed = true
@@ -413,11 +412,8 @@ struct NewOccupiedtimeModalView: View {
 //    }
 //}
 struct MyDatePicker: UIViewRepresentable {
-
     @Binding var selection: Date
     @Binding var starttime: Date
-    let minuteInterval: Int
-    let displayedComponents: DatePickerComponents
 
     func makeCoordinator() -> Coordinator {
         return Coordinator(self)
@@ -427,22 +423,13 @@ struct MyDatePicker: UIViewRepresentable {
         let picker = UIDatePicker()
         // listen to changes coming from the date picker, and use them to update the state variable
         picker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged), for: .valueChanged)
-        picker.minuteInterval = minuteInterval
-        picker.minimumDate = starttime
+        picker.minuteInterval = 5
+        picker.datePickerMode = .time
         return picker
     }
 
     func updateUIView(_ picker: UIDatePicker, context: UIViewRepresentableContext<MyDatePicker>) {
         picker.date = selection
-
-        switch displayedComponents {
-        case .hourAndMinute:
-            picker.datePickerMode = .time
-        case [.hourAndMinute, .date]:
-            picker.datePickerMode = .dateAndTime
-        default:
-            break
-        }
     }
 
     class Coordinator {
@@ -492,8 +479,7 @@ struct NewFreetimeModalView: View {
         var repetitionText = ""
         var weekdays = false
         var weekends = false
-        if (self.selection.contains("None"))
-        {
+        if (self.selection.contains("None")) {
             repetitionText = "None"
             return repetitionText
         }
@@ -551,6 +537,7 @@ struct NewFreetimeModalView: View {
         
         return repetitionText
     }
+    
     @State private var hour = 1
     @State private var minute = 0
 
@@ -561,12 +548,15 @@ struct NewFreetimeModalView: View {
             VStack {
                 Form {
                     Section {
-                       // MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, minuteInterval: 5, displayedComponents: .hourAndMinute)
-                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute).pickerStyle(WheelPickerStyle())
+                        MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime)
+                        
+//                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)//.pickerStyle(WheelPickerStyle())
                     }
+                    
                     Section {
-                    //    MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, minuteInterval: 5, displayedComponents: .hourAndMinute)
-                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute).pickerStyle(WheelPickerStyle())
+                        MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime)
+                        
+//                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute).pickerStyle(WheelPickerStyle())
                     }
 
                     Section {
@@ -574,9 +564,7 @@ struct NewFreetimeModalView: View {
                             List {
                                 HStack {
                                      Button(action: {
-                                         
-                                        if (self.selection.count != 1)
-                                        {
+                                        if (self.selection.count != 1) {
                                             self.selection.removeAll()
                                             self.selectDeselect("None")
                                         }
@@ -584,23 +572,20 @@ struct NewFreetimeModalView: View {
                                      }) {
                                          Text("None").foregroundColor(.black)
                                      }
+                                    
                                      if (self.selection.contains("None")) {
                                          Spacer()
                                          Image(systemName: "checkmark").foregroundColor(.blue)
                                      }
                                  }
-                                ForEach(self.repeatlist,  id: \.self) {
-                                    repeatoption in
+                                ForEach(self.repeatlist,  id: \.self) { repeatoption in
                                     VStack(alignment: .leading) {
                                         HStack {
                                             Button(action: {self.selectDeselect(repeatoption)
-                                                
-                                                if (self.selection.count==0)
-                                                {
+                                                if (self.selection.count==0) {
                                                     self.selectDeselect("None")
                                                 }
-                                                else if (self.selection.contains("None"))
-                                                {
+                                                else if (self.selection.contains("None")) {
                                                     self.selectDeselect("None")
                                                 }
                                                 
@@ -763,7 +748,6 @@ struct FreetimeDetailView: View {
     
     var body: some View {
         List {
-            //Text(String(freetimelist.count))
             Group {
                 Button(action: {self.selectDeselect("Monday")}) {
                     HStack {
@@ -772,10 +756,8 @@ struct FreetimeDetailView: View {
                         Image(systemName: selection.contains("Monday") ? "chevron.down" : "chevron.up")
                     }.padding(10).background(Color("one")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                 }
-                if (selection.contains("Monday"))
-                {
-                    ForEach(freetimelist)
-                    {
+                if (selection.contains("Monday")) {
+                    ForEach(freetimelist) {
                         freetime in
                         if (freetime.monday)
                         {
@@ -785,12 +767,10 @@ struct FreetimeDetailView: View {
                     .onDelete { indexSet in
                          for index in indexSet {
                             self.freetimelist[index].monday = false
-                            if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
-                            {
+                            if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday) {
                                 self.managedObjectContext.delete(self.freetimelist[index])
                             }
                          }
-
 
                          do {
                              try self.managedObjectContext.save()
@@ -807,26 +787,20 @@ struct FreetimeDetailView: View {
                        Image(systemName: selection.contains("Tuesday") ? "chevron.down" : "chevron.up")
                    }.padding(10).background(Color("two")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                }
-                if (selection.contains("Tuesday"))
-                {
-                    ForEach(freetimelist)
-                     {
+                if (selection.contains("Tuesday")) {
+                    ForEach(freetimelist) {
                          freetime in
-                         if (freetime.tuesday)
-                         {
+                         if (freetime.tuesday) {
                              Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
                          }
                      }
                      .onDelete { indexSet in
                           for index in indexSet {
                               self.freetimelist[index].tuesday = false
-                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
-                              {
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday) {
                                   self.managedObjectContext.delete(self.freetimelist[index])
                               }
-                            
                             }
-
 
                           do {
                               try self.managedObjectContext.save()
@@ -843,24 +817,19 @@ struct FreetimeDetailView: View {
                        Image(systemName: selection.contains("Wednesday") ? "chevron.down" : "chevron.up")
                    }.padding(10).background(Color("three")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                }
-                if (selection.contains("Wednesday"))
-                {
-                    ForEach(freetimelist)
-                    {
+                if (selection.contains("Wednesday")) {
+                    ForEach(freetimelist) {
                         freetime in
-                        if (freetime.wednesday)
-                        {
+                        if (freetime.wednesday) {
                             Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
                         }
                     }
                     .onDelete { indexSet in
                          for index in indexSet {
                               self.freetimelist[index].wednesday = false
-                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
-                              {
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday) {
                                   self.managedObjectContext.delete(self.freetimelist[index])
                               }
-                            
                             }
 
                          do {
@@ -878,24 +847,19 @@ struct FreetimeDetailView: View {
                            Image(systemName: selection.contains("Thursday") ? "chevron.down" : "chevron.up")
                        }.padding(10).background(Color("four")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                    }
-                if (selection.contains("Thursday"))
-                {
-                    ForEach(freetimelist)
-                    {
+                if (selection.contains("Thursday")) {
+                    ForEach(freetimelist) {
                         freetime in
-                        if (freetime.thursday)
-                        {
+                        if (freetime.thursday) {
                             Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
                         }
                     }
                     .onDelete { indexSet in
                          for index in indexSet {
                               self.freetimelist[index].thursday = false
-                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
-                              {
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday) {
                                   self.managedObjectContext.delete(self.freetimelist[index])
                               }
-                            
                         }
 
                          do {
@@ -913,24 +877,19 @@ struct FreetimeDetailView: View {
                            Image(systemName: selection.contains("Friday") ? "chevron.down" : "chevron.up")
                        }.padding(10).background(Color("five")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                    }
-                if (selection.contains("Friday"))
-                {
-                    ForEach(freetimelist)
-                    {
+                if (selection.contains("Friday")) {
+                    ForEach(freetimelist) {
                         freetime in
-                        if (freetime.friday)
-                        {
+                        if (freetime.friday) {
                             Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
                         }
                     }
                     .onDelete { indexSet in
                          for index in indexSet {
                               self.freetimelist[index].friday = false
-                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
-                              {
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday) {
                                   self.managedObjectContext.delete(self.freetimelist[index])
                               }
-                            
                             }
 
                          do {
@@ -941,7 +900,6 @@ struct FreetimeDetailView: View {
                          print("Freetime deleted")
                     }
                 }
-
             }
             Group {
                 Button(action: {self.selectDeselect("Saturday")}) {
@@ -951,27 +909,20 @@ struct FreetimeDetailView: View {
                            Image(systemName: selection.contains("Saturday") ? "chevron.down" : "chevron.up")
                        }.padding(10).background(Color("six")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                    }
-                if (selection.contains("Saturday"))
-                {
-                    ForEach(freetimelist)
-                    {
+                if (selection.contains("Saturday")) {
+                    ForEach(freetimelist) {
                         freetime in
-                        if (freetime.saturday)
-                        {
+                        if (freetime.saturday) {
                             Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
                         }
                     }
                     .onDelete { indexSet in
                          for index in indexSet {
                               self.freetimelist[index].saturday = false
-                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
-                              {
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday) {
                                   self.managedObjectContext.delete(self.freetimelist[index])
                               }
-                            
                             }
-
-
                          do {
                              try self.managedObjectContext.save()
                          } catch {
@@ -988,24 +939,19 @@ struct FreetimeDetailView: View {
                            Image(systemName: selection.contains("Sunday") ? "chevron.down" : "chevron.up")
                        }.padding(10).background(Color("seven")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                    }
-                if (selection.contains("Sunday"))
-                {
-                    ForEach(freetimelist)
-                    {
+                if (selection.contains("Sunday")) {
+                    ForEach(freetimelist) {
                         freetime in
-                        if (freetime.sunday)
-                        {
+                        if (freetime.sunday) {
                             Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
                         }
                     }
                     .onDelete { indexSet in
                          for index in indexSet {
                               self.freetimelist[index].sunday = false
-                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday)
-                              {
+                              if (!self.freetimelist[index].monday && !self.freetimelist[index].tuesday && !self.freetimelist[index].wednesday && !self.freetimelist[index].thursday && !self.freetimelist[index].friday && !self.freetimelist[index].saturday && !self.freetimelist[index].sunday) {
                                   self.managedObjectContext.delete(self.freetimelist[index])
                               }
-                            
                             }
 
                          do {
@@ -1024,13 +970,10 @@ struct FreetimeDetailView: View {
                            Image(systemName: selection.contains("One-off Dates") ? "chevron.down" : "chevron.up")
                        }.padding(10).background(Color("eight")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10).offset(x: -10)
                    }
-                if (selection.contains("One-off Dates"))
-                {
-                    ForEach(freetimelist)
-                    {
+                if (selection.contains("One-off Dates")) {
+                    ForEach(freetimelist) {
                         freetime in
-                        if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday)
-                        {
+                        if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday) {
                             HStack {
                                 Text(self.formatter.string(from: freetime.startdatetime) + " - " + self.formatter.string(from: freetime.enddatetime))
                                 Spacer()
@@ -1043,7 +986,6 @@ struct FreetimeDetailView: View {
                              self.managedObjectContext.delete(self.freetimelist[index])
                          }
 
-
                          do {
                              try self.managedObjectContext.save()
                          } catch {
@@ -1054,18 +996,14 @@ struct FreetimeDetailView: View {
                 }
             }
         }.navigationBarItems(trailing: Button(action: {
-            
-            if (self.selection.count < 8)
-            {
+            if (self.selection.count < 8) {
                 for dayname in self.daylist {
-                    if (!self.selection.contains(dayname))
-                    {
+                    if (!self.selection.contains(dayname)) {
                         self.selection.insert(dayname)
                     }
                 }
             }
-            else
-            {
+            else {
                 self.selection.removeAll()
             }
             

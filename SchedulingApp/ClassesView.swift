@@ -439,43 +439,38 @@ struct ClassesView: View {
             }
             if (freetime.tuesday) {
                 timetuesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimetuesday)), to: startoffreetimetuesday).minute!)
-                {
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimetuesday)), to: startoffreetimetuesday).minute!) {
                     startoffreetimetuesday = freetime.startdatetime
                 }
             }
             if (freetime.wednesday) {
                 timewednesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimewednesday)), to: startoffreetimewednesday).minute!)
-                {
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimewednesday)), to: startoffreetimewednesday).minute!) {
                     startoffreetimewednesday = freetime.startdatetime
                 }
             }
             if (freetime.thursday) {
                 timethursday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimethursday)), to: startoffreetimethursday).minute!)
-                {
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimethursday)), to: startoffreetimethursday).minute!) {
                     startoffreetimethursday = freetime.startdatetime
                 }
             }
             if (freetime.friday) {
                 timefriday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimefriday)), to: startoffreetimefriday).minute!)
-                 {
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimefriday)), to: startoffreetimefriday).minute!) {
                      startoffreetimefriday = freetime.startdatetime
                  }
             }
+            
             if (freetime.saturday) {
                 timesaturday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesaturday)), to: startoffreetimesaturday).minute!)
-                 {
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesaturday)), to: startoffreetimesaturday).minute!) {
                      startoffreetimesaturday = freetime.startdatetime
                  }
             }
             if (freetime.sunday) {
                 timesunday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesunday)), to: startoffreetimesunday).minute!)
-                 {
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: startoffreetimesunday)), to: startoffreetimesunday).minute!) {
                      startoffreetimesunday = freetime.startdatetime
                  }
             }
@@ -502,8 +497,8 @@ struct ClassesView: View {
             dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = generalfreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
             startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = startoffreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
             //print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! )
-            
         }
+        
         for freetime in freetimelist {
             if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday)
             {

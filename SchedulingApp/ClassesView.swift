@@ -344,60 +344,107 @@ struct ClassesView: View {
     let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
     
     var startOfDay: Date {
-        return Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200)))
+        return Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
+        //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
     }
 
+    func bulk(daystilldue: Int, totaltime: Int, bulk: Bool, dateFreeTimeDict: [Date: Int]) -> ([Int], Int)
+    {
+        let safetyfraction = daystilldue > 20 ? (daystilldue > 100 ? 19/20 : 9/10) : 3/4
+        var tempsubassignmentlist: [Int] = []
+        let newd = Int(daystilldue*safetyfraction)
+        //let rangeoflengths = [30, 300]
+        var approxlength = 0
+        if (bulk)
+        {
+            let tempval:Double = 0.066*Double  (totaltime) + 80
+            approxlength = Int(ceil(CGFloat(tempval)/CGFloat(15))*15)
+            
+        }
+        else
+        {
+            approxlength = max(Int(Double(totaltime)/Double(newd)), 30)
+            approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(15))*15)
+            
+        }
+        //possibly 0...newd or 0..<newd
+        var possibledays = 0
+        for i in 0..<newd {
+            if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! >= approxlength)
+            {
+                possibledays += 1
+            }
+        }
+        let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
+        if (ntotal <= possibledays)
+        {
+            for _ in 0..<ntotal {
+                tempsubassignmentlist.append(approxlength)
+            }
+            if (totaltime % approxlength != 0)
+            {
+                tempsubassignmentlist.append(totaltime % approxlength)
+            }
+        }
+        else
+        {
+            //do something with the notpossible days to reduce the totaltime that has to be distributed across the possible days
+        }
+        
+        return (tempsubassignmentlist, newd)
+
+    }
     
     func master() -> Void {
-        for i in (0...7) {
-            let newClass = Classcool(context: self.managedObjectContext)
-            newClass.bulk = bulks[i]
-            newClass.tolerance = Int64(tolerances[i])
-            newClass.name = classnameactual[i]
-            newClass.assignmentnumber = 0
-            newClass.color = classcolors[i]
-
-            do {
-                try self.managedObjectContext.save()
-                print("Class made")
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        for i in (0...9) {
-            let newAssignment = Assignment(context: self.managedObjectContext)
-            newAssignment.name = String(names[i])
-            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
-            if (duetimes[i] == "night")
-            {
-                newAssignment.duedate.addTimeInterval(79200)
-            }
-            else
-            {
-                newAssignment.duedate.addTimeInterval(28800)
-            }
-
-            newAssignment.totaltime = Int64(totaltimes[i])
-            newAssignment.subject = classnames[i]
-            newAssignment.timeleft = newAssignment.totaltime
-            newAssignment.progress = 0
-            newAssignment.grade = 0
-            newAssignment.completed = false
-            newAssignment.type = types[i]
-
-            for classity in self.classlist {
-                if (classity.name == newAssignment.subject) {
-                    classity.assignmentnumber += 1
-                    newAssignment.color = classity.color
-                    do {
-                        try self.managedObjectContext.save()
-                        print("Class number changed")
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
-        }
+//        for i in (0...7) {
+//            let newClass = Classcool(context: self.managedObjectContext)
+//            newClass.bulk = bulks[i]
+//            newClass.tolerance = Int64(tolerances[i])
+//            newClass.name = classnameactual[i]
+//            newClass.assignmentnumber = 0
+//            newClass.color = classcolors[i]
+//
+//            do {
+//                try self.managedObjectContext.save()
+//                print("Class made")
+//            } catch {
+//                print(error.localizedDescription)
+//            }
+//        }
+//        for i in (0...9) {
+//            let newAssignment = Assignment(context: self.managedObjectContext)
+//            newAssignment.name = String(names[i])
+//            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
+//            if (duetimes[i] == "night")
+//            {
+//                newAssignment.duedate.addTimeInterval(79200)
+//            }
+//            else
+//            {
+//                newAssignment.duedate.addTimeInterval(28800)
+//            }
+//
+//            newAssignment.totaltime = Int64(totaltimes[i])
+//            newAssignment.subject = classnames[i]
+//            newAssignment.timeleft = newAssignment.totaltime
+//            newAssignment.progress = 0
+//            newAssignment.grade = 0
+//            newAssignment.completed = false
+//            newAssignment.type = types[i]
+//
+//            for classity in self.classlist {
+//                if (classity.name == newAssignment.subject) {
+//                    classity.assignmentnumber += 1
+//                    newAssignment.color = classity.color
+//                    do {
+//                        try self.managedObjectContext.save()
+//                        print("Class number changed")
+//                    } catch {
+//                        print(error.localizedDescription)
+//                    }
+//                }
+//            }
+//        }
         print("epic success")
         
         for (index, _) in subassignmentlist.enumerated() {
@@ -423,7 +470,7 @@ struct ClassesView: View {
         var dateFreeTimeDict = [Date: Int]()
         var startoffreetimeDict = [Date: Date]()
         //initial subassignment objects are added just as (assignmentname, length of subassignment)
-        var subassignmentdict = [Date: (String, Int)]()
+        var subassignmentdict = [Date: [(String, Int)]]()
         print(startOfDay.description)
         
         for freetime in freetimelist {
@@ -521,13 +568,14 @@ struct ClassesView: View {
 //
 //        }
         for assignment in assignmentlist {
-            let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))), to:  Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate))).day!
-            print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))).description,Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate)), daystilldue)
+            let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: assignment.duedate)))).day!
+            //print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))).description, Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate)), daystilldue)
+            print(daystilldue)
             
             //print(daystilldue)
             if ("kablooey" == "blahablah")
             {
-                
+                let (subassignments, newd) = bulk(daystilldue: daystilldue, totaltime: Int(assignment.totaltime), bulk: false, dateFreeTimeDict: dateFreeTimeDict)
             }
             else {
                 
@@ -575,7 +623,7 @@ struct ClassesView: View {
                 HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                         Button(action: {
                             
-                            self.master()
+                             self.master()
                            // MasterStruct().master()
 //                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
 //                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
@@ -590,7 +638,7 @@ struct ClassesView: View {
 //
 //                            for classname in classnames {
 //                                let newClass = Classcool(context: self.managedObjectContext)
-//                                newClass.attentionspan = Int64.random(in: 0 ... 10)
+//                                newClass.bulk = false
 //                                newClass.tolerance = Int64.random(in: 0 ... 10)
 //                                newClass.name = classname
 //                                newClass.assignmentnumber = 0
@@ -685,7 +733,8 @@ struct ClassesView: View {
 //                                    } catch {
 //                                        print(error.localizedDescription)
 //                                    }
-//                                }
+       //                         }
+       //                     }
                         })
                         {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)

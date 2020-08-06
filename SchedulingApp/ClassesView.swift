@@ -450,55 +450,55 @@ struct ClassesView: View {
     }
     
     func master() -> Void {
-//        for i in (0...7) {
-//            let newClass = Classcool(context: self.managedObjectContext)
-//            newClass.bulk = bulks[i]
-//            newClass.tolerance = Int64(tolerances[i])
-//            newClass.name = classnameactual[i]
-//            newClass.assignmentnumber = 0
-//            newClass.color = classcolors[i]
-//
-//            do {
-//                try self.managedObjectContext.save()
-//                print("Class made")
-//            } catch {
-//                print(error.localizedDescription)
-//            }
-//        }
-//        for i in (0...9) {
-//            let newAssignment = Assignment(context: self.managedObjectContext)
-//            newAssignment.name = String(names[i])
-//            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
-//            if (duetimes[i] == "night")
-//            {
-//                newAssignment.duedate.addTimeInterval(79200)
-//            }
-//            else
-//            {
-//                newAssignment.duedate.addTimeInterval(28800)
-//            }
-//
-//            newAssignment.totaltime = Int64(totaltimes[i])
-//            newAssignment.subject = classnames[i]
-//            newAssignment.timeleft = newAssignment.totaltime
-//            newAssignment.progress = 0
-//            newAssignment.grade = 0
-//            newAssignment.completed = false
-//            newAssignment.type = types[i]
-//
-//            for classity in self.classlist {
-//                if (classity.name == newAssignment.subject) {
-//                    classity.assignmentnumber += 1
-//                    newAssignment.color = classity.color
-//                    do {
-//                        try self.managedObjectContext.save()
-//                        print("Class number changed")
-//                    } catch {
-//                        print(error.localizedDescription)
-//                    }
-//                }
-//            }
-//        }
+        for i in (0...7) {
+            let newClass = Classcool(context: self.managedObjectContext)
+            newClass.bulk = bulks[i]
+            newClass.tolerance = Int64(tolerances[i])
+            newClass.name = classnameactual[i]
+            newClass.assignmentnumber = 0
+            newClass.color = classcolors[i]
+
+            do {
+                try self.managedObjectContext.save()
+                print("Class made")
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        for i in (0...9) {
+            let newAssignment = Assignment(context: self.managedObjectContext)
+            newAssignment.name = String(names[i])
+            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
+            if (duetimes[i] == "night")
+            {
+                newAssignment.duedate.addTimeInterval(79200)
+            }
+            else
+            {
+                newAssignment.duedate.addTimeInterval(28800)
+            }
+
+            newAssignment.totaltime = Int64(totaltimes[i])
+            newAssignment.subject = classnames[i]
+            newAssignment.timeleft = newAssignment.totaltime
+            newAssignment.progress = 0
+            newAssignment.grade = 0
+            newAssignment.completed = false
+            newAssignment.type = types[i]
+
+            for classity in self.classlist {
+                if (classity.name == newAssignment.subject) {
+                    classity.assignmentnumber += 1
+                    newAssignment.color = classity.color
+                    do {
+                        try self.managedObjectContext.save()
+                        print("Class number changed")
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+        }
         print("epic success")
         
         for (index, _) in subassignmentlist.enumerated() {

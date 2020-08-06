@@ -23,7 +23,6 @@ struct ContentView: View {
             // To remove only extra separators below the list:
             UITableView.appearance().tableFooterView = UIView()
         }
-        //to force form to top of screen
        // UITableView.appearance().tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: Double.leastNonzeroMagnitude))
         // To remove all separators including the actual ones:
         UITableView.appearance().separatorStyle = .none

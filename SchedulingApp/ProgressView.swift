@@ -379,6 +379,22 @@ struct DetailProgressView: View {
 
 
 struct SettingsView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    
+    var assignmentlist: FetchedResults<Assignment>
+    
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
     var body: some View {
         List {
             NavigationLink(destination: Text("bulk n stuff"))
@@ -445,8 +461,37 @@ struct SettingsView: View {
                     }.padding(.horizontal, 25)
                  }
             }
+            Button(action: {self.deleteAll()}, label: {Text("Clear All Data").frame(minWidth: 0, maxWidth: .infinity)
+            .padding()
+            .foregroundColor(.red)
+                .background(Color.gray)
+            .cornerRadius(40)
+            .padding(.horizontal, 20)})
         }.navigationBarTitle("Settings")
     }
+    func deleteAll()
+    {
+        for (index, _) in subassignmentlist.enumerated() {
+             self.managedObjectContext.delete(self.subassignmentlist[index])
+        }
+        for (index, _) in assignmentlist.enumerated() {
+             self.managedObjectContext.delete(self.assignmentlist[index])
+        }
+        for (index, _) in classlist.enumerated() {
+             self.managedObjectContext.delete(self.classlist[index])
+        }
+//        for (index, _) in freetimelist.enumerated() {
+//             self.managedObjectContext.delete(self.freetimelist[index])
+//        }
+        do {
+            try self.managedObjectContext.save()
+            print("Class number changed")
+        } catch {
+            print(error.localizedDescription)
+        }
+        
+    }
+    
 }
 struct HelpCenterView: View {
     

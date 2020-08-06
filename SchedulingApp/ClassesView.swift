@@ -348,17 +348,22 @@ struct ClassesView: View {
         //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
     }
 
-    func bulk(daystilldue: Int, totaltime: Int, bulk: Bool, dateFreeTimeDict: [Date: Int]) -> ([Int], Int)
+    func bulk(assignment: Assignment, daystilldue: Int, totaltime: Int, bulk: Bool, dateFreeTimeDict: [Date: Int]) -> ([(Int, Int)], Int)
     {
-        let safetyfraction = daystilldue > 20 ? (daystilldue > 100 ? 19/20 : 9/10) : 3/4
-        var tempsubassignmentlist: [Int] = []
-        let newd = Int(daystilldue*safetyfraction)
+        let safetyfraction:Double = daystilldue > 20 ? (daystilldue > 100 ? 0.95 : 0.9) : 0.75
+        var tempsubassignmentlist: [(Int, Int)] = []
+        let newd = Int(ceil(Double(daystilldue)*Double(safetyfraction)))
+        var totaltime = totaltime
         //let rangeoflengths = [30, 300]
         var approxlength = 0
         if (bulk)
         {
-            let tempval:Double = 0.066*Double  (totaltime) + 80
-            approxlength = Int(ceil(CGFloat(tempval)/CGFloat(15))*15)
+            for classity in classlist {
+                if (classity.name == assignment.subject)
+                {
+                    approxlength = 90 + 15*Int(classity.tolerance)
+                }
+            }
             
         }
         else
@@ -369,26 +374,75 @@ struct ClassesView: View {
         }
         //possibly 0...newd or 0..<newd
         var possibledays = 0
+        var possibledayslist: [Int] = []
+        var notpossibledayslist: [Int] = []
+
         for i in 0..<newd {
             if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! >= approxlength)
             {
                 possibledays += 1
+                possibledayslist.append(i)
             }
         }
         let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
         if (ntotal <= possibledays)
         {
-            for _ in 0..<ntotal {
-                tempsubassignmentlist.append(approxlength)
+            var sumsy = 0
+            for i in 0..<ntotal-1 {
+                tempsubassignmentlist.append((possibledayslist[i], approxlength))
+                sumsy += approxlength
             }
-            if (totaltime % approxlength != 0)
-            {
-                tempsubassignmentlist.append(totaltime % approxlength)
-            }
+            tempsubassignmentlist.append((possibledayslist[ntotal-1], totaltime-sumsy))
+            
         }
         else
         {
-            //do something with the notpossible days to reduce the totaltime that has to be distributed across the possible days
+            var extratime = totaltime - approxlength*possibledays
+           // print(totaltime, possibledays, approxlength, extratime)
+            for i in 0..<newd {
+                if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! < approxlength)
+                {
+                    notpossibledayslist.append(i)
+                }
+            }
+            //print(tempsubassignmentlist)
+            //print(notpossibledayslist)
+            for value in notpossibledayslist {
+                //print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
+               // print(possibledays)
+                //print(extratime)
+                if (dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]! >= 30) // could be a different more dynamic bound
+                {
+
+                    if (extratime > dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
+                    {
+                        tempsubassignmentlist.append((value,dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]! ))
+                       // print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
+                        extratime -= dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!
+                    }
+                    else
+                    {
+                        // print(extratime)
+
+                        tempsubassignmentlist.append((value, extratime))
+                        extratime = 0
+                    }
+                    //totaltime -= dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!
+                    if (extratime == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+            if (extratime == 0)
+            {
+                for day in possibledayslist {
+                    tempsubassignmentlist.append((day, approxlength))
+                }
+            }
+            else{
+                print("epic fail")
+            }
         }
         
         return (tempsubassignmentlist, newd)
@@ -563,19 +617,22 @@ struct ClassesView: View {
 //
 //        }
         for assignment in assignmentlist {
-            let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: assignment.duedate)))).day!
-            //print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))).description, Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate)), daystilldue)
-            print(daystilldue)
-            
-            //print(daystilldue)
-            if ("kablooey" == "blahablah")
-            {
-                let (subassignments, newd) = bulk(daystilldue: daystilldue, totaltime: Int(assignment.totaltime), bulk: false, dateFreeTimeDict: dateFreeTimeDict)
-            }
-            else {
+
+                let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: assignment.duedate)))).day!
+                //print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))).description, Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate)), daystilldue)
+               // print(daystilldue)
                 
+                //print(daystilldue)
+
+                let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.totaltime), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
+                
+                print(assignment.name)
+                for (daysfromnow, lengthofwork) in subassignments {
+                    dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*daysfromnow), since: startOfDay)]! -= lengthofwork
+                    print(daysfromnow, lengthofwork)
+                }
             }
-        }
+
     }
     
     var body: some View {
@@ -620,16 +677,16 @@ struct ClassesView: View {
                             
                              self.master()
                            // MasterStruct().master()
-//                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
-//                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
-//                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
-//                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
-//                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
-//                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
-//                            let extendedessay = "Extended Essay"
-//                            let tok = "Theory of Knowledge"
-//                            let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
-//                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
+                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
+                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
+                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
+                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
+                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
+                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
+                            let extendedessay = "Extended Essay"
+                            let tok = "Theory of Knowledge"
+                            let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
+                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
 //
 //                            for classname in classnames {
 //                                let newClass = Classcool(context: self.managedObjectContext)

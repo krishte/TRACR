@@ -125,6 +125,7 @@ struct FilterView: View {
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
     @State var noClassesAlert = false
+    
     var body: some View {
         NavigationView{
             VStack {

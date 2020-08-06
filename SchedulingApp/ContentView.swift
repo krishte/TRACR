@@ -15,7 +15,6 @@ class DisplayedDate: ObservableObject {
 struct ContentView: View {
     @EnvironmentObject var changingDate: DisplayedDate
 
-    
     init() {
         if #available(iOS 14.0, *) {
             // iOS 14 doesn't have extra separators below the list by default.
@@ -28,9 +27,7 @@ struct ContentView: View {
         UITableView.appearance().separatorStyle = .none
 //        UITableView.appearance().backgroundColor = .clear
 //        changingDate.score = 1
-
     }
-    
     
     var body: some View {
         TabView {

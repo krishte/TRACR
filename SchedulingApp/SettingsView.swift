@@ -95,7 +95,6 @@ struct SettingsView: View {
                  }
             }
             
-            Divider().frame(height: 10)
             
             NavigationLink(destination: Text("email and team")) {
                  ZStack {
@@ -125,15 +124,33 @@ struct HelpCenterView: View {
 }
 
 struct NotificationsView: View {
-    let beforeassignmenttimes = [0, 5, 10, 15, 30]
+    let beforeassignmenttimes = ["At Start", "5 minutes", "10 minutes", "15 minutes", "30 minutes"]
     @State var selectedbeforeassignment = 0
     @State var selectedbeforebreak = 0
     let beforebreaktimes = [0,5, 10, 15, 30]
     @State var atassignmentstart = false
     @State var atbreakstart = false
     @State var atassignmentend = false
+    @State private var selection: Set<String> = ["None"]
+    @State private var selection2: Set<String> = ["None"]
     @State var atbreakend = false
     
+    
+    
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+    private func selectDeselect2(_ singularassignment: String) {
+        if selection2.contains(singularassignment) {
+            selection2.remove(singularassignment)
+        } else {
+            selection2.insert(singularassignment)
+        }
+    }
     var body: some View {
         // NavigationView {
           //  VStack {
@@ -142,49 +159,134 @@ struct NotificationsView: View {
         VStack {
             //Spacer()
                         Form {
+                            Text("Before Tasks").font(.title)
+
+                            Section {
+                                List {
+                                    HStack {
+                                         Button(action: {
+                                            if (self.selection.count != 1) {
+                                                self.selection.removeAll()
+                                                self.selectDeselect("None")
+                                            }
+                                             
+                                         }) {
+                                             Text("None").foregroundColor(.black)
+                                         }
+                                        
+                                         if (self.selection.contains("None")) {
+                                             Spacer()
+                                             Image(systemName: "checkmark").foregroundColor(.blue)
+                                         }
+                                     }
+                                    ForEach(self.beforeassignmenttimes,  id: \.self) { repeatoption in
+                                        VStack(alignment: .leading) {
+                                            HStack {
+                                                Button(action: {self.selectDeselect(repeatoption)
+                                                    if (self.selection.count==0) {
+                                                        self.selectDeselect("None")
+                                                    }
+                                                    else if (self.selection.contains("None")) {
+                                                        self.selectDeselect("None")
+                                                    }
+                                                    
+                                                }) {
+                                                    Text(repeatoption).foregroundColor(.black)
+                                                }
+                                                if (self.selection.contains(repeatoption)) {
+                                                    Spacer()
+                                                    Image(systemName: "checkmark").foregroundColor(.blue)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Text("Before Break").font(.title)
+                            Section {
+                                List {
+                                    HStack {
+                                         Button(action: {
+                                            if (self.selection2.count != 1) {
+                                                self.selection2.removeAll()
+                                                self.selectDeselect2("None")
+                                            }
+                                             
+                                         }) {
+                                             Text("None").foregroundColor(.black)
+                                         }
+                                        
+                                         if (self.selection2.contains("None")) {
+                                             Spacer()
+                                             Image(systemName: "checkmark").foregroundColor(.blue)
+                                         }
+                                     }
+                                    ForEach(self.beforeassignmenttimes,  id: \.self) { repeatoption in
+                                        VStack(alignment: .leading) {
+                                            HStack {
+                                                Button(action: {self.selectDeselect2(repeatoption)
+                                                    if (self.selection2.count==0) {
+                                                        self.selectDeselect2("None")
+                                                    }
+                                                    else if (self.selection2.contains("None")) {
+                                                        self.selectDeselect2("None")
+                                                    }
+                                                    
+                                                }) {
+                                                    Text(repeatoption).foregroundColor(.black)
+                                                }
+                                                if (self.selection2.contains(repeatoption)) {
+                                                    Spacer()
+                                                    Image(systemName: "checkmark").foregroundColor(.blue)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                             
-                            Picker(selection: $selectedbeforeassignment, label: Text("Before Assignment")) {
-                                ForEach(0 ..< beforeassignmenttimes.count) {
-                                    
-                                    if (self.beforeassignmenttimes[$0] == 0)
-                                    {
-                                        Text("None")
-                                    }
-                                    else
-                                    {
-                                        Text(String(self.beforeassignmenttimes[$0]) + " minutes")
-                                    }
-                                    
-
-                                }
-                            }
-                            Picker(selection: $selectedbeforebreak, label: Text("Before Break")) {
-                                ForEach(0 ..< beforebreaktimes.count) {
-
-                                    if (self.beforebreaktimes[$0] == 0)
-                                    {
-                                        Text("None")
-                                    }
-                                    else
-                                    {
-                                        Text(String(self.beforebreaktimes[$0]) + " minutes")
-                                    }
-                                    
-
-                                }
-                            }
-                            Toggle(isOn: $atassignmentstart) {
-                                Text("Assignment start")
-                            }
-                            Toggle(isOn: $atbreakstart) {
-                                Text("Break start")
-                            }
-                            Toggle(isOn: $atassignmentend) {
-                                Text("Assignment end")
-                            }
-                            Toggle(isOn: $atbreakend) {
-                                Text("Break end")
-                            }
+//                            Picker(selection: $selectedbeforeassignment, label: Text("Before Assignment")) {
+//                                ForEach(0 ..< beforeassignmenttimes.count) {
+//
+//                                    if (self.beforeassignmenttimes[$0] == 0)
+//                                    {
+//                                        Text("None")
+//                                    }
+//                                    else
+//                                    {
+//                                        Text(String(self.beforeassignmenttimes[$0]) + " minutes")
+//                                    }
+//
+//
+//                                }
+//                            }
+//                            Picker(selection: $selectedbeforebreak, label: Text("Before Break")) {
+//                                ForEach(0 ..< beforebreaktimes.count) {
+//
+//                                    if (self.beforebreaktimes[$0] == 0)
+//                                    {
+//                                        Text("None")
+//                                    }
+//                                    else
+//                                    {
+//                                        Text(String(self.beforebreaktimes[$0]) + " minutes")
+//                                    }
+//
+//
+//                                }
+//                            }
+//                            Toggle(isOn: $atassignmentstart) {
+//                                Text("Assignment start")
+//                            }
+//                            Toggle(isOn: $atbreakstart) {
+//                                Text("Break start")
+//                            }
+//                            Toggle(isOn: $atassignmentend) {
+//                                Text("Assignment end")
+//                            }
+//                            Toggle(isOn: $atbreakend) {
+//                                Text("Break end")
+//                            }
                         }.navigationBarTitle("Notifications", displayMode: .inline)
         }
                    // }

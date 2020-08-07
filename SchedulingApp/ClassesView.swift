@@ -356,52 +356,43 @@ struct ClassesView: View {
         var totaltime = totaltime
         //let rangeoflengths = [30, 300]
         var approxlength = 0
-        if (bulk)
-        {
+        if (bulk) {
             for classity in classlist {
-                if (classity.name == assignment.subject)
-                {
+                if (classity.name == assignment.subject) {
                     approxlength = 90 + 15*Int(classity.tolerance)
                 }
             }
-            
         }
-        else
-        {
+        else {
             approxlength = max(Int(Double(totaltime)/Double(newd)), 30)
             approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(15))*15)
-            
         }
+        
         //possibly 0...newd or 0..<newd
         var possibledays = 0
         var possibledayslist: [Int] = []
         var notpossibledayslist: [Int] = []
 
         for i in 0..<newd {
-            if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! >= approxlength)
-            {
+            if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! >= approxlength) {
                 possibledays += 1
                 possibledayslist.append(i)
             }
         }
         let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
-        if (ntotal <= possibledays)
-        {
+        if (ntotal <= possibledays) {
             var sumsy = 0
             for i in 0..<ntotal-1 {
                 tempsubassignmentlist.append((possibledayslist[i], approxlength))
                 sumsy += approxlength
             }
             tempsubassignmentlist.append((possibledayslist[ntotal-1], totaltime-sumsy))
-            
         }
-        else
-        {
+        else {
             var extratime = totaltime - approxlength*possibledays
            // print(totaltime, possibledays, approxlength, extratime)
             for i in 0..<newd {
-                if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! < approxlength)
-                {
+                if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! < approxlength) {
                     notpossibledayslist.append(i)
                 }
             }
@@ -414,28 +405,24 @@ struct ClassesView: View {
                 if (dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]! >= 30) // could be a different more dynamic bound
                 {
 
-                    if (extratime > dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
-                    {
+                    if (extratime > dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!) {
                         tempsubassignmentlist.append((value,dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]! ))
                        // print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
                         extratime -= dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!
                     }
-                    else
-                    {
+                    else {
                         // print(extratime)
 
                         tempsubassignmentlist.append((value, extratime))
                         extratime = 0
                     }
                     //totaltime -= dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!
-                    if (extratime == 0)
-                    {
+                    if (extratime == 0) {
                         break;
                     }
                 }
             }
-            if (extratime == 0)
-            {
+            if (extratime == 0) {
                 for day in possibledayslist {
                     tempsubassignmentlist.append((day, approxlength))
                 }
@@ -465,7 +452,6 @@ struct ClassesView: View {
         }
         
         return (tempsubassignmentlist, newd)
-
     }
     
     func master() -> Void {

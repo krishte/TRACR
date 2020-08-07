@@ -20,6 +20,8 @@
 		561880E024AB75B100558F29 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561880DF24AB75B100558F29 /* ProgressView.swift */; };
 		5621A72D24C49A0D008ADB07 /* Freetime+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621A72B24C49A0D008ADB07 /* Freetime+CoreDataClass.swift */; };
 		5621A72E24C49A0D008ADB07 /* Freetime+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621A72C24C49A0D008ADB07 /* Freetime+CoreDataProperties.swift */; };
+		56A6108724DDB4330063CE54 /* AssignmentTypes+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A6108524DDB4330063CE54 /* AssignmentTypes+CoreDataClass.swift */; };
+		56A6108824DDB4330063CE54 /* AssignmentTypes+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A6108624DDB4330063CE54 /* AssignmentTypes+CoreDataProperties.swift */; };
 		56A66EBE24B77D5000CCD161 /* ClassModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 56A66EBC24B77D5000CCD161 /* ClassModel.xcdatamodeld */; };
 		56A66ECD24B7D47A00CCD161 /* Assignment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A66ECB24B7D47A00CCD161 /* Assignment+CoreDataClass.swift */; };
 		56A66ECE24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A66ECC24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift */; };
@@ -72,6 +74,8 @@
 		561880DF24AB75B100558F29 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		5621A72B24C49A0D008ADB07 /* Freetime+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Freetime+CoreDataClass.swift"; path = "SchedulingApp/Freetime+CoreDataClass.swift"; sourceTree = "<group>"; };
 		5621A72C24C49A0D008ADB07 /* Freetime+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Freetime+CoreDataProperties.swift"; path = "SchedulingApp/Freetime+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		56A6108524DDB4330063CE54 /* AssignmentTypes+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AssignmentTypes+CoreDataClass.swift"; path = "SchedulingApp/AssignmentTypes+CoreDataClass.swift"; sourceTree = "<group>"; };
+		56A6108624DDB4330063CE54 /* AssignmentTypes+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AssignmentTypes+CoreDataProperties.swift"; path = "SchedulingApp/AssignmentTypes+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		56A66EBD24B77D5000CCD161 /* ClassModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ClassModel.xcdatamodel; sourceTree = "<group>"; };
 		56A66ECB24B7D47A00CCD161 /* Assignment+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Assignment+CoreDataClass.swift"; path = "SchedulingApp/Assignment+CoreDataClass.swift"; sourceTree = "<group>"; };
 		56A66ECC24B7D47A00CCD161 /* Assignment+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Assignment+CoreDataProperties.swift"; path = "SchedulingApp/Assignment+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -115,6 +119,8 @@
 		5618809D24AB4A8500558F29 = {
 			isa = PBXGroup;
 			children = (
+				56A6108524DDB4330063CE54 /* AssignmentTypes+CoreDataClass.swift */,
+				56A6108624DDB4330063CE54 /* AssignmentTypes+CoreDataProperties.swift */,
 				5621A72B24C49A0D008ADB07 /* Freetime+CoreDataClass.swift */,
 				5621A72C24C49A0D008ADB07 /* Freetime+CoreDataProperties.swift */,
 				56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */,
@@ -327,6 +333,7 @@
 			files = (
 				CFADF84424D1D249001A92D5 /* ModalViews.swift in Sources */,
 				561880AA24AB4A8500558F29 /* AppDelegate.swift in Sources */,
+				56A6108824DDB4330063CE54 /* AssignmentTypes+CoreDataProperties.swift in Sources */,
 				561880DA24AB753700558F29 /* HomeView.swift in Sources */,
 				561880AC24AB4A8500558F29 /* SceneDelegate.swift in Sources */,
 				561880AE24AB4A8500558F29 /* ContentView.swift in Sources */,
@@ -338,6 +345,7 @@
 				56E335ED24D3184E00AA2596 /* Master.swift in Sources */,
 				5621A72E24C49A0D008ADB07 /* Freetime+CoreDataProperties.swift in Sources */,
 				56A66EBE24B77D5000CCD161 /* ClassModel.xcdatamodeld in Sources */,
+				56A6108724DDB4330063CE54 /* AssignmentTypes+CoreDataClass.swift in Sources */,
 				5621A72D24C49A0D008ADB07 /* Freetime+CoreDataClass.swift in Sources */,
 				561880DC24AB759500558F29 /* ClassesView.swift in Sources */,
 				CFADF84624D1D45E001A92D5 /* AssignmentView.swift in Sources */,

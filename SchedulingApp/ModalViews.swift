@@ -315,7 +315,7 @@ struct NewClassModalView: View {
                             let newClass = Classcool(context: self.managedObjectContext)
                             //print(Int(self.classtolerancedouble))
                             //print(self.classnameindex)
-                            newClass.bulk = Bool.random()
+                            //newClass.bulk = Bool.random()
                             newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
                             newClass.name = testname
                             newClass.assignmentnumber = 0

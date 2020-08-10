@@ -42,7 +42,8 @@ struct MasterStruct {
     
     
     var startOfDay: Date {
-        return Calendar.current.startOfDay(for: Date() + 7200)
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+        return Calendar.current.startOfDay(for: Date() + TimeInterval(timezoneOffset))
     }
     
     init() {
@@ -56,6 +57,9 @@ struct MasterStruct {
         for (index, _) in subassignmentlist.enumerated() {
              self.managedObjectContext.delete(self.subassignmentlist[index])
         }
+        
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+        
         var timemonday = 0
         var timetuesday = 0
         var timewednesday = 0
@@ -63,7 +67,7 @@ struct MasterStruct {
         var timefriday = 0
         var timesaturday = 0
         var timesunday = 0
-        var latestDate = Date(timeIntervalSinceNow: 7200)
+        var latestDate = Date(timeIntervalSinceNow: TimeInterval(timezoneOffset))
         var dateFreeTimeDict = [Date: Int]()
         
         
@@ -104,7 +108,7 @@ struct MasterStruct {
             latestDate = max(latestDate, assignment.duedate)
         }
         
-        let daystilllatestdate = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: 7200), to: latestDate).day!
+        let daystilllatestdate = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: latestDate).day!
         
         for i in 0...daystilllatestdate {
             dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = generalfreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]

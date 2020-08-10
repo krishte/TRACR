@@ -19,7 +19,7 @@ struct NewAssignmentModalView: View {
     @State private var hours = 0
     @State private var minutes = 0
     @State var selectedDate = Date()
-    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation", "Exam", "Report"]
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
     
@@ -85,11 +85,10 @@ struct NewAssignmentModalView: View {
                     }
                 }
 
-
                 Section {
                     DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
-                
+
                 Section {
                     Button(action: {
                         self.createassignmentallowed = true
@@ -119,6 +118,7 @@ struct NewAssignmentModalView: View {
                                     classity.assignmentnumber += 1
                                 }
                             }
+                            
                             do {
                                 try self.managedObjectContext.save()
                             } catch {
@@ -552,22 +552,16 @@ struct NewFreetimeModalView: View {
             VStack {
                 Form {
                     Section {
-                        
-                        
                         Button(action: {
-                            
                             self.expandedstart.toggle()
-                            
                         }) {
                             HStack {
                                 Text("Select start time").foregroundColor(Color.black)
                                 Spacer()
                                 Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
                             }
-                            
                         }
-                        if (expandedstart)
-                        {
+                        if (expandedstart) {
                             VStack {
                                 MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                             }.animation(nil)
@@ -586,10 +580,8 @@ struct NewFreetimeModalView: View {
                                 Spacer()
                                 Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
                             }
-                            
                         }
-                        if (expandedend)
-                        {
+                        if (expandedend) {
                             VStack {
                                 MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                             }.animation(nil)
@@ -655,23 +647,21 @@ struct NewFreetimeModalView: View {
                         Button(action: {
                             let newFreetime = Freetime(context: self.managedObjectContext)
 
-                            if (self.selection.contains("None"))
-                            {
+                            if (self.selection.contains("None")) {
                                 let calendar = Calendar.current
-                                 let dateComponents = calendar.dateComponents([.day, .month, .year], from: self.selectedDate)
-                                 let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: self.selectedstartdatetime)
+                                let dateComponents = calendar.dateComponents([.day, .month, .year], from: self.selectedDate)
+                                let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: self.selectedstartdatetime)
                                  
-                                 var newComponents = DateComponents()
-                                 newComponents.timeZone = .current
-                                 newComponents.day = dateComponents.day
-                                 newComponents.month = dateComponents.month
-                                 newComponents.year = dateComponents.year
-                                 newComponents.hour = timeComponents.hour
-                                 newComponents.minute = timeComponents.minute
-                                 newComponents.second = timeComponents.second
+                                var newComponents = DateComponents()
+                                newComponents.timeZone = .current
+                                newComponents.day = dateComponents.day
+                                newComponents.month = dateComponents.month
+                                newComponents.year = dateComponents.year
+                                newComponents.hour = timeComponents.hour
+                                newComponents.minute = timeComponents.minute
+                                newComponents.second = timeComponents.second
                                  
                                 newFreetime.startdatetime = calendar.date(from: newComponents)!
-                                
                                 
                                 let timeComponents2 = calendar.dateComponents([.hour, .minute, .second], from: self.selectedenddatetime)
                                 
@@ -690,6 +680,7 @@ struct NewFreetimeModalView: View {
                                 newFreetime.startdatetime = self.selectedstartdatetime
                                 newFreetime.enddatetime = self.selectedenddatetime
                             }
+                            
                             newFreetime.monday = false
                             newFreetime.tuesday = false
                             newFreetime.wednesday = false
@@ -735,9 +726,6 @@ struct NewFreetimeModalView: View {
                             }
                             
                             self.NewFreetimePresenting = false
-                            
-
-
                         }) {
                             Text("Add Free Time")
                         }
@@ -1063,11 +1051,9 @@ struct NewGradeModalView: View {
                 Section {
                     Picker(selection: $selectedassignment, label: Text("Assignment")) {
                         ForEach(0 ..< assignmentlist.count) {
-                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0)
-                            {
+                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0) {
                                 Text(self.assignmentlist[$0].name)
                             }
-
                         }
                     }
                 }
@@ -1084,10 +1070,8 @@ struct NewGradeModalView: View {
                 Section {
                     Button(action: {
                         for assignment in self.assignmentlist {
-                            if (assignment.name == self.assignmentlist[self.selectedassignment].name)
-                            {
+                            if (assignment.name == self.assignmentlist[self.selectedassignment].name) {
                                 assignment.grade =  Int64(self.assignmentgrade.rounded(.down))
-
                             }
                         }
                      
@@ -1104,6 +1088,5 @@ struct NewGradeModalView: View {
                 }
             }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Grade", displayMode: .inline)
         }
-        
     }
 }

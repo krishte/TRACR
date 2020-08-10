@@ -115,6 +115,8 @@ struct SettingsView: View {
                 
             }
             }
+            
+            Button(action: {self.deleteAll()}, label: {Text("Clear All Data").frame(minWidth: 0, maxWidth: .infinity).padding().foregroundColor(.red).background(Color.gray).cornerRadius(40).padding(.horizontal, 20)})
         }.navigationBarTitle("Settings")
     }
     func delete() -> Void {

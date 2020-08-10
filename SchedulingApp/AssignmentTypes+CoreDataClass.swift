@@ -12,5 +12,5 @@ import CoreData
 
 @objc(AssignmentTypes)
 public class AssignmentTypes: NSManagedObject, Identifiable {
-
+    
 }

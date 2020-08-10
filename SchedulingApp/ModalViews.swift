@@ -1046,7 +1046,7 @@ struct FreetimeDetailView: View {
                 self.selection.removeAll()
             }
             
-        }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("Add Grade", displayMode: .inline)
+        }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("View Free Times", displayMode: .inline)
     }
 }
 

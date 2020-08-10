@@ -259,7 +259,7 @@ struct DetailProgressView: View {
         var averageGrade: Double = 0
         for group in allaverages {
             for (name, grade) in group {
-                if (name == classcool.name)
+                if (name == classcool.originalname)
                 {
                     return grade
                 }
@@ -272,9 +272,9 @@ struct DetailProgressView: View {
         var percentile: Double = 0
         for group in allpercentages {
             for (name, percentilelist) in group {
-                if (name == classcool.name)
+                if (name == classcool.originalname)
                 {
-                    for i in 0...(Int(getAverageGrade()+1)-1) {
+                    for i in 0...(Int(getAverageGrade()+0.99)-1) {
                         percentile += percentilelist[i]
                     }
                     return Int(percentile+0.5)

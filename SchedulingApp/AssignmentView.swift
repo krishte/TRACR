@@ -82,16 +82,20 @@ struct IndividualAssignmentFilterView: View {
             
             VStack {
                 if (!isExpanded) {
-                    Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
+                    Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading).padding(5)
                 }
                     
                 else {
-                    Text(assignment.name).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                    Text("Type: " + assignment.type).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
-                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading)
-                    Text("Total time: " + String(assignment.totaltime)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
-                    Text("Time left:  " + String(assignment.timeleft)).frame(width:UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading)
+                    Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-50, height: 50, alignment: .topLeading)
+
+                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading).padding(5)
+                    Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading).padding(5)
+                    HStack {
+                        Text("Total time: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
+                        Spacer()
+                        Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing).padding(5)
+                    }
                 }
                 
                 ZStack {
@@ -113,7 +117,7 @@ struct IndividualAssignmentFilterView: View {
 
                     }
                 }
-            }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.8 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
 
@@ -211,5 +215,19 @@ struct IndividualAssignmentFilterView: View {
  
                 }).animation(.spring())
         }.frame(width: UIScreen.main.bounds.size.width-20).padding(10)
+    }
+    func gethourminutestext(minutenumber: Int) -> String {
+        if (minutenumber < 60)
+        {
+            return String(minutenumber) + " minutes"
+        }
+        else if (minutenumber % 60 == 0)
+        {
+            return String(minutenumber/60) + " hours"
+        }
+        else
+        {
+            return String(minutenumber/60) + " h " + String(minutenumber%60) + " min"
+        }
     }
 }

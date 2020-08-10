@@ -319,6 +319,7 @@ struct NewClassModalView: View {
                             newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
                             newClass.name = testname
                             newClass.assignmentnumber = 0
+                            newClass.originalname = testname
                             if self.coloraselectedindex != nil {
                                 newClass.color = self.colorsa[self.coloraselectedindex!]
                             }
@@ -425,11 +426,14 @@ struct MyDatePicker: UIViewRepresentable {
         picker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged), for: .valueChanged)
         picker.minuteInterval = 5
         picker.datePickerMode = .time
+        picker.minimumDate = starttime
         return picker
     }
 
     func updateUIView(_ picker: UIDatePicker, context: UIViewRepresentableContext<MyDatePicker>) {
         picker.date = selection
+        picker.minimumDate = starttime
+
     }
 
     class Coordinator {
@@ -453,6 +457,8 @@ struct NewFreetimeModalView: View {
     @Binding var NewFreetimePresenting: Bool
     @State private var selectedstartdatetime = Date()
     @State private var selectedenddatetime = Date()
+    @State private var expandedstart = false
+    @State private var expandedend = false
     @State private var selectedDate = Date()
     let repeats = ["None", "Daily", "Weekly"]
     @State private var selectedrepeat = 0
@@ -463,8 +469,7 @@ struct NewFreetimeModalView: View {
     init(NewFreetimePresenting: Binding<Bool>) {
         self._NewFreetimePresenting = NewFreetimePresenting
         formatter = DateFormatter()
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
+        formatter.dateFormat = "HH:mm"
     }
     
     private func selectDeselect(_ singularassignment: String) {
@@ -548,13 +553,48 @@ struct NewFreetimeModalView: View {
             VStack {
                 Form {
                     Section {
-                        MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime)
                         
-//                        DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)//.pickerStyle(WheelPickerStyle())
+                        
+                        Button(action: {
+                            
+                            self.expandedstart.toggle()
+                            
+                        }) {
+                            HStack {
+                                Text("Select start time").foregroundColor(Color.black)
+                                Spacer()
+                                Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
+                            }
+                            
+                        }
+                        if (expandedstart)
+                        {
+                            VStack {
+                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                            }.animation(nil)
+                        }
+
+                   //    DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)//.pickerStyle(WheelPickerStyle())
                     }
                     
                     Section {
-                        MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime)
+                        Button(action: {
+                                self.expandedend.toggle()
+                            
+                        }) {
+                            HStack {
+                                Text("Select end time").foregroundColor(Color.black)
+                                Spacer()
+                                Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
+                            }
+                            
+                        }
+                        if (expandedend)
+                        {
+                            VStack {
+                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                            }.animation(nil)
+                        }
                         
 //                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute).pickerStyle(WheelPickerStyle())
                     }

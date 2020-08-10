@@ -317,8 +317,9 @@ struct ClassesView: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+        @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
     
-    
+    var assignmenttypeslist: FetchedResults<AssignmentTypes>
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
     @State var NewOccupiedtimePresenting = false
@@ -328,8 +329,8 @@ struct ClassesView: View {
     @State var stored: Double = 0
     
     @State var startedToDelete = false
-        
-    let types = ["Test", "Homework", "Presentation", "Essay", "Study", "Exam", "Report", "Essay", "Presentation", "Essay"]
+
+    let types = ["Test", "Homework", "Presentation/Oral", "Essay", "Study", "Exam", "Report/Paper", "Essay", "Presentation/Oral", "Essay"]
     let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
     let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
     let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 240]
@@ -339,7 +340,8 @@ struct ClassesView: View {
     
     let bulks = [true, true, true, false, false, false, false, false]
     let classnameactual = ["Math", "German", "English", "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
-    let tolerances = [9, 3, 4, 9, 6, 8, 2, 7]
+    let originalclassnames = ["Mathematics: Analysis and Approaches SL", "German B: SL","English A: Language and Literature SL",  "Physics: HL","Chemistry: HL", "Economics: HL", "Theory of Knowledge",  "Extended Essay"]
+    let tolerances = [4, 1, 2, 4, 3, 4, 1, 5]
     let assignmentnumbers = [2, 1, 1, 2, 1, 1, 1, 1]
     let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
     
@@ -361,10 +363,16 @@ struct ClassesView: View {
             for classity in classlist {
                 if (classity.name == assignment.subject)
                 {
-                    approxlength = 90 + 15*Int(classity.tolerance)
+                    for assignmenttype in assignmenttypeslist {
+                        if (assignmenttype.type == assignment.type)
+                        {
+                            approxlength = Int(assignmenttype.rangemin + ((assignmenttype.rangemax - assignmenttype.rangemin)/5) * classity.tolerance)
+                        }
+                    }
                 }
             }
-            
+            approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(15))*15)
+           // print(approxlength)
         }
         else
         {
@@ -372,6 +380,7 @@ struct ClassesView: View {
             approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(15))*15)
             
         }
+       // print(totaltime, approxlength, daystilldue)
         //possibly 0...newd or 0..<newd
         var possibledays = 0
         var possibledayslist: [Int] = []
@@ -385,6 +394,7 @@ struct ClassesView: View {
             }
         }
         let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
+     //   print(totaltime, approxlength)
         if (ntotal <= possibledays)
         {
             var sumsy = 0
@@ -469,55 +479,74 @@ struct ClassesView: View {
     }
     
     func master() -> Void {
-//        for i in (0...7) {
-//            let newClass = Classcool(context: self.managedObjectContext)
-//            newClass.bulk = bulks[i]
-//            newClass.tolerance = Int64(tolerances[i])
-//            newClass.name = classnameactual[i]
-//            newClass.assignmentnumber = 0
-//            newClass.color = classcolors[i]
-//
-//            do {
-//                try self.managedObjectContext.save()
-//                print("Class made")
-//            } catch {
-//                print(error.localizedDescription)
-//            }
-//        }
-//        for i in (0...9) {
-//            let newAssignment = Assignment(context: self.managedObjectContext)
-//            newAssignment.name = String(names[i])
-//            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
-//            if (duetimes[i] == "night")
-//            {
-//                newAssignment.duedate.addTimeInterval(79200)
-//            }
-//            else
-//            {
-//                newAssignment.duedate.addTimeInterval(28800)
-//            }
-//
-//            newAssignment.totaltime = Int64(totaltimes[i])
-//            newAssignment.subject = classnames[i]
-//            newAssignment.timeleft = newAssignment.totaltime
-//            newAssignment.progress = 0
-//            newAssignment.grade = 0
-//            newAssignment.completed = false
-//            newAssignment.type = types[i]
-//
-//            for classity in self.classlist {
-//                if (classity.name == newAssignment.subject) {
-//                    classity.assignmentnumber += 1
-//                    newAssignment.color = classity.color
-//                    do {
-//                        try self.managedObjectContext.save()
-//                        print("Class number changed")
-//                    } catch {
-//                        print(error.localizedDescription)
-//                    }
-//                }
-//            }
-//        }
+            let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+
+        for assignmenttype in assignmenttypes {
+            let newType = AssignmentTypes(context: self.managedObjectContext)
+            newType.type = assignmenttype
+            newType.rangemin = 90
+            newType.rangemax = 300
+            print(newType.type, newType.rangemin, newType.rangemax)
+            do {
+                try self.managedObjectContext.save()
+                print("new Subassignment")
+            } catch {
+                print(error.localizedDescription)
+
+
+            }
+        }
+
+
+        for i in (0...7) {
+            let newClass = Classcool(context: self.managedObjectContext)
+            newClass.originalname = originalclassnames[i]
+            newClass.tolerance = Int64(tolerances[i])
+            newClass.name = classnameactual[i]
+            newClass.assignmentnumber = 0
+            newClass.color = classcolors[i]
+
+            do {
+                try self.managedObjectContext.save()
+                print("Class made")
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        for i in (0...9) {
+            let newAssignment = Assignment(context: self.managedObjectContext)
+            newAssignment.name = String(names[i])
+            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
+            if (duetimes[i] == "night")
+            {
+                newAssignment.duedate.addTimeInterval(79200)
+            }
+            else
+            {
+                newAssignment.duedate.addTimeInterval(28800)
+            }
+
+            newAssignment.totaltime = Int64(totaltimes[i])
+            newAssignment.subject = classnames[i]
+            newAssignment.timeleft = newAssignment.totaltime
+            newAssignment.progress = 0
+            newAssignment.grade = 0
+            newAssignment.completed = false
+            newAssignment.type = types[i]
+
+            for classity in self.classlist {
+                if (classity.name == newAssignment.subject) {
+                    classity.assignmentnumber += 1
+                    newAssignment.color = classity.color
+                    do {
+                        try self.managedObjectContext.save()
+                        print("Class number changed")
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+        }
         print("epic success")
         
         for (index, _) in subassignmentlist.enumerated() {
@@ -635,22 +664,22 @@ struct ClassesView: View {
                 //print(daystilldue)
 
                 let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.totaltime), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
-                
-               // print(assignment.name)
+
+                print(assignment.name, daystilldue)
                // print(daystilldue)
                 for (daysfromnow, lengthofwork) in subassignments {
                     dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*daysfromnow), since: startOfDay)]! -= lengthofwork
                     subassignmentdict[daysfromnow]!.append((assignment.name, lengthofwork))
-                  //  print(daysfromnow, lengthofwork)
+                    print(daysfromnow, lengthofwork)
                 }
         }
         for i in 0...daystilllatestdate {
             if (subassignmentdict[i]!.count > 0)
             {
-                print(i)
+               // print(i)
                 for (name, length) in subassignmentdict[i]!
                 {
-                    print(name, length)
+                   //print(name, length)
                 }
             }
         }
@@ -712,7 +741,7 @@ struct ClassesView: View {
 //
 //                            for classname in classnames {
 //                                let newClass = Classcool(context: self.managedObjectContext)
-//                                newClass.bulk = false
+//                                newClass.originalname - classname
 //                                newClass.tolerance = Int64.random(in: 0 ... 10)
 //                                newClass.name = classname
 //                                newClass.assignmentnumber = 0

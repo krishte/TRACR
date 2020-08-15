@@ -20,7 +20,7 @@ struct ClassProgressView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 25, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(Color(classcool.color))
                 .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100 ))
                // .shadow(radius: 10)
@@ -503,48 +503,59 @@ struct ProgressView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .center )
                     {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(Color.green)
+                                .frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
+                                //.padding(5)
+                            
+                            VStack {
+                                HStack {
+                                    Rectangle().frame(width:(UIScreen.main.bounds.size.width-40), height: 1).padding(.top, 15).padding(.leading, 20)
+                                    Spacer()
+                                }
+                                Spacer()
+                                HStack {
+                                    Rectangle().frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.bottom, 15).padding(.leading, 20)
+                                    Spacer()
+                                }
+
+                            }
+
+                            HStack {
+                                Spacer()
+                                VStack {
+                                    Spacer()
+                                    Rectangle().frame(width: 1, height: 220 ).padding(.bottom, 15).padding(.trailing, 40)
+                                }
+                            }
+                            ForEach(1..<5) {
+                                value in
+                                VStack {
+                                    Spacer()
+                                    HStack {
+                                        Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + 55*CGFloat(value)).opacity(0.3)
+                                        Spacer()
+                                    }
+                                }
+                                VStack {
+                                    Spacer()
+                                    HStack {
+                                        Spacer()
+                                        Text(String(value*2)).font(.system(size: 17)).padding(.trailing, 25).padding(.bottom, 55*CGFloat(value) - 10)
+                                    }
+                                }
+                            }
+
+                        }
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(Color.blue)
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
-                                VStack {
-                                    HStack {
-                                        Rectangle().frame(width: (UIScreen.main.bounds.size.width-30)*2/3 - 20, height: 1).padding(.top, 10).padding(.leading, 10)
-                                        Spacer()
-                                    }
-                                    Spacer()
-                                    HStack {
-                                        Rectangle().frame(width: (UIScreen.main.bounds.size.width-30)*2/3 - 20, height: 1).padding(.bottom, 10).padding(.leading, 10)
-                                        Spacer()
-                                    }
+                                Text("Textual Insights")
 
-                                }
-                                HStack {
-                                    Spacer()
-                                    VStack {
-                                        Spacer()
-                                        Rectangle().frame(width: 1, height: 180 ).padding(.bottom, 10).padding(.trailing, 30)
-                                    }
-                                }
-                                ForEach(1..<5) {
-                                    value in
-                                    VStack {
-                                        Spacer()
-                                        HStack {
-                                            Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-30)*2/3-20, height: 1).padding(.leading, 10).padding(.bottom, 10 + 45*CGFloat(value)).opacity(0.3)
-                                            Spacer()
-                                        }
-                                    }
-                                    VStack {
-                                        Spacer()
-                                        HStack {
-                                            Spacer()
-                                            Text(String(value*2)).font(.system(size: 15)).padding(.trailing, 15).padding(.bottom, 45*CGFloat(value)-10)
-                                        }
-                                    }
-                                }
-                            }//.padding(10)
+                            }
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(LinearGradient(gradient: Gradient(colors: [ Color("add_overlay_border"), Color("add_overlay_bg")]), startPoint: .bottomTrailing, endPoint: .topLeading))
@@ -580,13 +591,7 @@ struct ProgressView: View {
                                 //Text("Key").font(.title)
                             }
                         }.padding(.horizontal, 10)
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(Color.green)
-                                .frame(width: (UIScreen.main.bounds.size.width-20), height: (200 ))
-                                .padding(5)
 
-                        }
                        // Text("Classes").font(.system(size: 35)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, alignment: .leading)
                         ForEach(0..<classlist.count) {
                             value in

@@ -83,22 +83,22 @@ struct SettingsView: View {
                      }
                 }
                 
-                
-                NavigationLink(destination: Text("email and team")) {
-                     ZStack {
-                                
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                         .fill(Color.orange)
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-                    
-
-                        HStack {
-                         Text("About us").font(.system(size: 24)).fontWeight(.bold).frame(height: 80)
-                            Spacer()
-
-                        }.padding(.horizontal, 25)
-                     }
-                }
+//
+//                NavigationLink(destination: Text("email and team")) {
+//                     ZStack {
+//
+//                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+//                         .fill(Color.orange)
+//                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+//
+//
+//                        HStack {
+//                         Text("About us").font(.system(size: 24)).fontWeight(.bold).frame(height: 80)
+//                            Spacer()
+//
+//                        }.padding(.horizontal, 25)
+//                     }
+//                }
             }
             Section {
                 Button(action: {
@@ -116,7 +116,7 @@ struct SettingsView: View {
             }
             }
             
-            Button(action: {self.deleteAll()}, label: {Text("Clear All Data").frame(minWidth: 0, maxWidth: .infinity).padding().foregroundColor(.red).background(Color.gray).cornerRadius(40).padding(.horizontal, 20)})
+
         }.navigationBarTitle("Settings")
     }
     func delete() -> Void {
@@ -135,12 +135,63 @@ struct SettingsView: View {
 //                for (index, _) in self.freetimelist.enumerated() {
 //                     self.managedObjectContext.delete(self.freetimelist[index])
 //                }
+        
+        do {
+            try self.managedObjectContext.save()
+            //print("AssignmentTypes rangemin/rangemax changed")
+        } catch {
+            print(error.localizedDescription)
+        }
+
     }
 }
 struct HelpCenterView: View {
+    let faqtitles = ["Payment", "Data usage", "Report a problem","Tutorial" ]
+    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Tejas.Krishnan@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial."]
+    let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50]
+    let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four"]
+    @State private var selection: Set<String> = []
+
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
     
     var body: some View {
-        Text("Get HEEEELLLLPPPP")
+            VStack {
+                ScrollView {
+                    Spacer().frame(height: 20)
+                    ForEach(self.faqtitles,  id: \.self) {
+                        title in
+                        VStack {
+        
+                            Button(action: {
+                                self.selectDeselect(title)
+                                
+                                
+                            }) {
+                                HStack {
+                                    Text(title).foregroundColor(.black).fontWeight(.bold)
+                                    Spacer()
+                                    Image(systemName: self.selection.contains(title) ? "chevron.down" : "chevron.up").foregroundColor(Color.black)
+                                }.padding(10).background(Color(self.colors[title]!)).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10)
+                            }
+                        
+                            if (self.selection.contains(title))
+                            {
+                                Text(self.faqtext[title]!).multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: CGFloat(self.heights[title]!), alignment: .topLeading)
+                            }
+                            
+                        }
+
+
+                    }.animation(.spring())
+                }.animation(.spring())
+            }.navigationBarTitle("Help Center", displayMode: .inline)
+        
     }
 }
 struct PreferencesView: View {
@@ -177,6 +228,8 @@ struct DetailPreferencesView: View {
     @State private var typeval: Double = 0
     @State private var typeval2: Double = 0
     @State private var newdragoffsetmin = CGSize.zero
+    @State private var textvaluemin = 0
+    @State private var textvaluemax = 0
     
     @State var rectangleWidth = UIScreen.main.bounds.size.width - 60;
     
@@ -221,7 +274,7 @@ struct DetailPreferencesView: View {
                     
                     VStack {
                         Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2)
-                        Text(String(roundto15minutes(roundvalue: getmintext())))
+                        Text(textvaluemin == 0 ? String(roundto15minutes(roundvalue: getmintext())) : String(textvaluemin))
 
                     }.offset(x:  self.currentdragoffsetmin.width, y: 15)
                         // 3.
@@ -243,6 +296,12 @@ struct DetailPreferencesView: View {
                                 {
                                     self.currentdragoffsetmin.width = self.currentdragoffsetmax.width
                                 }
+                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                                {
+                                 //   print("success1")
+                                    self.currentdragoffsetmin.width = self.currentdragoffsetmax.width - self.rectangleWidth/9 - 1
+                                }
+
                         }   // 4.
                             .onEnded { value in
                                self.currentdragoffsetmin = CGSize(width: value.translation.width + self.newdragoffsetmin.width, height: value.translation.height + self.newdragoffsetmin.height)
@@ -258,12 +317,18 @@ struct DetailPreferencesView: View {
                                 {
                                     self.currentdragoffsetmin.width = self.currentdragoffsetmax.width
                                 }
+                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                                {
+                                 //   print("success2")
+                                    self.currentdragoffsetmin.width = self.currentdragoffsetmax.width - self.rectangleWidth/9 - 1
+                                }
+
                                 self.newdragoffsetmin = self.currentdragoffsetmin
                             }
                     )
                     VStack {
                         Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2)
-                        Text(String(roundto15minutes(roundvalue: getmaxtext())))
+                        Text(textvaluemax == 0 ? String(roundto15minutes(roundvalue: getmaxtext())) : String(textvaluemax))
                     }.offset(x:  self.currentdragoffsetmax.width, y: 15)
                          // 3.
                          .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
@@ -284,6 +349,11 @@ struct DetailPreferencesView: View {
                                 {
                                     self.currentdragoffsetmax.width = self.currentdragoffsetmin.width
                                 }
+                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                                {
+                                    self.currentdragoffsetmax.width = self.currentdragoffsetmin.width + self.rectangleWidth/9 + 1
+                                }
+
                          }   // 4.
                              .onEnded { value in
                                 self.currentdragoffsetmax = CGSize(width: value.translation.width + self.newdragoffsetmax.width, height: value.translation.height + self.newdragoffsetmax.height)
@@ -299,6 +369,11 @@ struct DetailPreferencesView: View {
                                 {
                                     self.currentdragoffsetmax.width = self.currentdragoffsetmin.width
                                 }
+                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                                {
+                                    self.currentdragoffsetmax.width = self.currentdragoffsetmin.width + self.rectangleWidth/9 + 1
+                                }
+
                                 self.newdragoffsetmax = self.currentdragoffsetmax
                              }
                      )
@@ -309,20 +384,52 @@ struct DetailPreferencesView: View {
 //                 //   Text("Max: " + String(roundto15minutes(roundvalue: getmaxtext()))).frame(width: rectangleWidth/2)
 //                }
                 Spacer().frame(height: 30)
+                HStack {
+ //                   Spacer().frame(width: 5)
+                    HStack(spacing: rectangleWidth/9 - 1) {
+                        
+                        ForEach(0 ..< 10)
+                        {
+                            value in
+                            Rectangle().frame(width: 1, height: 10)
+                        }
+                    }
+                }
+                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.black).frame(width: self.rectangleWidth, height: 1, alignment: .leading).offset(y: -8)
+                HStack {
+                    Text("30m").font(.system(size: 10)).offset(x: 5)
+                    Spacer()
+                    Text("300m").font(.system(size: 10))
+                }.frame(width: rectangleWidth+30).offset(y: -5)
+                Spacer().frame(height: 30)
                 Divider().frame(width: rectangleWidth, height: 2)
 
             }.padding(10).onAppear {
                 self.typeval = Double(self.assignmenttype.rangemin)
                 self.typeval2 = Double(self.assignmenttype.rangemax)
-                self.currentdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-195)/105)*self.rectangleWidth/2
-                self.currentdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-195)/105)*self.rectangleWidth/2
-                self.newdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-195)/105)*self.rectangleWidth/2
-                self.newdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-195)/105)*self.rectangleWidth/2
+                self.currentdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-165)/135)*self.rectangleWidth/2
+                self.currentdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-165)/135)*self.rectangleWidth/2
+                self.newdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-165)/135)*self.rectangleWidth/2
+                self.newdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-165)/135)*self.rectangleWidth/2
             }.onDisappear {
 //                self.assignmenttype.rangemin = Int64(self.typeval)
 //                self.assignmenttype.rangemax = Int64(self.typeval2)
-                self.assignmenttype.rangemin  = Int64(self.roundto15minutes(roundvalue: self.getmintext()))
-                self.assignmenttype.rangemax  = Int64(self.roundto15minutes(roundvalue: self.getmaxtext()))
+                if (self.textvaluemin == 0)
+                {
+                    self.assignmenttype.rangemin  = Int64(self.roundto15minutes(roundvalue: self.getmintext()))
+                }
+                else
+                {
+                    self.assignmenttype.rangemin = Int64(self.textvaluemin)
+                }
+                if (self.textvaluemax == 0)
+                {
+                    self.assignmenttype.rangemax  = Int64(self.roundto15minutes(roundvalue: self.getmaxtext()))
+                }
+                else
+                {
+                    self.assignmenttype.rangemax = Int64(self.textvaluemax)
+                }
                 do {
                     try self.managedObjectContext.save()
                     //print("AssignmentTypes rangemin/rangemax changed")
@@ -346,10 +453,10 @@ struct DetailPreferencesView: View {
         return -1*((self.currentdragoffsetmax.width-self.currentdragoffsetmin.width)/2 - (self.currentdragoffsetmin.width))+max(self.currentdragoffsetmax.width - self.currentdragoffsetmin.width, 0)
     }
     func getmintext() -> Int {
-        return 195 + Int((self.currentdragoffsetmin.width/(rectangleWidth/2))*105)
+        return 165 + Int((self.currentdragoffsetmin.width/(rectangleWidth/2))*135)
     }
     func getmaxtext() -> Int {
-        return 195 + Int((self.currentdragoffsetmax.width/(rectangleWidth/2))*105)
+        return 165 + Int((self.currentdragoffsetmax.width/(rectangleWidth/2))*135)
     }
 }
 struct NotificationsView: View {

@@ -19,16 +19,22 @@ struct NewAssignmentModalView: View {
     @State private var hours = 0
     @State private var minutes = 0
     @State var selectedDate = Date()
-    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation", "Exam", "Report"]
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
     
     @State private var createassignmentallowed = true
     @State private var showingAlert = false
+    @State private var expandedduedate = false
+    @State private var startDate = Date()
+    var formatter: DateFormatter
     
     init(NewAssignmentPresenting: Binding<Bool>) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
+        formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
     }
     
     var body: some View {
@@ -87,7 +93,24 @@ struct NewAssignmentModalView: View {
 
 
                 Section {
-                    DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                    Button(action: {
+                            self.expandedduedate.toggle()
+                        
+                    }) {
+                        HStack {
+                            Text("Select due date and time").foregroundColor(Color.black)
+                            Spacer()
+                            Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                        }
+                        
+                    }
+                    if (expandedduedate)
+                    {
+                        VStack {
+                            MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                        }.animation(nil)
+                    }
+                    //DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
                 
                 Section {
@@ -414,6 +437,7 @@ struct NewOccupiedtimeModalView: View {
 struct MyDatePicker: UIViewRepresentable {
     @Binding var selection: Date
     @Binding var starttime: Date
+    var dateandtimedisplayed: Bool
 
     func makeCoordinator() -> Coordinator {
         return Coordinator(self)
@@ -424,7 +448,7 @@ struct MyDatePicker: UIViewRepresentable {
         // listen to changes coming from the date picker, and use them to update the state variable
         picker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged), for: .valueChanged)
         picker.minuteInterval = 5
-        picker.datePickerMode = .time
+        picker.datePickerMode = dateandtimedisplayed ? .dateAndTime : .time
         picker.minimumDate = starttime
         return picker
     }
@@ -569,7 +593,7 @@ struct NewFreetimeModalView: View {
                         if (expandedstart)
                         {
                             VStack {
-                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                             }.animation(nil)
                         }
 
@@ -591,7 +615,7 @@ struct NewFreetimeModalView: View {
                         if (expandedend)
                         {
                             VStack {
-                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                             }.animation(nil)
                         }
                         

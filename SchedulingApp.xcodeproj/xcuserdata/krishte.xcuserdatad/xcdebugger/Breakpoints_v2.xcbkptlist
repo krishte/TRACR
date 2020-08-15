@@ -46,8 +46,8 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "793"
-            endingLineNumber = "793"
+            startingLineNumber = "827"
+            endingLineNumber = "827"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -78,10 +78,10 @@
             filePath = "SchedulingApp/SettingsView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "353"
-            endingLineNumber = "353"
-            landmarkName = "NotificationsView"
-            landmarkType = "14">
+            startingLineNumber = "460"
+            endingLineNumber = "460"
+            landmarkName = "getmaxtext()"
+            landmarkType = "7">
             <Locations>
                <Location
                   uuid = "4608C629-E01B-423E-8743-1E06120FA5CB - e093e2fe5f925269"
@@ -126,8 +126,8 @@
             filePath = "SchedulingApp/ModalViews.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "581"
-            endingLineNumber = "581"
+            startingLineNumber = "605"
+            endingLineNumber = "605"
             landmarkName = "body"
             landmarkType = "24">
             <Locations>

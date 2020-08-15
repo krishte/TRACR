@@ -117,7 +117,7 @@ struct IndividualAssignmentFilterView: View {
 
                     }
                 }
-            }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.8 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
 

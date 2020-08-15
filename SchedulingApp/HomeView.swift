@@ -303,9 +303,13 @@ struct HomeBodyView: View {
     
     @State var lastnthdayfromnow: Int
     @State var increased = true
+<<<<<<< HEAD
     @State var stopupdating = false
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+=======
+    @State var timezoneOffset: Int = TimeZone.current.secondsFromGMT()
+>>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>) {
         self._verticaloffset = verticaloffset
@@ -341,7 +345,6 @@ struct HomeBodyView: View {
         shortdateformatter.dateStyle = .short
         shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.selectedColor  = "one"
-        let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         let lastmondaydate = Date(timeInterval: TimeInterval(86400 + timezoneOffset), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400+timezoneOffset+1), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400 + timezoneOffset+1), since: Date().startOfWeek!)
         
@@ -357,6 +360,8 @@ struct HomeBodyView: View {
 //        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
+ 
+        
     }
     
     func upcomingDisplayTime() -> String {
@@ -474,8 +479,7 @@ struct HomeBodyView: View {
 //                                                    print(subassignment.startdatetime.description)
 //                                                }
                                                 
-                                                print(self.datesfromlastmonday[self.nthdayfromnow].description)
-                                                print(subassignment.startdatetime.description)
+
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }
@@ -485,7 +489,7 @@ struct HomeBodyView: View {
                             }
                         }
                         
-                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(), toGranularity: .day)) {
+                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), toGranularity: .day)) {
                             HStack(spacing: 0) {
                                 Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
                                 Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)

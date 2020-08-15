@@ -261,7 +261,7 @@ struct DetailView: View {
     @State private var selection: Set<Assignment> = []
     @Environment(\.managedObjectContext) var managedObjectContext
     
-    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
@@ -292,12 +292,46 @@ struct DetailView: View {
                         }
                     }
                     }.animation(.spring())
+                if (getCompletedAssignmentNumber() > 0)
+                {
+                    HStack {
+                        VStack {
+                            Divider()
+                        }
+                        Text("Completed Assignments").frame(width: 200)
+                        VStack {
+                            Divider()
+                        }
+                    }.animation(.spring())
+                    ForEach(assignmentlist) {
+                        assignment in
+                        if (self.classcool.assignmentnumber != -1 && assignment.subject == self.classcool.name && assignment.completed == true) {
+                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment).shadow(radius: 10).onTapGesture {
+                                self.selectDeselect(assignment)
+                            }
+                        }
+                    }.animation(.spring())
+                }
             }
         }.navigationBarItems(trailing: Button(action: {
             self.EditClassPresenting = true
         })
         { Text("Edit").frame(height: 100, alignment: .trailing) }
         ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber)).environment(\.managedObjectContext, self.managedObjectContext)})
+    }
+    
+    
+    func getCompletedAssignmentNumber() -> Int {
+        
+        
+        var ans: Int = 0
+        for assignment in assignmentlist {
+            if (assignment.subject == self.classcool.name && assignment.completed == true)
+            {
+                ans += 1
+            }
+        }
+        return ans
     }
 }
 
@@ -474,7 +508,7 @@ struct ClassesView: View {
         for assignmenttype in assignmenttypes {
             let newType = AssignmentTypes(context: self.managedObjectContext)
             newType.type = assignmenttype
-            newType.rangemin = 90
+            newType.rangemin = 30
             newType.rangemax = 300
             print(newType.type, newType.rangemin, newType.rangemax)
             do {
@@ -719,20 +753,20 @@ struct ClassesView: View {
                             
                              self.master()
                            // MasterStruct().master()
-                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
-                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
-                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
-                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
-                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
-                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
-                            let extendedessay = "Extended Essay"
-                            let tok = "Theory of Knowledge"
-                            let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
-                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
+//                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
+//                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
+//                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
+//                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
+//                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
+//                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
+//                            let extendedessay = "Extended Essay"
+//                            let tok = "Theory of Knowledge"
+//                            let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
+//                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
 //
 //                            for classname in classnames {
 //                                let newClass = Classcool(context: self.managedObjectContext)
-//                                newClass.originalname - classname
+//                                newClass.originalname = classname
 //                                newClass.tolerance = Int64.random(in: 0 ... 10)
 //                                newClass.name = classname
 //                                newClass.assignmentnumber = 0
@@ -827,8 +861,8 @@ struct ClassesView: View {
 //                                    } catch {
 //                                        print(error.localizedDescription)
 //                                    }
-       //                         }
-       //                     }
+//                                }
+//                            }
                         })
                         {
                             Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)

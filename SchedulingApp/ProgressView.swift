@@ -22,20 +22,20 @@ struct ClassProgressView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 25, style: .continuous)
                 .fill(Color(classcool.color))
-                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
-                .shadow(radius: 10)
+                .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100 ))
+               // .shadow(radius: 10)
             VStack {
-                HStack {
-                    Text(classcool.name).font(.system(size: 24)).fontWeight(.bold)
-                    Spacer()
-                   if getAverageGrade() == 0 {
-                       Text("No Grades").font(.body).fontWeight(.light)
-                   }
-                   else
-                   {
-                       Text("\(getAverageGrade(), specifier: "%.1f")").font(.title).fontWeight(.bold)
-                   }
-                }.padding(.horizontal, 25)
+               // HStack {
+                Text(classcool.name).font(.system(size: 20)).fontWeight(.bold)
+               //     Spacer()
+//                   if getAverageGrade() == 0 {
+//                    Text("No Grades").font(.system(size: 20)).fontWeight(.light)
+//                   }
+//                   else
+//                   {
+//                    Text("\(getAverageGrade(), specifier: "%.1f")").font(.system(size: 20)).fontWeight(.bold)
+//                   }
+                //}.padding(.horizontal, 20)
                 
 //                VStack {
 //                    ForEach(assignmentlist) {
@@ -45,8 +45,8 @@ struct ClassProgressView: View {
 //                            }
 //                    }
 //                }
-            }
-        }
+            }.frame(height: 100).padding(10)
+        }.frame(width: (UIScreen.main.bounds.size.width-20)/2).shadow(radius: 5)
     }
     
     func getAverageGrade() -> Double
@@ -115,6 +115,7 @@ struct DetailProgressView: View {
     var group5_percentages = ["Mathematics: Analysis and Approaches SL" : [2.00, 12.40, 19.90, 23.30, 21.20, 14.90, 6.20], "Mathematics: Analysis and Approaches HL" : [1.10, 7.20, 13.50, 21.90, 24.80, 18.60, 12.80], "Mathematics: Applications and Interpretation SL" : [2.00, 12.40, 19.90, 23.30, 21.20, 14.90, 6.20], "Mathematics: Applications and Interpretation HL" : [1.10, 7.20, 13.50, 21.90, 24.80, 18.60, 12.80]]
     var group6_percentages = ["Music: SL" : [0.30, 1.60, 13.80, 30.90, 27.50, 21.90, 4.10], "Music: HL" : [0.10, 3.20, 17.30, 22.20, 28.50, 19.90, 8.70], "Theatre: SL" : [0.80, 7.40, 14.50, 29.30, 25.80, 14.50, 7.70], "Theatre: HL" : [0.30, 3.00, 10.60, 24.30, 27.60, 24.60, 9.40], "Visual Art: SL" : [0.30, 10.50, 35.20, 28.30, 19.20, 5.60, 1.10], "Visual Art: HL" : [0.10, 4.80, 23.80, 29.50, 26.20, 12.90, 2.70], "Economics: SL" : [1.00, 5.50, 16.30, 20.80, 24.80, 21.80, 9.80], "Economics HL" : [0.40, 2.50, 8.00, 18.00, 30.50, 27.90, 13.10], "Psychology: SL" : [0.80, 8.60, 14.30, 27.60, 27.90, 17.20, 3.50], "Psychology: HL" : [0.20, 3.20, 12.20, 25.70, 31.10, 23.70, 3.90], "Biology: SL" : [0.90, 10.80, 21.80, 26.60, 20.50, 14.40, 5.0], "Biology: HL" : [1.20, 8.30, 18.50, 26.90, 23.00, 16.10, 5.90], "Chemistry: SL" : [2.90, 15.60, 22.50, 21.30, 17.00, 15.10, 5.50], "Chemistry: HL" : [1.10, 8.80, 17.90, 20.10, 23.00, 20.20, 8.80], "Physics: SL" : [1.70, 13.10, 26.70, 23.10, 17.20, 10.00, 8.10], "Physics: HL" : [0.70, 6.40, 18.60, 20.80, 22.20, 17.40, 14.00]]
     var group7_percentages = ["Extended Essay": [10.90, 23.54, 37.99, 25.06, 1.53, 0.99], "Theory of Knowledge": [5.57, 25.54, 48.36, 18.94, 0.68, 0.91]]
+    
 
     var body: some View {
         VStack {
@@ -191,11 +192,31 @@ struct DetailProgressView: View {
                                     }.offset(y: 10)
                                 }
                             }.offset(y: -16)
+                            
 
-
+//                                Path { path in
+//                                    createDict().forEach { (assignment, number) in
+//                                        if (number == 1)
+//                                        {
+//                                            path.move(to: CGPoint(x: 10, y: 285-30*Int(assignment.grade)))
+//                                        }
+//                                        else
+//                                        {
+//                                            path.addLine(to: CGPoint(x: 10 + Int(getCompletedNumber()) * (number-1), y: 285-30*Int(assignment.grade)))
+//                                        }
+//                                    }
+//                                }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                            
+//                            Path { path in
+//                                path.move(to: CGPoint(x: 10, y: 285))
+//                                path.addLine(to: CGPoint(x: 100, y: 400))
+//                                path.addLine(to: CGPoint(x: 300, y: 400))
+//                            }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                         }
                         
                         Spacer().frame(height: 40)
+                        
+
                         if (getgradenum())
                         {
                             HStack {
@@ -254,9 +275,20 @@ struct DetailProgressView: View {
             }
         }
     }
+    func createDict() -> [Assignment: Int] {
+        var assignmentgradetonumberdict = [Assignment: Int]()
+        var counter = 1
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
+                assignmentgradetonumberdict[assignment] = counter
+                counter += 1
+            }
+        }
+        return assignmentgradetonumberdict
+    }
     func getGlobalAverageI() -> Double {
-        var allaverages = [group1_averages, group2_averages, group3_averages, group4_averages, group5_averages, group6_averages]
-        var averageGrade: Double = 0
+        let allaverages = [group1_averages, group2_averages, group3_averages, group4_averages, group5_averages, group6_averages]
+        var _: Double = 0
         for group in allaverages {
             for (name, grade) in group {
                 if (name == classcool.originalname)
@@ -301,6 +333,12 @@ struct DetailProgressView: View {
         var formattertitle: DateFormatter
         formattertitle = DateFormatter()
         formattertitle.dateFormat = "MMMM yyyy"
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.name)
+            {
+                return formattertitle.string(from: assignment.duedate)
+            }
+        }
         return formattertitle.string(from: assignmentlist[0].duedate)
     }
     func getLastAssignmentDate() -> String {
@@ -310,7 +348,11 @@ struct DetailProgressView: View {
         formattertitle = DateFormatter()
         formattertitle.dateFormat = "MMMM yyyy"
         for assignment in assignmentlist {
-            storedDate = assignment.duedate
+            if (assignment.subject == classcool.name)
+            {
+                storedDate = assignment.duedate
+            }
+            
         }
         return formattertitle.string(from: storedDate)
     }
@@ -377,6 +419,7 @@ struct DetailProgressView: View {
     }
 }
     
+
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Classcool.entity(),
@@ -395,6 +438,61 @@ struct ProgressView: View {
     @State var noAssignmentsAlert = false
     
     @State var showingSettingsView = false
+    @State private var selectedClass: Int? = 0
+    @State private var selection: Set<String> = []
+    
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+    
+    func getclassnumber(classcool: Classcool) -> Int
+    {
+        for (index, element) in classlist.enumerated() {
+            if (element.name == classcool.name)
+            {
+                return index+1
+            }
+        }
+        return 1
+    }
+    func getdoubleclasslist() -> [(Classcool, Classcool)]
+    {
+        var pairs: [Classcool] = []
+        var anslist: [(Classcool, Classcool)] = []
+        for i in 0..<classlist.count {
+            pairs.append(classlist[i])
+            if (pairs.count == 2)
+            {
+                anslist.append((pairs[0], pairs[1]))
+                pairs = []
+            }
+            else if (pairs.count == 1 && i == classlist.count-1)
+            {
+                anslist.append((pairs[0], pairs[1]))
+                pairs = []
+            }
+        }
+        return anslist
+    }
+    func getdivisiblebytwo(value: Int) -> Bool {
+        if (value % 2 == 0)
+        {
+            return true
+        }
+        return false
+    }
+    func getlastclass(value: Int) -> Bool {
+        if (self.classlist.count % 2 == 1 && value == self.classlist.count-1)
+        {
+            return true
+        }
+        return false
+        
+    }
     
     var body: some View {
          NavigationView {
@@ -402,12 +500,147 @@ struct ProgressView: View {
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                 { EmptyView() }
                 
-                List {
-                    ForEach(classlist) {
-                        classcool in
-                        NavigationLink(destination: DetailProgressView(classcool2: classcool)) {
-                          ClassProgressView(classcool: classcool)
+                ScrollView(showsIndicators: false) {
+                    VStack(alignment: .center )
+                    {
+                        HStack(alignment: .center) {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(Color.blue)
+                                    .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
+                                VStack {
+                                    HStack {
+                                        Rectangle().frame(width: (UIScreen.main.bounds.size.width-30)*2/3 - 20, height: 1).padding(.top, 10).padding(.leading, 10)
+                                        Spacer()
+                                    }
+                                    Spacer()
+                                    HStack {
+                                        Rectangle().frame(width: (UIScreen.main.bounds.size.width-30)*2/3 - 20, height: 1).padding(.bottom, 10).padding(.leading, 10)
+                                        Spacer()
+                                    }
+
+                                }
+                                HStack {
+                                    Spacer()
+                                    VStack {
+                                        Spacer()
+                                        Rectangle().frame(width: 1, height: 180 ).padding(.bottom, 10).padding(.trailing, 30)
+                                    }
+                                }
+                                ForEach(1..<5) {
+                                    value in
+                                    VStack {
+                                        Spacer()
+                                        HStack {
+                                            Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-30)*2/3-20, height: 1).padding(.leading, 10).padding(.bottom, 10 + 45*CGFloat(value)).opacity(0.3)
+                                            Spacer()
+                                        }
+                                    }
+                                    VStack {
+                                        Spacer()
+                                        HStack {
+                                            Spacer()
+                                            Text(String(value*2)).font(.system(size: 15)).padding(.trailing, 15).padding(.bottom, 45*CGFloat(value)-10)
+                                        }
+                                    }
+                                }
+                            }//.padding(10)
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [ Color("add_overlay_border"), Color("add_overlay_bg")]), startPoint: .bottomTrailing, endPoint: .topLeading))
+//                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
+                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200 ))
+                                ScrollView(showsIndicators: false) {
+
+
+                                        VStack(alignment: .leading,spacing:5) {
+                                            
+                                            ForEach(classlist) {
+                                                classcool in
+                                                
+                                                HStack {
+                                                    
+                                                    Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 2.5).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                    Spacer()
+                                                    Button(action: {self.selectDeselect(classcool.name)})
+                                                    {
+                                                      
+                                                        Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-40, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                    }
+    //                                                Spacer()
+    //                                                if (self.selection.contains(classcool.name)) {
+    //
+    //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
+    //                                                }
+                                                }
+                                            }
+                                    }
+                                    
+                                }.frame(height: 180)//.padding(10)
+                                //Text("Key").font(.title)
+                            }
+                        }.padding(.horizontal, 10)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(Color.green)
+                                .frame(width: (UIScreen.main.bounds.size.width-20), height: (200 ))
+                                .padding(5)
+
                         }
+                       // Text("Classes").font(.system(size: 35)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, alignment: .leading)
+                        ForEach(0..<classlist.count) {
+                            value in
+
+                                NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
+                                    EmptyView()
+                                }
+                            HStack {
+                                Button(action: {
+                                    self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
+                                }) {
+                                    if (self.getlastclass(value: value))
+                                    {
+                                        ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading)
+                                    }
+                                    else if (self.getdivisiblebytwo(value: value))
+                                    {
+                                        
+                                        ClassProgressView(classcool: self.classlist[value])
+                                        
+                                    }
+
+                                }.buttonStyle(PlainButtonStyle())
+                                Button(action: {
+                                    self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
+                                }) {
+                                    if (self.getlastclass(value: value))
+                                    {
+                                    }
+                                    else if (self.getdivisiblebytwo(value: value))
+                                    {
+                                        ClassProgressView(classcool: self.classlist[value+1])
+                                    }
+                                }.buttonStyle(PlainButtonStyle())
+
+                            }
+
+
+                        }
+//                        ForEach(classlist) {
+//                            classcool in
+//                            NavigationLink(destination: DetailProgressView(classcool2: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {
+//                                EmptyView()
+//                            }
+//                            Button(action: {
+//                                self.selectedClass = self.getclassnumber(classcool: classcool)
+//                            }) {
+//                                ClassProgressView(classcool: classcool)
+//
+//                            }
+//
+//
+//
+//                        }
                     }
                 }
             }

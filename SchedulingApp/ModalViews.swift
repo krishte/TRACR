@@ -25,10 +25,16 @@ struct NewAssignmentModalView: View {
     
     @State private var createassignmentallowed = true
     @State private var showingAlert = false
+    @State private var expandedduedate = false
+    @State private var startDate = Date()
+    var formatter: DateFormatter
     
     init(NewAssignmentPresenting: Binding<Bool>) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
+        formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
     }
     
     var body: some View {
@@ -86,7 +92,24 @@ struct NewAssignmentModalView: View {
                 }
 
                 Section {
-                    DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                    Button(action: {
+                            self.expandedduedate.toggle()
+                        
+                    }) {
+                        HStack {
+                            Text("Select due date and time").foregroundColor(Color.black)
+                            Spacer()
+                            Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                        }
+                        
+                    }
+                    if (expandedduedate)
+                    {
+                        VStack {
+                            MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                        }.animation(nil)
+                    }
+                    //DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
 
                 Section {
@@ -414,6 +437,7 @@ struct NewOccupiedtimeModalView: View {
 struct MyDatePicker: UIViewRepresentable {
     @Binding var selection: Date
     @Binding var starttime: Date
+    var dateandtimedisplayed: Bool
 
     func makeCoordinator() -> Coordinator {
         return Coordinator(self)
@@ -424,7 +448,7 @@ struct MyDatePicker: UIViewRepresentable {
         // listen to changes coming from the date picker, and use them to update the state variable
         picker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged), for: .valueChanged)
         picker.minuteInterval = 5
-        picker.datePickerMode = .time
+        picker.datePickerMode = dateandtimedisplayed ? .dateAndTime : .time
         picker.minimumDate = starttime
         return picker
     }
@@ -563,7 +587,7 @@ struct NewFreetimeModalView: View {
                         }
                         if (expandedstart) {
                             VStack {
-                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                             }.animation(nil)
                         }
 
@@ -583,7 +607,7 @@ struct NewFreetimeModalView: View {
                         }
                         if (expandedend) {
                             VStack {
-                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                             }.animation(nil)
                         }
                         

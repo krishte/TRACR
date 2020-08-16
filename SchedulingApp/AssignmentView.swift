@@ -181,7 +181,7 @@ struct IndividualAssignmentFilterView: View {
                                  
 
                                  for classity in self.classlist {
-                                     if (classity.name == self.assignment.subject) {
+                                     if (classity.originalname == self.assignment.subject) {
                                          classity.assignmentnumber -= 1
                                      }
                                  }

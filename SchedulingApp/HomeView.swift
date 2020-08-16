@@ -687,7 +687,7 @@ struct IndividualSubassignmentView: View {
                                     if (element.timeleft == 0) {
                                         element.completed = true
                                         for classity in self.classlist {
-                                            if (classity.name == element.subject) {
+                                            if (classity.originalname == element.subject) {
                                                 classity.assignmentnumber -= 1
                                             }
                                         }
@@ -721,12 +721,15 @@ struct HomeView: View {
     @State var NewOccupiedtimePresenting = false
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
-    
+    @State var noAssignmentsAlert = false
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.name, ascending: true)])
     
-    @State var noClassesAlert = false
+    var assignmentlist: FetchedResults<Assignment>
+    
+        @State var noClassesAlert = false
     
     @State var verticaloffset: CGFloat = UIScreen.main.bounds.height
     @State var subassignmentname = "SubAssignmentNameBlank"
@@ -769,10 +772,12 @@ struct HomeView: View {
                             Text("Free Time")
                             Image(systemName: "clock")
                         }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                        Button(action: {self.NewGradePresenting.toggle()}) {
+                        Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
                             Text("Grade")
                             Image(systemName: "percent")
-                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                            Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
+                        }
                     }
                 }.padding(.top, -5)
                 
@@ -785,6 +790,15 @@ struct HomeView: View {
                 SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
             }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
         }
+    }
+    func getcompletedAssignments() -> Bool {
+        for assignment in assignmentlist {
+            if (assignment.completed == true && assignment.grade == 0)
+            {
+                return true;
+            }
+        }
+        return false
     }
 }
 

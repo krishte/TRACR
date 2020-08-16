@@ -26,7 +26,7 @@ struct ClassProgressView: View {
                // .shadow(radius: 10)
             VStack {
                // HStack {
-                Text(classcool.name).font(.system(size: 20)).fontWeight(.bold)
+                Text(classcool.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.center)
                //     Spacer()
 //                   if getAverageGrade() == 0 {
 //                    Text("No Grades").font(.system(size: 20)).fontWeight(.light)
@@ -45,7 +45,7 @@ struct ClassProgressView: View {
 //                            }
 //                    }
 //                }
-            }.frame(height: 100).padding(10)
+            }.frame(height: 100).padding(.horizontal, 10).padding(.vertical, 5)
         }.frame(width: (UIScreen.main.bounds.size.width-20)/2).shadow(radius: 5)
     }
     
@@ -54,7 +54,7 @@ struct ClassProgressView: View {
         var gradesum: Double = 0
         var gradenum: Double = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
+            if (assignment.subject == classcool.originalname && assignment.completed == true && assignment.grade != 0)
             {
                 gradesum += Double(assignment.grade)
                 gradenum += 1
@@ -279,7 +279,7 @@ struct DetailProgressView: View {
         var assignmentgradetonumberdict = [Assignment: Int]()
         var counter = 1
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
+            if (assignment.subject == classcool.originalname && assignment.completed == true && assignment.grade != 0) {
                 assignmentgradetonumberdict[assignment] = counter
                 counter += 1
             }
@@ -319,7 +319,7 @@ struct DetailProgressView: View {
         var gradesum: Double = 0
         var gradenum: Double = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
+            if (assignment.subject == classcool.originalname && assignment.completed == true && assignment.grade != 0) {
                 gradesum += Double(assignment.grade)
                 gradenum += 1
             }
@@ -334,7 +334,7 @@ struct DetailProgressView: View {
         formattertitle = DateFormatter()
         formattertitle.dateFormat = "MMMM yyyy"
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name)
+            if (assignment.subject == classcool.originalname)
             {
                 return formattertitle.string(from: assignment.duedate)
             }
@@ -348,7 +348,7 @@ struct DetailProgressView: View {
         formattertitle = DateFormatter()
         formattertitle.dateFormat = "MMMM yyyy"
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name)
+            if (assignment.subject == classcool.originalname)
             {
                 storedDate = assignment.duedate
             }
@@ -360,7 +360,7 @@ struct DetailProgressView: View {
     func getLastAssignmentGrade() -> Int64 {
         var gradeval: Int64 = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
+            if (assignment.subject == classcool.originalname && assignment.completed == true && assignment.grade != 0) {
                 gradeval = assignment.grade
             }
         }
@@ -371,7 +371,7 @@ struct DetailProgressView: View {
     func getgradenum() -> Bool {
         var gradenum: Int = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
+            if (assignment.subject == classcool.originalname && assignment.completed == true && assignment.grade != 0) {
                 gradenum += 1
             }
         }
@@ -386,7 +386,7 @@ struct DetailProgressView: View {
         var gradenum: Double = 0
         var lastgrade: Double = 0
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0)
+            if (assignment.subject == classcool.originalname && assignment.completed == true && assignment.grade != 0)
             {
                 gradesum += Double(assignment.grade)
                 gradenum += 1
@@ -401,7 +401,7 @@ struct DetailProgressView: View {
         var numberofcompleted: Double = 0
         
         for assignment in assignmentlist {
-            if (assignment.subject == classcool.name && assignment.completed == true && assignment.grade != 0) {
+            if (assignment.subject == classcool.originalname && assignment.completed == true && assignment.grade != 0) {
                 numberofcompleted += 1
             }
         }
@@ -412,7 +412,7 @@ struct DetailProgressView: View {
     }
     
     func graphableAssignment(assignment: Assignment) -> Bool{
-        if (assignment.subject == self.classcool.name && assignment.completed == true && assignment.grade != 0) {
+        if (assignment.subject == self.classcool.originalname && assignment.completed == true && assignment.grade != 0) {
             return true;
         }
         return false;
@@ -505,7 +505,7 @@ struct ProgressView: View {
                     {
                         ZStack {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(Color.green)
+                                .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
                                 .frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
                                 //.padding(5)
                             
@@ -551,38 +551,39 @@ struct ProgressView: View {
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Color.blue)
+                                    .fill(Color.orange)
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
-                                Text("Textual Insights")
+                                Text("Textual Insights").foregroundColor(Color.black)
 
                             }
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(LinearGradient(gradient: Gradient(colors: [ Color("add_overlay_border"), Color("add_overlay_bg")]), startPoint: .bottomTrailing, endPoint: .topLeading))
+                                    .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
 //                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200 ))
                                 ScrollView(showsIndicators: false) {
 
 
-                                        VStack(alignment: .leading,spacing:5) {
+                                        VStack(alignment: .leading,spacing:10) {
                                             
                                             ForEach(classlist) {
                                                 classcool in
                                                 
                                                 HStack {
                                                     
-                                                    Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 2.5).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                    Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
                                                     Spacer()
                                                     Button(action: {self.selectDeselect(classcool.name)})
                                                     {
                                                       
-                                                        Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-40, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                        Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
                                                     }
     //                                                Spacer()
     //                                                if (self.selection.contains(classcool.name)) {
     //
     //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
     //                                                }
+                                                    Spacer()
                                                 }
                                             }
                                     }
@@ -593,43 +594,59 @@ struct ProgressView: View {
                         }.padding(.horizontal, 10)
 
                        // Text("Classes").font(.system(size: 35)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, alignment: .leading)
-                        ForEach(0..<classlist.count) {
-                            value in
+                        Spacer().frame(height: 10)
+                        if (classlist.count > 0)
+                        {
+                            ForEach(0..<classlist.count) {
+                                value in
 
-                                NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
-                                    EmptyView()
+                                    NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
+                                        EmptyView()
+                                    }
+                                HStack {
+                                    Button(action: {
+                                        self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
+                                    }) {
+                                        if (self.getlastclass(value: value))
+                                        {
+                                            ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading)
+                                        }
+                                        else if (self.getdivisiblebytwo(value: value))
+                                        {
+                                            
+                                            ClassProgressView(classcool: self.classlist[value])
+                                            
+                                        }
+
+                                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                        Button (action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                            Text("Add Grade")
+                                        }.sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
+                                            Alert(title: Text("No Completed Assignments"), message: Text("Complete an Assignment First"))
+                                        }
+                                    }.padding(0)
+                                    Button(action: {
+                                        self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
+                                    }) {
+                                        if (self.getlastclass(value: value))
+                                        {
+                                        }
+                                        else if (self.getdivisiblebytwo(value: value))
+                                        {
+                                            ClassProgressView(classcool: self.classlist[value+1])
+                                        }
+                                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                        Button (action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                            Text("Add Grade")
+                                        }.sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
+                                            Alert(title: Text("No Completed Assignments"), message: Text("Complete an Assignment First"))
+                                        }
+                                    }.padding(0)
+
                                 }
-                            HStack {
-                                Button(action: {
-                                    self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
-                                }) {
-                                    if (self.getlastclass(value: value))
-                                    {
-                                        ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading)
-                                    }
-                                    else if (self.getdivisiblebytwo(value: value))
-                                    {
-                                        
-                                        ClassProgressView(classcool: self.classlist[value])
-                                        
-                                    }
 
-                                }.buttonStyle(PlainButtonStyle())
-                                Button(action: {
-                                    self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
-                                }) {
-                                    if (self.getlastclass(value: value))
-                                    {
-                                    }
-                                    else if (self.getdivisiblebytwo(value: value))
-                                    {
-                                        ClassProgressView(classcool: self.classlist[value+1])
-                                    }
-                                }.buttonStyle(PlainButtonStyle())
 
                             }
-
-
                         }
 //                        ForEach(classlist) {
 //                            classcool in
@@ -659,7 +676,7 @@ struct ProgressView: View {
                     Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
 
                     Button(action: {
-                        self.assignmentlist.count > 0 ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+                        self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
                         
                     }) {
                         Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
@@ -683,7 +700,7 @@ struct ProgressView: View {
                             Text("Free Time")
                             Image(systemName: "clock")
                         }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                        Button(action: {self.NewGradePresenting.toggle()}) {
+                        Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
                             Text("Grade")
                             Image(systemName: "percent")
                         }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
@@ -694,6 +711,17 @@ struct ProgressView: View {
          }.onDisappear {
             self.showingSettingsView = false
         }
+    }
+    
+    func getcompletedAssignments() -> Bool {
+        for assignment in assignmentlist {
+            if (assignment.completed == true && assignment.grade == 0)
+            {
+                print(assignment.name)
+                return true;
+            }
+        }
+        return false
     }
 }
 

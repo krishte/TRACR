@@ -127,7 +127,7 @@ struct NewAssignmentModalView: View {
                             let newAssignment = Assignment(context: self.managedObjectContext)
                             newAssignment.completed = false
                             newAssignment.grade = 0
-                            newAssignment.subject = self.classlist[self.selectedclass].name
+                            newAssignment.subject = self.classlist[self.selectedclass].originalname
                             newAssignment.name = self.nameofassignment
                             newAssignment.type = self.assignmenttypes[self.assignmenttype]
                             newAssignment.progress = 0
@@ -137,7 +137,7 @@ struct NewAssignmentModalView: View {
                             newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
                             newAssignment.timeleft = newAssignment.totaltime
                             for classity in self.classlist {
-                                if (classity.name == newAssignment.subject) {
+                                if (classity.originalname == newAssignment.subject) {
                                     newAssignment.color = classity.color
                                     classity.assignmentnumber += 1
                                 }
@@ -183,6 +183,8 @@ struct NewClassModalView: View {
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
     
     let groups = [["English A: Literature", "English A: Language and Literatue", "English B"], ["German B", "French B", "Spanish B", "German A: Literature", "French A: Literature", "Spanish A: Literature", "German A: Language and Literatue", "French A: Language and Literatue", "Spanish A: Language and Literatue", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "Environmental Systems and Societies SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "Environmental Systems and Societies SL"], ["Mathematics: Analysis and Approaches", "Mathematics: Applications and Interpretation"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["Extended Essay"], ["Theory of Knowledge"]]
+    
+    let shortenedgroups = [["English A: Lit", "English A: Lang and Lit", "English B"], ["German B", "French B", "Spanish B", "German A: Lit", "French A: Lit", "Spanish A: Lit", "German A: Lang and Lit", "French A: Lang and Lit", "Spanish A: Lang and Lit", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "ESS SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "ESS SL"], ["Mathematics: AA", "Mathematics: AI"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["EE"], ["EE"]]
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -325,6 +327,7 @@ struct NewClassModalView: View {
                     Button(action: {
                         let testname = !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])"
                         
+                        let shortenedtestname =  !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex])"
                         self.createclassallowed = true
                         
                         for classity in self.classlist {
@@ -339,7 +342,7 @@ struct NewClassModalView: View {
                             //print(Int(self.classtolerancedouble))
                             //print(self.classnameindex)
                             newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
-                            newClass.name = testname
+                            newClass.name = shortenedtestname
                             newClass.assignmentnumber = 0
                             newClass.originalname = testname
                             if self.coloraselectedindex != nil {
@@ -1078,21 +1081,43 @@ struct NewGradeModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
     var assignmentlist: FetchedResults<Assignment>
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    var classeslist: FetchedResults<Classcool>
     @State private var selectedassignment = 0
     @State private var assignmentgrade: Double = 4
     @Binding var NewGradePresenting: Bool
+
+    func getgradableassignments() -> [Int]
+    {
+        var gradableAssignments: [Int] = []
+        for (index, assignment) in assignmentlist.enumerated() {
+            if (assignment.completed == true && assignment.grade == 0)
+            {
+
+                gradableAssignments.append(index)
+    
+            }
+        }
+        return gradableAssignments
+    }
     var body: some View {
         NavigationView {
             Form {
                 Section {
                     Picker(selection: $selectedassignment, label: Text("Assignment")) {
-                        ForEach(0 ..< assignmentlist.count) {
-                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0)
+                        ForEach(0 ..< getgradableassignments().count) {
+                            if ($0 < self.getgradableassignments().count)
                             {
-                                Text(self.assignmentlist[$0].name)
+                                Text(self.assignmentlist[self.getgradableassignments()[$0]].name)
                             }
-
                         }
+//                        ForEach(0 ..< assignmentlist.count) {
+//                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0)
+//                            {
+//                                Text(self.assignmentlist[$0].name)
+//                            }
+//
+//                        }
                     }
                 }
                 Section {
@@ -1107,8 +1132,12 @@ struct NewGradeModalView: View {
                 }
                 Section {
                     Button(action: {
+                        print(self.selectedassignment)
+                        print(self.getgradableassignments())
+                      //  print(self.getgradableassignments()[4])
+                        let value = self.getgradableassignments()[self.selectedassignment]
                         for assignment in self.assignmentlist {
-                            if (assignment.name == self.assignmentlist[self.selectedassignment].name)
+                            if (assignment.name == self.assignmentlist[value].name)
                             {
                                 assignment.grade =  Int64(self.assignmentgrade.rounded(.down))
 

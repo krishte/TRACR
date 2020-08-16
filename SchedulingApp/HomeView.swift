@@ -80,6 +80,7 @@ struct WeeklyBlockView: View {
     @Binding var nthdayfromnow: Int
     @Binding var lastnthdayfromnow: Int
     @Binding var increased: Bool
+    @Binding var stopupdating: Bool
     @EnvironmentObject var changingDate: DisplayedDate
 
     let datenumberindices: [Int]
@@ -95,6 +96,7 @@ struct WeeklyBlockView: View {
                     }.onTapGesture {
                         withAnimation(.spring()) {
                             self.nthdayfromnow = self.datenumberindices[index]
+                            self.stopupdating = true
                             
                             if self.lastnthdayfromnow > self.nthdayfromnow {
                                 self.increased = false
@@ -105,6 +107,10 @@ struct WeeklyBlockView: View {
                             }
                             
                             self.lastnthdayfromnow = self.nthdayfromnow
+                            
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(300)) {
+                                self.stopupdating = false
+                            }
                         }
                     }
                 }
@@ -119,6 +125,7 @@ struct WeeklyBlockView: View {
  
 struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
     @Binding var increased: Bool
+    @Binding var stopupdating: Bool
     
     var viewControllers: [UIViewController]
 
@@ -135,7 +142,7 @@ struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
-        pageViewController.setViewControllers([viewControllers[0]], direction: (self.increased ? .forward : .reverse), animated: true)//reverse/forward based on change
+        pageViewController.setViewControllers([viewControllers[0]], direction: (self.increased ? .forward : .reverse), animated: self.stopupdating)//reverse/forward based on change
     }
     
     class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
@@ -296,6 +303,11 @@ struct HomeBodyView: View {
     
     @State var lastnthdayfromnow: Int
     @State var increased = true
+
+    @State var stopupdating = false
+    
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
     @State var timezoneOffset: Int = TimeZone.current.secondsFromGMT()
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>) {
@@ -352,11 +364,12 @@ struct HomeBodyView: View {
     }
     
     func upcomingDisplayTime() -> String {
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+        
         let minuteval = Calendar.current
-        .dateComponents([.minute], from: Date(timeIntervalSinceNow: 7200), to: subassignmentlist[0].startdatetime)
+            .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: subassignmentlist[0].startdatetime)
         .minute!
 
-        
         if (minuteval > 720 ) {
             return "No Upcoming Subassignments"
         }
@@ -369,6 +382,15 @@ struct HomeBodyView: View {
         return "In " + String(minuteval/60) + " hours " + String(minuteval%60) + " mins: "
     }
     
+    func isSameDay(date1: Date, date2: Date) -> Bool {
+        let diff = Calendar.current.dateComponents([.day], from: date1, to: date2)
+        if diff.day == 0 {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     var body: some View {
         VStack {
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
@@ -377,9 +399,9 @@ struct HomeBodyView: View {
                 }
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
             
-            PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
+            PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday))]).id(UUID()).frame(height: 50)
             
-            DummyPageViewControllerForDates(increased: self.$increased, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(height: 50)
+            DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(height: 50)
             
             ZStack {
                 if (subassignmentlist.count > 0) {
@@ -475,15 +497,8 @@ struct HomeBodyView: View {
                     }.animation(.spring())
                 }
             }
-        }
-    }
-    
-    func isSameDay(date1: Date, date2: Date) -> Bool {
-        let diff = Calendar.current.dateComponents([.day], from: date1, to: date2)
-        if diff.day == 0 {
-            return true
-        } else {
-            return false
+        }.onReceive(timer) { _ in
+            //
         }
     }
 }
@@ -725,19 +740,29 @@ struct HomeView: View {
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
+<<<<<<< SchedulingApp/HomeView.swift
+
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.grade, ascending: true)])
+    
+    var assignmentlist: FetchedResults<Classcool>
+=======
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.name, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
         @State var noClassesAlert = false
+>>>>>>> SchedulingApp/HomeView.swift
     
+    @State var noClassesAlert = false
+    @State var noCompletedAlert = false
+    //completed true and grade != 0
     @State var verticaloffset: CGFloat = UIScreen.main.bounds.height
     @State var subassignmentname = "SubAssignmentNameBlank"
     @State var addhours = 0
     @State var addminutes = 0
-
+    
     init() {
-      //  self.changingDate.displayedDate = Date()
+        //
     }
     
     var body: some View {
@@ -775,8 +800,13 @@ struct HomeView: View {
                         Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
                             Text("Grade")
                             Image(systemName: "percent")
+<<<<<<< SchedulingApp/HomeView.swift
+                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noCompletedAlert) {
+                            Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
+=======
                         }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
                             Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
+>>>>>>> SchedulingApp/HomeView.swift
                         }
                     }
                 }.padding(.top, -5)

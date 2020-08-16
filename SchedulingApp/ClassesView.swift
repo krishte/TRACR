@@ -19,11 +19,11 @@ struct ClassView: View {
             if (classcool.color != "") {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)
                     .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
-                    .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 10)
+                    .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 5)
             }
 
             HStack {
-                Text(classcool.name).font(.system(size: 24)).fontWeight(.bold).frame(height: 120)
+                Text(classcool.name).font(.system(size: 24)).fontWeight(.bold).frame(width: classcool.assignmentnumber == 0 ? UIScreen.main.bounds.size.width/2 - 20 : UIScreen.main.bounds.size.width/2 + 40, height: 120, alignment: .leading)
                 Spacer()
                 if classcool.assignmentnumber == 0 && !self.startedToDelete {
                     Text("No Assignments").font(.body).fontWeight(.light)
@@ -172,8 +172,7 @@ struct EditClassModalView: View {
                                     }
                                     
                                     for assignment in self.assignmentlist {
-                                        if (assignment.subject == self.currentclassname) {
-                                            assignment.subject = testname
+                                        if (assignment.subject == classity.originalname) {
                                             assignment.color = classity.color
                                             for subassignment in self.subassignmentlist {
                                                 if (subassignment.assignmentname == assignment.name) {
@@ -286,7 +285,7 @@ struct DetailView: View {
             
             ScrollView {
                 ForEach(assignmentlist) { assignment in
-                    if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.name && assignment.completed == false) {
+                    if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.originalname && assignment.completed == false) {
                         IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment).shadow(radius: 10).onTapGesture {
                             self.selectDeselect(assignment)
                         }
@@ -305,7 +304,7 @@ struct DetailView: View {
                     }.animation(.spring())
                     ForEach(assignmentlist) {
                         assignment in
-                        if (self.classcool.assignmentnumber != -1 && assignment.subject == self.classcool.name && assignment.completed == true) {
+                        if (self.classcool.assignmentnumber != -1 && assignment.subject == self.classcool.originalname && assignment.completed == true) {
                             IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment).shadow(radius: 10).onTapGesture {
                                 self.selectDeselect(assignment)
                             }
@@ -326,7 +325,7 @@ struct DetailView: View {
         
         var ans: Int = 0
         for assignment in assignmentlist {
-            if (assignment.subject == self.classcool.name && assignment.completed == true)
+            if (assignment.subject == self.classcool.originalname && assignment.completed == true)
             {
                 ans += 1
             }
@@ -361,7 +360,7 @@ struct ClassesView: View {
     @State var NewGradePresenting = false
     @State var noClassesAlert = false
     @State var stored: Double = 0
-    
+    @State var noAssignmentsAlert = false
     @State var startedToDelete = false
 
     let types = ["Test", "Homework", "Presentation/Oral", "Essay", "Study", "Exam", "Report/Paper", "Essay", "Presentation/Oral", "Essay"]
@@ -371,6 +370,7 @@ struct ClassesView: View {
     let names = ["Trigonometry Test", "Trigonometry Packet", "German Oral 2", "Othello Essay", "Physics Studying", "Final Exam", "Chemistry IA Final", "McDonalds Macroeconomics Essay", "ToK Final Presentation", "Extended Essay Final Essay"]
     let classnames = ["Math", "Math", "German", "English", "Physics" , "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
     let colors = ["one", "one", "two", "three" , "four", "four", "five", "six", "seven", "eight"]
+    let assignmentoriginalclassnames = ["Mathematics: Analysis and Approaches SL","Mathematics: Analysis and Approaches SL","German B: SL", "English A: Language and Literature SL","Physics: HL","Physics: HL","Chemistry: HL", "Economics: HL","Theory of Knowledge",  "Extended Essay"]
     
     let bulks = [true, true, true, false, false, false, false, false]
     let classnameactual = ["Math", "German", "English", "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
@@ -396,12 +396,13 @@ struct ClassesView: View {
         var approxlength = 0
         if (bulk) {
             for classity in classlist {
-                if (classity.name == assignment.subject)
+                if (classity.originalname == assignment.subject)
                 {
                     for assignmenttype in assignmenttypeslist {
                         if (assignmenttype.type == assignment.type)
                         {
                             approxlength = Int(assignmenttype.rangemin + ((assignmenttype.rangemax - assignmenttype.rangemin)/5) * classity.tolerance)
+                            print(approxlength)
                         }
                     }
                 }
@@ -425,6 +426,7 @@ struct ClassesView: View {
                 possibledayslist.append(i)
             }
         }
+        print(totaltime, approxlength)
         let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
      //   print(totaltime, approxlength)
         if (ntotal <= possibledays)
@@ -551,7 +553,7 @@ struct ClassesView: View {
             }
 
             newAssignment.totaltime = Int64(totaltimes[i])
-            newAssignment.subject = classnames[i]
+            newAssignment.subject = assignmentoriginalclassnames[i]
             newAssignment.timeleft = newAssignment.totaltime
             newAssignment.progress = 0
             newAssignment.grade = 0
@@ -559,7 +561,7 @@ struct ClassesView: View {
             newAssignment.type = types[i]
 
             for classity in self.classlist {
-                if (classity.name == newAssignment.subject) {
+                if (classity.originalname == newAssignment.subject) {
                     classity.assignmentnumber += 1
                     newAssignment.color = classity.color
                     do {
@@ -723,7 +725,7 @@ struct ClassesView: View {
                     
                     for index in indexSet {
                         for (index2, element) in self.assignmentlist.enumerated() {
-                            if (element.subject == self.classlist[index].name) {
+                            if (element.subject == self.classlist[index].originalname) {
                                 for (index3, element2) in self.subassignmentlist.enumerated() {
                                     if (element2.assignmentname == element.name) {
                                         self.managedObjectContext.delete(self.subassignmentlist[index3])
@@ -752,7 +754,7 @@ struct ClassesView: View {
                         Button(action: {
                             
                              self.master()
-                           // MasterStruct().master()
+                          //  MasterStruct().master()
 //                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
 //                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
 //                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
@@ -761,9 +763,24 @@ struct ClassesView: View {
 //                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
 //                            let extendedessay = "Extended Essay"
 //                            let tok = "Theory of Knowledge"
-//                            let assignmenttypes = ["exam", "essay", "presentation", "test", "study"]
 //                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
+//                               let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 //
+//                            for assignmenttype in assignmenttypes {
+//                                let newType = AssignmentTypes(context: self.managedObjectContext)
+//                                newType.type = assignmenttype
+//                                newType.rangemin = 30
+//                                newType.rangemax = 300
+//                                print(newType.type, newType.rangemin, newType.rangemax)
+//                                do {
+//                                    try self.managedObjectContext.save()
+//                                    print("new Subassignment")
+//                                } catch {
+//                                    print(error.localizedDescription)
+//
+//
+//                                }
+//                            }
 //                            for classname in classnames {
 //                                let newClass = Classcool(context: self.managedObjectContext)
 //                                newClass.originalname = classname
@@ -894,13 +911,24 @@ struct ClassesView: View {
                                 Text("Free Time")
                                 Image(systemName: "clock")
                             }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewGradePresenting.toggle()}) {
+                            Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
                                 Text("Grade")
                                 Image(systemName: "percent")
-                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                                Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
+                            }
                         }
             }).navigationBarTitle(Text("Classes"), displayMode: .large)
         }
+    }
+    func getcompletedAssignments() -> Bool {
+        for assignment in assignmentlist {
+            if (assignment.completed == true && assignment.grade == 0)
+            {
+                return true;
+            }
+        }
+        return false
     }
 }
 

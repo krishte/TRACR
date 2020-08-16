@@ -303,13 +303,12 @@ struct HomeBodyView: View {
     
     @State var lastnthdayfromnow: Int
     @State var increased = true
-<<<<<<< HEAD
+
     @State var stopupdating = false
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-=======
+
     @State var timezoneOffset: Int = TimeZone.current.secondsFromGMT()
->>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>) {
         self._verticaloffset = verticaloffset
@@ -360,8 +359,6 @@ struct HomeBodyView: View {
 //        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
- 
-        
     }
     
     func upcomingDisplayTime() -> String {
@@ -444,7 +441,6 @@ struct HomeBodyView: View {
                         }.frame(width: 150)
                     }
                 }.padding(10)
-                
             }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
             
             VStack {
@@ -472,19 +468,17 @@ struct HomeBodyView: View {
 //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
                                         if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
                                             IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
-                                                self.subassignmentassignmentname = subassignment.assignmentname
-                                                self.selectedColor = subassignment.color
-                                                
+                                                    self.subassignmentassignmentname = subassignment.assignmentname
+                                                    self.selectedColor = subassignment.color
 //                                                for subassignment in self.subassignmentlist {
 //                                                    print(subassignment.startdatetime.description)
 //                                                }
-                                                
-
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
-                                            }
+                                        }
                                     }.animation(.spring())
                                 }
+                                
                                 Spacer()
                             }
                         }
@@ -498,9 +492,10 @@ struct HomeBodyView: View {
                     }.animation(.spring())
                 }
             }
-        }.onReceive(timer) { _ in
-            //
         }
+      //  }.onReceive(timer) { _ in
+            //
+     //   }
     }
 }
 

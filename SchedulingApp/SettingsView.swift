@@ -115,11 +115,6 @@ struct SettingsView: View {
                 
             }
             }
-<<<<<<< HEAD
-=======
-            
-
->>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
         }.navigationBarTitle("Settings")
     }
     func delete() -> Void {
@@ -149,8 +144,6 @@ struct SettingsView: View {
     }
 }
 struct HelpCenterView: View {
-<<<<<<< HEAD
-=======
     let faqtitles = ["Payment", "Data usage", "Report a problem","Tutorial" ]
     let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Tejas.Krishnan@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial."]
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50]
@@ -164,8 +157,7 @@ struct HelpCenterView: View {
             selection.insert(singularassignment)
         }
     }
-    
->>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
+
     var body: some View {
             VStack {
                 ScrollView {

@@ -125,7 +125,8 @@ struct FilterView: View {
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
     @State var noClassesAlert = false
-    
+    @State var noAssignmentsAlert = false
+
     var body: some View {
         NavigationView{
             VStack {
@@ -165,13 +166,24 @@ struct FilterView: View {
                                 Text("Free Time")
                                 Image(systemName: "clock")
                             }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewGradePresenting.toggle()}) {
+                            Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
                                 Text("Grade")
                                 Image(systemName: "percent")
-                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                                Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
+                            }
                         }
                 }.padding(.top, 0)).navigationBarTitle("Assignment List")
          }
+    }
+    func getcompletedAssignments() -> Bool {
+        for assignment in assignmentlist {
+            if (assignment.completed == true && assignment.grade == 0)
+            {
+                return true;
+            }
+        }
+        return false
     }
 }
 

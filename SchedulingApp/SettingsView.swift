@@ -123,17 +123,29 @@ struct SettingsView: View {
         }.navigationBarTitle("Settings")
     }
     func delete() -> Void {
+        if (self.subassignmentlist.count > 0)
+        {
         for (index, _) in self.subassignmentlist.enumerated() {
              self.managedObjectContext.delete(self.subassignmentlist[index])
         }
+        }
+        if (self.assignmenttypeslist.count > 0)
+        {
         for (index, _) in self.assignmenttypeslist.enumerated() {
              self.managedObjectContext.delete(self.assignmenttypeslist[index])
         }
+        }
+        if (self.assignmentlist.count > 0)
+        {
         for (index, _) in self.assignmentlist.enumerated() {
              self.managedObjectContext.delete(self.assignmentlist[index])
         }
+        }
+        if (self.classlist.count > 0)
+        {
         for (index, _) in self.classlist.enumerated() {
              self.managedObjectContext.delete(self.classlist[index])
+        }
         }
 //                for (index, _) in self.freetimelist.enumerated() {
 //                     self.managedObjectContext.delete(self.freetimelist[index])

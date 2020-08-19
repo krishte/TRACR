@@ -115,8 +115,11 @@ struct SettingsView: View {
                 
             }
             }
+<<<<<<< HEAD
+=======
             
 
+>>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
         }.navigationBarTitle("Settings")
     }
     func delete() -> Void {
@@ -158,6 +161,8 @@ struct SettingsView: View {
     }
 }
 struct HelpCenterView: View {
+<<<<<<< HEAD
+=======
     let faqtitles = ["Payment", "Data usage", "Report a problem","Tutorial" ]
     let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Tejas.Krishnan@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial."]
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50]
@@ -172,6 +177,7 @@ struct HelpCenterView: View {
         }
     }
     
+>>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
     var body: some View {
             VStack {
                 ScrollView {
@@ -245,21 +251,17 @@ struct DetailPreferencesView: View {
     
     @State var rectangleWidth = UIScreen.main.bounds.size.width - 60;
     
-    init(assignmenttype: AssignmentTypes)
-    {
+    init(assignmenttype: AssignmentTypes) {
         self.assignmenttype = assignmenttype
-
-
     }
+    
     func setValues() -> Bool {
         self.typeval = Double(assignmenttype.rangemin)
         self.typeval2 = Double(assignmenttype.rangemax)
         return true;
-        
     }
-    var body: some View
-    {
-            
+    
+    var body: some View {
             VStack {
 //                if (setValues())
 //                {
@@ -471,6 +473,7 @@ struct DetailPreferencesView: View {
         return 165 + Int((self.currentdragoffsetmax.width/(rectangleWidth/2))*135)
     }
 }
+
 struct NotificationsView: View {
     let beforeassignmenttimes = ["At Start", "5 minutes", "10 minutes", "15 minutes", "30 minutes"]
     @State var selectedbeforeassignment = 0
@@ -482,8 +485,6 @@ struct NotificationsView: View {
     @State private var selection: Set<String> = ["None"]
     @State private var selection2: Set<String> = ["None"]
     @State var atbreakend = false
-    
-    
     
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {

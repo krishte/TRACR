@@ -381,7 +381,9 @@ struct ClassesView: View {
     let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
     
     var startOfDay: Date {
-        return Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+        
+        return Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
         //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
     }
 
@@ -594,7 +596,10 @@ struct ClassesView: View {
         _ = Date(timeInterval: 86300, since: startOfDay)
 
         var monfreetimelist:[(Date, Date)] = [], tuefreetimelist:[(Date, Date)] = [], wedfreetimelist:[(Date, Date)] = [], thufreetimelist:[(Date, Date)] = [], frifreetimelist:[(Date, Date)] = [], satfreetimelist:[(Date, Date)] = [], sunfreetimelist:[(Date, Date)] = []
-        var latestDate = Date(timeIntervalSinceNow: 7200)
+        
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+        
+        var latestDate = Date(timeIntervalSinceNow: TimeInterval(timezoneOffset))
         var dateFreeTimeDict = [Date: Int]()
         var startoffreetimeDict = [Date: Date]()
         var specificdatefreetimedict = [Date: [(Date,Date)]]()
@@ -654,7 +659,7 @@ struct ClassesView: View {
             latestDate = max(latestDate, assignment.duedate)
         }
         
-        let daystilllatestdate = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: 7200), to: latestDate).day!
+        let daystilllatestdate = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: latestDate).day!
         
         for i in 0...daystilllatestdate {
             subassignmentdict[i] = []
@@ -665,11 +670,10 @@ struct ClassesView: View {
         }
     
         for freetime in freetimelist {
-            if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday)
-            {
-                dateFreeTimeDict[Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+            if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday) {
+                dateFreeTimeDict[Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!), to: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!).minute!)
+                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!), to: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!).minute!)
                  {
                     startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)] = freetime.startdatetime
                  }
@@ -681,8 +685,7 @@ struct ClassesView: View {
 //
 //        }
         for assignment in assignmentlist {
-
-                let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: assignment.duedate)))).day!
+            let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: Date(timeInterval: -Double(timezoneOffset), since: assignment.duedate)))).day!
                 //print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))).description, Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate)), daystilldue)
                // print(daystilldue)
                 

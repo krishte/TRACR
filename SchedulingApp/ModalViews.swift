@@ -6,7 +6,8 @@ struct NewAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var changingDate: DisplayedDate
     
-    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
     var classlist: FetchedResults<Classcool>
     @Binding var NewAssignmentPresenting: Bool
     
@@ -14,7 +15,7 @@ struct NewAssignmentModalView: View {
     var assignmentslist: FetchedResults<Assignment>
     
     @State var nameofassignment: String = ""
-    @State private var selectedclass = 0
+    @State private var selectedclass: Int
     @State private var assignmenttype = 0
     @State private var hours = 0
     @State private var minutes = 0
@@ -29,12 +30,13 @@ struct NewAssignmentModalView: View {
     @State private var startDate = Date()
     var formatter: DateFormatter
     
-    init(NewAssignmentPresenting: Binding<Bool>) {
+    init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
         formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
+        _selectedclass = State(initialValue: selectedClass)
     }
     
     var body: some View {
@@ -1085,17 +1087,35 @@ struct NewGradeModalView: View {
     var classeslist: FetchedResults<Classcool>
     @State private var selectedassignment = 0
     @State private var assignmentgrade: Double = 4
+    @State private var classfilter: Int
     @Binding var NewGradePresenting: Bool
 
+    
+    init(NewGradePresenting: Binding<Bool>, classfilter: Int)
+    {
+        self._NewGradePresenting = NewGradePresenting
+        self._classfilter = State(initialValue: classfilter)
+    }
     func getgradableassignments() -> [Int]
     {
+        print(classfilter)
         var gradableAssignments: [Int] = []
         for (index, assignment) in assignmentlist.enumerated() {
-            if (assignment.completed == true && assignment.grade == 0)
+            if (classfilter == -1)
             {
+                if (assignment.completed == true && assignment.grade == 0)
+                {
 
-                gradableAssignments.append(index)
-    
+                    gradableAssignments.append(index)
+        
+                }
+            }
+            else
+            {
+                if (assignment.completed == true && assignment.grade == 0 && assignment.subject == classeslist[classfilter].originalname)
+                {
+                    gradableAssignments.append(index)
+                }
             }
         }
         return gradableAssignments

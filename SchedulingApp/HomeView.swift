@@ -756,7 +756,7 @@ struct HomeView: View {
                         Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
                             Text("Assignment")
                             Image(systemName: "paperclip")
-                        }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                        }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
                             Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                         }
                         Button(action: {self.NewClassPresenting.toggle()}) {
@@ -775,7 +775,7 @@ struct HomeView: View {
                         Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
                             Text("Grade")
                             Image(systemName: "percent")
-                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
                             Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
                         }
                     }

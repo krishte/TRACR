@@ -27,7 +27,7 @@ struct TutorialView: View {
                     Image("Tutorial2").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
                     Spacer().frame(width: 60)
                     Image("Tutorial3").resizable().frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.height-600).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
-                    Spacer().frame(width: 9)
+                    Spacer().frame(width: 10)
                     
                 }
             }

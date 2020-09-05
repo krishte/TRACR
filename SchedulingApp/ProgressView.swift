@@ -22,11 +22,11 @@ struct ClassProgressView: View {
         ZStack {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(Color(classcool.color))
-                .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100 ))
+                .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100))
                // .shadow(radius: 10)
             VStack {
                // HStack {
-                Text(classcool.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.center)
+                Text(classcool.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.center).frame(width: (UIScreen.main.bounds.size.width-40)/2)
                //     Spacer()
 //                   if getAverageGrade() == 0 {
 //                    Text("No Grades").font(.system(size: 20)).fontWeight(.light)
@@ -419,6 +419,127 @@ struct DetailProgressView: View {
     }
 }
     
+struct PageViewControllerGraphFilters: UIViewControllerRepresentable {
+    var viewControllers: [UIViewController]
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    func makeUIViewController(context: Context) -> UIPageViewController {
+        let pageViewController = UIPageViewController(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal)
+        
+        pageViewController.dataSource = context.coordinator
+        
+        return pageViewController
+    }
+    
+    func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+        pageViewController.setViewControllers([viewControllers[0]], direction: .forward, animated: true)
+    }
+    
+    class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+        var parent: PageViewControllerGraphFilters
+
+        init(_ pageViewController: PageViewControllerGraphFilters) {
+            self.parent = pageViewController
+        }
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+            guard let index = parent.viewControllers.firstIndex(of: viewController) else {
+                 return nil
+            }
+            
+            if index == 0 {
+                return parent.viewControllers[parent.viewControllers.count - 1]
+            }
+ 
+            return parent.viewControllers[index - 1]
+        }
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+            guard let index = parent.viewControllers.firstIndex(of: viewController) else {
+                return nil
+            }
+            
+            if index + 1 == parent.viewControllers.count {
+                return parent.viewControllers[0]
+            }
+            
+            return parent.viewControllers[index + 1]
+        }
+    }
+}
+
+struct GraphClassFilterPageView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: Classcool.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+
+    @Binding var selection: Set<String>
+
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Class").fontWeight(.semibold).padding(.leading, 10)
+
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(classlist) { classcool in
+                        HStack {
+                            Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5).animation(.easeInOut(duration: 0.25))
+                            Spacer()
+                            Button(action: {self.selectDeselect(classcool.name)}) {
+                                Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                            }
+                            Spacer()
+                        }
+                    }
+                }
+            }//.padding(10)
+            //Text("Key").font(.title)
+        }
+    }
+}
+
+
+struct GraphTypeFilterPageView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: AssignmentTypes.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \AssignmentTypes.type, ascending: true)])
+    
+    var assignmenttypes: FetchedResults<AssignmentTypes>
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Type").fontWeight(.semibold).padding(.leading, 10)
+
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(assignmenttypes) { assignmenttype in
+                        HStack {
+                            Text(assignmenttype.type)
+                            Spacer()
+                        }
+                    }
+                }
+            }//.padding(10)
+            //Text("Key").font(.title)
+        }.background(Color.clear)
+    }
+}
 
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -440,15 +561,7 @@ struct ProgressView: View {
     @State var showingSettingsView = false
     @State private var selectedClass: Int? = 0
     @State private var selection: Set<String> = []
-    
-    private func selectDeselect(_ singularassignment: String) {
-        if selection.contains(singularassignment) {
-            selection.remove(singularassignment)
-        } else {
-            selection.insert(singularassignment)
-        }
-    }
-    
+        
     func getclassnumber(classcool: Classcool) -> Int
     {
         for (index, element) in classlist.enumerated() {
@@ -529,8 +642,7 @@ struct ProgressView: View {
                                     Rectangle().frame(width: 1, height: 220 ).padding(.bottom, 15).padding(.trailing, 40)
                                 }
                             }
-                            ForEach(1..<5) {
-                                value in
+                            ForEach(1..<5) { value in
                                 VStack {
                                     Spacer()
                                     HStack {
@@ -546,50 +658,22 @@ struct ProgressView: View {
                                     }
                                 }
                             }
-
                         }
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(Color.orange)
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
-                                Text("Textual Insights").foregroundColor(Color.black)
+                                Text("Textual Insights (coming soon)").foregroundColor(Color.black)
 
                             }
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
 //                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
-                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200 ))
-                                ScrollView(showsIndicators: false) {
-
-
-                                        VStack(alignment: .leading,spacing:10) {
-                                            
-                                            ForEach(classlist) {
-                                                classcool in
-                                                
-                                                HStack {
-                                                    
-                                                    Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
-                                                    Spacer()
-                                                    Button(action: {self.selectDeselect(classcool.name)})
-                                                    {
-                                                      
-                                                        Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
-                                                    }
-    //                                                Spacer()
-    //                                                if (self.selection.contains(classcool.name)) {
-    //
-    //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
-    //                                                }
-                                                    Spacer()
-                                                }
-                                            }
-                                    }
-                                    
-                                }.frame(height: 180)//.padding(10)
-                                //Text("Key").font(.title)
+                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200))
+                                
+                                PageViewControllerGraphFilters(viewControllers: [UIHostingController(rootView: GraphClassFilterPageView(selection: self.$selection)), UIHostingController(rootView: GraphTypeFilterPageView())]).id(UUID()).frame(width: (UIScreen.main.bounds.size.width-60) * 1/3, height: 180)
                             }
                         }.padding(.horizontal, 10)
 
@@ -625,6 +709,7 @@ struct ProgressView: View {
                                             Alert(title: Text("No Completed Assignments"), message: Text("Complete an Assignment First"))
                                         }
                                     }.padding(0)
+                                    
                                     Button(action: {
                                         self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
                                     }) {

@@ -12,6 +12,32 @@ import SwiftUI
 
 
 
+struct TutorialView: View {
+    
+    var body: some View {
+//        ScrollView(.horizontal, showsIndicators: false)
+//        {
+        VStack {
+            ScrollView(.horizontal, showsIndicators: false) {
+
+                HStack {
+                    Spacer().frame(width: 50)
+                    Image("Tutorial1").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
+                    Spacer().frame(width: 100)
+                    Image("Tutorial2").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
+                    Spacer().frame(width: 60)
+                    Image("Tutorial3").resizable().frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.height-600).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
+                    Spacer().frame(width: 10)
+                    
+                }
+            }
+            
+            Spacer()
+          //  }
+        }
+        //}
+    }
+}
 
 struct SettingsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -35,13 +61,14 @@ struct SettingsView: View {
     
     @State var cleardataalert = false
     var body: some View {
+    
         Form {
         List {
             Section {
                 NavigationLink(destination: PreferencesView()) {
                      ZStack {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                         .fill(Color.red)
+                         .fill(Color("twelve"))
                             .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
                     
                         HStack {
@@ -56,7 +83,7 @@ struct SettingsView: View {
                     ZStack {
                                
                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color.blue)
+                        .fill(Color("fifteen"))
                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
                    
 
@@ -71,7 +98,7 @@ struct SettingsView: View {
                      ZStack {
                                 
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                         .fill(Color.green)
+                         .fill(Color("fourteen"))
                             .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
                     
 
@@ -82,6 +109,7 @@ struct SettingsView: View {
                         }.padding(.horizontal, 25)
                      }
                 }
+
                 
 //
 //                NavigationLink(destination: Text("email and team")) {
@@ -101,6 +129,12 @@ struct SettingsView: View {
 //                }
             }
             Section {
+                NavigationLink(destination: TutorialView())
+                {
+                    Text("Tutorial")
+                }
+            }
+            Section {
                 Button(action: {
                     self.cleardataalert.toggle()
 
@@ -115,11 +149,7 @@ struct SettingsView: View {
                 
             }
             }
-<<<<<<< HEAD
-=======
-            
 
->>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
         }.navigationBarTitle("Settings")
     }
     func delete() -> Void {
@@ -161,10 +191,9 @@ struct SettingsView: View {
     }
 }
 struct HelpCenterView: View {
-<<<<<<< HEAD
-=======
+
     let faqtitles = ["Payment", "Data usage", "Report a problem","Tutorial" ]
-    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Tejas.Krishnan@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial."]
+    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Raul.Sanchezflores@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial."]
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50]
     let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four"]
     @State private var selection: Set<String> = []
@@ -177,7 +206,6 @@ struct HelpCenterView: View {
         }
     }
     
->>>>>>> bbd21caacc85833a893a49637c848f7f598e7602
     var body: some View {
             VStack {
                 ScrollView {
@@ -513,13 +541,13 @@ struct NotificationsView: View {
                                 List {
                                     HStack {
                                          Button(action: {
-                                            if (self.selection.count != 1) {
+                                            if (!self.selection.contains("None")) {
                                                 self.selection.removeAll()
                                                 self.selectDeselect("None")
                                             }
                                              
                                          }) {
-                                             Text("None").foregroundColor(.black)
+                                             Text("None")//.foregroundColor(.black)
                                          }
                                         
                                          if (self.selection.contains("None")) {
@@ -539,7 +567,7 @@ struct NotificationsView: View {
                                                     }
                                                     
                                                 }) {
-                                                    Text(repeatoption).foregroundColor(.black)
+                                                    Text(repeatoption)//.foregroundColor(.black)
                                                 }
                                                 if (self.selection.contains(repeatoption)) {
                                                     Spacer()
@@ -551,17 +579,17 @@ struct NotificationsView: View {
                                 }
                             }
                        //     Text("Before Break").font(.title)
-                            Section(header: Text("Before Break").font(.system(size: 20))) {
+                            Section(header: Text("Before End of Tasks").font(.system(size: 20))) {
                                 List {
                                     HStack {
                                          Button(action: {
-                                            if (self.selection2.count != 1) {
+                                            if (!self.selection2.contains("None")) {
                                                 self.selection2.removeAll()
                                                 self.selectDeselect2("None")
                                             }
                                              
                                          }) {
-                                             Text("None").foregroundColor(.black)
+                                             Text("None")//.foregroundColor(.black)
                                          }
                                         
                                          if (self.selection2.contains("None")) {
@@ -581,7 +609,7 @@ struct NotificationsView: View {
                                                     }
                                                     
                                                 }) {
-                                                    Text(repeatoption).foregroundColor(.black)
+                                                    Text(repeatoption)//.foregroundColor(.black)
                                                 }
                                                 if (self.selection2.contains(repeatoption)) {
                                                     Spacer()

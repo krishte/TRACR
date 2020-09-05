@@ -7,13 +7,18 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 class DisplayedDate: ObservableObject {
     @Published var score: Int = 0
 }
 
 struct ContentView: View {
-    @EnvironmentObject var changingDate: DisplayedDate
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: Subassignmentnew.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
 
     init() {
         if #available(iOS 14.0, *) {
@@ -27,13 +32,29 @@ struct ContentView: View {
         UITableView.appearance().separatorStyle = .none
 //        UITableView.appearance().backgroundColor = .clear
 //        changingDate.score = 1
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+            if success {
+                print("All set!")
+            } else if let error = error {
+                print(error.localizedDescription)
+            }
+        }
+      //  self.schedulenotifications()
     }
-    
+
     var body: some View {
         TabView {
-            HomeView().environmentObject(changingDate).tabItem {
-                Image(systemName: "house").resizable().scaledToFill()
-                Text("Home").font(.body)
+            
+            
+
+
+            HomeView()
+            .tabItem {
+
+                    Image(systemName: "house").resizable().scaledToFill()
+                    Text("Home").font(.body)
+                
+                
             }
             
             ClassesView().tabItem {

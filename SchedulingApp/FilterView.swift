@@ -10,14 +10,16 @@ import SwiftUI
 
 struct DropDown: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Binding var showCompleted: Bool
     @State private var selectedFilter = 0
-    @State private var showCompleted = false
+    //@State private var showCompleted = false
 
-    init() {
+    init(showCompleted2: Binding<Bool>) {
         UITableView.appearance().tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: Double.leastNonzeroMagnitude))
+        self._showCompleted = showCompleted2
     }
 
-    var filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
+    let filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
     var body: some View {
         VStack {
             Form {
@@ -29,11 +31,11 @@ struct DropDown: View {
                             }
                         }
                     }
-                    Toggle(isOn: $showCompleted) {
-                        Text("Show Completed Assignments")
-                    }
+//                    Toggle(isOn: $showCompleted) {
+//                        Text("Show Completed Assignments")
+//                    }
                 }
-            }.frame(height: 90)
+            }.frame(height: 50)
             
             AssignmentsView(selectedFilter: self.filters[selectedFilter], value: showCompleted)
         }
@@ -112,8 +114,10 @@ struct AssignmentsView: View {
 
 struct FilterView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.subject, ascending: true)])
-    
+
     var assignmentlist: FetchedResults<Assignment>
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
@@ -126,52 +130,83 @@ struct FilterView: View {
     @State var NewGradePresenting = false
     @State var noClassesAlert = false
     @State var noAssignmentsAlert = false
+    @State var completedvalue = false
 
     var body: some View {
         NavigationView{
-            VStack {
-                DropDown()
+            ZStack {
+                VStack {
+                    DropDown(showCompleted2: $completedvalue)
+                }
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).padding(20)
+                            Button(action: {
+                                self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
+        //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
+        //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
+
+                                }) {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
+                                                                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                                                                    Text("Assignment")
+                                                                    Image(systemName: "paperclip")
+                                                                }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                                                                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                                                                }
+                                                                Button(action: {self.NewClassPresenting.toggle()}) {
+                                                                    Text("Class")
+                                                                    Image(systemName: "list.bullet")
+                                                                }.sheet(isPresented: $NewClassPresenting, content: {
+                                                                    NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                    //                                Text("Occupied Time")
+                                    //                                Image(systemName: "clock.fill")
+                                    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.NewFreetimePresenting.toggle()}) {
+                                                                    Text("Free Time")
+                                                                    Image(systemName: "clock")
+                                                                }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                                                    Text("Grade")
+                                                                    Image(systemName: "percent")
+                                                                }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                                                                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
+                                                                }
+                                                            }.frame(width: 70, height: 70).padding(20).overlay(
+                                    ZStack {
+                                        //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                    }
+                                )
+                            }
+                        }
+                        
+                    
+
+                    }
+                }
             }
             .navigationBarItems(
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                         Button(action: {print("settings button clicked")}) {
-                            Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }.padding(.leading, 2.0);
                     
                         Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
 
                         Button(action: {
-                            self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
+                            withAnimation(.spring())
+                            {
+                                self.completedvalue.toggle()
+                            }
                             
                         }) {
-                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }.contextMenu{
-                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                                Text("Assignment")
-                                Image(systemName: "paperclip")
-                            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-                            }
-                            Button(action: {self.NewClassPresenting.toggle()}) {
-                                Text("Class")
-                                Image(systemName: "list.bullet")
-                            }.sheet(isPresented: $NewClassPresenting, content: {
-                                NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                Text("Occupied Time")
-                                Image(systemName: "clock.fill")
-                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewFreetimePresenting.toggle()}) {
-                                Text("Free Time")
-                                Image(systemName: "clock")
-                            }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
-                                Text("Grade")
-                                Image(systemName: "percent")
-                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-                                Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
-                            }
+                            Image(systemName: self.completedvalue ? "checkmark.circle.fill" : "checkmark.circle").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
                 }.padding(.top, 0)).navigationBarTitle("Assignment List")
          }

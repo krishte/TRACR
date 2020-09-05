@@ -36,7 +36,12 @@ struct ClassView: View {
     }
     
     func getNextColor(currentColor: String) -> Color {
-        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
+        let existinggradients = ["one", "two", "three", "five", "six", "eleven", "fourteen","thirteen", "fifteen"]
+        if (existinggradients.contains(currentColor))
+        {
+            return Color(currentColor + "-b")
+        }
         for color in colorlist {
             if (color == currentColor)
             {
@@ -89,7 +94,7 @@ struct EditClassModalView: View {
                             Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
                             Spacer()
                         }.frame(height: 30)
-                        Slider(value: $classtolerancedouble, in: 1...10)
+                        Slider(value: $classtolerancedouble, in: 1...5)
                     }
                 }
                 
@@ -244,9 +249,15 @@ struct EditClassModalView: View {
     }
     
     func getNextColor(currentColor: String) -> Color {
-        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
+        let existinggradients = ["one", "two", "three", "five", "six", "eleven","thirteen", "fourteen", "fifteen"]
+        if (existinggradients.contains(currentColor))
+        {
+            return Color(currentColor + "-b")
+        }
         for color in colorlist {
-            if (color == currentColor) {
+            if (color == currentColor)
+            {
                 return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
             }
         }
@@ -264,9 +275,14 @@ struct DetailView: View {
     
     var assignmentlist: FetchedResults<Assignment>
     
-    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
+    
+    @State var NewAssignmentPresenting: Bool = false
+    @State var noClassesAlert: Bool = false
+    @State var scalevalue: CGFloat = 1
+    @State private var ocolor = Color.blue
     
     private func selectDeselect(_ singularassignment: Assignment) {
         if selection.contains(singularassignment) {
@@ -276,50 +292,99 @@ struct DetailView: View {
         }
     }
     
+    func getclassindex(classcool: Classcool) -> Int {
+        for (index, element) in classlist.enumerated()
+        {
+            if (element == classcool)
+            {
+                return index
+            }
+        }
+        return 0
+    }
+    
     var body: some View {
-        VStack {
-            Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
-            Spacer()
-            Text("Tolerance: " + String(classcool.tolerance))
-            Spacer()
-            
-            ScrollView {
-                ForEach(assignmentlist) { assignment in
-                    if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.originalname && assignment.completed == false) {
-                        IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment).shadow(radius: 10).onTapGesture {
-                            self.selectDeselect(assignment)
-                        }
-                    }
-                    }.animation(.spring())
-                if (getCompletedAssignmentNumber() > 0)
-                {
-                    HStack {
-                        VStack {
-                            Divider()
-                        }
-                        Text("Completed Assignments").frame(width: 200)
-                        VStack {
-                            Divider()
-                        }
-                    }.animation(.spring())
-                    ForEach(assignmentlist) {
-                        assignment in
-                        if (self.classcool.assignmentnumber != -1 && assignment.subject == self.classcool.originalname && assignment.completed == true) {
-                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment).shadow(radius: 10).onTapGesture {
+        ZStack {
+            VStack {
+                Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
+                Spacer()
+                Text("Tolerance: " + String(classcool.tolerance))
+                Spacer()
+                
+                ScrollView {
+                    ForEach(assignmentlist) { assignment in
+                        if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.originalname && assignment.completed == false) {
+                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment).shadow(radius: 10).onTapGesture {
                                 self.selectDeselect(assignment)
                             }
                         }
                     }.animation(.spring())
+                    if (!getexistingassignments())
+                    {
+                        //Image("emptyassignment").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+                        Text("Tap the add button to add an assignment").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, alignment: .center).multilineTextAlignment(.center)
+                        
+                    }
+                    if (getCompletedAssignmentNumber() > 0)
+                    {
+                        HStack {
+                            VStack {
+                                Divider()
+                            }
+                            Text("Completed Assignments").frame(width: 200)
+                            VStack {
+                                Divider()
+                            }
+                        }.animation(.spring())
+                        ForEach(assignmentlist) {
+                            assignment in
+                            if (self.classcool.assignmentnumber != -1 && assignment.subject == self.classcool.originalname && assignment.completed == true) {
+                                IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment).shadow(radius: 10).onTapGesture {
+                                    self.selectDeselect(assignment)
+                                }
+                            }
+                        }.animation(.spring())
+                    }
+                }
+            }.navigationBarItems(trailing: Button(action: {
+                self.EditClassPresenting = true
+            })
+            { Text("Edit").frame(height: 100, alignment: .trailing) }
+            ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber)).environment(\.managedObjectContext, self.managedObjectContext)})
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+
+                    Button(action: {
+                        self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
+//                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
+//                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
+                        
+                    }) {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).scaleEffect(self.scalevalue).padding(20).overlay(
+                            ZStack {
+                                //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).scaleEffect(self.scalevalue)
+                            }
+                        ).shadow(radius: 50)
+                    }.animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool)).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                        Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                    }
                 }
             }
-        }.navigationBarItems(trailing: Button(action: {
-            self.EditClassPresenting = true
-        })
-        { Text("Edit").frame(height: 100, alignment: .trailing) }
-        ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber)).environment(\.managedObjectContext, self.managedObjectContext)})
+        }
     }
     
-    
+    func getexistingassignments() -> Bool {
+        for assignment in assignmentlist {
+            if (assignment.subject == classcool.originalname)
+            {
+                return true
+            }
+        }
+        return false
+    }
     func getCompletedAssignmentNumber() -> Int {
         
         
@@ -336,7 +401,7 @@ struct DetailView: View {
 
 struct ClassesView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
@@ -386,7 +451,96 @@ struct ClassesView: View {
         return Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
         //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
     }
+        func schedulenotifications() {
+            
+            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+            
+           
+            let calendar = Calendar.current
+            
+            let times = [0, 5, 10, 15, 30]
 
+            // show this notification five seconds from now
+         //   print(subassignmentlist.count)
+            let defaults = UserDefaults.standard
+            let array = defaults.object(forKey: "savedassignmentnotifications") as? [String] ?? ["None"]
+            let array2 = defaults.object(forKey: "savedbreaknotifications") as? [String] ?? ["None"]
+            //let array2 = defaults.object(forKey: "savedbreaknotifications") as? [String] ?? ["None"]
+            let beforeassignmenttimes = ["At Start", "5 minutes", "10 minutes", "15 minutes", "30 minutes"]
+
+
+            var listofnotifications: [DateComponents] = []
+            for subassignment in subassignmentlist {
+                for (index, val) in beforeassignmenttimes.enumerated() {
+                    if (array.contains(val))
+                    {
+                        let content = UNMutableNotificationContent()
+                        content.title = "Upcoming Task " + "in " + String(times[index]) + " minutes: "
+                           content.body = subassignment.assignmentname
+                           content.sound = UNNotificationSound.default
+
+                        let datevalue = Date(timeInterval: TimeInterval(-7200 - times[index]*60), since: subassignment.startdatetime)
+                            let components = calendar.dateComponents([Calendar.Component.minute,Calendar.Component.hour,Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: datevalue)
+                            listofnotifications.append(components)
+                            let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+
+                            // choose a random identifier
+                            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+                            // add our notification request
+                            UNUserNotificationCenter.current().add(request)
+
+                    }
+                        if (array2.contains(val))
+                        {
+                            let content = UNMutableNotificationContent()
+                               content.title = "Upcoming Task " + "in " + String(times[index]) + " minutes: "
+                                  content.body = subassignment.assignmentname
+                               content.sound = UNNotificationSound.default
+
+                            let datevalue = Date(timeInterval: TimeInterval(-7200 - times[index]*60), since: subassignment.enddatetime)
+                                let components = calendar.dateComponents([Calendar.Component.minute,Calendar.Component.hour,Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: datevalue)
+                            listofnotifications.append(components)
+                                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+
+                                // choose a random identifier
+                                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+                                // add our notification request
+                                UNUserNotificationCenter.current().add(request)
+
+                        }
+
+                }
+
+
+            }
+            print(listofnotifications)
+            var datelist: [Date] = []
+            for value in listofnotifications {
+                let date = calendar.date(from: value)!
+                datelist.append(date)
+            }
+            datelist.sort()
+            print("")
+            print(datelist)
+//            let content2 = UNMutableNotificationContent()
+//            content2.title = "Upcoming Task " + "in " + String(times[1]) + " minutes: "
+//               content2.body = subassignmentlist[0].assignmentname
+//        //    content2.body = "Text"
+//               content2.sound = UNNotificationSound.default
+//
+//                let trigger2 = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+//
+//                // choose a random identifier
+//                let request2 = UNNotificationRequest(identifier: UUID().uuidString, content: content2, trigger: trigger2)
+//
+//                // add our notification request
+//                UNUserNotificationCenter.current().add(request2)
+            print("success")
+
+            
+        }
     func bulk(assignment: Assignment, daystilldue: Int, totaltime: Int, bulk: Bool, dateFreeTimeDict: [Date: Int]) -> ([(Int, Int)], Int)
     {
         let safetyfraction:Double = daystilldue > 20 ? (daystilldue > 100 ? 0.95 : 0.9) : (daystilldue > 7 ? 0.75 : 1)
@@ -724,61 +878,152 @@ struct ClassesView: View {
         }
         return 0
     }
+    func getnumofclasses() -> Bool {
+        var count = 0
+        for clasity in classlist {
+            count += 1
+        }
+        if (count > 0)
+        {
+            return true
+        }
+        return false
+    }
     @State var storedindex = 0
+    @State var opacityvalue = 1.0
     var body: some View {
         NavigationView {
-            List {
-                ForEach(self.classlist) { classcool in
-                    NavigationLink(destination: DetailView(classcool: classcool )) {
-                        ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).contextMenu {
-                            Button(action: {
-                                self.classlist.count > 0 ? self.NewAssignmentPresenting2.toggle() : self.noClassesAlert.toggle()
-                                self.storedindex = self.getclassindex(classcool: classcool)
-                            }) {
-                                Text("Add Assignment")
-                                Image(systemName: "paperclip")
-                            }
-                        }
-                    }
-                    
-                }.onDelete { indexSet in
-                    self.startedToDelete = true
-                    
-                    for index in indexSet {
-                        for (index2, element) in self.assignmentlist.enumerated() {
-                            if (element.subject == self.classlist[index].originalname) {
-                                for (index3, element2) in self.subassignmentlist.enumerated() {
-                                    if (element2.assignmentname == element.name) {
-                                        self.managedObjectContext.delete(self.subassignmentlist[index3])
+            ZStack {
+                List {
+                    if (getnumofclasses())
+                    {
+                        ForEach(self.classlist) { classcool in
+                            NavigationLink(destination: DetailView(classcool: classcool )) {
+                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).contextMenu {
+                                    Button(action: {
+                                        self.classlist.count > 0 ? self.NewAssignmentPresenting2.toggle() : self.noClassesAlert.toggle()
+                                        self.storedindex = self.getclassindex(classcool: classcool)
+                                    }) {
+                                        Text("Add Assignment")
+                                        Image(systemName: "paperclip")
                                     }
                                 }
-                                self.managedObjectContext.delete(self.assignmentlist[index2])
+                            }
+                            
+                        }.onDelete { indexSet in
+                            self.startedToDelete = true
+                            
+                            for index in indexSet {
+                                for (index2, element) in self.assignmentlist.enumerated() {
+                                    if (element.subject == self.classlist[index].originalname) {
+                                        for (index3, element2) in self.subassignmentlist.enumerated() {
+                                            if (element2.assignmentname == element.name) {
+                                                self.managedObjectContext.delete(self.subassignmentlist[index3])
+                                            }
+                                        }
+                                        self.managedObjectContext.delete(self.assignmentlist[index2])
+                                    }
+                                }
+                                self.managedObjectContext.delete(self.classlist[index])
+                            }
+                            
+                            do {
+                                try self.managedObjectContext.save()
+                                print("Class made")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                            print("Class deleted")
+                            
+                            self.startedToDelete = false
+                        }
+                        
+                    }
+                    else
+                    {
+    //                    Image("emptyclass").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width, alignment: .center).offset(x: -20)
+    //                    Text("Click the add button to add a class").font(.system(size: 40)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width - 40, alignment: .center).multilineTextAlignment(.center)
+                        ZStack {
+//                            HStack {
+//                                Spacer()
+//                                VStack {
+//                                    ZStack {
+//                                        Image("Arrow").resizable().aspectRatio(contentMode: .fit).frame(width: 80).offset(y: -70)
+//                                        Text("Add class here").offset(x: -40, y: 0)
+//                                    }
+//                                    Spacer()
+//                                }
+//
+//                            }
+                            Text("No classes created").font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height-250, alignment: .center)
+                        }
+                    }
+
+                }.sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
+                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                }
+                
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(opacityvalue).padding(20)
+                            Button(action: {
+                                self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
+        //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
+        //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
+
+                                }) {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
+                                                                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                                                                    Text("Assignment")
+                                                                    Image(systemName: "paperclip")
+                                                                }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                                                                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                                                                }
+                                                                Button(action: {self.NewClassPresenting.toggle()}) {
+                                                                    Text("Class")
+                                                                    Image(systemName: "list.bullet")
+                                                                }.sheet(isPresented: $NewClassPresenting, content: {
+                                                                    NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                    //                                Text("Occupied Time")
+                                    //                                Image(systemName: "clock.fill")
+                                    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.NewFreetimePresenting.toggle()}) {
+                                                                    Text("Free Time")
+                                                                    Image(systemName: "clock")
+                                                                }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                                                    Text("Grade")
+                                                                    Image(systemName: "percent")
+                                                                }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                                                                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
+                                                                }
+                                                            }.frame(width: 70, height: 70).opacity(opacityvalue).padding(20).overlay(
+                                    ZStack {
+                                        //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                    }
+                                )
                             }
                         }
-                        self.managedObjectContext.delete(self.classlist[index])
+                        
+                    
+
                     }
-                    
-                    do {
-                        try self.managedObjectContext.save()
-                        print("Class made")
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                    
-                    print("Class deleted")
-                    
-                    self.startedToDelete = false
                 }
-            }.sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
-                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
             }.navigationBarItems(
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                         Button(action: {
                             
-                          //   self.master()
-                          //  MasterStruct().master()
-                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literatue HL"]
+                          // self.master()
+                           // self.schedulenotifications()
+                           // MasterStruct().master()
+                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
                             let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
                             let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
                             let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
@@ -903,44 +1148,20 @@ struct ClassesView: View {
                                     }
                                 }
                             }
+                            self.schedulenotifications()
                         })
                         {
-                            Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
                     
                         Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5)
+                        Text("").frame(width: UIScreen.main.bounds.size.width/12, height: 20)
 
-                        Button(action: {
-                            self.NewClassPresenting.toggle()
-                        }) {
-                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }.contextMenu{
-                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                                Text("Assignment")
-                                Image(systemName: "paperclip")
-                            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-                            }
-                            Button(action: {self.NewClassPresenting.toggle()}) {
-                                Text("Class")
-                                Image(systemName: "list.bullet")
-                            }.sheet(isPresented: $NewClassPresenting, content: {
-                                NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                Text("Occupied Time")
-                                Image(systemName: "clock.fill")
-                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.NewFreetimePresenting.toggle()}) {
-                                Text("Free Time")
-                                Image(systemName: "clock")
-                            }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                            Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
-                                Text("Grade")
-                                Image(systemName: "percent")
-                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-                                Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
-                            }
-                        }
+//                        Button(action: {
+//                            self.NewClassPresenting.toggle()
+//                        }) {
+//                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+//                        }
             }).navigationBarTitle(Text("Classes"), displayMode: .large)
         }
     }

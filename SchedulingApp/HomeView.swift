@@ -439,8 +439,6 @@ struct HomeBodyView: View {
 //        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
- 
-        
     }
     
     func upcomingDisplayTime() -> String {
@@ -526,7 +524,6 @@ struct HomeBodyView: View {
                         }.frame(width: 150)
                     }
                 }.padding(10)
-                
             }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
             
             VStack {
@@ -560,13 +557,12 @@ struct HomeBodyView: View {
 //                                                for subassignment in self.subassignmentlist {
 //                                                    print(subassignment.startdatetime.description)
 //                                                }
-                                                
-
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
-                                            }
+                                        }
                                     }.animation(.spring())
                                 }
+                                
                                 Spacer()
                             }
                         }

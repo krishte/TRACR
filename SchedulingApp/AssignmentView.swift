@@ -44,16 +44,17 @@ struct IndividualAssignmentFilterView: View {
                 if (isDragged && !self.isCompleted) {
                     ZStack {
                         HStack {
-                            Rectangle().fill(Color.green) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
+                            Rectangle().fill(Color("fourteen")) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: UIScreen.main.bounds.size.width-10+self.dragoffset.width)
                         }
                         HStack {
                             Spacer()
-                            if (self.dragoffset.width < -110) {
-                                Text("Complete").foregroundColor(Color.white).frame(width:100)
-                            }
-                            else {
-                                Text("Complete").foregroundColor(Color.white).frame(width:100).offset(x: self.dragoffset.width + 110)
-                            }
+//                            if (self.dragoffset.width < -110) {
+//                                Text("Complete").foregroundColor(Color.white).frame(width:100)
+//                            }
+//                            else {
+                                Text("Complete").foregroundColor(Color.white).frame(width:100).offset(x: self.dragoffset.width < -110 ? 0: self.dragoffset.width + 110)
+                                //Text("Complete").foregroundColor(Color.white).frame(width:100).offset(x: self.dragoffset.width + 110)
+                         //   }
                         }
                     }
                 }
@@ -65,14 +66,14 @@ struct IndividualAssignmentFilterView: View {
                         }
                         HStack {
                             
-                            if (self.dragoffset.width > 150) {
-                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -110)
-                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -150)
-                            }
-                            else {
-                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width-260)
-                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width-300)
-                            }
+//                            if (self.dragoffset.width > 150) {
+//                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -110)
+//                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -150)
+//                            }
+//                            else {
+                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width > 150 ? -110 : self.dragoffset.width-260)
+                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width > 150 ? -150 : self.dragoffset.width-300)
+//                            }
                             
                         }
                     }
@@ -117,7 +118,7 @@ struct IndividualAssignmentFilterView: View {
 
                     }
                 }
-            }.padding(10).background( Color(assignment.color)).cornerRadius(20).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.padding(10).background( Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
 

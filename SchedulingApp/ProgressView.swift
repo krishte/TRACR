@@ -21,12 +21,12 @@ struct ClassProgressView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(Color(classcool.color))
-                .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100))
+                .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+                .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100 ))
                // .shadow(radius: 10)
             VStack {
                // HStack {
-                Text(classcool.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.center).frame(width: (UIScreen.main.bounds.size.width-40)/2)
+                Text(classcool.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.center).frame(width: (UIScreen.main.bounds.size.width-60)/2)
                //     Spacer()
 //                   if getAverageGrade() == 0 {
 //                    Text("No Grades").font(.system(size: 20)).fontWeight(.light)
@@ -48,7 +48,21 @@ struct ClassProgressView: View {
             }.frame(height: 100).padding(.horizontal, 10).padding(.vertical, 5)
         }.frame(width: (UIScreen.main.bounds.size.width-20)/2).shadow(radius: 5)
     }
-    
+    func getNextColor(currentColor: String) -> Color {
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
+        let existinggradients = ["one", "two", "three", "five", "six", "eleven","thirteen", "fourteen", "fifteen"]
+        if (existinggradients.contains(currentColor))
+        {
+            return Color(currentColor + "-b")
+        }
+        for color in colorlist {
+            if (color == currentColor)
+            {
+                return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
+            }
+        }
+        return Color("one")
+    }
     func getAverageGrade() -> Double
     {
         var gradesum: Double = 0
@@ -78,8 +92,7 @@ struct DetailProgressView: View {
     var assignmentlist: FetchedResults<Assignment>
     
     @FetchRequest(entity: Classcool.entity(),
-                  sortDescriptors: [])
-    
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     var classlist: FetchedResults<Classcool>
     @State var selectedtimeframe = 0
     let screensize = UIScreen.main.bounds.size.width-20
@@ -116,164 +129,261 @@ struct DetailProgressView: View {
     var group6_percentages = ["Music: SL" : [0.30, 1.60, 13.80, 30.90, 27.50, 21.90, 4.10], "Music: HL" : [0.10, 3.20, 17.30, 22.20, 28.50, 19.90, 8.70], "Theatre: SL" : [0.80, 7.40, 14.50, 29.30, 25.80, 14.50, 7.70], "Theatre: HL" : [0.30, 3.00, 10.60, 24.30, 27.60, 24.60, 9.40], "Visual Art: SL" : [0.30, 10.50, 35.20, 28.30, 19.20, 5.60, 1.10], "Visual Art: HL" : [0.10, 4.80, 23.80, 29.50, 26.20, 12.90, 2.70], "Economics: SL" : [1.00, 5.50, 16.30, 20.80, 24.80, 21.80, 9.80], "Economics HL" : [0.40, 2.50, 8.00, 18.00, 30.50, 27.90, 13.10], "Psychology: SL" : [0.80, 8.60, 14.30, 27.60, 27.90, 17.20, 3.50], "Psychology: HL" : [0.20, 3.20, 12.20, 25.70, 31.10, 23.70, 3.90], "Biology: SL" : [0.90, 10.80, 21.80, 26.60, 20.50, 14.40, 5.0], "Biology: HL" : [1.20, 8.30, 18.50, 26.90, 23.00, 16.10, 5.90], "Chemistry: SL" : [2.90, 15.60, 22.50, 21.30, 17.00, 15.10, 5.50], "Chemistry: HL" : [1.10, 8.80, 17.90, 20.10, 23.00, 20.20, 8.80], "Physics: SL" : [1.70, 13.10, 26.70, 23.10, 17.20, 10.00, 8.10], "Physics: HL" : [0.70, 6.40, 18.60, 20.80, 22.20, 17.40, 14.00]]
     var group7_percentages = ["Extended Essay": [10.90, 23.54, 37.99, 25.06, 1.53, 0.99], "Theory of Knowledge": [5.57, 25.54, 48.36, 18.94, 0.68, 0.91]]
     
-
+    let minussize: CGFloat = 45
+    let squarecolor: String = "graphbackgroundtop"
+    @State var NewGradePresenting = false
+    @State var storedindex = -1
+    @State var noAssignmentsAlert = false
     var body: some View {
-        VStack {
-            Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
-            Spacer()
-            Text("Average grade: \(getAverageGrade(), specifier: "%.1f")")
-            Spacer().frame(height: 20)
-            Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 4).background(Color("graphbackground"))
-            ScrollView(showsIndicators: false) {
-                if (getAverageGrade() != 0) {
-                    VStack {
-//                        Picker(selection: $selectedtimeframe, label: Text(""))
-//                        {
-//                            Text("Month").tag(0)
-//                            Text("Year").tag(1)
-//                        }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
-                        //Divider()
-                        //Spacer()
-                        if (getgradenum()) {
-                            
-                            Text(getFirstAssignmentDate() + " - " + getLastAssignmentDate()).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, height: 40, alignment: .topLeading).offset(y: 30)
-                        }
-                        ZStack {
-                            VStack {
-                                Rectangle().fill(Color("graphbackground")).frame(width:UIScreen.main.bounds.size.width, height: 300)
-                            }.offset(y: 20)
-                            
-                            VStack(alignment: .leading,spacing: 0) {
+        ZStack {
+            VStack {
+                Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
+                Spacer()
+                Text("Average grade: \(getAverageGrade(), specifier: "%.1f")")
+                Spacer().frame(height: 20)
+                Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 4).background(Color("graphbackground"))
+                ScrollView(showsIndicators: false) {
+                    if (getAverageGrade() != 0) {
+                        VStack {
+    //                        Picker(selection: $selectedtimeframe, label: Text(""))
+    //                        {
+    //                            Text("Month").tag(0)
+    //                            Text("Year").tag(1)
+    //                        }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
+                            //Divider()
+                            //Spacer()
+                            if (getgradenum()) {
                                 
-                                Spacer()
-                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
-                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
-                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
-                                Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
-                                Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
-                            }.offset(x: -10, y: -15)
-                            HStack {
-                                //Spacer()
-                                ScrollView(.horizontal, showsIndicators: false)
-                                {
-                                    HStack {
-                                        Spacer()
-                                        ForEach(assignmentlist) {
-                                            assignment in
-                                            
-                                            if (self.graphableAssignment(assignment: assignment))
-                                            {
+                                Text(getFirstAssignmentDate() + " - " + getLastAssignmentDate()).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, height: 40, alignment: .topLeading).offset(y: 30)
+                            }
+                            ZStack {
+                                VStack {
+                                    Rectangle().fill(Color("graphbackground")).frame(width:UIScreen.main.bounds.size.width, height: 300)
+                                }.offset(y: 20)
+                                
+                                VStack(alignment: .leading,spacing: 0) {
+                                    
+                                    Spacer()
+                                    if (classcool.originalname == "Theory of Knowledge" || classcool.originalname == "Extended Essay")
+                                    {
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 59.5)
+                                    }
+                                    else
+                                    {
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                    }
+                                    Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
+                                }.offset(x: -10, y: -15)
+                                HStack {
+                                    //Spacer()
+                                    ScrollView(.horizontal, showsIndicators: false)
+                                    {
+                                        HStack {
+                                            Spacer()
+                                            ForEach(assignmentlist) {
+                                                assignment in
+                                                
+                                                if (self.graphableAssignment(assignment: assignment))
+                                                {
 
-                                                VStack {
-                                                    Spacer()
-                                                    Rectangle()
-                                                        .fill(Color.blue)
-                                                        .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade) * 30)
+                                                    VStack {
+                                                        Spacer()
+    //                                                    if (self.classcool.name == "Extended Essay" || self.classcool.name == "Theory of Knowledge")
+    //                                                    {
+    //                                                        Rectangle()
+    //                                                        .fill(Color.blue)
+    //                                                        .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade-2) * 60)
+    //
+    //                                                    }
+    //                                                    else
+    //                                                    {
+                                                            Rectangle()
+                                                            .fill(Color.blue)
+                                                                .frame(width: self.getCompletedNumber(), height: (self.classcool.originalname == "Extended Essay" || self.classcool.originalname == "Theory of Knowledge") ? CGFloat(assignment.grade-2) * 60 : CGFloat(assignment.grade) * 30)
+    //                                                    }
+                                                        //Text( self.formatter.string(from: assignment.duedate))
+                                                          //  .font(.footnote)
+                                                           // .frame(width: self.getCompletedNumber(),height: 20)
+                                                    }
 
-                                                    //Text( self.formatter.string(from: assignment.duedate))
-                                                      //  .font(.footnote)
-                                                       // .frame(width: self.getCompletedNumber(),height: 20)
                                                 }
-
                                             }
                                         }
+                                        
                                     }
-                                    
+                                    ZStack {
+                                        if (classcool.originalname == "Theory of Knowledge" || classcool.originalname == "Extended Essay")
+                                        {
+                                            Rectangle().fill(Color.black).frame(width: 1.5, height: 245).offset(x: -10,y:30).padding(0)
+                                        }
+                                        else
+                                        {
+                                            Rectangle().fill(Color.black).frame(width: 1.5, height: 215).offset(x: -10,y:44).padding(0)
+                                        }
+                                        VStack {
+                                           // Spacer()
+                                            if (classcool.originalname == "Theory of Knowledge" || classcool.originalname == "Extended Essay")
+                                            {
+                                                Text("A").frame(width: 20).padding(.top, 40)
+                                                Text("B").frame(width: 20).padding(.top, 40)
+                                                Text("C").frame(width: 20).padding(.top, 40)
+                                                Text("D").frame(width: 20).padding(.top, 40)
+                                                Text("E").frame(width: 20).padding(.top, 40)
+                                            }
+                                            else
+                                            {
+                                                Text("7").frame(width: 20).padding(.top, 68).font(.system(size: 10))
+                                                Text("6").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                                Text("5").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                                Text("4").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                                Text("3").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                                Text("2").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                                Text("1").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                                Text("0").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                            }
+                                        }.offset(y: 10)
+                                    }
+                                }.offset(y: -16)
+                                
+
+    //                                Path { path in
+    //                                    createDict().forEach { (assignment, number) in
+    //                                        if (number == 1)
+    //                                        {
+    //                                            path.move(to: CGPoint(x: 10, y: 285-30*Int(assignment.grade)))
+    //                                        }
+    //                                        else
+    //                                        {
+    //                                            path.addLine(to: CGPoint(x: 10 + Int(getCompletedNumber()) * (number-1), y: 285-30*Int(assignment.grade)))
+    //                                        }
+    //                                    }
+    //                                }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                                
+    //                            Path { path in
+    //                                path.move(to: CGPoint(x: 10, y: 285))
+    //                                path.addLine(to: CGPoint(x: 100, y: 400))
+    //                                path.addLine(to: CGPoint(x: 300, y: 400))
+    //                            }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                            }
+                            
+                            Spacer().frame(height: 40)
+                            
+
+                            if (getgradenum())
+                            {
+                                if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
+                                {
+                                    HStack {
+                                        VStack {
+                                            Text("Average").font(.system(size: 18)).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                            Text("\(getAverageGrade(), specifier: "%.2f")").font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            if (getChangeInAverageGrade() >= 0)
+                                            {
+                                                Text("+\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            }
+                                            else
+                                            {
+                                                Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            }
+                                        }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
+                                        Spacer().frame(width: 20)
+                                        VStack {
+                                            Text("Last Assignment vs. Average").font(.system(size: 18)).multilineTextAlignment(.center).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                            Text(String(getLastAssignmentGrade())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            if (Double(getLastAssignmentGrade()) - getAverageGrade() >= 0.0)
+                                            {
+                                                Text("+\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            }
+                                            else
+                                            {
+                                                Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            }
+                                        }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
+                                    }
                                 }
-                                ZStack {
-                                    Rectangle().fill(Color.black).frame(width: 1.5, height: 245).offset(x: -10,y:30).padding(0)
+                                Spacer().frame(height: 20)
+                                HStack {
                                     VStack {
-                                       // Spacer()
-                                        Text("8").frame(width: 20).padding(.top, 40)
-                                        Text("6").frame(width: 20).padding(.top, 40)
-                                        Text("4").frame(width: 20).padding(.top, 40)
-                                        Text("2").frame(width: 20).padding(.top, 40)
-                                        Text("0").frame(width: 20).padding(.top, 40)
-                                    }.offset(y: 10)
+                                        Text("Class Average").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                        Text(getGlobalAverageI() == 0 ? "No Data": String(getGlobalAverageI())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+
+                                    }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
+                                    Spacer().frame(width: 20)
+                                    VStack {
+                                        Text("Percentile").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                        Text(getPercentile() == 0 ? "No Data": String(getPercentile()) + "%").font(.system(size:  25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                    }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                 }
-                            }.offset(y: -16)
-                            
 
-//                                Path { path in
-//                                    createDict().forEach { (assignment, number) in
-//                                        if (number == 1)
-//                                        {
-//                                            path.move(to: CGPoint(x: 10, y: 285-30*Int(assignment.grade)))
-//                                        }
-//                                        else
-//                                        {
-//                                            path.addLine(to: CGPoint(x: 10 + Int(getCompletedNumber()) * (number-1), y: 285-30*Int(assignment.grade)))
-//                                        }
-//                                    }
-//                                }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
-                            
-//                            Path { path in
-//                                path.move(to: CGPoint(x: 10, y: 285))
-//                                path.addLine(to: CGPoint(x: 100, y: 400))
-//                                path.addLine(to: CGPoint(x: 300, y: 400))
-//                            }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
-                        }
-                        
-                        Spacer().frame(height: 40)
-                        
-
-                        if (getgradenum())
-                        {
-                            HStack {
-                                VStack {
-                                    Text("Average").padding(10).font(.title).background(Color("four")).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
-                                    Text("\(getAverageGrade(), specifier: "%.2f")").font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    if (getChangeInAverageGrade() >= 0)
-                                    {
-                                        Text("+\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    }
-                                    else
-                                    {
-                                        Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    }
-                                }.padding(10).background(Color("four")).cornerRadius(20).shadow(radius: 10)
-                                VStack {
-                                    Text("Last Assignment vs. Average").padding(10).font(.title).background(Color("four")).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
-                                    Text(String(getLastAssignmentGrade())).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    if (Double(getLastAssignmentGrade()) - getAverageGrade() >= 0.0)
-                                    {
-                                        Text("+\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    }
-                                    else
-                                    {
-                                        Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    }
-                                }.padding(10).background(Color("four")).cornerRadius(20).shadow(radius: 10)
                             }
-                            Spacer()
-                            HStack {
-                                VStack {
-                                    Text("Class Average").padding(10).font(.title).background(Color("four")).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
-                                    Text(getGlobalAverageI() == 0 ? "No Data": String(getGlobalAverageI())).font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    Text("").font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-
-                                }.padding(10).background(Color("four")).cornerRadius(20).shadow(radius: 10)
-                                VStack {
-                                    Text("Percentile").padding(10).font(.title).background(Color("four")).frame(width: UIScreen.main.bounds.size.width/2-30 ,height: (UIScreen.main.bounds.size.width/2-30)/2)
-                                    Text(getPercentile() == 0 ? "No Data": String(getPercentile()) + "%").font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                    Text("").font(.title).frame(width: UIScreen.main.bounds.size.width/2-30 , height: (UIScreen.main.bounds.size.width/2-30)/4)
-                                }.padding(10).background(Color("four")).cornerRadius(20).shadow(radius: 10)
-                            }
-
+                            
                         }
-                        
+
                     }
-
+    //                ForEach(assignmentlist) {
+    //                    assignment in
+    //                    if (assignment.subject == self.classcool.name && assignment.completed == true)
+    //                    {
+    //                        IndividualAssignemntProgressView(assignment2: assignment)
+    //                    }
+    //
                 }
-//                ForEach(assignmentlist) {
-//                    assignment in
-//                    if (assignment.subject == self.classcool.name && assignment.completed == true)
-//                    {
-//                        IndividualAssignemntProgressView(assignment2: assignment)
-//                    }
-//                
+            }
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+
+                    Button(action: {
+                        self.storedindex = self.getactualclassnumber(classcool: self.classcool)
+                        self.getcompletedassignmentsbyclass() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+//                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
+//                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
+                        
+                    }) {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).padding(20).overlay(
+                            ZStack {
+                                //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                            }
+                        ).shadow(radius: 50)
+                    }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
+                        Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
+                    }
+                    }
+                }
             }
         }
+    
+    func getactualclassnumber(classcool: Classcool) -> Int
+    {
+        for (index, element) in classlist.enumerated() {
+            if (element.name == classcool.name)
+            {
+                return index
+            }
+        }
+        return 0
+    }
+    func getcompletedassignmentsbyclass() -> Bool {
+        for assignment in assignmentlist {
+            if (assignment.completed == true && assignment.grade == 0 && assignment.subject == self.classlist[self.storedindex].originalname)
+            {
+                return true;
+            }
+        }
+        return false
     }
     func createDict() -> [Assignment: Int] {
         var assignmentgradetonumberdict = [Assignment: Int]()
@@ -418,6 +528,11 @@ struct DetailProgressView: View {
         return false;
     }
 }
+
+struct Line: View {
+    var classcool: Classcool
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    var assignmentlist: FetchedResults<Assignment>
     
 struct PageViewControllerGraphFilters: UIViewControllerRepresentable {
     var viewControllers: [UIViewController]
@@ -541,13 +656,75 @@ struct GraphTypeFilterPageView: View {
     }
 }
 
+    var data: [Double] {
+        var listofassignments: [Double] = []
+        for (_, assignment) in assignmentlist.enumerated() {
+            if (assignment.completed == true && assignment.grade != 0 && assignment.subject == classcool.originalname)
+            {
+                listofassignments.append(Double(assignment.grade))
+            }
+        }
+        print(listofassignments)
+        return listofassignments
+        
+    }
+    var stepWidth: CGFloat {
+        if data.count < 2 {
+            return 0
+        }
+     //   print(CGFloat(UIScreen.main.bounds.size.width-80)/CGFloat(data.count-1))
+        return CGFloat(UIScreen.main.bounds.size.width-80)/CGFloat(data.count-1)
+        
+    }
+    var stepHeight: CGFloat {
+        
+        
+        return 27.5
+    }
+    var path: Path {
+        let points = self.data
+        return Path.lineChart(points: points, step: CGPoint(x: stepWidth, y: stepHeight))
+    }
+    
+    public var body: some View {
+        
+   //     ZStack {
+
+            self.path
+                .stroke(Color(classcool.color) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+           
+      //  }
+    }
+}
+extension Path {
+    
+    static func lineChart(points:[Double], step:CGPoint) -> Path {
+        var path = Path()
+        if (points.count < 2){
+            return path
+        }
+        let p1 = CGPoint(x: 20, y: 235 - CGFloat(points[0]) * step.y)
+        print(points[0], step.y)
+        print( 235 - CGFloat(points[0]) * step.y)
+        path.move(to: p1)
+        for pointIndex in 1..<points.count {
+            let p2 = CGPoint(x: 20 + step.x * CGFloat(pointIndex), y: 235 - step.y*CGFloat(points[pointIndex]))
+            print(points[pointIndex], step.y)
+            print(235 - step.y*CGFloat(points[pointIndex]))
+            path.addLine(to: p2)
+        }
+        return path
+    }
+}
+
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     @FetchRequest(entity: Classcool.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
-    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     var assignmentlist: FetchedResults<Assignment>
     
     @State var NewAssignmentPresenting = false
@@ -555,9 +732,12 @@ struct ProgressView: View {
     @State var NewOccupiedtimePresenting = false
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
+    @State var NewGradePresenting2 = false
+    @State var NewGradePresenting3 = false
     @State var noClassesAlert = false
     @State var noAssignmentsAlert = false
-    
+    @State var noAssignmentsAlert2 = false
+    @State var storedindex = 0
     @State var showingSettingsView = false
     @State private var selectedClass: Int? = 0
     @State private var selection: Set<String> = []
@@ -572,24 +752,15 @@ struct ProgressView: View {
         }
         return 1
     }
-    func getdoubleclasslist() -> [(Classcool, Classcool)]
+    func getactualclassnumber(classcool: Classcool) -> Int
     {
-        var pairs: [Classcool] = []
-        var anslist: [(Classcool, Classcool)] = []
-        for i in 0..<classlist.count {
-            pairs.append(classlist[i])
-            if (pairs.count == 2)
+        for (index, element) in classlist.enumerated() {
+            if (element.name == classcool.name)
             {
-                anslist.append((pairs[0], pairs[1]))
-                pairs = []
-            }
-            else if (pairs.count == 1 && i == classlist.count-1)
-            {
-                anslist.append((pairs[0], pairs[1]))
-                pairs = []
+                return index
             }
         }
-        return anslist
+        return 0
     }
     func getdivisiblebytwo(value: Int) -> Bool {
         if (value % 2 == 0)
@@ -606,6 +777,7 @@ struct ProgressView: View {
         return false
         
     }
+
     
     var body: some View {
          NavigationView {
@@ -639,7 +811,7 @@ struct ProgressView: View {
                                 Spacer()
                                 VStack {
                                     Spacer()
-                                    Rectangle().frame(width: 1, height: 220 ).padding(.bottom, 15).padding(.trailing, 40)
+                                    Rectangle().frame(width: 1, height: 220).padding(.bottom, 15).padding(.trailing, 40)
                                 }
                             }
                             ForEach(1..<5) { value in
@@ -658,22 +830,85 @@ struct ProgressView: View {
                                     }
                                 }
                             }
+//                            VStack {
+//                                Spacer()
+//                                HStack {
+//                                    Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + 165 + 27.5).opacity(0.3)
+//                                    Spacer()
+//                                }
+//                            }
+//                            VStack {
+//                                Spacer()
+//                                HStack {
+//                                    Spacer()
+//                                    Text(String(7)).font(.system(size: 17)).padding(.trailing, 25).padding(.bottom, 165 + 27.5 - 10)
+//                                }
+//                            }
+                            ForEach(classlist) {
+                                classcool in
+                                if (self.selection.contains(classcool.name))
+                                {
+                                    Line(classcool: classcool)
+                                }
+                                        
+                                    
+                                
+                            }
+//                            Path { path in
+//                                path.move(to: CGPoint(x: 20, y: 235))
+//                                path.addLine(to: CGPoint(x: 50, y: 15))
+//                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.size.width-60, y: 235))
+//                            }.fill(Color.green)
+
                         }
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(Color.orange)
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
-                                Text("Textual Insights (coming soon)").foregroundColor(Color.black)
+                                VStack {
+                                    Text("Textual Insights").foregroundColor(Color.black)
+                                    Text("Coming Soon").foregroundColor(Color.black)
+                                }
 
                             }
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
 //                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
-                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200))
-                                
-                                PageViewControllerGraphFilters(viewControllers: [UIHostingController(rootView: GraphClassFilterPageView(selection: self.$selection)), UIHostingController(rootView: GraphTypeFilterPageView())]).id(UUID()).frame(width: (UIScreen.main.bounds.size.width-60) * 1/3, height: 180)
+                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200 ))
+                                ScrollView(showsIndicators: false) {
+
+
+                                        VStack(alignment: .leading,spacing:10) {
+                                            
+                                            ForEach(classlist) {
+                                                classcool in
+                                                
+                                                if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
+                                                {
+                                                    HStack {
+                                                        
+                                                        Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                        Spacer()
+                                                        Button(action: {self.selectDeselect(classcool.name)})
+                                                        {
+                                                          
+                                                            Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                        }
+        //                                                Spacer()
+        //                                                if (self.selection.contains(classcool.name)) {
+        //
+        //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
+        //                                                }
+                                                        Spacer()
+                                                    }
+                                                }
+                                            }
+                                    }
+                                    
+                                }.frame(height: 180)//.padding(10)
+                                //Text("Key").font(.title)
                             }
                         }.padding(.horizontal, 10)
 
@@ -693,7 +928,7 @@ struct ProgressView: View {
                                     }) {
                                         if (self.getlastclass(value: value))
                                         {
-                                            ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading)
+                                            ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading).padding(.leading, 5)
                                         }
                                         else if (self.getdivisiblebytwo(value: value))
                                         {
@@ -701,13 +936,16 @@ struct ProgressView: View {
                                             ClassProgressView(classcool: self.classlist[value])
                                             
                                         }
-
+ 
                                     }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                        Button (action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                        Button (action: {
+
+                                            self.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
+                                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
+                                        }) {
                                             Text("Add Grade")
-                                        }.sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
-                                            Alert(title: Text("No Completed Assignments"), message: Text("Complete an Assignment First"))
                                         }
+                                        
                                     }.padding(0)
                                     
                                     Button(action: {
@@ -721,17 +959,21 @@ struct ProgressView: View {
                                             ClassProgressView(classcool: self.classlist[value+1])
                                         }
                                     }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                        Button (action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                        Button (action: {
+                                            self.storedindex = self.getactualclassnumber(classcool: self.classlist[value+1])
+                                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
+                                        }) {
                                             Text("Add Grade")
-                                        }.sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
-                                            Alert(title: Text("No Completed Assignments"), message: Text("Complete an Assignment First"))
                                         }
                                     }.padding(0)
-
+                                    
                                 }
 
 
+                            }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
+                                Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                             }
+
                         }
 //                        ForEach(classlist) {
 //                            classcool in
@@ -750,51 +992,82 @@ struct ProgressView: View {
 //                        }
                     }
                 }
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).padding(20)
+                            Button(action: {
+                                self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
+        //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
+        //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
+
+                                }) {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
+                                                                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                                                                    Text("Assignment")
+                                                                    Image(systemName: "paperclip")
+                                                                }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                                                                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                                                                }
+                                                                Button(action: {self.NewClassPresenting.toggle()}) {
+                                                                    Text("Class")
+                                                                    Image(systemName: "list.bullet")
+                                                                }.sheet(isPresented: $NewClassPresenting, content: {
+                                                                    NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                    //                                Text("Occupied Time")
+                                    //                                Image(systemName: "clock.fill")
+                                    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.NewFreetimePresenting.toggle()}) {
+                                                                    Text("Free Time")
+                                                                    Image(systemName: "clock")
+                                                                }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                                                    Text("Grade")
+                                                                    Image(systemName: "percent")
+                                                                }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                                                                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
+                                                                }
+                                                            }.frame(width: 70, height: 70).padding(20).overlay(
+                                    ZStack {
+                                        //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                    }
+                                )
+                            }
+                        }
+                        
+                    
+
+                    }
+                }
             }
             .navigationBarItems(
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                     Button(action: {self.showingSettingsView = true}) {
-                        Image(systemName: "gear").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+
+                        Image(systemName:"gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                            
+                        
+
+
                     }.padding(.leading, 2.0);
                 
                     Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
-
-                    Button(action: {
-                        self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
-                        
-                    }) {
-                        Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                    }.contextMenu{
-                        Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                            Text("Assignment")
-                            Image(systemName: "paperclip")
-                        }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                            Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-                        }
-                        Button(action: {self.NewClassPresenting.toggle()}) {
-                            Text("Class")
-                            Image(systemName: "list.bullet")
-                        }.sheet(isPresented: $NewClassPresenting, content: {
-                            NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                        Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                            Text("Occupied Time")
-                            Image(systemName: "clock.fill")
-                        }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                        Button(action: {self.NewFreetimePresenting.toggle()}) {
-                            Text("Free Time")
-                            Image(systemName: "clock")
-                        }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                        Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
-                            Text("Grade")
-                            Image(systemName: "percent")
-                        }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-                            Alert(title: Text("No Assignments Added"), message: Text("Add an Assignment First"))
-                        }
-                    }
+                    Text("").frame(width: UIScreen.main.bounds.size.width/12, height: 20)
+//                    Button(action: {
+//                        self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+//
+//                    }) {
+//                        Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+//                    }
                 }.padding(.top, 0)).navigationBarTitle("Progress")
          }.onDisappear {
             self.showingSettingsView = false
+            self.selectedClass = 0
         }
     }
     
@@ -803,6 +1076,15 @@ struct ProgressView: View {
             if (assignment.completed == true && assignment.grade == 0)
             {
                 print(assignment.name)
+                return true;
+            }
+        }
+        return false
+    }
+    func getcompletedassignmentsbyclass() -> Bool {
+        for assignment in assignmentlist {
+            if (assignment.completed == true && assignment.grade == 0 && assignment.subject == self.classlist[self.storedindex].originalname)
+            {
                 return true;
             }
         }

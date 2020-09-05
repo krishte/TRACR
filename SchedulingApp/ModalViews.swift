@@ -6,7 +6,8 @@ struct NewAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var changingDate: DisplayedDate
     
-    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
     var classlist: FetchedResults<Classcool>
     @Binding var NewAssignmentPresenting: Bool
     
@@ -14,7 +15,7 @@ struct NewAssignmentModalView: View {
     var assignmentslist: FetchedResults<Assignment>
     
     @State var nameofassignment: String = ""
-    @State private var selectedclass = 0
+    @State private var selectedclass: Int
     @State private var assignmenttype = 0
     @State private var hours = 0
     @State private var minutes = 0
@@ -29,12 +30,13 @@ struct NewAssignmentModalView: View {
     @State private var startDate = Date()
     var formatter: DateFormatter
     
-    init(NewAssignmentPresenting: Binding<Bool>) {
+    init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
         formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
+        _selectedclass = State(initialValue: selectedClass)
     }
     
     var body: some View {
@@ -178,7 +180,7 @@ struct NewClassModalView: View {
     @State private var classgroupnameindex = 0
     @State private var classnameindex = 0
     @State private var classlevelindex = 0
-    @State private var classtolerancedouble: Double = 5.5
+    @State private var classtolerancedouble: Double = 3
 
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
     
@@ -269,7 +271,7 @@ struct NewClassModalView: View {
                             Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
                             Spacer()
                         }.frame(height: 30)
-                        Slider(value: $classtolerancedouble, in: 1...10)
+                        Slider(value: $classtolerancedouble, in: 1...5)
                     }
                 }
                 
@@ -412,7 +414,12 @@ struct NewClassModalView: View {
         }
     }
     func getNextColor(currentColor: String) -> Color {
-        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "one"]
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
+        let existinggradients = ["one", "two", "three", "five", "six", "eleven","thirteen", "fourteen", "fifteen"]
+        if (existinggradients.contains(currentColor))
+        {
+            return Color(currentColor + "-b")
+        }
         for color in colorlist {
             if (color == currentColor)
             {
@@ -1069,24 +1076,53 @@ struct NewGradeModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
     var assignmentlist: FetchedResults<Assignment>
-    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     var classeslist: FetchedResults<Classcool>
     @State private var selectedassignment = 0
     @State private var assignmentgrade: Double = 4
+    @State private var classfilter: Int
     @Binding var NewGradePresenting: Bool
+    var otherclassgrades: [String] = ["E", "D", "C", "B", "A"]
 
+    
+    init(NewGradePresenting: Binding<Bool>, classfilter: Int)
+    {
+        self._NewGradePresenting = NewGradePresenting
+        self._classfilter = State(initialValue: classfilter)
+    }
     func getgradableassignments() -> [Int]
     {
+     //   print(classfilter)
+      //  print(classeslist[classfilter].originalname)
+        print(classfilter)
         var gradableAssignments: [Int] = []
         for (index, assignment) in assignmentlist.enumerated() {
-            if (assignment.completed == true && assignment.grade == 0)
+            if (classfilter == -1)
             {
+                if (assignment.completed == true && assignment.grade == 0)
+                {
 
-                gradableAssignments.append(index)
-    
+                    gradableAssignments.append(index)
+        
+                }
+            }
+            else
+            {
+                if (assignment.completed == true && assignment.grade == 0 && assignment.subject == classeslist[classfilter].originalname)
+                {
+                    gradableAssignments.append(index)
+                   // print(assignment.name)
+                }
             }
         }
         return gradableAssignments
+    }
+    func getclassname() -> String{
+        if (self.selectedassignment < self.getgradableassignments().count)
+        {
+            return self.assignmentlist[self.getgradableassignments()[self.selectedassignment]].subject
+        }
+        return ""
     }
     var body: some View {
         NavigationView {
@@ -1110,11 +1146,22 @@ struct NewGradeModalView: View {
                 }
                 Section {
                     VStack {
-                        HStack {
-                            Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
-                            Spacer()
-                        }.frame(height: 30)
-                        Slider(value: $assignmentgrade, in: 1...7)
+                        if (self.getclassname() == "Theory of Knowledge" || self.getclassname() == "Extended Essay")
+                        {
+                            HStack {
+                                Text("Grade: " + otherclassgrades[Int(assignmentgrade)-2])
+                                Spacer()
+                            }.frame(height: 30)
+                            Slider(value: $assignmentgrade, in: 2...6)
+                        }
+                        else
+                        {
+                            HStack {
+                                Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                Spacer()
+                            }.frame(height: 30)
+                            Slider(value: $assignmentgrade, in: 1...7)
+                        }
                     }
 
                 }

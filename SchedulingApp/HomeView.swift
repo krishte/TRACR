@@ -5,26 +5,26 @@
 //  Created by Tejas Krishnan on 6/30/20.
 //  Copyright © 2020 Tejas Krishnan. All rights reserved.
 //
-
+ 
 import Foundation
 import UIKit
 import SwiftUI
-
+ 
 extension Calendar {
     static let gregorian = Calendar(identifier: .gregorian)
 }
-
+ 
 extension Date {
     var startOfWeek: Date? {
         return Calendar.gregorian.date(from: Calendar.gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))
     }
 }
-
+ 
 struct PageViewControllerWeeks: UIViewControllerRepresentable {
     @Binding var nthdayfromnow: Int
-
+ 
     var viewControllers: [UIViewController]
-
+ 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -45,7 +45,7 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
     
     class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
         var parent: PageViewControllerWeeks
-
+ 
         init(_ pageViewController: PageViewControllerWeeks) {
             self.parent = pageViewController
         }
@@ -75,7 +75,7 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
         }
     }
 }
-
+ 
 struct WeeklyBlockView: View {
         @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
@@ -87,7 +87,7 @@ struct WeeklyBlockView: View {
     @Binding var increased: Bool
     @Binding var stopupdating: Bool
     @EnvironmentObject var changingDate: DisplayedDate
-
+ 
     let datenumberindices: [Int]
     let datenumbersfromlastmonday: [String]
     let datesfromlastmonday: [Date]
@@ -112,7 +112,7 @@ struct WeeklyBlockView: View {
             }
             //print(assignment.name)
         }
-
+ 
         //print(ans.count)
         return ans
     }
@@ -144,7 +144,7 @@ struct WeeklyBlockView: View {
         {
             return 7*CGFloat(assignmentsindex)-10.5
         }
-
+ 
         return CGFloat(CGFloat(assignmentsindex)/CGFloat(length) * 20 - 10)
     }
     var body: some View {
@@ -155,7 +155,7 @@ struct WeeklyBlockView: View {
                         ZStack {
                             Circle().fill(Color("datenumberred")).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).opacity(self.datenumberindices[index] == self.nthdayfromnow ? 1 : 0)
                           //  Circle().fill(Color("one")).frame(width: 5, height: 5)
-
+ 
                             Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
                         }.onTapGesture {
                             withAnimation(.spring()) {
@@ -181,13 +181,13 @@ struct WeeklyBlockView: View {
                             ForEach(self.getassignmentsbydate(index: index).indices)
                             {
                                 index2 in
-
+ 
 //                                if (Int(index2) < self.getlenofassignmentsbydate(index: index))
 //                                {
                                 Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
                                     
 //                                }
-
+ 
                             }
                         }
                         Spacer()
@@ -207,7 +207,7 @@ struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
     @Binding var stopupdating: Bool
     
     var viewControllers: [UIViewController]
-
+ 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -226,7 +226,7 @@ struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
     
     class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
         var parent: DummyPageViewControllerForDates
-
+ 
         init(_ pageViewController: DummyPageViewControllerForDates) {
             self.parent = pageViewController
         }
@@ -248,7 +248,7 @@ struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
         }
     }
 }
-
+ 
 struct SubassignmentAddTimeAction: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     
@@ -336,13 +336,13 @@ struct SubassignmentAddTimeAction: View {
         }.padding(.all, 25).frame(maxHeight: 365).background(Color.white).cornerRadius(25).padding(.all, 14)
     }
 }
-
-
+ 
+ 
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var changingDate: DisplayedDate
-
-
+ 
+ 
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
@@ -386,7 +386,7 @@ struct HomeBodyView: View {
     @State var stopupdating = false
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-
+ 
     @State var timezoneOffset: Int = TimeZone.current.secondsFromGMT()
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, uniformlistshows: Binding<Bool>) {
@@ -395,7 +395,7 @@ struct HomeBodyView: View {
         self._addhours = addhours
         self._addminutes = addminutes
         self._uniformlistviewshows = uniformlistshows
-
+ 
         self._lastnthdayfromnow = self._nthdayfromnow
         
         daytitleformatter = DateFormatter()
@@ -449,7 +449,7 @@ struct HomeBodyView: View {
         let minuteval = Calendar.current
             .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: subassignmentlist[0].startdatetime)
         .minute!
-
+ 
         if (minuteval > 720 ) {
             return "No Upcoming Subassignments"
         }
@@ -547,7 +547,7 @@ struct HomeBodyView: View {
                             Spacer()
                             VStack {
                                 Spacer().frame(height: 25)
-
+ 
                                 ZStack(alignment: .topTrailing) {
                                     ForEach(subassignmentlist) { subassignment in
                                         //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
@@ -561,7 +561,7 @@ struct HomeBodyView: View {
 //                                                    print(subassignment.startdatetime.description)
 //                                                }
                                                 
-
+ 
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                             }
@@ -617,12 +617,12 @@ struct HomeBodyView: View {
                 
                   return true  //was +122 but had to subtract 2*60.35 to account for GMT + 2
             }
-
+ 
         }
         return false
     }
 }
-
+ 
 struct SubassignmentListView: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
@@ -678,8 +678,8 @@ struct SubassignmentListView: View {
         return diffComponents.minute!
     }
 }
-
-
+ 
+ 
 struct UpcomingSubassignmentProgressBar: View {
     @ObservedObject var assignment: Assignment
     
@@ -695,8 +695,8 @@ struct UpcomingSubassignmentProgressBar: View {
         }
     }
 }
-
-
+ 
+ 
 struct IndividualSubassignmentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     
@@ -724,7 +724,7 @@ struct IndividualSubassignmentView: View {
     var fixedHeight: Bool
     
     var subassignmentlength: Int
-
+ 
     var subassignment: Subassignmentnew
     @Binding var verticaloffset: CGFloat
     @Binding var subassignmentname: String
@@ -819,7 +819,7 @@ struct IndividualSubassignmentView: View {
                 .onChanged { value in
                     self.dragoffset = value.translation
                     //self.isDragged = true
-
+ 
                     if (self.dragoffset.width < 0) {
                         self.isDraggedleft = false
                         self.isDragged = true
@@ -913,12 +913,12 @@ struct IndividualSubassignmentView: View {
         }.frame(width: UIScreen.main.bounds.size.width-40)
     }
 }
-
+ 
 struct HomeView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @EnvironmentObject var changingDate: DisplayedDate
-
+ 
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
     @State var NewOccupiedtimePresenting = false
@@ -928,13 +928,13 @@ struct HomeView: View {
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
-
+ 
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.name, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
     @State var noClassesAlert = false
-
+ 
     
     @State var noCompletedAlert = false
     //completed true and grade != 0
@@ -983,7 +983,7 @@ struct HomeView: View {
                             self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
     //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
     //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
-
+ 
                             }) {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
                                                             Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
@@ -1021,7 +1021,7 @@ struct HomeView: View {
                     }
                     
                 
-
+ 
                 }
             }
             
@@ -1032,7 +1032,7 @@ struct HomeView: View {
             }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
         }.onDisappear() {
             let defaults = UserDefaults.standard
-
+ 
             defaults.set(self.uniformlistshows, forKey: "savedtoggleview")
         }
     }
@@ -1046,8 +1046,8 @@ struct HomeView: View {
         return false
     }
 }
-
-
+ 
+ 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
              let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext

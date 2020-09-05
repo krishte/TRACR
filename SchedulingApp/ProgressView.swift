@@ -5,9 +5,9 @@
 //  Created by Tejas Krishnan on 6/30/20.
 //  Copyright © 2020 Tejas Krishnan. All rights reserved.
 //
-
+ 
 import SwiftUI
-
+ 
 struct ClassProgressView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -16,7 +16,7 @@ struct ClassProgressView: View {
                   sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
-
+ 
     
     var body: some View {
         ZStack {
@@ -81,7 +81,7 @@ struct ClassProgressView: View {
         return (gradesum/gradenum)
     }
 }
-
+ 
 struct DetailProgressView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -107,18 +107,18 @@ struct DetailProgressView: View {
     }
     
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
-
+ 
     let groups = [["English A: Literature", "English A: Language and Literatue"], ["German B", "French B", "German A: Literature", "German A: Language and Literatue", "French A: Literature", "French A: Language and Literatue"], ["Geography", "History", "Economics", "Psychology", "Global Politics"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Environmental Systems and Societies", "Sport Science"], ["Mathematics: Analysis and Approaches", "Mathematics: Applications and Interpretation"], ["Music", "Visual Arts", "Theatre" ], ["Extended Essay"], ["Theory of Knowledge"]]
     var group1_averages = ["English A: Literature SL" : 5.02, "English A: Literature HL" : 4.68, "English A: Language and Literature SL" :5.10, "English A: Language and Literature HL" :4.98, "English B SL" :5.76, "English B HL" :5.73]
-
+ 
     var group2_averages = ["French B SL" :5.04, "French B HL" :5.15, "German B SL" :5.10, "German B HL" :5.68, "Spanish B SL" :5.03, "German Ab Initio" :5.00, "Spanish Ab Initio":4.97, "French Ab Initio" :4.90, "French A: Literature SL" :5.10, "French A: Literature HL" :5.21, "French A: Language and Literature SL" :5.33, "French A: Language and Literature HL" :5.11, "German A: Literature SL" :4.96, "German A: Literature HL" : 5.07, "German A: Language and Literature SL" :5.25, "German A: Language and Literature HL" :5.34, "Spanish A: Language and Literature SL" :4.76, "Spanish A: Language and Literature HL" :4.87]
-
+ 
     var group3_averages = ["Economics: SL" :4.67, "Economics HL" :5.10, "Geography: SL" :4.80, "Geography: HL" :5.19, "Global Politics: SL" :4.77, "Global Politics: HL" :5.09, "History: SL" :4.46, "History: HL" :4.29, "Psychology: SL" :4.39, "Psychology: HL" :4.71, "Environmental Systems and Societies SL" :4.17]
-
+ 
     var group4_averages = ["Biology: SL" :4.18, "Biology: HL" :4.34, "Chemistry: SL" :4.02, "Chemistry: HL" :4.51, "Computer Science: SL" :3.85, "Computer Science: HL" :4.22, "Design Technology: SL" :3.97, "Design Technology: HL" :4.47, "Physics: SL" :4.04, "Physics: HL" :4.65, "Sport, Exercise and Health Science: SL" :3.95, "Sport, Exercise and Health Science: HL" :4.90, "Environmental Systems and Societies SL" :4.17]
-
+ 
     var group5_averages = ["Mathematics: Analysis and Approaches SL" :4.19, "Mathematics: Analysis and Approaches HL" :4.69, "Mathematics: Applications and Interpretation SL" :4.19, "Mathematics: Applications and Interpretation HL" :4.69]
-
+ 
     var group6_averages = ["Music SL" :4.66, "Music HL" :4.71, "Theatre SL" :4.46, "Theatre HL" :4.88, "Visual Art SL" :3.77, "Visual Art HL" :4.27, "Economics SL" :4.67, "Economics HL" :5.10, "Psychology SL" :4.39, "Psychology HL" :4.71, "Biology SL" :4.18, "Biology HL" :4.34, "Chemistry SL" :4.02, "Chemistry HL" :4.51, "Physics SL" :4.04, "Physics HL" :4.65]
     
     var group1_percentages = ["English A: Literature SL" : [0.00, 0.80, 5.80, 22.80, 38.10, 26.40, 6.20], "English A: Literature HL" : [0.00, 1.50, 8.90, 31.40, 39.40, 16.20, 2.60], "English A: Language and Literature SL" : [0.00, 0.30, 4.00, 20.90, 39.10, 31.50, 4.10], "English A: Language and Literature HL" : [0.00, 0.50, 5.80, 25.50, 37.50, 25.40, 5.30], "English B: SL" : [0.00, 0.20, 1.90, 7.60, 21.80, 48.80, 19.70], "English B: HL" : [0.00, 0.00, 0.60, 5.70, 25.50, 56.10, 12.10]]
@@ -194,7 +194,7 @@ struct DetailProgressView: View {
                                                 
                                                 if (self.graphableAssignment(assignment: assignment))
                                                 {
-
+ 
                                                     VStack {
                                                         Spacer()
     //                                                    if (self.classcool.name == "Extended Essay" || self.classcool.name == "Theory of Knowledge")
@@ -214,7 +214,7 @@ struct DetailProgressView: View {
                                                           //  .font(.footnote)
                                                            // .frame(width: self.getCompletedNumber(),height: 20)
                                                     }
-
+ 
                                                 }
                                             }
                                         }
@@ -254,7 +254,7 @@ struct DetailProgressView: View {
                                     }
                                 }.offset(y: -16)
                                 
-
+ 
     //                                Path { path in
     //                                    createDict().forEach { (assignment, number) in
     //                                        if (number == 1)
@@ -277,7 +277,7 @@ struct DetailProgressView: View {
                             
                             Spacer().frame(height: 40)
                             
-
+ 
                             if (getgradenum())
                             {
                                 if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
@@ -316,7 +316,7 @@ struct DetailProgressView: View {
                                         Text("Class Average").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
                                         Text(getGlobalAverageI() == 0 ? "No Data": String(getGlobalAverageI())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-
+ 
                                     }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                     Spacer().frame(width: 20)
                                     VStack {
@@ -325,11 +325,11 @@ struct DetailProgressView: View {
                                         Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                     }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                 }
-
+ 
                             }
                             
                         }
-
+ 
                     }
     //                ForEach(assignmentlist) {
     //                    assignment in
@@ -344,7 +344,7 @@ struct DetailProgressView: View {
                 Spacer()
                 HStack {
                     Spacer()
-
+ 
                     Button(action: {
                         self.storedindex = self.getactualclassnumber(classcool: self.classcool)
                         self.getcompletedassignmentsbyclass() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
@@ -528,13 +528,13 @@ struct DetailProgressView: View {
         return false;
     }
 }
-
+ 
 struct Line: View {
     var classcool: Classcool
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     var assignmentlist: FetchedResults<Assignment>
     
-
+ 
     var data: [Double] {
         var listofassignments: [Double] = []
         for (_, assignment) in assignmentlist.enumerated() {
@@ -568,7 +568,7 @@ struct Line: View {
     public var body: some View {
         
    //     ZStack {
-
+ 
             self.path
                 .stroke(Color(classcool.color) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
            
@@ -595,7 +595,7 @@ extension Path {
         return path
     }
 }
-
+ 
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
@@ -664,7 +664,7 @@ struct ProgressView: View {
         return false
         
     }
-
+ 
     
     var body: some View {
          NavigationView {
@@ -691,9 +691,9 @@ struct ProgressView: View {
                                     Rectangle().frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.bottom, 15).padding(.leading, 20)
                                     Spacer()
                                 }
-
+ 
                             }
-
+ 
                             HStack {
                                 Spacer()
                                 VStack {
@@ -747,7 +747,7 @@ struct ProgressView: View {
 //                                path.addLine(to: CGPoint(x: 50, y: 15))
 //                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.size.width-60, y: 235))
 //                            }.fill(Color.green)
-
+ 
                         }
                         HStack(alignment: .center) {
                             ZStack {
@@ -758,7 +758,7 @@ struct ProgressView: View {
                                     Text("Textual Insights").foregroundColor(Color.black)
                                     Text("Coming Soon").foregroundColor(Color.black)
                                 }
-
+ 
                             }
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -766,8 +766,8 @@ struct ProgressView: View {
 //                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200 ))
                                 ScrollView(showsIndicators: false) {
-
-
+ 
+ 
                                         VStack(alignment: .leading,spacing:10) {
                                             
                                             ForEach(classlist) {
@@ -799,14 +799,14 @@ struct ProgressView: View {
                                 //Text("Key").font(.title)
                             }
                         }.padding(.horizontal, 10)
-
+ 
                        // Text("Classes").font(.system(size: 35)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, alignment: .leading)
                         Spacer().frame(height: 10)
                         if (classlist.count > 0)
                         {
                             ForEach(0..<classlist.count) {
                                 value in
-
+ 
                                     NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
                                         EmptyView()
                                     }
@@ -827,7 +827,7 @@ struct ProgressView: View {
  
                                     }.buttonStyle(PlainButtonStyle()).contextMenu {
                                         Button (action: {
-
+ 
                                             self.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
                                             self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
                                         }) {
@@ -855,12 +855,12 @@ struct ProgressView: View {
                                     }.padding(0)
                                     
                                 }
-
-
+ 
+ 
                             }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
                                 Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                             }
-
+ 
                         }
 //                        ForEach(classlist) {
 //                            classcool in
@@ -889,7 +889,7 @@ struct ProgressView: View {
                                 self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
         //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
         //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
-
+ 
                                 }) {
                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
                                                                 Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
@@ -927,7 +927,7 @@ struct ProgressView: View {
                         }
                         
                     
-
+ 
                     }
                 }
             }
@@ -935,12 +935,12 @@ struct ProgressView: View {
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
                     Button(action: {self.showingSettingsView = true}) {
-
+ 
                         Image(systemName:"gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                             
                         
-
-
+ 
+ 
                     }.padding(.leading, 2.0);
                 
                     Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
@@ -978,7 +978,7 @@ struct ProgressView: View {
         return false
     }
 }
-
+ 
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
           let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext

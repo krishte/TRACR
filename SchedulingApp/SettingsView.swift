@@ -66,48 +66,77 @@ struct SettingsView: View {
         List {
             Section {
                 NavigationLink(destination: PreferencesView()) {
-                     ZStack {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                         .fill(Color("twelve"))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-                    
-                        HStack {
-                         Text("Preferences").font(.system(size: 24)).fontWeight(.bold).frame(height: 80)
-                            Spacer()
-
-                        }.padding(.horizontal, 25)
-                     }
+//                     ZStack {
+////                      //  RoundedRectangle(cornerRadius: 10, style: .continuous)
+////                         .fill(Color("twelve"))
+////                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+//
+//                        HStack {
+//                         Text("Preferences").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
+//                            Spacer()
+//
+//                        }.padding(.horizontal, 25)
+//                     }
+                    HStack {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.green).frame(width:40, height:40)
+                            Image(systemName: "slider.horizontal.3").resizable().frame(width:25, height:25)
+                        }
+                        Spacer().frame(width:20)
+                        Text("Preferences").font(.system(size:20))
+                    }.frame(height:40)
                 }
+               // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
                 
                 NavigationLink(destination: NotificationsView()) {
-                    ZStack {
-                               
-                       RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(Color("fifteen"))
-                           .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-                   
+//                    ZStack {
+//
+////                       RoundedRectangle(cornerRadius: 10, style: .continuous)
+////                        .fill(Color("fifteen"))
+////                           .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+//
+//
+//                       HStack {
+//                        Text("Notifications").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
+//                           Spacer()
+//
+//                       }.padding(.horizontal, 25)
+//                    }
+                    HStack {
+                        ZStack {
+                            
+                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.red).frame(width:40, height:40)
 
-                       HStack {
-                        Text("Notifications").font(.system(size: 24)).fontWeight(.bold).frame(height: 80)
-                           Spacer()
-
-                       }.padding(.horizontal, 25)
-                    }
+                            Image(systemName: "app.badge").resizable().frame(width:25, height:25)
+                        }
+                        Spacer().frame(width:20)
+                        Text("Notifications").font(.system(size:20))
+                    }.frame(height:40)
                 }
+               // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
+
                 NavigationLink(destination: HelpCenterView()) {
-                     ZStack {
-                                
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                         .fill(Color("fourteen"))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-                    
-
-                        HStack {
-                         Text("FAQ").font(.system(size: 24)).fontWeight(.bold).frame(height: 80)
-                            Spacer()
-
-                        }.padding(.horizontal, 25)
-                     }
+//                     ZStack {
+//
+////                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+////                         .fill(Color("fourteen"))
+////                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+//
+//
+//                        HStack {
+//                         Text("FAQ").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
+//                            Spacer()
+//
+//                        }.padding(.horizontal, 25)
+//                     }
+                    HStack {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
+                            Image(systemName: "questionmark").resizable().frame(width:15, height:25)
+                        }
+                        Spacer().frame(width:20)
+                        Text("FAQ").font(.system(size:20))
+                    }.frame(height:40)
                 }
 
                 
@@ -159,11 +188,15 @@ struct SettingsView: View {
              self.managedObjectContext.delete(self.subassignmentlist[index])
         }
         }
-        if (self.assignmenttypeslist.count > 0)
-        {
-        for (index, _) in self.assignmenttypeslist.enumerated() {
-             self.managedObjectContext.delete(self.assignmenttypeslist[index])
-        }
+//        if (self.assignmenttypeslist.count > 0)
+//        {
+//        for (index, _) in self.assignmenttypeslist.enumerated() {
+//             self.managedObjectContext.delete(self.assignmenttypeslist[index])
+//        }
+//        }
+        for (_, element) in self.assignmenttypeslist.enumerated() {
+            element.rangemin = 30
+            element.rangemax = 300
         }
         if (self.assignmentlist.count > 0)
         {
@@ -250,6 +283,7 @@ struct PreferencesView: View {
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     var body: some View {
         VStack {
+            //Text(String(assignmenttypeslist.count))
           //  Form {
                 ScrollView(showsIndicators: false) {
                     ForEach(self.assignmenttypeslist) {

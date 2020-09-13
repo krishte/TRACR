@@ -86,8 +86,7 @@ struct DetailProgressView: View {
     var classcool: Classcool
     @Environment(\.managedObjectContext) var managedObjectContext
     
-    @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
@@ -128,12 +127,15 @@ struct DetailProgressView: View {
     var group5_percentages = ["Mathematics: Analysis and Approaches SL" : [2.00, 12.40, 19.90, 23.30, 21.20, 14.90, 6.20], "Mathematics: Analysis and Approaches HL" : [1.10, 7.20, 13.50, 21.90, 24.80, 18.60, 12.80], "Mathematics: Applications and Interpretation SL" : [2.00, 12.40, 19.90, 23.30, 21.20, 14.90, 6.20], "Mathematics: Applications and Interpretation HL" : [1.10, 7.20, 13.50, 21.90, 24.80, 18.60, 12.80]]
     var group6_percentages = ["Music: SL" : [0.30, 1.60, 13.80, 30.90, 27.50, 21.90, 4.10], "Music: HL" : [0.10, 3.20, 17.30, 22.20, 28.50, 19.90, 8.70], "Theatre: SL" : [0.80, 7.40, 14.50, 29.30, 25.80, 14.50, 7.70], "Theatre: HL" : [0.30, 3.00, 10.60, 24.30, 27.60, 24.60, 9.40], "Visual Art: SL" : [0.30, 10.50, 35.20, 28.30, 19.20, 5.60, 1.10], "Visual Art: HL" : [0.10, 4.80, 23.80, 29.50, 26.20, 12.90, 2.70], "Economics: SL" : [1.00, 5.50, 16.30, 20.80, 24.80, 21.80, 9.80], "Economics HL" : [0.40, 2.50, 8.00, 18.00, 30.50, 27.90, 13.10], "Psychology: SL" : [0.80, 8.60, 14.30, 27.60, 27.90, 17.20, 3.50], "Psychology: HL" : [0.20, 3.20, 12.20, 25.70, 31.10, 23.70, 3.90], "Biology: SL" : [0.90, 10.80, 21.80, 26.60, 20.50, 14.40, 5.0], "Biology: HL" : [1.20, 8.30, 18.50, 26.90, 23.00, 16.10, 5.90], "Chemistry: SL" : [2.90, 15.60, 22.50, 21.30, 17.00, 15.10, 5.50], "Chemistry: HL" : [1.10, 8.80, 17.90, 20.10, 23.00, 20.20, 8.80], "Physics: SL" : [1.70, 13.10, 26.70, 23.10, 17.20, 10.00, 8.10], "Physics: HL" : [0.70, 6.40, 18.60, 20.80, 22.20, 17.40, 14.00]]
     var group7_percentages = ["Extended Essay": [10.90, 23.54, 37.99, 25.06, 1.53, 0.99], "Theory of Knowledge": [5.57, 25.54, 48.36, 18.94, 0.68, 0.91]]
-    
+    @State var showassignmentedit: Bool = false
+    @State var selectedassignmentedit: String = ""
     let minussize: CGFloat = 45
     let squarecolor: String = "graphbackgroundtop"
     @State var NewGradePresenting = false
     @State var storedindex = -1
     @State var noAssignmentsAlert = false
+    @State private var selection: Set<Assignment> = []
+
     var body: some View {
         ZStack {
             VStack {
@@ -331,15 +333,44 @@ struct DetailProgressView: View {
                         }
  
                     }
-    //                ForEach(assignmentlist) {
-    //                    assignment in
-    //                    if (assignment.subject == self.classcool.name && assignment.completed == true)
-    //                    {
-    //                        IndividualAssignemntProgressView(assignment2: assignment)
-    //                    }
-    //
-                }
-            }
+                    Spacer().frame(height: 20)
+                    ForEach(assignmentlist)
+                    {
+                        assignment in
+                        if (assignment.subject == self.classcool.originalname && assignment.completed == true && assignment.grade != 0)
+                        {
+                            GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
+                                    self.selectDeselect(assignment)
+                                }.padding(-5).animation(.spring()).shadow(radius: 10)
+                            
+                        }
+                    }.sheet(isPresented: $showassignmentedit, content: {
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
+                    if (getUngradedAssignments() > 0)
+                    {
+                        Spacer().frame(height:10)
+                        HStack {
+                            VStack {
+                                Divider()
+                            }
+                            Text("Ungraded Assignments").frame(width: 200)
+                            VStack {
+                                Divider()
+                            }
+                        }.animation(.spring())
+                        ForEach(assignmentlist) {
+                            assignment in
+                            if (assignment.subject == self.classcool.originalname && assignment.completed == true && assignment.grade == 0) {
+                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).shadow(radius: 10).onTapGesture {
+                                    self.selectDeselect(assignment)
+                                }.padding(-5).animation(.spring())
+                            }
+                        }.sheet(isPresented: $showassignmentedit, content: {
+                            EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
+                    }
+                }.animation(.spring())
+                
+            }.animation(.spring())
             VStack {
                 Spacer()
                 HStack {
@@ -361,11 +392,38 @@ struct DetailProgressView: View {
                     }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
                         Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                     }
-                    }
                 }
             }
         }
-    
+    }
+    func getUngradedAssignments() -> Int {
+        for assignment in assignmentlist {
+            if (assignment.subject == self.classcool.originalname && assignment.completed == true && assignment.grade == 0)
+            {
+                return 1
+            }
+        }
+        return 0
+    }
+    private func selectDeselect(_ singularassignment: Assignment) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+    func getassignmentindex() -> Int {
+        print(selectedassignmentedit)
+        for (index, assignment) in assignmentlist.enumerated() {
+            if (assignment.name == selectedassignmentedit)
+            {
+                print(assignment.name)
+                return index
+            }
+        }
+        return 0
+    }
+
     func getactualclassnumber(classcool: Classcool) -> Int
     {
         for (index, element) in classlist.enumerated() {
@@ -933,7 +991,7 @@ struct ProgressView: View {
             }
             .navigationBarItems(
                 leading:
-                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                     Button(action: {self.showingSettingsView = true}) {
  
                         Image(systemName:"gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
@@ -941,10 +999,10 @@ struct ProgressView: View {
                         
  
  
-                    }.padding(.leading, 2.0);
+                    }.padding(.leading, 2.0)
                 
-                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
-                    Text("").frame(width: UIScreen.main.bounds.size.width/12, height: 20)
+                    Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
+                    Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
 //                    Button(action: {
 //                        self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
 //

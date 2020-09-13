@@ -574,27 +574,26 @@ struct NotificationsView: View {
                             Section(header: Text("Before Tasks").font(.system(size: 20))) {
                                 List {
                                     HStack {
-                                        Button(action: {
+                                         Button(action: {
                                             if (!self.selection.contains("None")) {
                                                 self.selection.removeAll()
                                                 self.selectDeselect("None")
                                             }
                                              
-                                        }) {
-                                            Text("None")//.foregroundColor(.black)
-                                        }
+                                         }) {
+                                             Text("None")//.foregroundColor(.black)
+                                         }
                                         
-                                        if (self.selection.contains("None")) {
-                                            Spacer()
-                                            Image(systemName: "checkmark").foregroundColor(.blue)
-                                        }
-                                    }
-                                    
+                                         if (self.selection.contains("None")) {
+                                             Spacer()
+                                             Image(systemName: "checkmark").foregroundColor(.blue)
+                                         }
+                                     }
                                     ForEach(self.beforeassignmenttimes,  id: \.self) { repeatoption in
                                         VStack(alignment: .leading) {
                                             HStack {
                                                 Button(action: {self.selectDeselect(repeatoption)
-                                                    if (self.selection.count == 0) {
+                                                    if (self.selection.count==0) {
                                                         self.selectDeselect("None")
                                                     }
                                                     else if (self.selection.contains("None")) {

@@ -92,61 +92,52 @@ struct WeeklyBlockView: View {
     let datenumbersfromlastmonday: [String]
     let datesfromlastmonday: [Date]
     
-    func getassignmentsbydate(index: Int) -> [String]
-    {
+    func getassignmentsbydate(index: Int) -> [String] {
         var ans: [String] = []
        // print("Index: " + String(index))
         for assignment in assignmentlist {
            // let diff = Calendar.current.dateComponents([.day], from: self.datesfromlastmonday[self.datenumberindices[index]], to:
             //assignment.duedate).day
-            if (assignment.completed == false)
-            {
+            if (assignment.completed == false) {
                 let diff = Calendar.current.isDate(Date(timeInterval: -7200, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: -7200, since: assignment.duedate), toGranularity: .day)
                 print(self.datesfromlastmonday[self.datenumberindices[index]], assignment.duedate.description)
-                if (diff == true)
-                {
+                if (diff == true) {
                     //print(assignment.name)
                     ans.append(assignment.color)
                 }
-                    
             }
-            //print(assignment.name)
         }
- 
-        //print(ans.count)
+        
         return ans
     }
+    
     func getassignmentsbydateindex(index: Int, index2: Int) -> String {
         //return getassignmentsbydate(index:index).count
-        if (index2 < self.getassignmentsbydate(index: index).count)
-        {
+        if (index2 < self.getassignmentsbydate(index: index).count) {
             return self.getassignmentsbydate(index: index)[index2]
         }
+
         return "one"
-        
     }
-    func getoffsetfromindex(assignmentsindex: Int, index: Int) -> CGFloat
-    {
+    
+    func getoffsetfromindex(assignmentsindex: Int, index: Int) -> CGFloat {
         let length = getassignmentsbydate(index: index).count-1
-        if (length == 0 || length == -1)
-        {
+        if (length == 0 || length == -1) {
             return CGFloat(0)
         }
-        if (length == 1)
-        {
+        if (length == 1) {
             return 7*CGFloat(assignmentsindex)-3.5
         }
-        if (length == 2)
-        {
+        if (length == 2) {
             return 7*CGFloat(assignmentsindex)-7
         }
-        if (length == 3)
-        {
+        if (length == 3) {
             return 7*CGFloat(assignmentsindex)-10.5
         }
  
         return CGFloat(CGFloat(assignmentsindex)/CGFloat(length) * 20 - 10)
     }
+    
     var body: some View {
         ZStack {
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
@@ -178,16 +169,11 @@ struct WeeklyBlockView: View {
                             }
                         }//.frame(height: 200)
                         ZStack {
-                            ForEach(self.getassignmentsbydate(index: index).indices)
-                            {
-                                index2 in
- 
+                            ForEach(self.getassignmentsbydate(index: index).indices) { index2 in
 //                                if (Int(index2) < self.getlenofassignmentsbydate(index: index))
 //                                {
                                 Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
-                                    
 //                                }
- 
                             }
                         }
                         Spacer()
@@ -248,7 +234,7 @@ struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
         }
     }
 }
- 
+
 struct SubassignmentAddTimeAction: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     
@@ -264,6 +250,8 @@ struct SubassignmentAddTimeAction: View {
     @Binding var subassignmentname: String
     @Binding var addhours: Int
     @Binding var addminutes: Int
+    let ogaddhours: Int
+    let ogaddminutes: Int
     
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
@@ -271,7 +259,14 @@ struct SubassignmentAddTimeAction: View {
     var body : some View {
         VStack(spacing: 15) {
             HStack {
-                Text("\(self.subassignmentname)").font(.system(size: 18)).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                Text("\(self.subassignmentname)").font(.system(size: 18)).frame(width: UIScreen.main.bounds.size.width-100, alignment: .topLeading)
+                
+                Spacer()
+                
+                Button(action: {
+                    self.offsetvar = UIScreen.main.bounds.size.width
+                })
+                { Image(systemName: "xmark.circle.fill").foregroundColor(.black) }
             }
             
             HStack {
@@ -281,8 +276,6 @@ struct SubassignmentAddTimeAction: View {
                             Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
                          }
                      }.pickerStyle(WheelPickerStyle())
-//                    Button(action: {print("sdfdsfdsf")})
-//                    { Text(" + Add Even More Time") }
                 }.frame(minWidth: 100, maxWidth: .infinity)
                 .clipped()
                 
@@ -310,8 +303,8 @@ struct SubassignmentAddTimeAction: View {
                 Button(action: {
                     for (_, element) in self.assignmentlist.enumerated() {
                         if (element.name == self.subassignmentname) {
-                            element.timeleft += Int64(60*self.hourlist[self.addhours] + self.minutelist[self.addminutes])
-                            element.totaltime += Int64(60*self.hourlist[self.addhours] + self.minutelist[self.addminutes])
+                            element.timeleft -= Int64(60*self.hourlist[self.addhours] + self.minutelist[self.addminutes])
+//                            element.totaltime += Int64(60*self.hourlist[self.addhours] + self.minutelist[self.addminutes])
                             element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
                         }
                     }
@@ -332,6 +325,15 @@ struct SubassignmentAddTimeAction: View {
                     self.offsetvar = UIScreen.main.bounds.size.width
                 })
                 { Text("Add Time to Assignment").font(.system(size: 20)) }
+            }
+            
+            HStack {
+                Button(action: {
+                    print(self.ogaddhours, self.ogaddminutes)
+                })
+                {
+                    Text(" + Add More Time to Assignment")
+                }
             }
         }.padding(.all, 25).frame(maxHeight: 365).background(Color.white).cornerRadius(25).padding(.all, 14)
     }
@@ -439,8 +441,6 @@ struct HomeBodyView: View {
 //        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
- 
-        
     }
     
     func upcomingDisplayTime() -> String {
@@ -584,41 +584,46 @@ struct HomeBodyView: View {
             }
                 }.transition(.move(edge: .leading)).animation(.spring())
         }
-        else
-        {
+                
+        else { //unifrom list view!!!! :)
             VStack {
-            ScrollView {
-                ForEach(0 ..< daytitlesfromlastmonday.count)
-                {
-                    daytitle in
+                ScrollView {
                     HStack {
-                        Spacer().frame(width: 10)
-                        Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(self.getsubassignmentsondate(dayIndex: daytitle) ? Color("blackwhite") : Color("blackwhite")).fontWeight(.bold)
+                        Text("Tasks").font(.largeTitle).fontWeight(.bold)
                         Spacer()
-                    }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
-                    SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).animation(.spring())
+                    }.padding(.all, 10)
+                    
+                    ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
+                        HStack {
+                            Spacer().frame(width: 10)
+                            Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(self.getsubassignmentsondate(dayIndex: daytitle) ? Color("blackwhite") : Color("blackwhite")).fontWeight(.semibold)
+                            Spacer()
+                        }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg")).padding(.bottom, 2)
+                        
+                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).animation(.spring())
+                        
+                    }.animation(.spring())
+    //                ForEach(subassignmentlist) {
+    //                    subassignment in
+    //                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).onTapGesture {
+    //                        self.subassignmentassignmentname = subassignment.assignmentname
+    //                        self.selectedColor = subassignment.color
+    //
+    //                    }
+    //                }
                 }.animation(.spring())
-//                ForEach(subassignmentlist) {
-//                    subassignment in
-//                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).onTapGesture {
-//                        self.subassignmentassignmentname = subassignment.assignmentname
-//                        self.selectedColor = subassignment.color
-//
-//                    }
-//                }
-            }.animation(.spring())
             }.transition(.move(edge: .leading)).animation(.spring())
         }
         }.transition(.move(edge: .leading)).animation(.easeInOut)
     }
+    
     func getsubassignmentsondate(dayIndex: Int) -> Bool {
         for subassignment in subassignmentlist {
             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[dayIndex])) {
-                
-                  return true  //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                    return true  //was +122 but had to subtract 2*60.35 to account for GMT + 2
             }
- 
         }
+        
         return false
     }
 }
@@ -636,8 +641,7 @@ struct SubassignmentListView: View {
     @Binding var addminutes: Int
     var shortdateformatter: DateFormatter
     
-    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date])
-    {
+    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date]) {
         self.daytitle = daytitle
         self._verticaloffset = verticaloffset
         self._subassignmentname = subassignmentname
@@ -649,37 +653,36 @@ struct SubassignmentListView: View {
         shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.daytitlesfromlastmonday = daytitlesfromlastmonday
         self.datesfromlastmonday = datesfromlastmonday
-        
     }
     
     func getcurrentdatestring() -> String {
         for (index, value) in daytitlesfromlastmonday.enumerated() {
-            if (value == daytitle)
-            {
+            if (value == daytitle) {
                 return self.shortdateformatter.string(from: self.datesfromlastmonday[index])
             }
         }
+        
         return ""
     }
+    
     var body: some View {
       //  ScrollView {
             ForEach(subassignmentlist) {
                 subassignment in
                 if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
-                        IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: true)                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: true)                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
                 }
                 
             }.animation(.spring())
     //    }.animation(.spring())
     }
-    func computesubassignmentlength(subassignment: Subassignmentnew) -> Int
-    {
+    
+    func computesubassignmentlength(subassignment: Subassignmentnew) -> Int {
         let diffComponents = Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime)
         return diffComponents.minute!
     }
 }
- 
- 
+
 struct UpcomingSubassignmentProgressBar: View {
     @ObservedObject var assignment: Assignment
     
@@ -854,25 +857,21 @@ struct IndividualSubassignmentView: View {
                                     
                                     self.addhours = Int(minutes / 60)
                                     self.addminutes = Int((minutes - (self.addhours * 60)) / 5)
-                                    
-                                    element.timeleft -= Int64(minutes)
-                                    element.totaltime -= Int64(minutes)
-                                    element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
                                 }
                             }
                             
-                            for (index, element) in self.subassignmentlist.enumerated() {
-                                if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name) {
-                                    self.managedObjectContext.delete(self.subassignmentlist[index])
-                                }
-                            }
+//                            for (index, element) in self.subassignmentlist.enumerated() {
+//                                if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name) {
+//                                    self.managedObjectContext.delete(self.subassignmentlist[index])
+//                                }
+//                            }
                             
-                            do {
-                                try self.managedObjectContext.save()
-                                print("Subassignment time added")
-                            } catch {
-                                print(error.localizedDescription)
-                            }
+//                            do {
+//                                try self.managedObjectContext.save()
+//                                print("Subassignment time added")
+//                            } catch {
+//                                print(error.localizedDescription)
+//                            }
                             
                         }
                     }
@@ -1028,7 +1027,7 @@ struct HomeView: View {
             VStack {
                 Spacer()
                 
-                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
+                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, ogaddhours: self.addhours, ogaddminutes: self.addminutes).offset(y: self.verticaloffset).animation(.spring())
             }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
         }.onDisappear() {
             let defaults = UserDefaults.standard
@@ -1046,12 +1045,12 @@ struct HomeView: View {
         return false
     }
 }
- 
- 
+
+
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-             let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
           
-          return HomeView().environment(\.managedObjectContext, context).environmentObject(DisplayedDate())
+        return HomeView().environment(\.managedObjectContext, context).environmentObject(DisplayedDate())
     }
 }

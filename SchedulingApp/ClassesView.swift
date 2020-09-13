@@ -283,6 +283,8 @@ struct DetailView: View {
     @State var noClassesAlert: Bool = false
     @State var scalevalue: CGFloat = 1
     @State private var ocolor = Color.blue
+    @State var showeditassignment: Bool = false
+    @State var selectededitassignment: String = ""
     
     private func selectDeselect(_ singularassignment: Assignment) {
         if selection.contains(singularassignment) {
@@ -303,6 +305,15 @@ struct DetailView: View {
         return 0
     }
     
+    func getassignmentindex() -> Int {
+        for (index, assignment) in assignmentlist.enumerated() {
+            if (assignment.name == selectededitassignment)
+            {
+                return index
+            }
+        }
+        return 0
+    }
     var body: some View {
         ZStack {
             VStack {
@@ -314,15 +325,17 @@ struct DetailView: View {
                 ScrollView {
                     ForEach(assignmentlist) { assignment in
                         if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.originalname && assignment.completed == false) {
-                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment).shadow(radius: 10).onTapGesture {
+                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment, selectededit: self.$selectededitassignment, showedit: self.$showeditassignment).shadow(radius: 10).onTapGesture {
                                 self.selectDeselect(assignment)
                             }
                         }
-                    }.animation(.spring())
+                    }.sheet(isPresented: $showeditassignment, content: {
+                        EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
                     if (!getexistingassignments())
                     {
-                        //Image("emptyassignment").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
-                        Text("Tap the add button to add an assignment").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, alignment: .center).multilineTextAlignment(.center)
+                        Spacer().frame(height: 100)
+                        Image("emptyassignment").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+                        Text("No Assignments").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
                         
                     }
                     if (getCompletedAssignmentNumber() > 0)
@@ -339,11 +352,12 @@ struct DetailView: View {
                         ForEach(assignmentlist) {
                             assignment in
                             if (self.classcool.assignmentnumber != -1 && assignment.subject == self.classcool.originalname && assignment.completed == true) {
-                                IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment).shadow(radius: 10).onTapGesture {
+                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$selectededitassignment, showedit: self.$showeditassignment).shadow(radius: 10).onTapGesture {
                                     self.selectDeselect(assignment)
                                 }
                             }
-                        }.animation(.spring())
+                        }.sheet(isPresented: $showeditassignment, content: {
+                            EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
                     }
                 }
             }.navigationBarItems(trailing: Button(action: {
@@ -428,7 +442,8 @@ struct ClassesView: View {
     @State var stored: Double = 0
     @State var noAssignmentsAlert = false
     @State var startedToDelete = false
-
+    @State var showingSettingsView = false
+    
     let types = ["Test", "Homework", "Presentation/Oral", "Essay", "Study", "Exam", "Report/Paper", "Essay", "Presentation/Oral", "Essay"]
     let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
     let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
@@ -894,6 +909,8 @@ struct ClassesView: View {
     var body: some View {
         NavigationView {
             ZStack {
+                NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
+                 { EmptyView() }
                 List {
                     if (getnumofclasses())
                     {
@@ -944,19 +961,23 @@ struct ClassesView: View {
                     {
     //                    Image("emptyclass").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width, alignment: .center).offset(x: -20)
     //                    Text("Click the add button to add a class").font(.system(size: 40)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width - 40, alignment: .center).multilineTextAlignment(.center)
-                        ZStack {
-//                            HStack {
-//                                Spacer()
-//                                VStack {
-//                                    ZStack {
-//                                        Image("Arrow").resizable().aspectRatio(contentMode: .fit).frame(width: 80).offset(y: -70)
-//                                        Text("Add class here").offset(x: -40, y: 0)
-//                                    }
-//                                    Spacer()
-//                                }
-//
-//                            }
-                            Text("No classes created").font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height-250, alignment: .center)
+                        VStack {
+                            Spacer().frame(height: 100)
+                            ZStack {
+    //                            HStack {
+    //                                Spacer()
+    //                                VStack {
+    //                                    ZStack {
+    //                                        Image("Arrow").resizable().aspectRatio(contentMode: .fit).frame(width: 80).offset(y: -70)
+    //                                        Text("Add class here").offset(x: -40, y: 0)
+    //                                    }
+    //                                    Spacer()
+    //                                }
+    //
+    //                            }
+                                Image(systemName: "moon.zzz").resizable().frame(width: UIScreen.main.bounds.size.width-200, height: 250)
+                                Text("No classes created").font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, height: 30, alignment: .center).offset(y: 175)
+                            }
                         }
                     }
 
@@ -1017,9 +1038,19 @@ struct ClassesView: View {
                 }
             }.navigationBarItems(
                 leading:
-                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                         Button(action: {
                             
+                            self.showingSettingsView = true
+                        })
+                        {
+                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }.padding(.leading, 2.0)
+                    
+                    Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)                       // Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
+                    
+                    Button(action: {
+                        
                           // self.master()
                            // self.schedulenotifications()
                            // MasterStruct().master()
@@ -1034,21 +1065,21 @@ struct ClassesView: View {
                             let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
                                let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 
-                            for assignmenttype in assignmenttypes {
-                                let newType = AssignmentTypes(context: self.managedObjectContext)
-                                newType.type = assignmenttype
-                                newType.rangemin = 30
-                                newType.rangemax = 300
-                                print(newType.type, newType.rangemin, newType.rangemax)
-                                do {
-                                    try self.managedObjectContext.save()
-                                    print("new Subassignment")
-                                } catch {
-                                    print(error.localizedDescription)
-
-
-                                }
-                            }
+//                            for assignmenttype in assignmenttypes {
+//                                let newType = AssignmentTypes(context: self.managedObjectContext)
+//                                newType.type = assignmenttype
+//                                newType.rangemin = 30
+//                                newType.rangemax = 300
+//                                print(newType.type, newType.rangemin, newType.rangemax)
+//                                do {
+//                                    try self.managedObjectContext.save()
+//                                    print("new Subassignment")
+//                                } catch {
+//                                    print(error.localizedDescription)
+//
+//
+//                                }
+//                            }
                             for classname in classnames {
                                 let newClass = Classcool(context: self.managedObjectContext)
                                 newClass.originalname = classname
@@ -1075,7 +1106,7 @@ struct ClassesView: View {
                                     newAssignment.subject = classname
                                     newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime/60)*60
                                     newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
-                                    newAssignment.grade = Int64.random(in: 1...7)
+                                    newAssignment.grade = Int64.random(in: 2...6)
                                     newAssignment.completed = false
                                     newAssignment.type = assignmenttypes.randomElement()!
 
@@ -1148,14 +1179,13 @@ struct ClassesView: View {
                                     }
                                 }
                             }
-                            self.schedulenotifications()
-                        })
-                        {
-                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }
-                    
-                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5)
-                        Text("").frame(width: UIScreen.main.bounds.size.width/12, height: 20)
+                        
+                        
+                        self.schedulenotifications()
+                    })
+                    {
+                        Image(systemName: "hand.raised").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font(Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width/12)
+                    }.padding(.trailing, 2.0)
 
 //                        Button(action: {
 //                            self.NewClassPresenting.toggle()
@@ -1163,6 +1193,8 @@ struct ClassesView: View {
 //                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
 //                        }
             }).navigationBarTitle(Text("Classes"), displayMode: .large)
+        }.onDisappear() {
+            self.showingSettingsView = false
         }
     }
     func getcompletedAssignments() -> Bool {

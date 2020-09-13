@@ -81,13 +81,18 @@ struct WeeklyBlockView: View {
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
     
     @Binding var nthdayfromnow: Int
     @Binding var lastnthdayfromnow: Int
     @Binding var increased: Bool
     @Binding var stopupdating: Bool
-    @EnvironmentObject var changingDate: DisplayedDate
- 
+    
+    @Binding var NewAssignmentPresenting: Bool
+    
+    @State var noClassesAlert = false
     let datenumberindices: [Int]
     let datenumbersfromlastmonday: [String]
     let datesfromlastmonday: [Date]
@@ -102,7 +107,7 @@ struct WeeklyBlockView: View {
             if (assignment.completed == false)
             {
                 let diff = Calendar.current.isDate(Date(timeInterval: -7200, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: -7200, since: assignment.duedate), toGranularity: .day)
-                print(self.datesfromlastmonday[self.datenumberindices[index]], assignment.duedate.description)
+             //   print(self.datesfromlastmonday[self.datenumberindices[index]], assignment.duedate.description)
                 if (diff == true)
                 {
                     //print(assignment.name)
@@ -153,10 +158,17 @@ struct WeeklyBlockView: View {
                 ForEach(self.datenumberindices.indices) { index in
                     VStack {
                         ZStack {
-                            Circle().fill(Color("datenumberred")).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).opacity(self.datenumberindices[index] == self.nthdayfromnow ? 1 : 0)
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("datenumberred")).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).opacity(self.datenumberindices[index] == self.nthdayfromnow ? 1 : 0)
                           //  Circle().fill(Color("one")).frame(width: 5, height: 5)
  
                             Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(.regular)
+                        }.contextMenu {
+                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                                Text("Assignment")
+                                Image(systemName: "paperclip")
+                            }.alert(isPresented: self.$noClassesAlert) {
+                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                            }
                         }.onTapGesture {
                             withAnimation(.spring()) {
                                 self.nthdayfromnow = self.datenumberindices[index]
@@ -176,7 +188,7 @@ struct WeeklyBlockView: View {
                                     self.stopupdating = false
                                 }
                             }
-                        }//.frame(height: 200)
+                        }
                         ZStack {
                             ForEach(self.getassignmentsbydate(index: index).indices)
                             {
@@ -193,6 +205,7 @@ struct WeeklyBlockView: View {
                         Spacer()
                     }//.frame(height: 80)
                 }
+                
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
 //            HStack {
 //                Rectangle().frame(width: 5).foregroundColor(Color("datenumberred"))
@@ -378,23 +391,26 @@ struct HomeBodyView: View {
     
     @Binding var addhours: Int
     @Binding var addminutes: Int
+    
     @State var selectedColor: String = "one"
     
     @State var lastnthdayfromnow: Int
     @State var increased = true
     @Binding var uniformlistviewshows: Bool
     @State var stopupdating = false
+    @Binding var NewAssignmentPresenting: Bool
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
  
     @State var timezoneOffset: Int = TimeZone.current.secondsFromGMT()
     
-    init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, uniformlistshows: Binding<Bool>) {
+    init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, uniformlistshows: Binding<Bool>, NewAssignmentPresenting2: Binding<Bool>) {
         self._verticaloffset = verticaloffset
         self._subassignmentname = subassignmentname
         self._addhours = addhours
         self._addminutes = addminutes
         self._uniformlistviewshows = uniformlistshows
+        self._NewAssignmentPresenting = NewAssignmentPresenting2
  
         self._lastnthdayfromnow = self._nthdayfromnow
         
@@ -447,7 +463,7 @@ struct HomeBodyView: View {
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         let minuteval = Calendar.current
-            .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: subassignmentlist[0].startdatetime)
+            .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: subassignmentlist[self.getsubassignment()].startdatetime)
         .minute!
  
         if (minuteval > 720 ) {
@@ -460,6 +476,24 @@ struct HomeBodyView: View {
             return "In 1 h " + String(minuteval-60) + " min: "
         }
         return "In " + String(minuteval/60) + " h " + String(minuteval%60) + " min: "
+    }
+    func getsubassignment() -> Int {
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+
+        var minuteval: Int = 0
+        for (index, _) in subassignmentlist.enumerated() {
+            
+            minuteval = Calendar.current
+                .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: subassignmentlist[index].startdatetime)
+            .minute!
+            //print(minuteval)
+            if (minuteval > 0)
+            {
+                return index
+            }
+            
+        }
+        return -1
     }
     
     func isSameDay(date1: Date, date2: Date) -> Bool {
@@ -482,9 +516,9 @@ struct HomeBodyView: View {
                 }
                 }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
             
-                    PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext))]).id(UUID()).frame(height: 70).padding(.bottom, -10)
+                    PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext))]).id(UUID()).frame(height: 70).padding(.bottom, -10)
             
-            DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(height: 40)
+            //DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(height: 40)
             
             ZStack {
                 if (subassignmentlist.count > 0) {
@@ -498,15 +532,15 @@ struct HomeBodyView: View {
                         if (subassignmentlist.count == 0) {
                             Text("No Upcoming Subassignments")
                         }
-                        else if (self.upcomingDisplayTime() == "No Upcoming Subassignments") {
+                        else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
                             Text("No Upcoming Subassignments")
                         }
                         else {
                             Text("Next Upcoming:").fontWeight(.semibold).animation(.none)
-                            Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, alignment: .topLeading).animation(.none)
+                            Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading).animation(.none)
                             
-                            Text(subassignmentlist[0].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:40)
-                            Text(timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)).font(.system(size: 15))
+                            Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
+                            Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
                         }
                     }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
                     
@@ -518,9 +552,9 @@ struct HomeBodyView: View {
                             ForEach(self.assignmentlist) { assignment in
                                 if (assignment.name == self.subassignmentassignmentname) {
                                     Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 40, alignment: .topLeading)
-                                    Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12))
-                                    Text("Type: " + assignment.type).font(.system(size: 12))
-                                    UpcomingSubassignmentProgressBar(assignment: assignment)
+                                    Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12)).frame(height:15)
+                                    Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
+                                    UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
                                 }
                             }
                         }.frame(width: 150)
@@ -591,12 +625,15 @@ struct HomeBodyView: View {
                 ForEach(0 ..< daytitlesfromlastmonday.count)
                 {
                     daytitle in
-                    HStack {
-                        Spacer().frame(width: 10)
-                        Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(self.getsubassignmentsondate(dayIndex: daytitle) ? Color("blackwhite") : Color("blackwhite")).fontWeight(.bold)
-                        Spacer()
-                    }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
-                    SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).animation(.spring())
+                    if (Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! <= daytitle)
+                    {
+                        HStack {
+                            Spacer().frame(width: 10)
+                            Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(daytitle == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
+                            Spacer()
+                        }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
+                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).animation(.spring())
+                    }
                 }.animation(.spring())
 //                ForEach(subassignmentlist) {
 //                    subassignment in
@@ -943,6 +980,7 @@ struct HomeView: View {
     @State var addhours = 0
     @State var addminutes = 0
     @State var uniformlistshows: Bool
+    @State var showingSettingsView = false
     
     init() {
         let defaults = UserDefaults.standard
@@ -951,88 +989,107 @@ struct HomeView: View {
     }
     
     var body: some View {
-        ZStack {
-            VStack {
-                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
-                    Button(action: {print("settings button clicked")}) {
-                        Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                    }
-                    
-                    Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5)
-                    Button(action: {
-                        withAnimation(.spring())
-                        {
-                            self.uniformlistshows.toggle()
+        NavigationView {
+            ZStack {
+
+                    NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
+                     { EmptyView() }
+                HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).environmentObject(self.changingDate).padding(.top, -40)               // }
+                
+                
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).padding(20)
+                            Button(action: {
+                                self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
+        //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
+        //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
+     
+                                }) {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
+                                                                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                                                                    Text("Assignment")
+                                                                    Image(systemName: "paperclip")
+                                                                }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                                                                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                                                                }
+                                                                Button(action: {self.NewClassPresenting.toggle()}) {
+                                                                    Text("Class")
+                                                                    Image(systemName: "list.bullet")
+                                                                }.sheet(isPresented: $NewClassPresenting, content: {
+                                                                    NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                    //                                Text("Occupied Time")
+                                    //                                Image(systemName: "clock.fill")
+                                    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.NewFreetimePresenting.toggle()}) {
+                                                                    Text("Free Time")
+                                                                    Image(systemName: "clock")
+                                                                }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                                                                Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
+                                                                    Text("Grade")
+                                                                    Image(systemName: "percent")
+                                                                }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                                                                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
+                                                                }
+                                                            }.frame(width: 70, height: 70).padding(20).overlay(
+                                    ZStack {
+                                        //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                    }
+                                )
+                            }
                         }
                         
-                    }) {
-                        Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                    }
-                }.padding(.top, -5)
-                
-                HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, uniformlistshows: self.$uniformlistshows).environmentObject(self.changingDate)
-            }
-            
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).padding(20)
-                        Button(action: {
-                            self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
-    //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
-    //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
- 
-                            }) {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
-                                                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                                                                Text("Assignment")
-                                                                Image(systemName: "paperclip")
-                                                            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                                                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-                                                            }
-                                                            Button(action: {self.NewClassPresenting.toggle()}) {
-                                                                Text("Class")
-                                                                Image(systemName: "list.bullet")
-                                                            }.sheet(isPresented: $NewClassPresenting, content: {
-                                                                NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                                //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                //                                Text("Occupied Time")
-                                //                                Image(systemName: "clock.fill")
-                                //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                                                            Button(action: {self.NewFreetimePresenting.toggle()}) {
-                                                                Text("Free Time")
-                                                                Image(systemName: "clock")
-                                                            }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                                                            Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
-                                                                Text("Grade")
-                                                                Image(systemName: "percent")
-                                                            }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-                                                                Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
-                                                            }
-                                                        }.frame(width: 70, height: 70).padding(20).overlay(
-                                ZStack {
-                                    //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
-                                    Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
-                                }
-                            )
-                        }
-                    }
                     
-                
- 
+     
+                    }
                 }
-            }
-            
-            VStack {
-                Spacer()
-                
-                SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
-            }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
+    //            NavigationView {
+    //                NavigationLink(destination:
+    //                    ZStack {
+    //                       // Rectangle().fill(self.colorScheme == .light ? Color.white : Color.black).frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+    //                        SettingsView()
+    //                    }
+    //
+    //
+    //                    , isActive: self.$showingSettingsView)
+    //                { Text("") }
+    //            }
+                VStack {
+                    Spacer()
+                    
+                    SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
+                }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
+            }.navigationBarItems(leading:
+            //                VStack {
+            //                    Spacer().frame(height:10)
+                                HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
+                                    Button(action: {self.showingSettingsView = true}) {
+                                        Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                                    }.padding(.leading, 2.0)
+                                    
+                                    Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
+                                    Button(action: {
+                                        withAnimation(.spring())
+                                        {
+                                            self.uniformlistshows.toggle()
+                                        }
+                                        
+                                    }) {
+                                        Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                                    }
+                                }.padding(.top, -5)
+                                //Spacer().frame(height: 10)
+                                
+                            )
+
         }.onDisappear() {
             let defaults = UserDefaults.standard
- 
+            self.showingSettingsView = false
             defaults.set(self.uniformlistshows, forKey: "savedtoggleview")
         }
     }

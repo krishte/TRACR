@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Placeholder.png",
+      "filename" : "WhiteTracr.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "WhiteTracr-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "WhiteTracr-2.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -346,18 +346,6 @@ struct SubassignmentAddTimeAction: View {
                 })
                 { Text("Add Time to Assignment").font(.system(size: 20)) }
             }
-<<<<<<< HEAD
-            
-            HStack {
-                Button(action: {
-                    print("sdfds")
-                })
-                {
-                    Text(" + Add More Time to Assignment")
-                }
-            }
-=======
->>>>>>> c552406c0cbb2357aac852ee6246d8644483929e
         }.padding(.all, 25).frame(maxHeight: 365).background(Color.white).cornerRadius(25).padding(.all, 14)
     }
 }
@@ -625,27 +613,6 @@ struct HomeBodyView: View {
             }.onReceive(timer) { _ in
                 //
             }
-<<<<<<< HEAD
-                
-            else { //unifrom list view!!!! :)
-                VStack {
-                    ScrollView {
-                        ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
-                            if (Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! <= daytitle) {
-                                HStack {
-                                    Spacer().frame(width: 10)
-                                    Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(daytitle == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
-                                    Spacer()
-                                }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
-                                
-                                SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).animation(.spring())
-                            }
-                        }.animation(.spring())
-                    }.transition(.move(edge: .leading)).animation(.spring())
-                }.transition(.move(edge: .leading)).animation(.easeInOut)
-            }
-        }.transition(.move(edge: .leading)).animation(.spring())
-=======
                 }.transition(.move(edge: .leading)).animation(.spring())
         }
         else
@@ -677,7 +644,6 @@ struct HomeBodyView: View {
             }.transition(.move(edge: .leading)).animation(.spring())
         }
         }.transition(.move(edge: .leading)).animation(.easeInOut)
->>>>>>> c552406c0cbb2357aac852ee6246d8644483929e
     }
     func getsubassignmentsondate(dayIndex: Int) -> Bool {
         for subassignment in subassignmentlist {

@@ -611,6 +611,7 @@ struct HomeBodyView: View {
     //
     //                    }
     //                }
+                    
                 }.animation(.spring())
             }.transition(.move(edge: .leading)).animation(.spring())
         }

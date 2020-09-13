@@ -44,17 +44,9 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
-            
-            
-
-
-            HomeView()
-            .tabItem {
-
-                    Image(systemName: "house").resizable().scaledToFill()
-                    Text("Home").font(.body)
-                
-                
+            HomeView().tabItem {
+                Image(systemName: "house").resizable().scaledToFill()
+                Text("Home").font(.body)
             }
             
             ClassesView().tabItem {

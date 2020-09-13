@@ -103,6 +103,8 @@ struct AssignmentsView: View {
     
     var body: some View {
         VStack {
+                Text(self.showCompleted ? "Completed Assignments" : "Incomplete Assignments").fontWeight(.light).animation(.none)
+                Divider()
             ScrollView {
                 ForEach(assignmentlist) { assignment in
                   if (assignment.completed == self.showCompleted) {

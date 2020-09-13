@@ -132,10 +132,17 @@ struct NewAssignmentModalView: View {
                             newAssignment.name = self.nameofassignment
                             newAssignment.type = self.assignmenttypes[self.assignmenttype]
                             newAssignment.progress = 0
-                            newAssignment.duedate = self.selectedDate
+                            newAssignment.duedate = Date(timeInterval: 7200, since: self.selectedDate)
     //                        print(self.hours)
     //                        print(self.minutes)
-                            newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                            if (self.hours == 0)
+                            {
+                                newAssignment.totaltime = Int64(self.minutelist[self.minutes+1])
+                            }
+                            else
+                            {
+                                newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                            }
                             newAssignment.timeleft = newAssignment.totaltime
                             for classity in self.classlist {
                                 if (classity.originalname == newAssignment.subject) {
@@ -1190,6 +1197,247 @@ struct NewGradeModalView: View {
                     }
                 }
             }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Grade", displayMode: .inline)
+        }
+    }
+}
+
+
+struct EditAssignmentModalView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var changingDate: DisplayedDate
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    @Binding var NewAssignmentPresenting: Bool
+    
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    var assignmentslist: FetchedResults<Assignment>
+    
+    @State var nameofassignment: String
+    @State private var hours: Int
+    @State private var minutes: Int
+    @State private var selectedassignment: Int
+    @State var selectedDate: Date
+    @State var iscompleted: Bool
+    @State var gradeval: Double
+    @State var assignmentsubject: String
+    let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+    let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    
+    @State private var createassignmentallowed = true
+    @State private var showingAlert = false
+    @State private var expandedduedate = false
+    @State private var startDate = Date()
+    var formatter: DateFormatter
+    let otherclassgrades = ["E", "D", "C", "B", "A"]
+    init(NewAssignmentPresenting: Binding<Bool>, selectedassignment: Int, assignmentname: String, timeleft: Int, duedate: Date, iscompleted: Bool, gradeval: Int, assignmentsubject: String) {
+        print(selectedassignment)
+        self._NewAssignmentPresenting = NewAssignmentPresenting
+       // selectedDate = changingDate.displayedDate
+        formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+       // formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        self._selectedassignment = State(initialValue: selectedassignment)
+        self._nameofassignment = State(initialValue: assignmentname)
+        self._hours = State(initialValue: timeleft/60)
+        self._minutes = State(initialValue: (timeleft%60)/5)
+        self._selectedDate = State(initialValue: Date(timeInterval: -7200, since: duedate))
+        self._iscompleted = State(initialValue: iscompleted)
+        self._gradeval = State(initialValue: Double(gradeval))
+        self._assignmentsubject = State(initialValue: assignmentsubject)
+        
+    }
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section {
+                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.default)
+                }
+                
+                Toggle(isOn: $iscompleted) {
+                    Text("Completed Assignment")
+                }.onTapGesture {
+                    if (!self.iscompleted)
+                     {
+                        self.hours = 0
+                        self.minutes = 0
+                    }
+                }
+                if (self.iscompleted)
+                {
+                    Section {
+                        VStack {
+                            if (self.assignmentsubject == "Theory of Knowledge" || self.assignmentsubject == "Extended Essay")
+                            {
+                                HStack {
+                                    if (gradeval == 0 || gradeval == 1)
+                                    {
+                                        Text("Grade: NA")
+                                    }
+                                    else
+                                    {
+                                        Text("Grade: " + otherclassgrades[Int(gradeval)-2])
+                                    }
+                                    Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $gradeval, in: 2...6)
+                            }
+                            else
+                            {
+                                HStack {
+                                    if (gradeval == 0)
+                                    {
+                                        Text("Grade: NA")
+                                    }
+                                    else
+                                    {
+                                        Text("Grade: \(gradeval.rounded(.down), specifier: "%.0f")")
+                                    }
+                                    Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $gradeval, in: 1...7)
+                            }
+                        }
+
+                    }
+                }
+                if (!self.iscompleted)
+                {
+
+                    Section {
+                        Text("Time left")
+                        HStack {
+                            VStack {
+                                Picker(selection: $hours, label: Text("Hour")) {
+                                    ForEach(hourlist.indices) { hourindex in
+                                        Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
+                                     }
+                                 }.pickerStyle(WheelPickerStyle())
+                            }.frame(minWidth: 100, maxWidth: .infinity)
+                            .clipped()
+                            
+                            VStack {
+
+                                    Picker(selection: $minutes, label: Text("Minutes")) {
+                                        ForEach(minutelist.indices) { minuteindex in
+                                            Text(String(self.minutelist[minuteindex]) + " mins")
+                                        }
+                                    }.pickerStyle(WheelPickerStyle())
+                                
+                            }.frame(minWidth: 100, maxWidth: .infinity)
+                            .clipped()
+                        }
+                    }
+
+                    
+                    Section {
+                        Button(action: {
+                                self.expandedduedate.toggle()
+                            
+                        }) {
+                            HStack {
+                                Text("Select due date and time").foregroundColor(Color.black)
+                                Spacer()
+                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                            }
+                            
+                        }
+                        if (expandedduedate)
+                        {
+                            VStack {
+                                MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                            }.animation(nil)
+                        }
+                        //DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                    }
+                }
+                
+
+                Section {
+                    Button(action: {
+                        self.createassignmentallowed = true
+                        
+//                        for assignment in self.assignmentslist {
+//                            if assignment.name == self.nameofassignment {
+//                                self.createassignmentallowed = false
+//                            }
+//                        }
+
+                        if self.createassignmentallowed {
+                            self.assignmentslist[self.selectedassignment].name = self.nameofassignment
+                            self.assignmentslist[self.selectedassignment].duedate = Date(timeInterval: 7200, since: self.selectedDate)
+                            print(self.hours, self.minutes)
+                            let change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
+                            self.assignmentslist[self.selectedassignment].timeleft += change
+                            self.assignmentslist[self.selectedassignment].totaltime += change
+                            
+                            
+                            if (self.assignmentslist[self.selectedassignment].timeleft == 0 || self.iscompleted)
+                            {
+                                if ( !self.assignmentslist[self.selectedassignment].completed )
+                                {
+                                    for classity in self.classlist {
+                                        if (self.assignmentslist[self.selectedassignment].subject == classity.originalname)
+                                        {
+                                            classity.assignmentnumber -= 1
+                                        }
+                                    }
+                                }
+                                self.assignmentslist[self.selectedassignment].grade = Int64(self.gradeval)
+                                self.assignmentslist[self.selectedassignment].progress = 100
+                                self.assignmentslist[self.selectedassignment].completed = true
+                                
+                            }
+
+                            else
+                            {
+                                if (self.assignmentslist[self.selectedassignment].completed)
+                                {
+                                    for classity in self.classlist {
+                                        if (self.assignmentslist[self.selectedassignment].subject == classity.originalname)
+                                        {
+                                            classity.assignmentnumber += 1
+                                        }
+                                    }
+                                    
+                                }
+                                if (self.assignmentslist[self.selectedassignment].subject == "Theory of Knowledge" || self.assignmentslist[self.selectedassignment].subject == "Extended Essay")
+                                {
+                                    self.assignmentslist[self.selectedassignment].grade = 2
+                                }
+                                else
+                                {
+                                    self.assignmentslist[self.selectedassignment].grade = 0
+                                }
+                                self.assignmentslist[self.selectedassignment].completed = false
+                                self.assignmentslist[self.selectedassignment].progress =    Int64((Double(self.assignmentslist[self.selectedassignment].totaltime - self.assignmentslist[self.selectedassignment].timeleft)/Double(self.assignmentslist[self.selectedassignment].totaltime )) * 100)
+                            }
+                            
+                            
+                            do {
+                                try self.managedObjectContext.save()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                            self.NewAssignmentPresenting = false
+                        }
+                     
+                        else {
+                            print("Assignment with Same Name Exists; Change Name")
+                            self.showingAlert = true
+                        }
+                    }) {
+                        Text("Save Changes")
+                    }.alert(isPresented: $showingAlert) {
+                        Alert(title: Text("Assignment Already Exists"), message: Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+                    }
+                }
+                
+            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Assignment", displayMode: .inline)
         }
     }
 }

@@ -34,6 +34,7 @@ struct DropDown: View {
 //                    Toggle(isOn: $showCompleted) {
 //                        Text("Show Completed Assignments")
 //                    }
+                    //Text(showCompleted ? "Completed Assignments" : "To-Do Assignments").frame(width: 500, alignment: .leading)
                 }
             }.frame(height: 50)
             
@@ -46,6 +47,9 @@ struct AssignmentsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State private var selection: Set<Assignment> = []
 
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    
+    var assignmentlist2: FetchedResults<Assignment>
     var assignmentlistrequest: FetchRequest<Assignment>
     var assignmentlist: FetchedResults<Assignment>{assignmentlistrequest.wrappedValue}
     var showCompleted: Bool
@@ -53,6 +57,8 @@ struct AssignmentsView: View {
                   sortDescriptors: [])
 
     var classlist: FetchedResults<Classcool>
+    @State var showassignmentedit: Bool = false
+    @State var selectedassignmentedit: String = ""
     
     init(selectedFilter:String, value: Bool){
         if (selectedFilter == "Due date") {
@@ -103,14 +109,36 @@ struct AssignmentsView: View {
                 ForEach(assignmentlist) { assignment in
                   if (assignment.completed == self.showCompleted) {
                         VStack {
-                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment).onTapGesture {
-                                    self.selectDeselect(assignment)
-                                }.animation(.spring()).shadow(radius: 10)
+                            if (assignment.completed == true)
+                            {
+                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
+                                        self.selectDeselect(assignment)
+                                    }.animation(.spring()).shadow(radius: 10)
+                                
+                            }
+                            else
+                            {
+                                IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
+                                        self.selectDeselect(assignment)
+                                    }.animation(.spring()).shadow(radius: 10)
+                            }
                         }
                     }
                 }.animation(.spring())
             }
+        }.sheet(isPresented: $showassignmentedit, content: {
+            EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
+    }
+    func getassignmentindex() -> Int {
+        print(selectedassignmentedit)
+        for (index, assignment) in assignmentlist2.enumerated() {
+            if (assignment.name == selectedassignmentedit)
+            {
+                print(assignment.name)
+                return index
+            }
         }
+        return 0
     }
 }
 
@@ -133,12 +161,15 @@ struct FilterView: View {
     @State var noClassesAlert = false
     @State var noAssignmentsAlert = false
     @State var completedvalue = false
+    @State var showingSettingsView = false
 
     var body: some View {
         NavigationView{
             ZStack {
+                NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
+                 { EmptyView() }
                 VStack {
-                    DropDown(showCompleted2: $completedvalue)
+                    DropDown(showCompleted2: $completedvalue).environment(\.managedObjectContext, self.managedObjectContext)
                 }
                 VStack {
                     Spacer()
@@ -194,13 +225,12 @@ struct FilterView: View {
             }
             .navigationBarItems(
                 leading:
-                HStack(spacing: UIScreen.main.bounds.size.width / 3.7) {
-                        Button(action: {print("settings button clicked")}) {
+                HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
+                    Button(action: {self.showingSettingsView = true}) {
                             Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }.padding(.leading, 2.0);
+                        }.padding(.leading, 2.0)
                     
-                        Image("Tracr").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 5);
-
+                    Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                         Button(action: {
                             withAnimation(.spring())
                             {
@@ -211,7 +241,9 @@ struct FilterView: View {
                             Image(systemName: self.completedvalue ? "checkmark.circle.fill" : "checkmark.circle").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
                 }.padding(.top, 0)).navigationBarTitle("Assignment List")
-         }
+        }.onDisappear() {
+            self.showingSettingsView = false
+        }
     }
     func getcompletedAssignments() -> Bool {
         for assignment in assignmentlist {
@@ -222,6 +254,7 @@ struct FilterView: View {
         }
         return false
     }
+    //hello
 }
 
 struct FilterView_Previews: PreviewProvider {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
     <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
@@ -16,8 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="Tracr" translatesAutoresizingMaskIntoConstraints="NO" id="NlJ-wu-qE7">
-                                <rect key="frame" x="122" y="288" width="170" height="120"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="Tracr" translatesAutoresizingMaskIntoConstraints="NO" id="NlJ-wu-qE7">
+                                <rect key="frame" x="73" y="337" width="269" height="222"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="170" id="5yg-ep-dvw"/>
                                     <constraint firstAttribute="height" constant="120" id="zZR-9D-eDu"/>
@@ -38,7 +38,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Tracr" width="81.666664123535156" height="54.333332061767578"/>
+        <image name="Tracr" width="161.33332824707031" height="40.333332061767578"/>
         <namedColor name="three">
             <color red="0.3843137254901961" green="0.78823529411764703" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

@@ -97,8 +97,7 @@ struct WeeklyBlockView: View {
     let datenumbersfromlastmonday: [String]
     let datesfromlastmonday: [Date]
     
-    func getassignmentsbydate(index: Int) -> [String]
-    {
+    func getassignmentsbydate(index: Int) -> [String] {
         var ans: [String] = []
        // print("Index: " + String(index))
         for assignment in assignmentlist {
@@ -121,6 +120,7 @@ struct WeeklyBlockView: View {
         //print(ans.count)
         return ans
     }
+    
     func getassignmentsbydateindex(index: Int, index2: Int) -> String {
         //return getassignmentsbydate(index:index).count
         if (index2 < self.getassignmentsbydate(index: index).count)
@@ -130,28 +130,25 @@ struct WeeklyBlockView: View {
         return "one"
         
     }
-    func getoffsetfromindex(assignmentsindex: Int, index: Int) -> CGFloat
-    {
+    
+    func getoffsetfromindex(assignmentsindex: Int, index: Int) -> CGFloat {
         let length = getassignmentsbydate(index: index).count-1
-        if (length == 0 || length == -1)
-        {
+        if (length == 0 || length == -1) {
             return CGFloat(0)
         }
-        if (length == 1)
-        {
+        if (length == 1) {
             return 7*CGFloat(assignmentsindex)-3.5
         }
-        if (length == 2)
-        {
+        if (length == 2) {
             return 7*CGFloat(assignmentsindex)-7
         }
-        if (length == 3)
-        {
+        if (length == 3) {
             return 7*CGFloat(assignmentsindex)-10.5
         }
- 
+        
         return CGFloat(CGFloat(assignmentsindex)/CGFloat(length) * 20 - 10)
     }
+    
     var body: some View {
         ZStack {
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
@@ -190,16 +187,11 @@ struct WeeklyBlockView: View {
                             }
                         }
                         ZStack {
-                            ForEach(self.getassignmentsbydate(index: index).indices)
-                            {
-                                index2 in
- 
+                            ForEach(self.getassignmentsbydate(index: index).indices) { index2 in
 //                                if (Int(index2) < self.getlenofassignmentsbydate(index: index))
 //                                {
-                                Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
-                                    
+                                Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index)) 
 //                                }
- 
                             }
                         }
                         Spacer()
@@ -455,8 +447,6 @@ struct HomeBodyView: View {
 //        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
- 
-        
     }
     
     func upcomingDisplayTime() -> String {
@@ -477,6 +467,7 @@ struct HomeBodyView: View {
         }
         return "In " + String(minuteval/60) + " h " + String(minuteval%60) + " min: "
     }
+    
     func getsubassignment() -> Int {
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
 
@@ -615,13 +606,15 @@ struct HomeBodyView: View {
             }
                 }.transition(.move(edge: .leading)).animation(.spring())
         }
-        else
-        {
+        else {
             VStack {
             ScrollView {
-                ForEach(0 ..< daytitlesfromlastmonday.count)
-                {
-                    daytitle in
+                HStack {
+                    Text("Tasks").font(.largeTitle).bold()
+                    Spacer()
+                }.padding(.all, 10)
+                
+                ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
                     if (Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! <= daytitle)
                     {
                         HStack {

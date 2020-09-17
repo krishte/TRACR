@@ -253,7 +253,7 @@ struct IndividualAssignmentFilterView: View {
         }
         else if (minutenumber % 60 == 0)
         {
-            return String(minutenumber/60) + " hours"
+            return (minutenumber/60 == 1 ? String(minutenumber/60) + " hour" : String(minutenumber/60) + " hours")
         }
         else
         {
@@ -548,7 +548,7 @@ struct GradedAssignmentsView: View {
         }
         else if (minutenumber % 60 == 0)
         {
-            return String(minutenumber/60) + " hours"
+            return (minutenumber/60 == 1 ? String(minutenumber/60) + " hour" : String(minutenumber/60) + " hours")
         }
         else
         {

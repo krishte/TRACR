@@ -10,34 +10,117 @@ import Foundation
 import Combine
 import SwiftUI
 
-
-
-struct TutorialView: View {
+struct PageViewControllerTutorial: UIViewControllerRepresentable {
+    @Binding var tutorialPageNum: Int
     
-    var body: some View {
-//        ScrollView(.horizontal, showsIndicators: false)
-//        {
-        VStack {
-            ScrollView(.horizontal, showsIndicators: false) {
-
-                HStack {
-                    Spacer().frame(width: 50)
-                    Image("Tutorial1").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
-                    Spacer().frame(width: 100)
-                    Image("Tutorial2").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
-                    Spacer().frame(width: 60)
-                    Image("Tutorial3").resizable().frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.height-600).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
-                    Spacer().frame(width: 10)
-                    
-                }
+    var viewControllers: [UIViewController]
+ 
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    func makeUIViewController(context: Context) -> UIPageViewController {
+        let pageViewController = UIPageViewController(
+            transitionStyle: .scroll,
+            navigationOrientation: .horizontal)
+        
+        pageViewController.dataSource = context.coordinator
+        
+        return pageViewController
+    }
+    
+    func updateUIViewController(_ pageViewController: UIPageViewController, context: Context) {
+        pageViewController.setViewControllers([viewControllers[self.tutorialPageNum]], direction: .reverse, animated: true)
+    }
+    
+    class Coordinator: NSObject, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+        var parent: PageViewControllerTutorial
+ 
+        init(_ pageViewController: PageViewControllerTutorial) {
+            self.parent = pageViewController
+        }
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+            guard let index = parent.viewControllers.firstIndex(of: viewController) else {
+                 return nil
             }
             
-            Spacer()
-          //  }
+            if index == 0 {
+                return nil
+            }
+ 
+            return parent.viewControllers[index - 1]
         }
-        //}
+        
+        func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+            guard let index = parent.viewControllers.firstIndex(of: viewController) else {
+                return nil
+            }
+            
+            if index + 1 == parent.viewControllers.count {
+                return nil
+            }
+            
+            return parent.viewControllers[index + 1]
+        }
     }
 }
+
+struct TutorialPageViewLastPage: View {
+    @Binding var tutorialPageNum: Int
+    
+    var body: some View {
+        VStack {
+            Text("Heyyyy, last page man, go back?? click below then :)")
+            
+            Button(action: {
+                self.tutorialPageNum = 1
+                
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(50)) {
+                    self.tutorialPageNum = 0
+                }
+                
+            }) {
+                ZStack {
+                    //RoundedRectangle(cornerRadius: 8, style: .continuous).frame(width: 200, height: 100)
+                    
+                    HStack {
+                        Image(systemName: "gobackward")
+                        Spacer()
+                        Text("Restart Tutorial")
+                    }.frame(width: 150, height: 100)
+
+                }
+            }
+        }
+    }
+}
+//
+//struct TutorialView: View {
+//    var body: some View {
+////        ScrollView(.horizontal, showsIndicators: false)
+////        {
+//        VStack {
+//            ScrollView(.horizontal, showsIndicators: false) {
+//
+//                HStack {
+//                    Spacer().frame(width: 50)
+//                    Image("Tutorial1").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
+//                    Spacer().frame(width: 100)
+//                    Image("Tutorial2").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
+//                    Spacer().frame(width: 60)
+//                    Image("Tutorial3").resizable().frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.height-600).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
+//                    Spacer().frame(width: 10)
+//
+//                }
+//            }
+//
+//            Spacer()
+//          //  }
+//        }
+//        //}
+//    }
+//}
 
 struct SettingsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -60,12 +143,14 @@ struct SettingsView: View {
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
     
     @State var cleardataalert = false
-    var body: some View {
     
+    @State var tutorialPageNum = 0
+    
+    var body: some View {
         Form {
-        List {
-            Section {
-                NavigationLink(destination: PreferencesView()) {
+            List {
+                Section {
+                    NavigationLink(destination: PreferencesView()) {
 //                     ZStack {
 ////                      //  RoundedRectangle(cornerRadius: 10, style: .continuous)
 ////                         .fill(Color("twelve"))
@@ -77,18 +162,18 @@ struct SettingsView: View {
 //
 //                        }.padding(.horizontal, 25)
 //                     }
-                    HStack {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.green).frame(width:40, height:40)
-                            Image(systemName: "slider.horizontal.3").resizable().frame(width:25, height:25)
-                        }
-                        Spacer().frame(width:20)
-                        Text("Preferences").font(.system(size:20))
-                    }.frame(height:40)
-                }
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.green).frame(width:40, height:40)
+                                Image(systemName: "slider.horizontal.3").resizable().frame(width:25, height:25)
+                            }
+                            Spacer().frame(width:20)
+                            Text("Preferences").font(.system(size:20))
+                        }.frame(height:40)
+                    }
                // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
                 
-                NavigationLink(destination: NotificationsView()) {
+                    NavigationLink(destination: NotificationsView()) {
 //                    ZStack {
 //
 ////                       RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -102,20 +187,20 @@ struct SettingsView: View {
 //
 //                       }.padding(.horizontal, 25)
 //                    }
-                    HStack {
-                        ZStack {
-                            
-                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.red).frame(width:40, height:40)
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.red).frame(width: 40, height: 40)
 
-                            Image(systemName: "app.badge").resizable().frame(width:25, height:25)
-                        }
-                        Spacer().frame(width:20)
-                        Text("Notifications").font(.system(size:20))
-                    }.frame(height:40)
-                }
+                                Image(systemName: "app.badge").resizable().frame(width: 25, height: 25)
+                            }
+                            
+                            Spacer().frame(width: 20)
+                            Text("Notifications").font(.system(size: 20))
+                        }.frame(height: 40)
+                    }
                // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
 
-                NavigationLink(destination: HelpCenterView()) {
+                    NavigationLink(destination: HelpCenterView()) {
 //                     ZStack {
 //
 ////                        RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -129,15 +214,15 @@ struct SettingsView: View {
 //
 //                        }.padding(.horizontal, 25)
 //                     }
-                    HStack {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
-                            Image(systemName: "questionmark").resizable().frame(width:15, height:25)
-                        }
-                        Spacer().frame(width:20)
-                        Text("FAQ").font(.system(size:20))
-                    }.frame(height:40)
-                }
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
+                                Image(systemName: "questionmark").resizable().frame(width:15, height:25)
+                            }
+                            Spacer().frame(width:20)
+                            Text("FAQ").font(.system(size:20))
+                        }.frame(height:40)
+                    }
 
                 
 //
@@ -156,37 +241,35 @@ struct SettingsView: View {
 //                        }.padding(.horizontal, 25)
 //                     }
 //                }
-            }
-            Section {
-                NavigationLink(destination: TutorialView())
-                {
-                    Text("Tutorial")
-                }
-            }
-            Section {
-                Button(action: {
-                    self.cleardataalert.toggle()
-
-                }) {
-                    Text("Clear All Data").foregroundColor(Color.red)
-                }.alert(isPresented:$cleardataalert) {
-                    Alert(title: Text("Are you sure you want to clear all data?"), message: Text("There is no undoing this operation"), primaryButton: .destructive(Text("Clear All Data")) {
-                        self.delete()
-                        print("data cleared")
-                    }, secondaryButton: .cancel())
                 }
                 
+                Section {
+                    NavigationLink(destination: PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "Do this kinda, needs fixing.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)) {
+                        Text("Tutorial")
+                    }
+                }
+                    
+                Section {
+                    Button(action: {
+                        self.cleardataalert.toggle()
+                    }) {
+                        Text("Clear All Data").foregroundColor(Color.red)
+                    }.alert(isPresented:$cleardataalert) {
+                        Alert(title: Text("Are you sure you want to clear all data?"), message: Text("There is no undoing this operation"), primaryButton: .destructive(Text("Clear All Data")) {
+                            self.delete()
+                            print("data cleared")
+                        }, secondaryButton: .cancel())
+                    }
+                }
             }
-            }
-
         }.navigationBarTitle("Settings")
     }
+    
     func delete() -> Void {
-        if (self.subassignmentlist.count > 0)
-        {
-        for (index, _) in self.subassignmentlist.enumerated() {
-             self.managedObjectContext.delete(self.subassignmentlist[index])
-        }
+        if (self.subassignmentlist.count > 0) {
+            for (index, _) in self.subassignmentlist.enumerated() {
+                 self.managedObjectContext.delete(self.subassignmentlist[index])
+            }
         }
 //        if (self.assignmenttypeslist.count > 0)
 //        {
@@ -198,17 +281,16 @@ struct SettingsView: View {
             element.rangemin = 30
             element.rangemax = 300
         }
-        if (self.assignmentlist.count > 0)
-        {
-        for (index, _) in self.assignmentlist.enumerated() {
-             self.managedObjectContext.delete(self.assignmentlist[index])
+        
+        if (self.assignmentlist.count > 0) {
+            for (index, _) in self.assignmentlist.enumerated() {
+                 self.managedObjectContext.delete(self.assignmentlist[index])
+            }
         }
-        }
-        if (self.classlist.count > 0)
-        {
-        for (index, _) in self.classlist.enumerated() {
-             self.managedObjectContext.delete(self.classlist[index])
-        }
+        if (self.classlist.count > 0) {
+            for (index, _) in self.classlist.enumerated() {
+                 self.managedObjectContext.delete(self.classlist[index])
+            }
         }
 //                for (index, _) in self.freetimelist.enumerated() {
 //                     self.managedObjectContext.delete(self.freetimelist[index])
@@ -220,15 +302,15 @@ struct SettingsView: View {
         } catch {
             print(error.localizedDescription)
         }
-
     }
 }
-struct HelpCenterView: View {
 
+struct HelpCenterView: View {
     let faqtitles = ["Payment", "Data usage", "Report a problem","Tutorial" ]
     let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Raul.Sanchezflores@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial."]
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50]
     let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four"]
+    
     @State private var selection: Set<String> = []
 
     private func selectDeselect(_ singularassignment: String) {

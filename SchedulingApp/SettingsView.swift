@@ -361,18 +361,46 @@ struct PreferencesView: View {
                   sortDescriptors: [NSSortDescriptor(keyPath: \AssignmentTypes.type, ascending: true)])
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
     @State private var typeval: Int = 150
+    @State private var selection: Set<String> = []
 
+    
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+    
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     var body: some View {
         VStack {
             //Text(String(assignmenttypeslist.count))
           //  Form {
                 ScrollView(showsIndicators: false) {
+                    
+                        Button(action: {
+                            self.selectDeselect("show")
+                            
+                            
+                        }) {
+                            HStack {
+                                Text("What is this?").foregroundColor(.black).fontWeight(.bold)
+                                Spacer()
+                                Image(systemName: self.selection.contains("show") ? "chevron.down" : "chevron.up").foregroundColor(Color.black)
+                            }.padding(10).background(Color("two")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10)
+                        }.animation(.spring())
+                    
+                        if (self.selection.contains("show"))
+                        {
+                            Text("stuff").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 30, alignment: .topLeading).animation(.spring())
+                            Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
+                        }
                     ForEach(self.assignmenttypeslist) {
                         assignmenttype in
                         DetailPreferencesView(assignmenttype: assignmenttype)
-                    }
-                }
+                    }//.animation(.spring())
+                }//.animation(.spring())
            // }.navigationBarTitle("Preferences")
         }.navigationBarTitle("Preferences")
     }

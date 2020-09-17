@@ -82,7 +82,7 @@ struct TutorialPageViewLastPage: View {
                 
             }) {
                 ZStack {
-                    //RoundedRectangle(cornerRadius: 8, style: .continuous).frame(width: 200, height: 100)
+                    //RoundedRectangle(cornerRadius: 8, style: .continuous).frame(width: 200, height: 100) a
                     
                     HStack {
                         Image(systemName: "gobackward")

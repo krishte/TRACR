@@ -1065,21 +1065,21 @@ struct ClassesView: View {
                             let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
                                let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 
-//                            for assignmenttype in assignmenttypes {
-//                                let newType = AssignmentTypes(context: self.managedObjectContext)
-//                                newType.type = assignmenttype
-//                                newType.rangemin = 30
-//                                newType.rangemax = 300
-//                                print(newType.type, newType.rangemin, newType.rangemax)
-//                                do {
-//                                    try self.managedObjectContext.save()
-//                                    print("new Subassignment")
-//                                } catch {
-//                                    print(error.localizedDescription)
-//
-//
-//                                }
-//                            }
+                            for assignmenttype in assignmenttypes {
+                                let newType = AssignmentTypes(context: self.managedObjectContext)
+                                newType.type = assignmenttype
+                                newType.rangemin = 30
+                                newType.rangemax = 300
+                                print(newType.type, newType.rangemin, newType.rangemax)
+                                do {
+                                    try self.managedObjectContext.save()
+                                    print("new Subassignment")
+                                } catch {
+                                    print(error.localizedDescription)
+
+
+                                }
+                            }
                             for classname in classnames {
                                 let newClass = Classcool(context: self.managedObjectContext)
                                 newClass.originalname = classname

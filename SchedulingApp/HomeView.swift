@@ -97,8 +97,7 @@ struct WeeklyBlockView: View {
     let datenumbersfromlastmonday: [String]
     let datesfromlastmonday: [Date]
     
-    func getassignmentsbydate(index: Int) -> [String]
-    {
+    func getassignmentsbydate(index: Int) -> [String] {
         var ans: [String] = []
        // print("Index: " + String(index))
         for assignment in assignmentlist {
@@ -121,6 +120,7 @@ struct WeeklyBlockView: View {
         //print(ans.count)
         return ans
     }
+    
     func getassignmentsbydateindex(index: Int, index2: Int) -> String {
         //return getassignmentsbydate(index:index).count
         if (index2 < self.getassignmentsbydate(index: index).count)
@@ -130,28 +130,31 @@ struct WeeklyBlockView: View {
         return "one"
         
     }
-    func getoffsetfromindex(assignmentsindex: Int, index: Int) -> CGFloat
-    {
+    
+    func getoffsetfromindex(assignmentsindex: Int, index: Int) -> CGFloat {
         let length = getassignmentsbydate(index: index).count-1
-        if (length == 0 || length == -1)
-        {
+        if (length == 0 || length == -1) {
             return CGFloat(0)
         }
-        if (length == 1)
-        {
+        if (length == 1) {
             return 7*CGFloat(assignmentsindex)-3.5
         }
-        if (length == 2)
-        {
+        if (length == 2) {
             return 7*CGFloat(assignmentsindex)-7
         }
-        if (length == 3)
-        {
+        if (length == 3) {
             return 7*CGFloat(assignmentsindex)-10.5
         }
- 
+        if (length == 4) {
+            return 7*CGFloat(assignmentsindex)-14
+        }
+        if (length == 5) {
+            return 7*CGFloat(assignmentsindex)-17.5
+        }
+        
         return CGFloat(CGFloat(assignmentsindex)/CGFloat(length) * 20 - 10)
     }
+    
     var body: some View {
         ZStack {
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
@@ -190,16 +193,11 @@ struct WeeklyBlockView: View {
                             }
                         }
                         ZStack {
-                            ForEach(self.getassignmentsbydate(index: index).indices)
-                            {
-                                index2 in
- 
+                            ForEach(self.getassignmentsbydate(index: index).indices) { index2 in
 //                                if (Int(index2) < self.getlenofassignmentsbydate(index: index))
 //                                {
-                                Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
-                                    
+                                Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index)) 
 //                                }
- 
                             }
                         }
                         Spacer()
@@ -455,8 +453,6 @@ struct HomeBodyView: View {
 //        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
- 
-        
     }
     
     func upcomingDisplayTime() -> String {
@@ -477,6 +473,7 @@ struct HomeBodyView: View {
         }
         return "In " + String(minuteval/60) + " h " + String(minuteval%60) + " min: "
     }
+    
     func getsubassignment() -> Int {
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
 
@@ -507,14 +504,13 @@ struct HomeBodyView: View {
     
     var body: some View {
         VStack {
-            if (!self.uniformlistviewshows)
-            {
+            if (!self.uniformlistviewshows) {
                 VStack {
-            HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
-                ForEach(self.daysoftheweekabr.indices) { dayofthweekabrindex in
-                    Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)
-                }
-                }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
+                    HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+                        ForEach(self.daysoftheweekabr.indices) { dayofthweekabrindex in
+                            Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)
+                        }
+                    }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
             
                     PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext))]).id(UUID()).frame(height: 70).padding(.bottom, -10)
             
@@ -524,9 +520,11 @@ struct HomeBodyView: View {
                 if (subassignmentlist.count > 0) {
                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                 }
+                    
                 else {
                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("datenumberred"), Color("datenumberred")]), startPoint: .leading, endPoint: .trailing))
                 }
+                
                 HStack {
                     VStack(alignment: .leading) {
                         if (subassignmentlist.count == 0) {
@@ -560,7 +558,6 @@ struct HomeBodyView: View {
                         }.frame(width: 150)
                     }
                 }.padding(10)
-                
             }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
             
             VStack {
@@ -590,15 +587,12 @@ struct HomeBodyView: View {
                                             IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: false).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                                 self.selectedColor = subassignment.color
-                                                
 //                                                for subassignment in self.subassignmentlist {
 //                                                    print(subassignment.startdatetime.description)
 //                                                }
-                                                
- 
                                             }
                                                 //was +122 but had to subtract 2*60.35 to account for GMT + 2
-                                            }
+                                        }
                                     }.animation(.spring())
                                 }
                                 Spacer()
@@ -618,13 +612,15 @@ struct HomeBodyView: View {
             }
                 }.transition(.move(edge: .leading)).animation(.spring())
         }
-        else
-        {
+        else {
             VStack {
             ScrollView {
-                ForEach(0 ..< daytitlesfromlastmonday.count)
-                {
-                    daytitle in
+                HStack {
+                    Text("Tasks").font(.largeTitle).bold()
+                    Spacer()
+                }.padding(.all, 10)
+                
+                ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
                     if (Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! <= daytitle)
                     {
                         HStack {

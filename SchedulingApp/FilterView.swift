@@ -26,6 +26,9 @@ struct DropDown: View {
                 Section {
                     Picker(selection: $selectedFilter, label: Text("Sort by: ")) {
                         Section {
+                            Text("Sort Assignments By:").font(.headline).fontWeight(.semibold)
+                        }
+                        Section {
                             ForEach(0 ..< filters.count) {
                                Text(self.filters[$0])
                             }
@@ -103,19 +106,18 @@ struct AssignmentsView: View {
     
     var body: some View {
         VStack {
+            Text(self.showCompleted ? "Completed Assignments" : "Incomplete Assignments").animation(.none)
             ScrollView {
                 ForEach(assignmentlist) { assignment in
                   if (assignment.completed == self.showCompleted) {
                         VStack {
-                            if (assignment.completed == true)
-                            {
+                            if (assignment.completed == true) {
                                 GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
                                     }.animation(.spring()).shadow(radius: 10)
                                 
                             }
-                            else
-                            {
+                            else {
                                 IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
                                     }.animation(.spring()).shadow(radius: 10)

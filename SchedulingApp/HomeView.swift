@@ -151,7 +151,7 @@ struct WeeklyBlockView: View {
         if (length == 5) {
             return 7*CGFloat(assignmentsindex)-17.5
         }
-        
+         
         return CGFloat(CGFloat(assignmentsindex)/CGFloat(length) * 20 - 10)
     }
     

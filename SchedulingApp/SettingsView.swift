@@ -66,6 +66,56 @@ struct PageViewControllerTutorial: UIViewControllerRepresentable {
     }
 }
 
+struct TutorialPageView: View {
+    var tutorialScreenshot: String
+    var tutorialTitle: String
+    var tutorialInstructions1: String
+    var tutorialInstructions2: String
+    var tutorialInstructions3: String
+    
+    var body: some View {
+        VStack {
+            Image(self.tutorialScreenshot).resizable().aspectRatio(contentMode: .fit).frame(height: (UIScreen.main.bounds.size.height / 2) - 20)
+            
+            Spacer().frame(height: 15)
+            
+            Rectangle().frame(width: UIScreen.main.bounds.size.width - 40, height: 0.3)
+             
+            Spacer().frame(height: 15)
+            
+            HStack {
+                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 40, height: 40)
+                Spacer().frame(width: 15)
+                Text(self.tutorialTitle).font(.title).fontWeight(.light)
+                Spacer()
+            }.padding(.leading, 20)
+            
+            ScrollView(.vertical, showsIndicators: false, content: {
+                HStack {
+                    Image(systemName: "1.circle.fill").foregroundColor(tutorialInstructions1 == "" ? Color.white : Color("thirteen"))
+                    Spacer().frame(width: 15)
+                    Text(tutorialInstructions1)
+                    Spacer()
+                }
+                
+                HStack {
+                    Image(systemName: "2.circle.fill").foregroundColor(tutorialInstructions2 == "" ? Color.white : Color("thirteen"))
+                    Spacer().frame(width: 15)
+                    Text(tutorialInstructions2)
+                    Spacer()
+                }
+                
+                HStack {
+                    Image(systemName: "3.circle.fill").foregroundColor(tutorialInstructions3 == "" ? Color.white : Color("thirteen"))
+                    Spacer().frame(width: 15)
+                    Text(tutorialInstructions3)
+                    Spacer()
+                }
+            }).padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 120)
+        }.padding(.top, 116)
+    }
+}
+
 struct TutorialPageViewLastPage: View {
     @Binding var tutorialPageNum: Int
     
@@ -244,7 +294,7 @@ struct SettingsView: View {
                 }
                 
                 Section {
-                    NavigationLink(destination: PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "Do this kinda, needs fixing.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)) {
+                    NavigationLink(destination: PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)) {
                         Text("Tutorial")
                     }
                 }

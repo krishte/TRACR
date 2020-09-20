@@ -277,8 +277,12 @@ struct DetailProgressView: View {
     //                            }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
                             }
                             
-                            Spacer().frame(height: 40)
-                            
+                            Spacer().frame(height: 20)
+                            HStack {
+                                Text("Additional Insights").font(.headline)
+                                Spacer()
+                            }.padding(.leading, 15)
+                            Spacer().frame(height: 20)
  
                             if (getgradenum())
                             {
@@ -333,7 +337,14 @@ struct DetailProgressView: View {
                         }
  
                     }
+                    
                     Spacer().frame(height: 20)
+                    HStack {
+                        Text("Completed Assignments").font(.headline)
+                        Spacer()
+                    }.padding(.leading, 15)
+                    Spacer().frame(height: 20)
+                    
                     ForEach(assignmentlist)
                     {
                         assignment in
@@ -813,8 +824,8 @@ struct ProgressView: View {
                                     .fill(Color.orange)
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
                                 VStack {
-                                    Text("Textual Insights").foregroundColor(Color.black)
-                                    Text("Coming Soon").foregroundColor(Color.black)
+                                    Text("Textual Insights").font(.headline).foregroundColor(Color.black)
+                                    Text("Coming Soon").fontWeight(.light).foregroundColor(Color.black)
                                 }
  
                             }

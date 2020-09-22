@@ -94,24 +94,47 @@ struct NewAssignmentModalView: View {
                 }
 
                 Section {
-                    Button(action: {
-                            self.expandedduedate.toggle()
-                        
-                    }) {
-                        HStack {
-                            Text("Select due date and time").foregroundColor(Color.black)
-                            Spacer()
-                            Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+
+
+                    if #available(iOS 14.0, *) {
+                        Button(action: {
+                                self.expandedduedate.toggle()
+
+                        }) {
+                            HStack {
+                                Text("Select due date and time").foregroundColor(Color.black)
+                                Spacer()
+                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                            }
+
+                        }
+                        if (expandedduedate)
+                        {
+                            VStack {
+                                DatePicker("", selection: $selectedDate, in: startDate..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                            }.animation(.spring())
+                        }
+
+                    } else {
+                        Button(action: {
+                                self.expandedduedate.toggle()
+
+                        }) {
+                            HStack {
+                                Text("Select due date and time").foregroundColor(Color.black)
+                                Spacer()
+                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                            }
+
+                        }
+                        if (expandedduedate)
+                        {
+                            VStack {
+                                MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                            }.animation(nil)
                         }
                         
                     }
-                    if (expandedduedate)
-                    {
-                        VStack {
-                            MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
-                        }.animation(nil)
-                    }
-                    //DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                 }
 
                 Section {
@@ -389,19 +412,19 @@ struct NewClassModalView: View {
                     if self.coloraselectedindex != nil {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
                             .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                         
                     }
                     else if self.colorbselectedindex != nil {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
                             .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                         
                     }
                     else if self.colorcselectedindex != nil {
                         RoundedRectangle(cornerRadius: 25, style: .continuous)
                             .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                         
                     }
 
@@ -593,41 +616,119 @@ struct NewFreetimeModalView: View {
             VStack {
                 Form {
                     Section {
-                        Button(action: {
-                            self.expandedstart.toggle()
-                        }) {
-                            HStack {
-                                Text("Select start time").foregroundColor(Color.black)
-                                Spacer()
-                                Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
-                            }
-                        }
-                        if (expandedstart) {
-                            VStack {
-                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
-                            }.animation(nil)
-                        }
+                        if #available(iOS 14.0, *) {
+                            Button(action: {
+                                    self.expandedstart.toggle()
 
-                   //    DatePicker("Select start time", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)//.pickerStyle(WheelPickerStyle())
+                            }) {
+                                HStack {
+                                    Text("Select start time").foregroundColor(Color.black)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
+                                }
+
+                            }
+                            if (expandedstart)
+                            {
+                                VStack {
+                                    DatePicker("", selection: $selectedstartdatetime, in: selectedDate..., displayedComponents: .hourAndMinute).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                }.animation(.spring())
+                            }
+
+                        } else {
+                            Button(action: {
+                                    self.expandedstart.toggle()
+
+                            }) {
+                                HStack {
+                                    Text("Select start time").foregroundColor(Color.black)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
+                                }
+
+                            }
+                            if (expandedstart)
+                            {
+                                VStack {
+                                    MyDatePicker(selection: $selectedstartdatetime, starttime: $selectedDate, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                }.animation(nil)
+                            }
+                            
+                        }
+//                        Button(action: {
+//                            self.expandedstart.toggle()
+//                        }) {
+//                            HStack {
+//                                Text("Select start time").foregroundColor(Color.black)
+//                                Spacer()
+//                                Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
+//                            }
+//                        }
+//                        if (expandedstart) {
+//                            VStack {
+//                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+//                            }.animation(nil)
+//                        }
+//
+//                       DatePicker("", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)//.pickerStyle(WheelPickerStyle())
                     }
                     
                     Section {
-                        Button(action: {
-                                self.expandedend.toggle()
-                            
-                        }) {
-                            HStack {
-                                Text("Select end time").foregroundColor(Color.black)
-                                Spacer()
-                                Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
+//                        Button(action: {
+//                                self.expandedend.toggle()
+//
+//                        }) {
+//                            HStack {
+//                                Text("Select end time").foregroundColor(Color.black)
+//                                Spacer()
+//                                Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
+//                            }
+//                        }
+//                        if (expandedend) {
+//                            VStack {
+//                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+//                            }.animation(nil)
+//                        }
+                        if #available(iOS 14.0, *) {
+                            Button(action: {
+                                    self.expandedend.toggle()
+
+                            }) {
+                                HStack {
+                                    Text("Select end time").foregroundColor(Color.black)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
+                                }
+
                             }
+                            if (expandedend)
+                            {
+                                VStack {
+                                    DatePicker("", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                }.animation(.spring())
+                            }
+
                         }
-                        if (expandedend) {
-                            VStack {
-                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
-                            }.animation(nil)
+                    else {
+                            Button(action: {
+                                    self.expandedend.toggle()
+
+                            }) {
+                                HStack {
+                                    Text("Select end time").foregroundColor(Color.black)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
+                                }
+
+                            }
+                            if (expandedend)
+                            {
+                                VStack {
+                                    MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                }.animation(nil)
+                            }
+                            
                         }
-                        
 //                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute).pickerStyle(WheelPickerStyle())
                     }
 

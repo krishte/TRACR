@@ -175,13 +175,13 @@ struct DetailProgressView: View {
                                     }
                                     else
                                     {
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 29.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
+                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
                                     }
                                     Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
                                 }.offset(x: -10, y: -15)
@@ -210,7 +210,7 @@ struct DetailProgressView: View {
     //                                                    {
                                                             Rectangle()
                                                             .fill(Color.blue)
-                                                                .frame(width: self.getCompletedNumber(), height: (self.classcool.originalname == "Extended Essay" || self.classcool.originalname == "Theory of Knowledge") ? CGFloat(assignment.grade-2) * 60 : CGFloat(assignment.grade) * 30)
+                                                                .frame(width: self.getCompletedNumber(), height: (self.classcool.originalname == "Extended Essay" || self.classcool.originalname == "Theory of Knowledge") ? CGFloat(assignment.grade-2) * 60 : CGFloat(assignment.grade) * 38)
     //                                                    }
                                                         //Text( self.formatter.string(from: assignment.duedate))
                                                           //  .font(.footnote)
@@ -229,7 +229,7 @@ struct DetailProgressView: View {
                                         }
                                         else
                                         {
-                                            Rectangle().fill(Color.black).frame(width: 1.5, height: 215).offset(x: -10,y:44).padding(0)
+                                            Rectangle().fill(Color.black).frame(width: 1.5, height: 270).offset(x: -10,y:41).padding(0)
                                         }
                                         VStack {
                                            // Spacer()
@@ -250,7 +250,7 @@ struct DetailProgressView: View {
                                                 Text("3").frame(width: 20).padding(.top, 18).font(.system(size: 10))
                                                 Text("2").frame(width: 20).padding(.top, 18).font(.system(size: 10))
                                                 Text("1").frame(width: 20).padding(.top, 18).font(.system(size: 10))
-                                                Text("0").frame(width: 20).padding(.top, 18).font(.system(size: 10))
+                                                Text("0").frame(width: 20).padding(.top, 18).padding(.bottom, 4).font(.system(size: 10))
                                             }
                                         }.offset(y: 10)
                                     }

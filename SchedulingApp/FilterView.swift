@@ -10,6 +10,7 @@ import SwiftUI
 
 struct DropDown: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @Binding var showCompleted: Bool
     @State private var selectedFilter = 0
     //@State private var showCompleted = false
@@ -18,30 +19,70 @@ struct DropDown: View {
         UITableView.appearance().tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: Double.leastNonzeroMagnitude))
         self._showCompleted = showCompleted2
     }
-
-    let filters = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
+    @State var selectedbutton = "Class"
+    let filters: [String] = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
+    @State var filterspresented: Bool = false
     var body: some View {
         VStack {
-            Form {
-                Section {
-                    Picker(selection: $selectedFilter, label: Text("Sort by: ")) {
-                        Section {
-                            Text("Sort Assignments By:").font(.headline).fontWeight(.semibold)
-                        }
-                        Section {
-                            ForEach(0 ..< filters.count) {
-                               Text(self.filters[$0])
+          //  Form {
+          //      Section {
+//                    Picker(selection: $selectedFilter, label: Text("Sort by: ")) {
+//                        Section {
+//                            Text("Sort Assignments By:").font(.headline).fontWeight(.semibold).padding(.top, -40)
+//                        }
+//                        Section {
+//                            ForEach(0 ..< filters.count) {
+//                               Text(self.filters[$0])
+//                            }
+//                        }
+//                    }
+            NavigationLink(destination:
+            
+
+                    List
+                    {
+                        ForEach(0..<filters.count) {
+                            filter in
+                            Button(action:{
+                                selectedbutton = filters[filter]
+                               // self.presentationMode.wrappedValue.dismiss()
+                                filterspresented = false
+                            })
+                            {
+                                HStack {
+                                    Text(filters[filter])
+                                    Spacer()
+                                    if (selectedbutton == filters[filter])
+                                    {
+                                        Image(systemName: "checkmark").resizable().scaledToFit().foregroundColor(Color.blue)
+                                    }
+                                }.frame(height: 20)
                             }
                         }
+                    },
+                           isActive: $filterspresented )
+            {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("graphbackgroundtop")).frame(width: UIScreen.main.bounds.size.width-20, height: 50)
+                    HStack {
+                        Text("Sort Assignments By: ").foregroundColor(Color.black)
+                        Spacer()
+                        Text(selectedbutton).foregroundColor(Color.gray)
+                        Image(systemName: "chevron.right").resizable().scaledToFit().foregroundColor(Color.gray)
+                    }.frame(width: UIScreen.main.bounds.size.width-60, height: 15).onTapGesture {
+                        filterspresented = true
                     }
+                   // Image("chevron.right")
+                }
+            }
 //                    Toggle(isOn: $showCompleted) {
 //                        Text("Show Completed Assignments")
 //                    }
                     //Text(showCompleted ? "Completed Assignments" : "To-Do Assignments").frame(width: 500, alignment: .leading)
-                }
-            }.frame(height: 50)
+                //}
+          //  }.frame(height: 100)
             
-            AssignmentsView(selectedFilter: self.filters[selectedFilter], value: showCompleted)
+            AssignmentsView(selectedFilter: selectedbutton, value: showCompleted)
         }
     }
 }
@@ -126,6 +167,7 @@ struct AssignmentsView: View {
                     }
                 }.animation(.spring())
             }
+            
         }.sheet(isPresented: $showassignmentedit, content: {
             EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
     }

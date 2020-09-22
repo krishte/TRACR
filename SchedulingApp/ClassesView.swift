@@ -31,7 +31,7 @@ struct ClassView: View {
                 else {
                     Text(String(classcool.assignmentnumber)).font(.title).fontWeight(.bold)
                 }
-            }.padding(.horizontal, 25)
+            }.padding(.horizontal, 40)
         }
     }
     
@@ -904,6 +904,28 @@ struct ClassesView: View {
         }
         return false
     }
+    func getactualclassnumber(classcool: Classcool) -> Int
+    {
+        for (index, element) in classlist.enumerated() {
+            if (element.name == classcool.name)
+            {
+                return index
+            }
+        }
+        return 0
+    }
+    func getclassnumber(classcool: Classcool) -> Int
+    {
+        for (index, element) in classlist.enumerated() {
+            if (element.name == classcool.name)
+            {
+                return index+1
+            }
+        }
+        return 0
+    }
+    @State var storedIndex = 0
+    @State var selectedClass: Int? = 0
     @State var storedindex = 0
     @State var opacityvalue = 1.0
     var body: some View {
@@ -911,21 +933,39 @@ struct ClassesView: View {
             ZStack {
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                  { EmptyView() }
-                List {
+                ScrollView {
                     if (getnumofclasses())
                     {
                         ForEach(self.classlist) { classcool in
-                            NavigationLink(destination: DetailView(classcool: classcool )) {
-                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).contextMenu {
-                                    Button(action: {
-                                        self.classlist.count > 0 ? self.NewAssignmentPresenting2.toggle() : self.noClassesAlert.toggle()
-                                        self.storedindex = self.getclassindex(classcool: classcool)
-                                    }) {
-                                        Text("Add Assignment")
-                                        Image(systemName: "paperclip")
-                                    }
-                                }
+                            NavigationLink(destination: DetailView(classcool: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {
+                                EmptyView()
                             }
+                            Button(action: {
+                                self.selectedClass = self.getclassnumber(classcool: classcool)
+                            }) {
+                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).padding(.vertical, 10)
+
+                            }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                Button (action: {
+
+                                    self.storedindex = self.getactualclassnumber(classcool: classcool)
+                                    NewAssignmentPresenting2.toggle()
+                                }) {
+                                    Text("Add Assignment")
+                                }
+                                
+                            }
+//                            NavigationLink(destination: DetailView(classcool: classcool )) {
+//                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).contextMenu {
+//                                    Button(action: {
+//                                        self.classlist.count > 0 ? self.NewAssignmentPresenting2.toggle() : self.noClassesAlert.toggle()
+//                                        self.storedindex = self.getactualclassnumber(classcool: classcool)
+//                                    }) {
+//                                        Text("Add Assignment")
+//                                        Image(systemName: "paperclip")
+//                                    }
+//                                }
+//                            }.buttonStyle(PlainButtonStyle())
                             
                         }.onDelete { indexSet in
                             self.startedToDelete = true
@@ -954,7 +994,7 @@ struct ClassesView: View {
                             print("Class deleted")
                             
                             self.startedToDelete = false
-                        }
+                        }.frame(width: UIScreen.main.bounds.size.width)
                         
                     }
                     else
@@ -981,7 +1021,7 @@ struct ClassesView: View {
                         }
                     }
 
-                }.sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
+                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
                     Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                 }
                 
@@ -1195,6 +1235,7 @@ struct ClassesView: View {
             }).navigationBarTitle(Text("Classes"), displayMode: .large)
         }.onDisappear() {
             self.showingSettingsView = false
+            self.selectedClass = 0
         }
     }
     func getcompletedAssignments() -> Bool {

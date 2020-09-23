@@ -89,25 +89,25 @@ struct IndividualAssignmentFilterView: View {
             VStack {
                 if (!isExpanded) {
                     HStack {
-                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-100, height: 50, alignment: .topLeading).padding(.leading, 5)
+                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-100, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
                     }
-                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading).padding(5)
+                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                 }
                     
                 else {
                     ZStack {
                         VStack {
                             HStack {
-                                Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-100, height: 50, alignment: .topLeading).padding(.leading, 5)
+                                Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-100, height: 30, alignment: .topLeading).padding(.leading, 5)
                                 Spacer()
 
                             }
 
                             
 
-                            Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 30, alignment: .topLeading).padding(5)
-                            Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 30, alignment: .topLeading).padding(5)
+                            Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                            Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
                             HStack {
                                 Text("Total time: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
                                 Spacer()

@@ -295,11 +295,25 @@ struct SettingsView: View {
                 
                 Section {
                     NavigationLink(destination: PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)) {
-                        Text("Tutorial")
+                        
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
+                                Image(systemName: "info.circle").resizable().frame(width:25, height:25)
+                            }
+                            Spacer().frame(width:20)
+                            Text("Tutorial").font(.system(size:20))
+                        }.frame(height:40)
+                       
                     }
                 }
                     
                 Section {
+                    HStack {
+                        Text("Version:")
+                        Spacer()
+                        Text("Developer's Beta 2.0").foregroundColor(.gray)
+                    }
                     Button(action: {
                         self.cleardataalert.toggle()
                     }) {

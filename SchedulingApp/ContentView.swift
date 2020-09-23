@@ -49,14 +49,16 @@ struct ContentView: View {
                 Text("Home").font(.body)
             }
             
-            ClassesView().tabItem {
-                Image(systemName: "list.dash").resizable().scaledToFill()
-                Text("Classes")
-            }
+
             
              FilterView().tabItem {
                 Image(systemName:"paperclip").resizable().scaledToFill()
                 Text("Assignments")
+            }
+            
+            ClassesView().tabItem {
+                Image(systemName: "list.dash").resizable().scaledToFill()
+                Text("Classes")
             }
             
             ProgressView().tabItem {

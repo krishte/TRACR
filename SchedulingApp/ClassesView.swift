@@ -212,19 +212,20 @@ struct EditClassModalView: View {
                         if self.coloraselectedindex != nil {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
                                 .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                             
                         }
                         else if self.colorbselectedindex != nil {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
                                 .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                             
                         }
                         else if self.colorcselectedindex != nil {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
                                 .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 40, height: (120 ))
+                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                            
                         }
 
                         VStack {
@@ -459,7 +460,11 @@ struct ClassesView: View {
     let tolerances = [4, 1, 2, 4, 3, 4, 1, 5]
     let assignmentnumbers = [2, 1, 1, 2, 1, 1, 1, 1]
     let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
-    
+    @State var modalView: ModalView = .none
+    @State var alertView: AlertView = .noclass
+    @State var NewSheetPresenting = false
+    @State var NewAlertPresenting = false
+    @ObservedObject var sheetNavigator = SheetNavigator()
     var startOfDay: Date {
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
@@ -924,6 +929,36 @@ struct ClassesView: View {
         }
         return 0
     }
+    
+    @ViewBuilder
+    private func sheetContent() -> some View {
+        
+        if (self.sheetNavigator.modalView == .freetime)
+        {
+            
+            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+        }
+        else if (self.sheetNavigator.modalView == .assignment)
+        {
+            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)
+        }
+        else if (self.sheetNavigator.modalView == .classity)
+        {
+            NewClassModalView(NewClassPresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+        }
+        else if (self.sheetNavigator.modalView == .grade)
+        {
+            NewGradeModalView(NewGradePresenting: self.$NewSheetPresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)
+        }
+        else
+        {
+            Button(action: {
+                print(self.modalView)
+            }) {
+                Text("click me")
+            }
+        }
+    }
     @State var storedIndex = 0
     @State var selectedClass: Int? = 0
     @State var storedindex = 0
@@ -951,8 +986,46 @@ struct ClassesView: View {
                                     self.storedindex = self.getactualclassnumber(classcool: classcool)
                                     NewAssignmentPresenting2.toggle()
                                 }) {
-                                    Text("Add Assignment")
+                                    HStack {
+                                        Text("Add Assignment")
+                                        Spacer()
+                                        Image(systemName: "paperclip")
+                                    }
                                 }
+                                Divider()
+                                Button(action: {
+                                    self.startedToDelete = true
+                                    let index = getactualclassnumber(classcool: classcool)
+                                        for (index2, element) in self.assignmentlist.enumerated() {
+                                            if (element.subject == self.classlist[index].originalname) {
+                                                for (index3, element2) in self.subassignmentlist.enumerated() {
+                                                    if (element2.assignmentname == element.name) {
+                                                        self.managedObjectContext.delete(self.subassignmentlist[index3])
+                                                    }
+                                                }
+                                                self.managedObjectContext.delete(self.assignmentlist[index2])
+                                            }
+                                        }
+                                        self.managedObjectContext.delete(self.classlist[index])
+                                    
+                                    
+                                    do {
+                                        try self.managedObjectContext.save()
+                                        print("Class made")
+                                    } catch {
+                                        print(error.localizedDescription)
+                                    }
+                                    
+                                    print("Class deleted")
+                                    
+                                    self.startedToDelete = false
+                                }) {
+                                    HStack {
+                                        Text("Delete Class")
+                                        Spacer()
+                                        Image(systemName: "trash").foregroundColor(Color.red)
+                                    }
+                                }.foregroundColor(.red)
                                 
                             }
 //                            NavigationLink(destination: DetailView(classcool: classcool )) {
@@ -1021,7 +1094,7 @@ struct ClassesView: View {
                         }
                     }
 
-                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
+                }.frame(width: UIScreen.main.bounds.size.width).animation(.spring()).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
                     Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                 }
                 
@@ -1030,50 +1103,90 @@ struct ClassesView: View {
                     HStack {
                         Spacer()
                         ZStack {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(opacityvalue).padding(20)
+                            // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             Button(action: {
-                                self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
-        //                        self.scalevalue = self.scalevalue == 1.5 ? 1 : 1.5
-        //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
-
-                                }) {
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).contextMenu{
-                                                                Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
-                                                                    Text("Assignment")
-                                                                    Image(systemName: "paperclip")
-                                                                }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                                                                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-                                                                }
-                                                                Button(action: {self.NewClassPresenting.toggle()}) {
-                                                                    Text("Class")
-                                                                    Image(systemName: "list.bullet")
-                                                                }.sheet(isPresented: $NewClassPresenting, content: {
-                                                                    NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                                    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                    //                                Text("Occupied Time")
-                                    //                                Image(systemName: "clock.fill")
-                                    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                                                                Button(action: {self.NewFreetimePresenting.toggle()}) {
-                                                                    Text("Free Time")
-                                                                    Image(systemName: "clock")
-                                                                }.sheet(isPresented: $NewFreetimePresenting, content: { NewFreetimeModalView(NewFreetimePresenting: self.$NewFreetimePresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                                                                Button(action: {self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()}) {
-                                                                    Text("Grade")
-                                                                    Image(systemName: "percent")
-                                                                }.sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-                                                                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
-                                                                }
-                                                            }.frame(width: 70, height: 70).opacity(opacityvalue).padding(20).overlay(
+                                if (classlist.count > 0)
+                                {
+                                    self.sheetNavigator.modalView = .assignment
+                                    print(self.modalView)
+                                    self.NewSheetPresenting = true
+                                   // self.NewGradePresenting = true
+                                }
+                                else
+                                {
+                                    self.alertView = .noclass
+                                    self.NewAlertPresenting = true
+                                }
+                                
+                            }) {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {
                                         //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                         Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
                                     }
                                 )
-                            }
-                        }
+                            }.buttonStyle(PlainButtonStyle()).contextMenu{
+                                Button(action: {
+                                    if (classlist.count > 0)
+                                    {
+                                        self.sheetNavigator.modalView = .assignment
+                                        self.NewSheetPresenting = true
+                                        self.NewAssignmentPresenting = true
+                                    }
+                                    else
+                                    {
+                                        self.alertView = .noclass
+                                        self.NewAlertPresenting = true
+                                    }
+                                }) {
+                                    Text("Assignment")
+                                    Image(systemName: "paperclip")
+                                }
+                                Button(action: {
+                                    self.sheetNavigator.modalView = .classity
+                                    self.NewSheetPresenting = true
+                                    self.NewClassPresenting = true
+                                }) {
+                                    Text("Class")
+                                    Image(systemName: "list.bullet")
+                                }
+                                //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                //                                Text("Occupied Time")
+                                //                                Image(systemName: "clock.fill")
+                                //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                                Button(action: {
+                                    self.sheetNavigator.modalView = .freetime
+                                    print(self.modalView)
+                                    self.NewSheetPresenting = true
+                                }) {
+                                    Text("Free Time")
+                                    Image(systemName: "clock")
+                                }
+                                Button(action: {
+                                    
+                                    if (self.getcompletedAssignments())
+                                    {
+                                        self.sheetNavigator.modalView = .grade
+                                        self.NewSheetPresenting = true
+                                    }
+                                    else
+                                    {
+                                        self.alertView = .noassignment
+                                        self.NewAlertPresenting = true
+                                    }
+                                    //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+                                    
+                                }) {
+                                    Text("Grade")
+                                    Image(systemName: "percent")
+                                }
+                                
+                            }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
+                        }.sheet(isPresented: $NewSheetPresenting, content: sheetContent )
                         
-                    
-
+                        
+                        
+                        
                     }
                 }
             }.navigationBarItems(

@@ -93,14 +93,17 @@ struct WeeklyBlockView: View {
     @Binding var NewAssignmentPresenting: Bool
     
     @State var noClassesAlert = false
+    var refreshview: Bool = false
     let datenumberindices: [Int]
     let datenumbersfromlastmonday: [String]
     let datesfromlastmonday: [Date]
     
     func getassignmentsbydate(index: Int) -> [String] {
         var ans: [String] = []
-       // print("Index: " + String(index))
+     //  print("Index: " + String(index))
+        
         for assignment in assignmentlist {
+            //refreshview.toggle()
            // let diff = Calendar.current.dateComponents([.day], from: self.datesfromlastmonday[self.datenumberindices[index]], to:
             //assignment.duedate).day
             if (assignment.completed == false)
@@ -127,7 +130,9 @@ struct WeeklyBlockView: View {
         {
             return self.getassignmentsbydate(index: index)[index2]
         }
-        return "one"
+    
+    //    print("one")
+        return "zero"
         
     }
     
@@ -196,7 +201,14 @@ struct WeeklyBlockView: View {
                             ForEach(self.getassignmentsbydate(index: index).indices) { index2 in
 //                                if (Int(index2) < self.getlenofassignmentsbydate(index: index))
 //                                {
-                                Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index)) 
+                                if (self.getassignmentsbydateindex(index: index, index2: index2) == "zero")
+                                {
+                                    
+                                }
+                                else
+                                {
+                                    Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
+                                }
 //                                }
                             }
                         }
@@ -348,41 +360,7 @@ struct SubassignmentAddTimeAction: View {
     }
 }
  
-struct SpecialView: View {
-    
-    var body: some View {
-        VStack {
-            if #available(iOS 14.0, *) {
-               // WindowGroup {
-                    TabView {
-                        coolview1()
-                        coolview2()
-                        coolview3()
-                    }.tabViewStyle(PageTabViewStyle())
-             //   }
-            } else {
-                coolview1()                // Fallback on earlier versions
-            }
-            
-        }
-    }
-}
-struct coolview1: View {
-    var body: some View {
-        Text("hello")
-    }
-}
-struct coolview2: View {
-    var body: some View {
-        Text("hello2")
-    }
-}
-struct coolview3: View {
-    var body: some View {
-        Text("hello3")
-    }
-}
- 
+
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var changingDate: DisplayedDate
@@ -412,6 +390,8 @@ struct HomeBodyView: View {
     let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
+    
+    @State var selecteddaytitle: Int = 0
     
     var hourformatter: DateFormatter
     var minuteformatter: DateFormatter
@@ -471,6 +451,7 @@ struct HomeBodyView: View {
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
         shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
+       // self._selecteddaytitle = State(initialValue: nthdayfromnow)
         self.selectedColor  = "one"
         
         let lastmondaydate = Date(timeInterval: TimeInterval(86400 + timezoneOffset), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400+timezoneOffset+1), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400 + timezoneOffset+1), since: Date().startOfWeek!)
@@ -552,13 +533,23 @@ struct HomeBodyView: View {
                             WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)
                             WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices:  [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)
                             WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)
-                        }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .never)).frame(height: 70)
+                        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 70)
                     } else {
                         PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext))]).id(UUID()).frame(height: 70).padding(.bottom, -10)
                     }
 
-            
-           // DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(height: 40)
+                    if #available(iOS 14.0, *) {
+                        TabView(selection: self.$nthdayfromnow) {
+                            ForEach(daytitlesfromlastmonday.indices) {
+                                index in
+                                Text(daytitlesfromlastmonday[index]).font(.title).fontWeight(.medium).tag(index).frame(height: 40)
+                            }
+                            
+                        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 40)
+                        
+                    } else {
+                        DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
+                    }
             
             ZStack {
                 if (subassignmentlist.count > 0) {
@@ -654,17 +645,18 @@ struct HomeBodyView: View {
             }.onReceive(timer) { _ in
                 //
             }
-                }.transition(.move(edge: .leading)).animation(.spring())
+                }//.transition(.move(edge: .leading)).animation(.spring())
         }
         else {
+            //Spacer().frame(height:40)
             VStack {
-               // Spacer().frame(height:50)
+                
             ScrollView {
                 HStack {
                     Text("Tasks").font(.largeTitle).bold()
                     Spacer()
                 }.padding(.all, 10)
-                
+
                 ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
                     if (Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! <= daytitle)
                     {
@@ -684,10 +676,10 @@ struct HomeBodyView: View {
 //
 //                    }
 //                }
-            }.animation(.spring())
-            }.transition(.move(edge: .leading)).animation(.spring())
+            }
+            }//.transition(.move(edge: .leading)).animation(.spring())
         }
-        }.transition(.move(edge: .leading)).animation(.easeInOut)
+        }//.transition(.move(edge: .leading)).animation(.easeInOut)
     }
     func getsubassignmentsondate(dayIndex: Int) -> Bool {
         for subassignment in subassignmentlist {
@@ -1001,6 +993,9 @@ enum ModalView {
     case none
 }
 
+class SheetNavigator: ObservableObject {
+    @Published var modalView: ModalView = .none
+}
 enum AlertView {
     case noclass
     case noassignment
@@ -1039,6 +1034,7 @@ struct HomeView: View {
     @State var alertView: AlertView = .noclass
     @State var NewSheetPresenting = false
     @State var NewAlertPresenting = false
+    @ObservedObject var sheetNavigator = SheetNavigator()
     init() {
         let defaults = UserDefaults.standard
         let viewtype = defaults.object(forKey: "savedtoggleview") as? Bool ?? false
@@ -1047,19 +1043,21 @@ struct HomeView: View {
     
     @ViewBuilder
     private func sheetContent() -> some View {
-        if (self.modalView == .freetime)
+        
+        if (self.sheetNavigator.modalView == .freetime)
         {
+            
             NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
         }
-        else if (self.modalView == .assignment)
+        else if (self.sheetNavigator.modalView == .assignment)
         {
             NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)
         }
-        else if (self.modalView == .classity)
+        else if (self.sheetNavigator.modalView == .classity)
         {
             NewClassModalView(NewClassPresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
         }
-        else if (self.modalView == .grade)
+        else if (self.sheetNavigator.modalView == .grade)
         {
             NewGradeModalView(NewGradePresenting: self.$NewSheetPresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)
         }
@@ -1074,149 +1072,180 @@ struct HomeView: View {
     }
     var body: some View {
         NavigationView {
-            ZStack {
-
+            if #available(iOS 14.0, *) {
+                ZStack {
+                    
                     NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
-                     { EmptyView() }
-                HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).environmentObject(self.changingDate).padding(.top, -40)               // }
-                
-                
-                VStack {
-                    Spacer()
-                    HStack {
+                        { EmptyView() }
+                    HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).environmentObject(self.changingDate).padding(.top, -40)               // }
+                    
+                    
+                    VStack {
                         Spacer()
-                        ZStack {
-                           // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
-                            Button(action: {
-                                if (classlist.count > 0)
-                                {
-                                    self.modalView = .assignment
-                                    print(self.modalView)
-                                    self.NewSheetPresenting = true
-                                }
-                                else
-                                {
-                                    self.alertView = .noclass
-                                    self.NewAlertPresenting = true
-                                }
-
-                                }) {
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
-                                    ZStack {
-                                        //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
-                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
-                                    }
-                                )
-                            }.buttonStyle(PlainButtonStyle()).contextMenu{
+                        HStack {
+                            Spacer()
+                            ZStack {
+                                // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                                 Button(action: {
                                     if (classlist.count > 0)
                                     {
-                                        self.modalView = .assignment
+                                        self.sheetNavigator.modalView = .assignment
+                                        print(self.modalView)
                                         self.NewSheetPresenting = true
+                                       // self.NewGradePresenting = true
                                     }
                                     else
                                     {
                                         self.alertView = .noclass
                                         self.NewAlertPresenting = true
                                     }
-                                }) {
-                                    Text("Assignment")
-                                    Image(systemName: "paperclip")
-                                }
-                                Button(action: {
-                                    self.modalView = .classity
-                                    self.NewSheetPresenting = true
-                                }) {
-                                    Text("Class")
-                                    Image(systemName: "list.bullet")
-                                }
-    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-    //                                Text("Occupied Time")
-    //                                Image(systemName: "clock.fill")
-    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                                Button(action: {
-                                    self.modalView = .freetime
-                                    print(self.modalView)
-                                    self.NewSheetPresenting = true
-                                }) {
-                                    Text("Free Time")
-                                    Image(systemName: "clock")
-                                }
-                                Button(action: {
-                                        
-                                    if (self.getcompletedAssignments())
-                                    {
-                                        self.modalView = .grade
-                                        self.NewSheetPresenting = true
-                                    }
-                                    else
-                                    {
-                                        self.alertView = .noassignment
-                                        self.NewAlertPresenting = true
-                                    }
-                                      //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
                                     
                                 }) {
-                                    Text("Grade")
-                                    Image(systemName: "percent")
-                                }
-                                
-                            }.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
-                        }
-                        
-                    
-
-                    }
-                }
-//                .sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-//                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-//                }
-//                .sheet(isPresented: $NewClassPresenting, content: {
-//                            NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-
-
-//                .sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-//                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
-//                }
-
-    //            NavigationView {
-    //                NavigationLink(destination:
-    //                    ZStack {
-    //                       // Rectangle().fill(self.colorScheme == .light ? Color.white : Color.black).frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
-    //                        SettingsView()
-    //                    }
-    //
-    //
-    //                    , isActive: self.$showingSettingsView)
-    //                { Text("") }
-    //            }
-                VStack {
-                    Spacer()
-                    
-                    SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
-                }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
-            }.navigationBarItems(leading:
-            //                VStack {
-            //                    Spacer().frame(height:10)
-                                HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
-                                    Button(action: {self.showingSettingsView = true}) {
-                                        Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                                    }.padding(.leading, 2.0)
-                                    
-                                    Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
-                                    Button(action: {
-                                        withAnimation(.spring())
-                                        {
-                                            self.uniformlistshows.toggle()
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
+                                        ZStack {
+                                            //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                            Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
                                         }
+                                    )
+                                }.buttonStyle(PlainButtonStyle()).contextMenu{
+                                    Button(action: {
+                                        if (classlist.count > 0)
+                                        {
+                                            self.sheetNavigator.modalView = .assignment
+                                            self.NewSheetPresenting = true
+                                            self.NewAssignmentPresenting = true
+                                        }
+                                        else
+                                        {
+                                            self.alertView = .noclass
+                                            self.NewAlertPresenting = true
+                                        }
+                                    }) {
+                                        Text("Assignment")
+                                        Image(systemName: "paperclip")
+                                    }
+                                    Button(action: {
+                                        self.sheetNavigator.modalView = .classity
+                                        self.NewSheetPresenting = true
+                                        self.NewClassPresenting = true
+                                    }) {
+                                        Text("Class")
+                                        Image(systemName: "list.bullet")
+                                    }
+                                    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+                                    //                                Text("Occupied Time")
+                                    //                                Image(systemName: "clock.fill")
+                                    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+                                    Button(action: {
+                                        self.sheetNavigator.modalView = .freetime
+                                        print(self.modalView)
+                                        self.NewSheetPresenting = true
+                                    }) {
+                                        Text("Free Time")
+                                        Image(systemName: "clock")
+                                    }
+                                    Button(action: {
+                                        
+                                        if (self.getcompletedAssignments())
+                                        {
+                                            self.sheetNavigator.modalView = .grade
+                                            self.NewSheetPresenting = true
+                                        }
+                                        else
+                                        {
+                                            self.alertView = .noassignment
+                                            self.NewAlertPresenting = true
+                                        }
+                                        //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
                                         
                                     }) {
-                                        Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                                        Text("Grade")
+                                        Image(systemName: "percent")
                                     }
-                                }.padding(.top, -5)
+                                    
+                                }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
+                            }.sheet(isPresented: $NewSheetPresenting, content: sheetContent )
+                            
+                            
+                            
+                            
+                        }
+                    }
+                    //                .sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                    //                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
+                    //                }
+                    //                .sheet(isPresented: $NewClassPresenting, content: {
+                    //                            NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
+                    
+                    
+                    //                .sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
+                    //                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
+                    //                }
+                    
+                    //            NavigationView {
+                    //                NavigationLink(destination:
+                    //                    ZStack {
+                    //                       // Rectangle().fill(self.colorScheme == .light ? Color.white : Color.black).frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
+                    //                        SettingsView()
+                    //                    }
+                    //
+                    //
+                    //                    , isActive: self.$showingSettingsView)
+                    //                { Text("") }
+                    //            }
+                    VStack {
+                        Spacer()
+                        
+                        SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).offset(y: self.verticaloffset).animation(.spring())
+                    }.background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
+                }
+                            .navigationBarItems(leading:
+                            //                VStack {
+                            //                    Spacer().frame(height:10)
+                                                HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
+                                                    Button(action: {self.showingSettingsView = true}) {
+                                                        Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                                                    }.padding(.leading, 2.0)
+                
+                                                    Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
+                                                    Button(action: {
+                                                        withAnimation(.spring())
+                                                        {
+                                                            self.uniformlistshows.toggle()
+                                                        }
+                
+                                                    }) {
+                                                        Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                                                    }
+                                                }.padding(.top, -5)
+//                .toolbar {
+//                    ToolbarItem(placement: .navigationBarLeading) {
+//                        Button(action: {self.showingSettingsView = true}) {
+//                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+//                        }.buttonStyle(PlainButtonStyle()).padding(.leading, 2.0)
+//                    }
+//                    ToolbarItem(placement: .navigationBarTrailing) {
+//                        Button(action: {
+//                            withAnimation(.spring())
+//                            {
+//                                self.uniformlistshows.toggle()
+//                            }
+//
+//                        }) {
+//                            Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+//                        }.buttonStyle(PlainButtonStyle())
+//                    }
+//                    ToolbarItem(placement: .principal) {
+//                        Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
+//                    }
+//                }
+                )
+            } else {
+                // Fallback on earlier versions
+            }
                                 //Spacer().frame(height: 10)
                                 
-            )//.navigationBarTitle(self.uniformlistshows ? "Tasks" : "")
+            //.navigationBarTitle(self.uniformlistshows ? "Tasks" : "")
 
         }.onDisappear() {
             let defaults = UserDefaults.standard

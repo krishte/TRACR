@@ -1062,8 +1062,8 @@ struct ClassesView: View {
                     if (getnumofclasses())
                     {
                         ForEach(self.classlist) { classcool in
-                            if (!classcool.isarchived)
-                            {
+                        //    if (!classcool.isarchived)
+                          //  {
                                 
                                 
                                 NavigationLink(destination: DetailView(classcool: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {
@@ -1100,7 +1100,7 @@ struct ClassesView: View {
 
                                                 }
                                             }
-                                        self.classlist[deletedclassindex].isarchived = true
+                                     //   self.classlist[deletedclassindex].isarchived = true
                                         
                                         
                                         do {
@@ -1133,7 +1133,7 @@ struct ClassesView: View {
     //                                    }
     //                                }
     //                            }.buttonStyle(PlainButtonStyle())
-                            }
+                          //  }
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                         
                     }

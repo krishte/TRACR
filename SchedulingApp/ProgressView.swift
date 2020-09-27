@@ -878,8 +878,8 @@ struct ProgressView: View {
                                             
                                             ForEach(classlist) {
                                                 classcool in
-                                                if (!classcool.isarchived)
-                                                {
+                                           //     if (!classcool.isarchived)
+                                       //         {
                                                     if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
                                                     {
                                                         HStack {
@@ -899,7 +899,7 @@ struct ProgressView: View {
                                                             Spacer()
                                                         }
                                                     }
-                                                }
+                                         //       }
                                                 
                                             }
                                     }
@@ -915,8 +915,8 @@ struct ProgressView: View {
                         {
                             ForEach(0..<classlist.count) {
                                 value in
-                                if(!self.classlist[value].isarchived)
-                                {
+                              //  if(!self.classlist[value].isarchived)
+                          //      {
                                     NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
                                         EmptyView()
                                     }
@@ -965,7 +965,7 @@ struct ProgressView: View {
                                         }.padding(0)
                                         
                                     }
-                                }
+                            //    }
                                 
                             }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
                                 Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))

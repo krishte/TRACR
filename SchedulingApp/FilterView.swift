@@ -162,8 +162,8 @@ struct AssignmentsView: View {
                                 GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
                                     }.animation(.spring()).shadow(radius: 10)
-                                
                             }
+                            
                             else {
                                 IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)

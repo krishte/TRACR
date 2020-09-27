@@ -640,7 +640,7 @@ struct HomeBodyView: View {
                                 Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
                             }.padding(.top, CGFloat(Date().timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 120.7 - 1207)
                         }
-                    }.animation(.spring())
+                    }//.animation(.spring())
                 }
             }.onReceive(timer) { _ in
                 //
@@ -650,12 +650,12 @@ struct HomeBodyView: View {
         else {
             //Spacer().frame(height:40)
             VStack {
-                
-            ScrollView {
                 HStack {
                     Text("Tasks").font(.largeTitle).bold()
                     Spacer()
                 }.padding(.all, 10)
+                ScrollView {
+
 
                 ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
                     if (Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! <= daytitle)
@@ -837,7 +837,7 @@ struct IndividualSubassignmentView: View {
                if (isDragged) {
                    ZStack {
                         HStack {
-                            Rectangle().fill(Color("fourteen")) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +    CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: self.fixedHeight ? UIScreen.main.bounds.size.width - 10 + self.dragoffset.width : UIScreen.main.bounds.size.width-30+self.dragoffset.width)
+                            Rectangle().fill(Color("fourteen")) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +    CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? UIScreen.main.bounds.size.width - 10 + self.dragoffset.width : UIScreen.main.bounds.size.width-30+self.dragoffset.width)
                         }
                         HStack {
                             Spacer()
@@ -853,7 +853,7 @@ struct IndividualSubassignmentView: View {
                 if (isDraggedleft) {
                     ZStack {
                         HStack {
-                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((subassignmentlength-60)/60))*60.35)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
+                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
                         }
                         
                         HStack {
@@ -885,7 +885,7 @@ struct IndividualSubassignmentView: View {
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                // Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)
-            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((subassignmentlength-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 25, coordinateSpace: .local)
+            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
                     //self.isDragged = true
@@ -904,6 +904,10 @@ struct IndividualSubassignmentView: View {
                     }
                     else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
                         self.incompleted = true
+                    }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+                        self.dragoffset = .zero
                     }
                 }
                 .onEnded { value in
@@ -1206,37 +1210,37 @@ struct HomeView: View {
                                                     Button(action: {self.showingSettingsView = true}) {
                                                         Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                                                     }.padding(.leading, 2.0)
-                
+
                                                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                                                     Button(action: {
-                                                        withAnimation(.spring())
-                                                        {
+                                                      //  withAnimation(.spring())
+                                                      //  {
                                                             self.uniformlistshows.toggle()
-                                                        }
-                
+                                                       // }
+
                                                     }) {
                                                         Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                                                     }
-                                                }.padding(.top, -5)
-//                .toolbar {
+                                                }.padding(.top, -5).frame(height: 40)
+//                .toolbar() {
 //                    ToolbarItem(placement: .navigationBarLeading) {
 //                        Button(action: {self.showingSettingsView = true}) {
-//                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-//                        }.buttonStyle(PlainButtonStyle()).padding(.leading, 2.0)
+//                            Image(systemName: "gear").resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12).frame(height: 100)
+//                        }.buttonStyle(PlainButtonStyle()).foregroundColor(colorScheme == .light ? Color.black : Color.white).padding(.leading, 2.0)
 //                    }
 //                    ToolbarItem(placement: .navigationBarTrailing) {
 //                        Button(action: {
-//                            withAnimation(.spring())
-//                            {
+//                           // withAnimation(.spring())
+//                           // {
 //                                self.uniformlistshows.toggle()
-//                            }
+//                            //}
 //
 //                        }) {
-//                            Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+//                            Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12).frame(height: 100)
 //                        }.buttonStyle(PlainButtonStyle())
 //                    }
 //                    ToolbarItem(placement: .principal) {
-//                        Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
+//                        Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5).frame(height: 100)
 //                    }
 //                }
                 )

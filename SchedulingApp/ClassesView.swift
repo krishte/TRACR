@@ -13,12 +13,15 @@ struct ClassView: View {
     @Binding var startedToDelete: Bool
     
     @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    var classlist: FetchedResults<Classcool>
     
     var body: some View {
         ZStack {
             if (classcool.color != "") {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)
-                    .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+                    //.fill(LinearGradient(gradient: Gradient(colors: [getcurrentolor(currentColor: classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+                    .fill(getcurrentolor(currentColor: classcool.color))
                     .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 5)
             }
 
@@ -34,17 +37,23 @@ struct ClassView: View {
             }.padding(.horizontal, 40)
         }
     }
-    
+    func getcurrentolor(currentColor: String) -> Color {
+        return Color(currentColor)
+    }
     func getNextColor(currentColor: String) -> Color {
+
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
         let existinggradients = ["one", "two", "three", "five", "six", "eleven", "fourteen","thirteen", "fifteen"]
+        print(currentColor)
         if (existinggradients.contains(currentColor))
         {
+            print(currentColor + "-b")
             return Color(currentColor + "-b")
         }
         for color in colorlist {
             if (color == currentColor)
             {
+                print(colorlist[colorlist.firstIndex(of: color)! + 1])
                 return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
             }
         }
@@ -678,6 +687,85 @@ struct ClassesView: View {
         
         return (tempsubassignmentlist, newd)
     }
+    func createsubassignments() {
+        var storedduedate: Date = Date()
+//        for assignment in assignmentlist {
+//            if (assignment.name == "Chemistry IA Final")
+//            {
+//                storedduedate = assignment.duedate
+//            }
+//        }
+//        let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+//           newSubassignment.assignmentname = "Chemistry IA Final"
+//         //  let randomDate = Double.random(in: 10000 ... 1700000)
+//           newSubassignment.startdatetime = Date(timeInterval: 153000, since: startOfDay)
+//           newSubassignment.enddatetime = Date(timeInterval: 153000+7200, since: startOfDay)
+//           newSubassignment.color = "twelve"
+//           newSubassignment.assignmentduedate = storedduedate
+//           print(newSubassignment.assignmentduedate.description)
+//        
+//        for assignment in assignmentlist {
+//            if (assignment.name == "Trigonometry Packet")
+//            {
+//                storedduedate = assignment.duedate
+//            }
+//        }
+//        let newSubassignment2 = Subassignmentnew(context: self.managedObjectContext)
+//           newSubassignment2.assignmentname = "Trigonometry Packet"
+//         //  let randomDate = Double.random(in: 10000 ... 1700000)
+//           newSubassignment2.startdatetime = Date(timeInterval: 235800, since: startOfDay)
+//           newSubassignment2.enddatetime = Date(timeInterval: 235800+3600+1800, since: startOfDay)
+//           newSubassignment2.color = "one"
+//           newSubassignment2.assignmentduedate = storedduedate
+//           print(newSubassignment2.assignmentduedate.description)
+
+        for assignment in assignmentlist {
+            if (assignment.name == "McDonalds Macroeconomics Essay")
+            {
+                storedduedate = assignment.duedate
+                assignment.timeleft = assignment.totaltime
+                assignment.progress = 0
+            }
+        }
+//        let newSubassignment3 = Subassignmentnew(context: self.managedObjectContext)
+//           newSubassignment3.assignmentname = "McDonalds Macroeconomics Essay"
+//         //  let randomDate = Double.random(in: 10000 ... 1700000)
+//           newSubassignment3.startdatetime = Date(timeInterval: 153000+7200+900, since: startOfDay)
+//           newSubassignment3.enddatetime = Date(timeInterval: 153000+7200+900+4800, since: startOfDay)
+//           newSubassignment3.color = "six"
+//           newSubassignment3.assignmentduedate = storedduedate
+        
+        
+        let newSubassignment4 = Subassignmentnew(context: self.managedObjectContext)
+           newSubassignment4.assignmentname = "McDonalds Macroeconomics Essay"
+         //  let randomDate = Double.random(in: 10000 ... 1700000)
+           newSubassignment4.startdatetime = Date(timeInterval: 235800+3600+1800+300, since: startOfDay)
+           newSubassignment4.enddatetime = Date(timeInterval: 235800+3600+1800+3600+300, since: startOfDay)
+           newSubassignment4.color = "six"
+           newSubassignment4.assignmentduedate = storedduedate
+        
+//        let newSubassignment5 = Subassignmentnew(context: self.managedObjectContext)
+//           newSubassignment5.assignmentname = "McDonalds Macroeconomics Essay"
+//         //  let randomDate = Double.random(in: 10000 ... 1700000)
+//           newSubassignment5.startdatetime = Date(timeInterval: 331200, since: startOfDay)
+//           newSubassignment5.enddatetime = Date(timeInterval: 331200+4800, since: startOfDay)
+//           newSubassignment5.color = "six"
+//           newSubassignment5.assignmentduedate = storedduedate
+//        let newSubassignment6 = Subassignmentnew(context: self.managedObjectContext)
+//           newSubassignment6.assignmentname = "McDonalds Macroeconomics Essay"
+//         //  let randomDate = Double.random(in: 10000 ... 1700000)
+//           newSubassignment6.startdatetime = Date(timeInterval: 381600, since: startOfDay)
+//           newSubassignment6.enddatetime = Date(timeInterval: 381600+4800, since: startOfDay)
+//           newSubassignment6.color = "six"
+//           newSubassignment6.assignmentduedate = storedduedate
+        
+        do {
+            try self.managedObjectContext.save()
+            print("new Subassignment")
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
     
     func master() -> Void {
             let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
@@ -706,6 +794,7 @@ struct ClassesView: View {
             newClass.name = classnameactual[i]
             newClass.assignmentnumber = 0
             newClass.color = classcolors[i]
+          //  newClass.isarchived = false
 
             do {
                 try self.managedObjectContext.save()
@@ -963,6 +1052,7 @@ struct ClassesView: View {
     @State var selectedClass: Int? = 0
     @State var storedindex = 0
     @State var opacityvalue = 1.0
+    @State var deletedclassindex = -1
     var body: some View {
         NavigationView {
             ZStack {
@@ -972,102 +1062,79 @@ struct ClassesView: View {
                     if (getnumofclasses())
                     {
                         ForEach(self.classlist) { classcool in
-                            NavigationLink(destination: DetailView(classcool: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {
-                                EmptyView()
-                            }
-                            Button(action: {
-                                self.selectedClass = self.getclassnumber(classcool: classcool)
-                            }) {
-                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).padding(.vertical, 10)
-
-                            }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                Button (action: {
-
-                                    self.storedindex = self.getactualclassnumber(classcool: classcool)
-                                    NewAssignmentPresenting2.toggle()
-                                }) {
-                                    HStack {
-                                        Text("Add Assignment")
-                                        Spacer()
-                                        Image(systemName: "paperclip")
-                                    }
-                                }
-                                Divider()
-                                Button(action: {
-                                    self.startedToDelete = true
-                                    let index = getactualclassnumber(classcool: classcool)
-                                        for (index2, element) in self.assignmentlist.enumerated() {
-                                            if (element.subject == self.classlist[index].originalname) {
-                                                for (index3, element2) in self.subassignmentlist.enumerated() {
-                                                    if (element2.assignmentname == element.name) {
-                                                        self.managedObjectContext.delete(self.subassignmentlist[index3])
-                                                    }
-                                                }
-                                                self.managedObjectContext.delete(self.assignmentlist[index2])
-                                            }
-                                        }
-                                        self.managedObjectContext.delete(self.classlist[index])
-                                    
-                                    
-                                    do {
-                                        try self.managedObjectContext.save()
-                                        print("Class made")
-                                    } catch {
-                                        print(error.localizedDescription)
-                                    }
-                                    
-                                    print("Class deleted")
-                                    
-                                    self.startedToDelete = false
-                                }) {
-                                    HStack {
-                                        Text("Delete Class")
-                                        Spacer()
-                                        Image(systemName: "trash").foregroundColor(Color.red)
-                                    }
-                                }.foregroundColor(.red)
+                            if (!classcool.isarchived)
+                            {
                                 
-                            }
-//                            NavigationLink(destination: DetailView(classcool: classcool )) {
-//                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).contextMenu {
-//                                    Button(action: {
-//                                        self.classlist.count > 0 ? self.NewAssignmentPresenting2.toggle() : self.noClassesAlert.toggle()
-//                                        self.storedindex = self.getactualclassnumber(classcool: classcool)
-//                                    }) {
-//                                        Text("Add Assignment")
-//                                        Image(systemName: "paperclip")
-//                                    }
-//                                }
-//                            }.buttonStyle(PlainButtonStyle())
-                            
-                        }.onDelete { indexSet in
-                            self.startedToDelete = true
-                            
-                            for index in indexSet {
-                                for (index2, element) in self.assignmentlist.enumerated() {
-                                    if (element.subject == self.classlist[index].originalname) {
-                                        for (index3, element2) in self.subassignmentlist.enumerated() {
-                                            if (element2.assignmentname == element.name) {
-                                                self.managedObjectContext.delete(self.subassignmentlist[index3])
-                                            }
-                                        }
-                                        self.managedObjectContext.delete(self.assignmentlist[index2])
-                                    }
+                                
+                                NavigationLink(destination: DetailView(classcool: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {
+                                    EmptyView()
                                 }
-                                self.managedObjectContext.delete(self.classlist[index])
+                                Button(action: {
+                                    self.selectedClass = self.getclassnumber(classcool: classcool)
+                                }) {
+                                    ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).padding(.vertical, 10)
+
+                                }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                    Button (action: {
+
+                                        self.storedindex = self.getactualclassnumber(classcool: classcool)
+                                        NewAssignmentPresenting2.toggle()
+                                    }) {
+                                        HStack {
+                                            Text("Add Assignment")
+                                            Spacer()
+                                            Image(systemName: "paperclip")
+                                        }
+                                    }
+                                    Divider()
+                                    Button(action: {
+                                        self.startedToDelete = true
+                                        deletedclassindex = getactualclassnumber(classcool: classcool)
+                                        for (_, element) in self.assignmentlist.enumerated() {
+                                                if (element.subject == self.classlist[deletedclassindex].originalname) {
+                                                    for (index3, element2) in self.subassignmentlist.enumerated() {
+                                                        if (element2.assignmentname == element.name) {
+                                                            self.managedObjectContext.delete(self.subassignmentlist[index3])
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+                                        self.classlist[deletedclassindex].isarchived = true
+                                        
+                                        
+                                        do {
+                                            try self.managedObjectContext.save()
+                                            print("Class deleted")
+                                        } catch {
+                                            print(error.localizedDescription)
+                                        }
+                                        
+                                     //   print("Class deleted")
+                                        deletedclassindex = -1
+                                        self.startedToDelete = false
+                                    }) {
+                                        HStack {
+                                            Text("Archive Class")
+                                            Spacer()
+                                            Image(systemName: "trash").foregroundColor(Color.red)
+                                        }
+                                    }.foregroundColor(.red)
+                                    
+                                }//.animation(.spring())
+    //                            NavigationLink(destination: DetailView(classcool: classcool )) {
+    //                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).contextMenu {
+    //                                    Button(action: {
+    //                                        self.classlist.count > 0 ? self.NewAssignmentPresenting2.toggle() : self.noClassesAlert.toggle()
+    //                                        self.storedindex = self.getactualclassnumber(classcool: classcool)
+    //                                    }) {
+    //                                        Text("Add Assignment")
+    //                                        Image(systemName: "paperclip")
+    //                                    }
+    //                                }
+    //                            }.buttonStyle(PlainButtonStyle())
                             }
-                            
-                            do {
-                                try self.managedObjectContext.save()
-                                print("Class made")
-                            } catch {
-                                print(error.localizedDescription)
-                            }
-                            
-                            print("Class deleted")
-                            
-                            self.startedToDelete = false
-                        }.frame(width: UIScreen.main.bounds.size.width)
+                        }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                         
                     }
                     else
@@ -1094,7 +1161,7 @@ struct ClassesView: View {
                         }
                     }
 
-                }.frame(width: UIScreen.main.bounds.size.width).animation(.spring()).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
+                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
                     Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                 }
                 
@@ -1203,7 +1270,7 @@ struct ClassesView: View {
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)                       // Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
                     
                     Button(action: {
-                        
+                    //    self.createsubassignments()
                           // self.master()
                            // self.schedulenotifications()
                            // MasterStruct().master()
@@ -1240,6 +1307,7 @@ struct ClassesView: View {
                                 newClass.name = classname
                                 newClass.assignmentnumber = 0
                                 newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+                               // newClass.isarchived = false
 
                                 do {
                                     try self.managedObjectContext.save()
@@ -1332,12 +1400,13 @@ struct ClassesView: View {
                                     }
                                 }
                             }
-                        
-                        
-                        self.schedulenotifications()
-                    })
+
+
+                       // self.schedulenotifications()
+                    }
+                    )
                     {
-                        Image(systemName: "hand.raised").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font(Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width/12)
+                    Image(systemName: "hand.raised").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font(Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width/12)
                     }.padding(.trailing, 2.0)
 
 //                        Button(action: {

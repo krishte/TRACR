@@ -377,6 +377,7 @@ struct NewClassModalView: View {
                             newClass.name = shortenedtestname
                             newClass.assignmentnumber = 0
                             newClass.originalname = testname
+                         //   newClass.isarchived = false
                             if self.coloraselectedindex != nil {
                                 newClass.color = self.colorsa[self.coloraselectedindex!]
                             }
@@ -510,7 +511,9 @@ struct MyDatePicker: UIViewRepresentable {
         }
     }
 }
-
+class FreeTimeNavigator: ObservableObject {
+    @Published var updateview: Bool = false
+}
 struct NewFreetimeModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State var repeatlist: [String] = ["Every Monday", "Every Tuesday", "Every Wednesday", "Every Thursday", "Every Friday", "Every Saturday", "Every Sunday"]
@@ -528,6 +531,7 @@ struct NewFreetimeModalView: View {
     var formatter: DateFormatter
     @State var daysNum: [Int] = []
     @State private var starttime = Date(timeIntervalSince1970: 0)
+    @ObservedObject var freetimenavigator: FreeTimeNavigator = FreeTimeNavigator()
     
     init(NewFreetimePresenting: Binding<Bool>) {
         self._NewFreetimePresenting = NewFreetimePresenting
@@ -631,7 +635,7 @@ struct NewFreetimeModalView: View {
                             if (expandedstart)
                             {
                                 VStack {
-                                    DatePicker("", selection: $selectedstartdatetime, in: selectedDate..., displayedComponents: .hourAndMinute).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                    DatePicker("", selection: $selectedstartdatetime, in: starttime..., displayedComponents: .hourAndMinute).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
                                 }.animation(.spring())
                             }
 
@@ -650,7 +654,7 @@ struct NewFreetimeModalView: View {
                             if (expandedstart)
                             {
                                 VStack {
-                                    MyDatePicker(selection: $selectedstartdatetime, starttime: $selectedDate, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                    MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                                 }.animation(nil)
                             }
                             
@@ -733,50 +737,55 @@ struct NewFreetimeModalView: View {
                     }
 
                     Section {
-                        NavigationLink(destination:
-                            List {
-                                HStack {
-                                     Button(action: {
-                                        if (self.selection.count != 1) {
-                                            self.selection.removeAll()
-                                            self.selectDeselect("None")
-                                        }
-                                         
-                                     }) {
-                                         Text("None").foregroundColor(.black)
-                                     }
-                                    
-                                     if (self.selection.contains("None")) {
-                                         Spacer()
-                                         Image(systemName: "checkmark").foregroundColor(.blue)
-                                     }
+                        HStack {
+                            Text("Repeat").frame(height: 50)
+                            Spacer()
+                            
+                            Text(repetitionTextCreator(self.selection)).foregroundColor(.gray)
+                        }
+                    
+                        List {
+                            HStack {
+                                 Button(action: {
+                                    if (self.selection.count != 0) {
+                                        freetimenavigator.updateview.toggle()
+                                        self.selection.removeAll()
+                                        self.selectDeselect("None")
+                                    }
+                                     
+                                 }) {
+                                    Text("None").foregroundColor(.black).fontWeight(.light)
                                  }
-                                ForEach(self.repeatlist,  id: \.self) { repeatoption in
-                                    VStack(alignment: .leading) {
-                                        HStack {
-                                            Button(action: {self.selectDeselect(repeatoption)
-                                                if (self.selection.count==0) {
-                                                    self.selectDeselect("None")
-                                                }
-                                                else if (self.selection.contains("None")) {
-                                                    self.selectDeselect("None")
-                                                }
-                                                
-                                            }) {
-                                                Text(repeatoption).foregroundColor(.black)
+                                
+                                 if (self.selection.contains("None")) {
+                                     Spacer()
+                                     Image(systemName: "checkmark").foregroundColor(.blue)
+                                 }
+                             }
+                            ForEach(self.repeatlist,  id: \.self) { repeatoption in
+                                VStack(alignment: .leading) {
+                                    HStack {
+                                        Button(action: {
+                                            freetimenavigator.updateview.toggle()
+
+                                            self.selectDeselect(repeatoption)
+                                            if (self.selection.count==0) {
+                                                self.selectDeselect("None")
                                             }
-                                            if (self.selection.contains(repeatoption)) {
-                                                Spacer()
-                                                Image(systemName: "checkmark").foregroundColor(.blue)
+                                            else if (self.selection.contains("None")) {
+                                                self.selectDeselect("None")
                                             }
+                                            
+                                        }) {
+                                            Text(repeatoption).foregroundColor(.black).fontWeight(.light)
+                                        }
+                                        if (self.selection.contains(repeatoption)) {
+                                            Spacer()
+                                            Image(systemName: "checkmark").foregroundColor(.blue)
                                         }
                                     }
                                 }
-                            }) {
-                                Text("Repeat")
-                                Spacer()
-                                
-                                Text(repetitionTextCreator(self.selection)).foregroundColor(.gray)
+                            }
                         }
                     }
                     Section {

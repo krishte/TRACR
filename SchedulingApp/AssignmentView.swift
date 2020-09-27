@@ -148,7 +148,7 @@ struct IndividualAssignmentFilterView: View {
 
                     }
                 }
-            }.padding(10).background( Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.padding(10).background( Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
 
@@ -168,6 +168,10 @@ struct IndividualAssignmentFilterView: View {
                         }
                         else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
                             self.incompleted = true
+                        }
+                        
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+                            self.dragoffset = .zero
                         }
                     }
 //                    else

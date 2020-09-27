@@ -16,7 +16,8 @@ extension Classcool {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Classcool> {
         return NSFetchRequest<Classcool>(entityName: "Classcool")
     }
-
+    
+    @NSManaged public var isarchived: Bool
     @NSManaged public var name: String
     @NSManaged public var tolerance: Int64
     @NSManaged public var assignmentnumber: Int64

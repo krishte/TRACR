@@ -111,8 +111,8 @@ struct TutorialPageView: View {
                     Text(tutorialInstructions3)
                     Spacer()
                 }
-            }).padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 120)
-        }.padding(.top, 116)
+            }).padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5) // was 120 for bottom
+        }//.padding(.top, 116)
     }
 }
 
@@ -294,17 +294,51 @@ struct SettingsView: View {
                 }
                 
                 Section {
-                    NavigationLink(destination: PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)) {
+                    if #available(iOS 14.0, *) {
+                        NavigationLink(destination:
+                            TabView {
+                                TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")
+                                    TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")
+                                TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")
+                                TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum)
+                           }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
                         
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
-                                Image(systemName: "info.circle").resizable().frame(width:25, height:25)
-                            }
-                            Spacer().frame(width:20)
-                            Text("Tutorial").font(.system(size:20))
-                        }.frame(height:40)
-                       
+
+                        
+                        ) {
+                            
+                            HStack {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
+                                    Image(systemName: "info.circle").resizable().frame(width:25, height:25)
+                                }
+                                Spacer().frame(width:20)
+                                Text("Tutorial").font(.system(size:20))
+                            }.frame(height:40)
+                           
+                        }
+                    }
+                    else
+                    {
+                        NavigationLink(destination:
+                        
+                        
+                            PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)
+   
+                        
+                        ) {
+                            
+                            HStack {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
+                                    Image(systemName: "info.circle").resizable().frame(width:25, height:25)
+                                }
+                                Spacer().frame(width:20)
+                                Text("Tutorial").font(.system(size:20))
+                            }.frame(height:40)
+                           
+                        }
+                        
                     }
                 }
                     
@@ -375,7 +409,7 @@ struct HelpCenterView: View {
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50]
     let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four"]
     
-    @State private var selection: Set<String> = []
+    @State private var selection: Set<String> = ["Payment", "Data usage", "Report a problem","Tutorial" ]
 
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {

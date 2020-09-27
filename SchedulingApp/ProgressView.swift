@@ -21,7 +21,8 @@ struct ClassProgressView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+               // .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+                .fill(Color(classcool.color))
                 .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100 ))
                // .shadow(radius: 10)
             VStack {
@@ -767,11 +768,13 @@ struct ProgressView: View {
             }
         }
     }
+
  
     
     var body: some View {
          NavigationView {
             ZStack {
+
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                 { EmptyView() }
                 
@@ -875,26 +878,29 @@ struct ProgressView: View {
                                             
                                             ForEach(classlist) {
                                                 classcool in
-                                                
-                                                if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
+                                                if (!classcool.isarchived)
                                                 {
-                                                    HStack {
-                                                        
-                                                        Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
-                                                        Spacer()
-                                                        Button(action: {self.selectDeselect(classcool.name)})
-                                                        {
-                                                          
-                                                            Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                    if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
+                                                    {
+                                                        HStack {
+                                                            
+                                                            Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                            Spacer()
+                                                            Button(action: {self.selectDeselect(classcool.name)})
+                                                            {
+                                                              
+                                                                Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                            }
+            //                                                Spacer()
+            //                                                if (self.selection.contains(classcool.name)) {
+            //
+            //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
+            //                                                }
+                                                            Spacer()
                                                         }
-        //                                                Spacer()
-        //                                                if (self.selection.contains(classcool.name)) {
-        //
-        //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
-        //                                                }
-                                                        Spacer()
                                                     }
                                                 }
+                                                
                                             }
                                     }
                                     
@@ -909,61 +915,62 @@ struct ProgressView: View {
                         {
                             ForEach(0..<classlist.count) {
                                 value in
- 
+                                if(!self.classlist[value].isarchived)
+                                {
                                     NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
                                         EmptyView()
                                     }
-                                HStack {
-                                    Button(action: {
-                                        self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
-                                    }) {
-                                        if (self.getlastclass(value: value))
-                                        {
-                                            ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading).padding(.leading, 5)
-                                        }
-                                        else if (self.getdivisiblebytwo(value: value))
-                                        {
-                                            
-                                            ClassProgressView(classcool: self.classlist[value])
-                                            
-                                        }
- 
-                                    }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                        Button (action: {
- 
-                                            self.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
-                                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
+                                    HStack {
+                                        Button(action: {
+                                            self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
                                         }) {
-                                            Text("Add Grade")
-                                        }
+                                            if (self.getlastclass(value: value))
+                                            {
+                                                ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading).padding(.leading, 5)
+                                            }
+                                            else if (self.getdivisiblebytwo(value: value))
+                                            {
+                                                
+                                                ClassProgressView(classcool: self.classlist[value])
+                                                
+                                            }
+     
+                                        }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                            Button (action: {
+     
+                                                self.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
+                                                self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
+                                            }) {
+                                                Text("Add Grade")
+                                            }
+                                            
+                                        }.padding(0)
+                                        Button(action: {
+                                            self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
+                                        }) {
+                                            if (self.getlastclass(value: value))
+                                            {
+                                            }
+                                            else if (self.getdivisiblebytwo(value: value))
+                                            {
+                                                ClassProgressView(classcool: self.classlist[value+1])
+                                            }
+                                        }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                            Button (action: {
+                                                self.storedindex = self.getactualclassnumber(classcool: self.classlist[value+1])
+                                                self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
+                                            }) {
+                                                Text("Add Grade")
+                                            }
+                                        }.padding(0)
                                         
-                                    }.padding(0)
-                                    Button(action: {
-                                        self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
-                                    }) {
-                                        if (self.getlastclass(value: value))
-                                        {
-                                        }
-                                        else if (self.getdivisiblebytwo(value: value))
-                                        {
-                                            ClassProgressView(classcool: self.classlist[value+1])
-                                        }
-                                    }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                        Button (action: {
-                                            self.storedindex = self.getactualclassnumber(classcool: self.classlist[value+1])
-                                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
-                                        }) {
-                                            Text("Add Grade")
-                                        }
-                                    }.padding(0)
-                                    
+                                    }
                                 }
- 
- 
+                                
                             }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
                                 Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                             }
- 
+                            
                         }
 //                        ForEach(classlist) {
 //                            classcool in

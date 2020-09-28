@@ -97,6 +97,7 @@ struct DetailProgressView: View {
     @State var selectedtimeframe = 0
     let screensize = UIScreen.main.bounds.size.width-20
     var formatter: DateFormatter
+    @ObservedObject var sheetnavigator: SheetNavigatorFilterView = SheetNavigatorFilterView()
    // let gradedict:[String:[Double]]
     init(classcool2: Classcool) {
         classcool = classcool2
@@ -351,7 +352,7 @@ struct DetailProgressView: View {
                         assignment in
                         if (assignment.subject == self.classcool.originalname && assignment.completed == true && assignment.grade != 0)
                         {
-                            GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
+                            GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                     self.selectDeselect(assignment)
                                 }.padding(-5).animation(.spring()).shadow(radius: 10)
                             
@@ -373,7 +374,7 @@ struct DetailProgressView: View {
                         ForEach(assignmentlist) {
                             assignment in
                             if (assignment.subject == self.classcool.originalname && assignment.completed == true && assignment.grade == 0) {
-                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).shadow(radius: 10).onTapGesture {
+                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).shadow(radius: 10).onTapGesture {
                                     self.selectDeselect(assignment)
                                 }.padding(-5).animation(.spring())
                             }
@@ -425,9 +426,9 @@ struct DetailProgressView: View {
         }
     }
     func getassignmentindex() -> Int {
-        print(selectedassignmentedit)
+        print(sheetnavigator.selectedassignmentedit)
         for (index, assignment) in assignmentlist.enumerated() {
-            if (assignment.name == selectedassignmentedit)
+            if (assignment.name == sheetnavigator.selectedassignmentedit)
             {
                 print(assignment.name)
                 return index
@@ -665,6 +666,10 @@ extension Path {
         return path
     }
 }
+
+class SheetNavigatorProgressView: ObservableObject {
+    @Published var storedindex: Int = -1
+}
  
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -687,6 +692,7 @@ struct ProgressView: View {
     @State var noAssignmentsAlert = false
     @State var noAssignmentsAlert2 = false
     @State var storedindex = 0
+    @ObservedObject var sheetnavigator: SheetNavigatorProgressView = SheetNavigatorProgressView()
     @State var showingSettingsView = false
     @State private var selectedClass: Int? = 0
     @State private var selection: Set<String> = []
@@ -773,6 +779,11 @@ struct ProgressView: View {
     
     var body: some View {
          NavigationView {
+            VStack {
+            HStack {
+                Text("Progress").font(.largeTitle).bold().frame(height:40)
+                Spacer()
+            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
             ZStack {
 
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
@@ -938,7 +949,7 @@ struct ProgressView: View {
                                         }.buttonStyle(PlainButtonStyle()).contextMenu {
                                             Button (action: {
      
-                                                self.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
+                                                self.sheetnavigator.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
                                                 self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
                                             }) {
                                                 Text("Add Grade")
@@ -957,7 +968,7 @@ struct ProgressView: View {
                                             }
                                         }.buttonStyle(PlainButtonStyle()).contextMenu {
                                             Button (action: {
-                                                self.storedindex = self.getactualclassnumber(classcool: self.classlist[value+1])
+                                                self.sheetnavigator.storedindex = self.getactualclassnumber(classcool: self.classlist[value+1])
                                                 self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
                                             }) {
                                                 Text("Add Grade")
@@ -967,7 +978,7 @@ struct ProgressView: View {
                                     }
                             //    }
                                 
-                            }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
+                            }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.sheetnavigator.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
                                 Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                             }
                             
@@ -1081,6 +1092,7 @@ struct ProgressView: View {
                     }
                 }
             }
+            }
             .navigationBarItems(
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
@@ -1101,7 +1113,7 @@ struct ProgressView: View {
 //                    }) {
 //                        Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
 //                    }
-                }.padding(.top, 0)).navigationBarTitle("Progress")
+                }.padding(.top, 0))//.navigationBarTitle("Progress")
          }.onDisappear {
             self.showingSettingsView = false
             self.selectedClass = 0
@@ -1120,7 +1132,7 @@ struct ProgressView: View {
     }
     func getcompletedassignmentsbyclass() -> Bool {
         for assignment in assignmentlist {
-            if (assignment.completed == true && assignment.grade == 0 && assignment.subject == self.classlist[self.storedindex].originalname)
+            if (assignment.completed == true && assignment.grade == 0 && assignment.subject == self.classlist[self.sheetnavigator.storedindex].originalname)
             {
                 return true;
             }

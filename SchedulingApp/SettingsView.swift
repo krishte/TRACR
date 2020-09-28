@@ -369,12 +369,12 @@ struct SettingsView: View {
                  self.managedObjectContext.delete(self.subassignmentlist[index])
             }
         }
-//        if (self.assignmenttypeslist.count > 0)
-//        {
-//        for (index, _) in self.assignmenttypeslist.enumerated() {
-//             self.managedObjectContext.delete(self.assignmenttypeslist[index])
-//        }
-//        }
+        if (self.assignmenttypeslist.count > 0)
+        {
+        for (index, _) in self.assignmenttypeslist.enumerated() {
+             self.managedObjectContext.delete(self.assignmenttypeslist[index])
+        }
+        }
         for (_, element) in self.assignmenttypeslist.enumerated() {
             element.rangemin = 30
             element.rangemax = 300

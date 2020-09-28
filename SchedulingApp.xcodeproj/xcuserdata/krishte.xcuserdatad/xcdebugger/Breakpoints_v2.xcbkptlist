@@ -28,8 +28,8 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "283"
-            endingLineNumber = "283"
+            startingLineNumber = "327"
+            endingLineNumber = "327"
             landmarkName = "DetailView"
             landmarkType = "14">
          </BreakpointContent>
@@ -156,8 +156,8 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "770"
-            endingLineNumber = "770"
+            startingLineNumber = "834"
+            endingLineNumber = "834"
             landmarkName = "master()"
             landmarkType = "7">
          </BreakpointContent>
@@ -172,8 +172,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "844"
-            endingLineNumber = "844"
+            startingLineNumber = "855"
+            endingLineNumber = "855"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -188,8 +188,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1095"
-            endingLineNumber = "1095"
+            startingLineNumber = "1107"
+            endingLineNumber = "1107"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -204,8 +204,8 @@
             filePath = "SchedulingApp/ClassesView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "692"
-            endingLineNumber = "692"
+            startingLineNumber = "756"
+            endingLineNumber = "756"
             landmarkName = "createsubassignments()"
             landmarkType = "7">
          </BreakpointContent>
@@ -220,8 +220,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "968"
-            endingLineNumber = "968"
+            startingLineNumber = "979"
+            endingLineNumber = "979"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -236,8 +236,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "959"
-            endingLineNumber = "959"
+            startingLineNumber = "970"
+            endingLineNumber = "970"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -252,8 +252,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "958"
-            endingLineNumber = "958"
+            startingLineNumber = "969"
+            endingLineNumber = "969"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>

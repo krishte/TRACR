@@ -108,6 +108,7 @@ struct AssignmentsView: View {
     var classlist: FetchedResults<Classcool>
     @State var showassignmentedit: Bool = false
     @State var selectedassignmentedit: String = ""
+    @ObservedObject var sheetnavigator: SheetNavigatorFilterView = SheetNavigatorFilterView()
     
     
     init(selectedFilter:String, value: Bool){
@@ -159,13 +160,13 @@ struct AssignmentsView: View {
                   if (assignment.completed == self.showCompleted) {
                         VStack {
                             if (assignment.completed == true) {
-                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
+                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
                                     }.animation(.spring()).shadow(radius: 10)
                             }
                             
                             else {
-                                IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
+                                IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
                                     }.animation(.spring()).shadow(radius: 10)
                             }
@@ -174,13 +175,13 @@ struct AssignmentsView: View {
                 }.animation(.spring())
             }
             
-        }.sheet(isPresented: $showassignmentedit, content: {
-            EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)})//.animation(.spring())
+        }.sheet(isPresented: self.$showassignmentedit, content: {
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)})//.animation(.spring())
     }
     func getassignmentindex() -> Int {
-        print(selectedassignmentedit)
+        print(sheetnavigator.selectedassignmentedit)
         for (index, assignment) in assignmentlist2.enumerated() {
-            if (assignment.name == selectedassignmentedit)
+            if (assignment.name == sheetnavigator.selectedassignmentedit)
             {
                 print(assignment.name)
                 return index

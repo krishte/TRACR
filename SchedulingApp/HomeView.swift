@@ -391,6 +391,8 @@ struct HomeBodyView: View {
     
     @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
     
+    @State var nthweekfromnow: Int = 0
+    
     @State var selecteddaytitle: Int = 0
     
     var hourformatter: DateFormatter
@@ -528,11 +530,11 @@ struct HomeBodyView: View {
                     }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
                   //  SpecialView()
                     if #available(iOS 14.0, *) {
-                        TabView {
-                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)
-                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)
-                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices:  [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)
-                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)
+                        TabView() {
+                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext).tag(0)
+                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext).tag(1)
+                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices:  [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext).tag(2)
+                            WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext).tag(3)
                         }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 70)
                     } else {
                         PageViewControllerWeeks(nthdayfromnow: $nthdayfromnow, viewControllers: [UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [7, 8, 9, 10, 11, 12, 13], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating,NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [14, 15, 16, 17, 18, 19, 20], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext)), UIHostingController(rootView: WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [21, 22, 23, 24, 25, 26, 27], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext))]).id(UUID()).frame(height: 70).padding(.bottom, -10)
@@ -653,7 +655,59 @@ struct HomeBodyView: View {
                 HStack {
                     Text("Tasks").font(.largeTitle).bold()
                     Spacer()
-                }.padding(.all, 10)
+                }.padding(.all, 10).padding(.leading, 10)
+                
+                ZStack {
+                    if (subassignmentlist.count > 0) {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                    }
+
+                    else {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("datenumberred"), Color("datenumberred")]), startPoint: .leading, endPoint: .trailing))
+                    }
+
+                    HStack {
+                        VStack(alignment: .leading) {
+//                            if (subassignmentlist.count == 0) {
+//                                Text("No Upcoming Subassignments")
+//                            }
+//                            else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
+//                                Text("No Upcoming Subassignments")
+//                            }
+//                            else {
+//                                Text("Next Upcoming:").fontWeight(.semibold).animation(.none)
+//                                Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading).animation(.none)
+//
+//                                Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
+//                                Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
+//                            }
+                            ForEach(self.assignmentlist) { assignment in
+                                if (assignment.name == self.subassignmentassignmentname) {
+                                    Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 80, alignment: .topLeading).offset(y: 5)
+
+                                }
+                            }
+                        }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
+
+                        if self.subassignmentassignmentname != "" {
+                            Spacer().frame(width: 10)
+                            Divider().frame(width: 1).background(Color.black)
+                            Spacer().frame(width: 10)
+                            VStack(alignment: .leading) {
+                                ForEach(self.assignmentlist) { assignment in
+                                    if (assignment.name == self.subassignmentassignmentname) {
+                                      //  Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 40, alignment: .topLeading)
+                                        
+                                        Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 15)).fontWeight(.bold).frame(height:40)
+                                        Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
+                                        Text("Time Left: " + String(assignment.timeleft + " mintues")).font(.system(size: 12)).frame(height: 15)
+                                        UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
+                                    }
+                                }
+                            }.frame(width: 150)
+                        }
+                    }.padding(10)
+                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
                 ScrollView {
 
 
@@ -665,7 +719,7 @@ struct HomeBodyView: View {
                             Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(daytitle == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
                             Spacer()
                         }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
-                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).animation(.spring())
+                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor).animation(.spring())
                     }
                 }.animation(.spring())
 //                ForEach(subassignmentlist) {
@@ -704,15 +758,19 @@ struct SubassignmentListView: View {
     @Binding var subassignmentname: String
     @Binding var addhours: Int
     @Binding var addminutes: Int
+    @Binding var subassignmentassignmentname: String
+    @Binding var selectedcolor: String
     var shortdateformatter: DateFormatter
     
-    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date])
+    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>)
     {
         self.daytitle = daytitle
         self._verticaloffset = verticaloffset
         self._subassignmentname = subassignmentname
         self._addhours = addhours
         self._addminutes = addminutes
+        self._subassignmentassignmentname = subassignmentassignmentname
+        self._selectedcolor = selectedcolor
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
@@ -736,7 +794,10 @@ struct SubassignmentListView: View {
             ForEach(subassignmentlist) {
                 subassignment in
                 if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
-                        IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: true)                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: true).onTapGesture {
+                        selectedcolor = subassignment.color
+                        subassignmentassignmentname = subassignment.assignmentname
+                    }                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
                 }
                 
             }.animation(.spring())
@@ -999,8 +1060,10 @@ enum ModalView {
 
 class SheetNavigator: ObservableObject {
     @Published var modalView: ModalView = .none
+    @Published var alertView: AlertView = .none
 }
 enum AlertView {
+    case none
     case noclass
     case noassignment
 }
@@ -1074,6 +1137,7 @@ struct HomeView: View {
             }
         }
     }
+    
     var body: some View {
         NavigationView {
             if #available(iOS 14.0, *) {
@@ -1100,7 +1164,7 @@ struct HomeView: View {
                                     }
                                     else
                                     {
-                                        self.alertView = .noclass
+                                        self.sheetNavigator.alertView = .noclass
                                         self.NewAlertPresenting = true
                                     }
                                     
@@ -1121,7 +1185,7 @@ struct HomeView: View {
                                         }
                                         else
                                         {
-                                            self.alertView = .noclass
+                                            self.sheetNavigator.alertView = .noclass
                                             self.NewAlertPresenting = true
                                         }
                                     }) {
@@ -1157,7 +1221,7 @@ struct HomeView: View {
                                         }
                                         else
                                         {
-                                            self.alertView = .noassignment
+                                            self.sheetNavigator.alertView = .noassignment
                                             self.NewAlertPresenting = true
                                         }
                                         //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
@@ -1168,7 +1232,9 @@ struct HomeView: View {
                                     }
                                     
                                 }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
-                            }.sheet(isPresented: $NewSheetPresenting, content: sheetContent )
+                            }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
+                                Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
+                            }
                             
                             
                             

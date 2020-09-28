@@ -20,9 +20,9 @@ struct ClassView: View {
         ZStack {
             if (classcool.color != "") {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)
-                    //.fill(LinearGradient(gradient: Gradient(colors: [getcurrentolor(currentColor: classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
-                    .fill(getcurrentolor(currentColor: classcool.color))
-                    .frame(width: UIScreen.main.bounds.size.width - 40, height: (120)).shadow(radius: 5)
+                    .fill(LinearGradient(gradient: Gradient(colors: [getcurrentolor(currentColor: classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
+                    //.fill(getcurrentolor(currentColor: classcool.color))
+                    .frame(width: UIScreen.main.bounds.size.width - 20, height: (120)).shadow(radius: 5)
             }
 
             HStack {
@@ -43,17 +43,14 @@ struct ClassView: View {
     func getNextColor(currentColor: String) -> Color {
 
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
-        let existinggradients = ["one", "two", "three", "five", "six", "eleven", "fourteen","thirteen", "fifteen"]
-        print(currentColor)
+        let existinggradients = ["one", "two", "three", "five", "six", "eleven","thirteen", "fourteen", "fifteen"]
         if (existinggradients.contains(currentColor))
         {
-            print(currentColor + "-b")
             return Color(currentColor + "-b")
         }
         for color in colorlist {
             if (color == currentColor)
             {
-                print(colorlist[colorlist.firstIndex(of: color)! + 1])
                 return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
             }
         }
@@ -73,22 +70,61 @@ struct EditClassModalView: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
+    @Binding var showeditclass: Bool
     @State var currentclassname: String
     @State var classnamechanged: String
     @Binding var EditClassPresenting: Bool
     @State var classtolerancedouble: Double
-    var classassignmentnumber: Int
+    @State var classassignmentnumber: Int
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
     let colorsc = ["eleven", "twelve", "thirteen", "fourteen", "fifteen"]
     
-    @State private var coloraselectedindex: Int? = 0
-    @State private var colorbselectedindex: Int?
-    @State private var colorcselectedindex: Int?
+    @State private var coloraselectedindex: Int
+    @State private var colorbselectedindex: Int
+    @State private var colorcselectedindex: Int
     
     @State private var createclassallowed = true
     @State private var showingAlert = false
+    
+    init(showeditclass: Binding<Bool>, currentclassname: String, classnamechanged: String, EditClassPresenting: Binding<Bool>, classtolerancedouble: Double, classassignmentnumber: Int, classcolor: String)
+    {
+        self._showeditclass = showeditclass
+        self._currentclassname = State(initialValue: currentclassname)
+        self._classnamechanged = State(initialValue: classnamechanged)
+        self._EditClassPresenting = EditClassPresenting
+        self._classtolerancedouble = State(initialValue: classtolerancedouble)
+        self._classassignmentnumber = State(initialValue: classassignmentnumber)
+        
+        self._coloraselectedindex = State(initialValue: -1)
+        self._colorbselectedindex = State(initialValue: -1)
+        self._colorcselectedindex = State(initialValue: -1)
+        if (colorsa.contains(classcolor))
+        {
+            self._coloraselectedindex = State(initialValue: colorsa.firstIndex(of: classcolor)!)
+
+            //print(1)
+        }
+        else if (colorsb.contains(classcolor))
+        {
+            self._colorbselectedindex = State(initialValue: colorsb.firstIndex(of: classcolor)!)
+
+           // print(colorsb.firstIndex(of: classcolor)!)
+            //print(2)
+        }
+        else
+        {
+            self._colorcselectedindex = State(initialValue: colorsc.firstIndex(of: classcolor)!)
+
+           // print(3)
+        }
+        //print(coloraselectedindex!, colorbselectedindex!, colorcselectedindex!)
+        print(classcolor)
+        
+    }
+    
+
     
     var body: some View {
         NavigationView {
@@ -122,8 +158,8 @@ struct EditClassModalView: View {
                                             , lineWidth: (self.coloraselectedindex == colorindexa ? 3 : 1)).frame(width: 25, height: 25)
                                     }.onTapGesture {
                                         self.coloraselectedindex = colorindexa
-                                        self.colorbselectedindex = nil
-                                        self.colorcselectedindex = nil
+                                        self.colorbselectedindex = -1
+                                        self.colorcselectedindex = -1
                                     }
                                 }
                             }
@@ -134,9 +170,9 @@ struct EditClassModalView: View {
                                         RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
                                         , lineWidth: (self.colorbselectedindex == colorindexb ? 3 : 1)).frame(width: 25, height: 25)
                                     }.onTapGesture {
-                                        self.coloraselectedindex = nil
+                                        self.coloraselectedindex = -1
                                         self.colorbselectedindex = colorindexb
-                                        self.colorcselectedindex = nil
+                                        self.colorcselectedindex = -1
                                     }
                                 }
                             }
@@ -147,8 +183,8 @@ struct EditClassModalView: View {
                                         RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
                                     , lineWidth: (self.colorcselectedindex == colorindexc ? 3 : 1)).frame(width: 25, height: 25)
                                     }.onTapGesture {
-                                        self.coloraselectedindex = nil
-                                        self.colorbselectedindex = nil
+                                        self.coloraselectedindex = -1
+                                        self.colorbselectedindex = -1
                                         self.colorcselectedindex = colorindexc
                                     }
                                 }
@@ -175,14 +211,14 @@ struct EditClassModalView: View {
                                 if (classity.name == self.currentclassname) {
                                     classity.name = testname
                                     classity.tolerance  = Int64(self.classtolerancedouble.rounded(.down))
-                                    if self.coloraselectedindex != nil {
-                                        classity.color = self.colorsa[self.coloraselectedindex!]
+                                    if self.coloraselectedindex != -1 {
+                                        classity.color = self.colorsa[self.coloraselectedindex]
                                     }
-                                    else if self.colorbselectedindex != nil {
-                                        classity.color = self.colorsb[self.colorbselectedindex!]
+                                    else if self.colorbselectedindex != -1 {
+                                        classity.color = self.colorsb[self.colorbselectedindex]
                                     }
-                                    else if self.colorcselectedindex != nil {
-                                        classity.color = self.colorsc[self.colorcselectedindex!]
+                                    else if self.colorcselectedindex != -1 {
+                                        classity.color = self.colorsc[self.colorcselectedindex]
                                     }
                                     
                                     for assignment in self.assignmentlist {
@@ -202,6 +238,7 @@ struct EditClassModalView: View {
                                     }
                                 }
                             }
+                            self.showeditclass = false
                             self.EditClassPresenting = false
                         }
                             
@@ -218,21 +255,21 @@ struct EditClassModalView: View {
                 Section {
                     Text("Preview")
                     ZStack {
-                        if self.coloraselectedindex != nil {
+                        if self.coloraselectedindex != -1 {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex])]), startPoint: .leading, endPoint: .trailing))
                                 .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                             
                         }
-                        else if self.colorbselectedindex != nil {
+                        else if self.colorbselectedindex != -1 {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex])]), startPoint: .leading, endPoint: .trailing))
                                 .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                             
                         }
-                        else if self.colorcselectedindex != nil {
+                        else if self.colorcselectedindex != -1 {
                             RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex])]), startPoint: .leading, endPoint: .trailing))
                                 .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                             
                         }
@@ -254,7 +291,11 @@ struct EditClassModalView: View {
                         }.padding(.horizontal, 25)
                     }
                 }
-            }.navigationBarItems(trailing: Button(action: {self.EditClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Class", displayMode: .inline)
+            }.navigationBarItems(trailing: Button(action: {
+                                                    self.showeditclass = false
+                                                    self.EditClassPresenting = false
+                
+            }, label: {Text("Cancel")})).navigationBarTitle("Edit Class", displayMode: .inline)
         }
     }
     
@@ -274,7 +315,10 @@ struct EditClassModalView: View {
         return Color("one")
     }
 }
-
+class SheetNavigatorEditClass: ObservableObject {
+    @Published var showeditclass: Bool = false
+    @Published var selectededitassignment: String = ""
+}
 struct DetailView: View {
     @State var EditClassPresenting = false
     @ObservedObject var classcool: Classcool
@@ -295,6 +339,8 @@ struct DetailView: View {
     @State private var ocolor = Color.blue
     @State var showeditassignment: Bool = false
     @State var selectededitassignment: String = ""
+    @State var NewSheetPresenting: Bool = false
+    @ObservedObject var sheetnavigator: SheetNavigatorEditClass = SheetNavigatorEditClass()
     
     private func selectDeselect(_ singularassignment: Assignment) {
         if selection.contains(singularassignment) {
@@ -317,12 +363,27 @@ struct DetailView: View {
     
     func getassignmentindex() -> Int {
         for (index, assignment) in assignmentlist.enumerated() {
-            if (assignment.name == selectededitassignment)
+            if (assignment.name == sheetnavigator.selectededitassignment)
             {
                 return index
             }
         }
         return 0
+    }
+    
+    
+    @ViewBuilder
+    private func sheetContent() -> some View {
+        
+        if (!self.sheetnavigator.showeditclass)
+        {
+            EditAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)
+            
+        }
+        else
+        {
+            EditClassModalView(showeditclass: self.$sheetnavigator.showeditclass , currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$NewSheetPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber), classcolor: self.classcool.color).environment(\.managedObjectContext, self.managedObjectContext)
+        }
     }
     var body: some View {
         ZStack {
@@ -335,7 +396,7 @@ struct DetailView: View {
                 ScrollView {
                     ForEach(assignmentlist) { assignment in
                         if (self.classcool.assignmentnumber != 0 && assignment.subject == self.classcool.originalname && assignment.completed == false) {
-                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment, selectededit: self.$selectededitassignment, showedit: self.$showeditassignment).shadow(radius: 10).onTapGesture {
+                            IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: false, assignment2: assignment, selectededit: self.$sheetnavigator.selectededitassignment, showedit: self.$NewSheetPresenting).shadow(radius: 10).onTapGesture {
                                 self.selectDeselect(assignment)
                             }
                         }
@@ -362,19 +423,22 @@ struct DetailView: View {
                         ForEach(assignmentlist) {
                             assignment in
                             if (self.classcool.assignmentnumber != -1 && assignment.subject == self.classcool.originalname && assignment.completed == true) {
-                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$selectededitassignment, showedit: self.$showeditassignment).shadow(radius: 10).onTapGesture {
+                                GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$sheetnavigator.selectededitassignment, showedit: self.$NewSheetPresenting).shadow(radius: 10).onTapGesture {
                                     self.selectDeselect(assignment)
                                 }
                             }
-                        }.sheet(isPresented: $showeditassignment, content: {
-                            EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
+                        }
+//                        .sheet(isPresented: $showeditassignment, content: {
+//                            EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
                     }
                 }
             }.navigationBarItems(trailing: Button(action: {
-                self.EditClassPresenting = true
+                self.NewSheetPresenting = true
+                sheetnavigator.showeditclass.toggle()
+                
             })
             { Text("Edit").frame(height: 100, alignment: .trailing) }
-            ).sheet(isPresented: $EditClassPresenting, content: {EditClassModalView(currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$EditClassPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber)).environment(\.managedObjectContext, self.managedObjectContext)})
+            ).sheet(isPresented: $NewSheetPresenting, content: sheetContent)
             VStack {
                 Spacer()
                 HStack {
@@ -770,21 +834,21 @@ struct ClassesView: View {
     func master() -> Void {
             let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 
-        for assignmenttype in assignmenttypes {
-            let newType = AssignmentTypes(context: self.managedObjectContext)
-            newType.type = assignmenttype
-            newType.rangemin = 30
-            newType.rangemax = 300
-            print(newType.type, newType.rangemin, newType.rangemax)
-            do {
-                try self.managedObjectContext.save()
-                print("new Subassignment")
-            } catch {
-                print(error.localizedDescription)
-
-
-            }
-        }
+//        for assignmenttype in assignmenttypes {
+//            let newType = AssignmentTypes(context: self.managedObjectContext)
+//            newType.type = assignmenttype
+//            newType.rangemin = 30
+//            newType.rangemax = 300
+//            print(newType.type, newType.rangemin, newType.rangemax)
+//            do {
+//                try self.managedObjectContext.save()
+//                print("new Subassignment")
+//            } catch {
+//                print(error.localizedDescription)
+//
+//
+//            }
+//        }
 
 
         for i in (0...7) {
@@ -1048,13 +1112,20 @@ struct ClassesView: View {
             }
         }
     }
-    @State var storedIndex = 0
     @State var selectedClass: Int? = 0
     @State var storedindex = 0
     @State var opacityvalue = 1.0
     @State var deletedclassindex = -1
+    @ObservedObject var sheetnavigator: SheetNavigatorClassesView = SheetNavigatorClassesView()
+    @ObservedObject var classdeleter: ClassDeleter = ClassDeleter()
+    
     var body: some View {
         NavigationView {
+            VStack {
+            HStack {
+                Text("Classes").font(.largeTitle).bold().frame(height:40)
+                Spacer()
+            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
             ZStack {
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                  { EmptyView() }
@@ -1077,7 +1148,7 @@ struct ClassesView: View {
                                 }.buttonStyle(PlainButtonStyle()).contextMenu {
                                     Button (action: {
 
-                                        self.storedindex = self.getactualclassnumber(classcool: classcool)
+                                        self.sheetnavigator.storedindex = self.getactualclassnumber(classcool: classcool)
                                         NewAssignmentPresenting2.toggle()
                                     }) {
                                         HStack {
@@ -1088,7 +1159,7 @@ struct ClassesView: View {
                                     }
                                     Divider()
                                     Button(action: {
-                                        self.startedToDelete = true
+                                        self.classdeleter.isdeleting = true
                                         deletedclassindex = getactualclassnumber(classcool: classcool)
                                         for (_, element) in self.assignmentlist.enumerated() {
                                                 if (element.subject == self.classlist[deletedclassindex].originalname) {
@@ -1100,8 +1171,11 @@ struct ClassesView: View {
 
                                                 }
                                             }
+                                  //      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(300)) {
+                                            self.managedObjectContext.delete(self.classlist[deletedclassindex])
+                                      //  }
                                      //   self.classlist[deletedclassindex].isarchived = true
-                                        
+                                        self.classdeleter.isdeleting = false
                                         
                                         do {
                                             try self.managedObjectContext.save()
@@ -1112,7 +1186,7 @@ struct ClassesView: View {
                                         
                                      //   print("Class deleted")
                                         deletedclassindex = -1
-                                        self.startedToDelete = false
+                                        
                                     }) {
                                         HStack {
                                             Text("Archive Class")
@@ -1161,7 +1235,7 @@ struct ClassesView: View {
                         }
                     }
 
-                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
+                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.sheetnavigator.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
                     Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                 }
                 
@@ -1256,6 +1330,7 @@ struct ClassesView: View {
                         
                     }
                 }
+            }
             }.navigationBarItems(
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
@@ -1285,21 +1360,21 @@ struct ClassesView: View {
                             let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
                                let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 
-                            for assignmenttype in assignmenttypes {
-                                let newType = AssignmentTypes(context: self.managedObjectContext)
-                                newType.type = assignmenttype
-                                newType.rangemin = 30
-                                newType.rangemax = 300
-                                print(newType.type, newType.rangemin, newType.rangemax)
-                                do {
-                                    try self.managedObjectContext.save()
-                                    print("new Subassignment")
-                                } catch {
-                                    print(error.localizedDescription)
-
-
-                                }
-                            }
+//                            for assignmenttype in assignmenttypes {
+//                                let newType = AssignmentTypes(context: self.managedObjectContext)
+//                                newType.type = assignmenttype
+//                                newType.rangemin = 30
+//                                newType.rangemax = 300
+//                                print(newType.type, newType.rangemin, newType.rangemax)
+//                                do {
+//                                    try self.managedObjectContext.save()
+//                                    print("new Subassignment")
+//                                } catch {
+//                                    print(error.localizedDescription)
+//
+//
+//                                }
+//                            }
                             for classname in classnames {
                                 let newClass = Classcool(context: self.managedObjectContext)
                                 newClass.originalname = classname
@@ -1406,7 +1481,7 @@ struct ClassesView: View {
                     }
                     )
                     {
-                    Image(systemName: "hand.raised").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font(Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width/12)
+                    Image(systemName: "archivebox").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font(Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width/12)
                     }.padding(.trailing, 2.0)
 
 //                        Button(action: {
@@ -1414,7 +1489,7 @@ struct ClassesView: View {
 //                        }) {
 //                            Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
 //                        }
-            }).navigationBarTitle(Text("Classes"), displayMode: .large)
+            })//.navigationBarTitle(Text("Classes"), displayMode: .large)
         }.onDisappear() {
             self.showingSettingsView = false
             self.selectedClass = 0
@@ -1429,6 +1504,14 @@ struct ClassesView: View {
         }
         return false
     }
+}
+
+class SheetNavigatorClassesView: ObservableObject {
+    @Published var storedindex: Int = 0
+}
+
+class ClassDeleter: ObservableObject {
+    @Published var isdeleting: Bool = false
 }
 
 struct ClassesView_Previews: PreviewProvider {

@@ -49,9 +49,7 @@ struct ContentView: View {
                 Text("Home").font(.body)
             }
             
-
-            
-             FilterView().tabItem {
+            FilterView().tabItem {
                 Image(systemName:"paperclip").resizable().scaledToFill()
                 Text("Assignments")
             }

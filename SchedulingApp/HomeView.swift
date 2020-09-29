@@ -1336,7 +1336,7 @@ struct HomeView: View {
                     //            }
                     VStack {
                         Spacer()
-                        
+                         
                         SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage).offset(y: self.verticaloffset).animation(.spring())
                     }.frame(width: UIScreen.main.bounds.size.width).background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
                 }

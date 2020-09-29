@@ -679,7 +679,7 @@ struct HomeBodyView: View {
                                         //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
 //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
                                         if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: false).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                                 self.selectedColor = subassignment.color
 //                                                for subassignment in self.subassignmentlist {
@@ -772,7 +772,7 @@ struct HomeBodyView: View {
                             Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(daytitle == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
                             Spacer()
                         }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
-                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor).animation(.spring())
+                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).animation(.spring())
                     }
                 }.animation(.spring())
 //                ForEach(subassignmentlist) {
@@ -824,7 +824,7 @@ struct SubassignmentListView: View {
     @Binding var selectededitassignment: String
     var shortdateformatter: DateFormatter
     
-    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>)
+    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>)
     {
         self.daytitle = daytitle
         self._verticaloffset = verticaloffset
@@ -864,7 +864,7 @@ struct SubassignmentListView: View {
             ForEach(subassignmentlist) {
                 subassignment in
                 if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
-                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: true).onTapGesture {
+                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment).onTapGesture {
                         selectedcolor = subassignment.color
                         subassignmentassignmentname = subassignment.assignmentname
                     }                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
@@ -937,11 +937,14 @@ struct IndividualSubassignmentView: View {
     @Binding var subassignmentindex: Int
     @Binding var subassignmentcompletionpercentage: Double
     
+    @Binding var showeditassignment: Bool
+    @Binding var selectededitassignment: String
+    
     let screenval = -UIScreen.main.bounds.size.width
     
     var shortdateformatter: DateFormatter
     
-    init(subassignment2: Subassignmentnew, verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, fixedHeight: Bool) {
+    init(subassignment2: Subassignmentnew, verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>) {
         self._verticaloffset = verticaloffset
         self._subassignmentname = subassignmentname
         self._subassignmentlength = subassignmentlength
@@ -951,6 +954,9 @@ struct IndividualSubassignmentView: View {
         self._subassignmentdatetext = subassignmentdatetext
         self._subassignmentindex = subassignmentindex
         self._subassignmentcompletionpercentage = subassignmentcompletionpercentage
+        
+        self._showeditassignment = showeditassignment
+        self._selectededitassignment = selectededitassignment
         
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -1034,7 +1040,7 @@ struct IndividualSubassignmentView: View {
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                // Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)
-            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
+            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
                 Button(action:{
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname
@@ -1065,6 +1071,7 @@ struct IndividualSubassignmentView: View {
                     }
                     else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
                         self.incompleted = true
+                        self.deleted = false
                     }
                     
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
@@ -1080,8 +1087,8 @@ struct IndividualSubassignmentView: View {
                    // }
                    
                     if (self.incompleted == true) {
-                        if (self.incompletedonce == true || self.incompletedonce == false) {
-                            self.incompletedonce = false
+                        if (self.incompletedonce == true) {
+//                            self.incompletedonce = false
                             print("incompleted")
                             
                             self.verticaloffset = 0

@@ -1059,19 +1059,19 @@ struct IndividualSubassignmentView: View {
                     if (self.dragoffset.width < 0) {
                         self.isDraggedleft = false
                         self.isDragged = true
+                        self.incompleted = false
                     }
                     else if (self.dragoffset.width > 0) {
                         self.isDragged = false
                         self.isDraggedleft = true
+                        self.deleted = false
                     }
                                         
                     if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
                         self.deleted = true
-                        self.incompleted = false
                     }
                     else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
                         self.incompleted = true
-                        self.deleted = false
                     }
                     
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {

@@ -108,7 +108,7 @@ struct WeeklyBlockView: View {
             //assignment.duedate).day
             if (assignment.completed == false)
             {
-                let diff = Calendar.current.isDate(Date(timeInterval: -7200, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: -7200, since: assignment.duedate), toGranularity: .day)
+                let diff = Calendar.current.isDate(Date(timeInterval: 0, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: 0, since: assignment.duedate), toGranularity: .day)
              //   print(self.datesfromlastmonday[self.datenumberindices[index]], assignment.duedate.description)
                 if (diff == true)
                 {
@@ -496,15 +496,15 @@ struct HomeBodyView: View {
         self.minuteformatter.dateFormat = "mm"
         timeformatter = DateFormatter()
         timeformatter.dateFormat = "HH:mm"
-        timeformatter.timeZone = TimeZone(secondsFromGMT: 0)
+        //timeformatter.timeZone = TimeZone(secondsFromGMT: 0)
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
-        shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
+     //   shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
        // self._selecteddaytitle = State(initialValue: nthdayfromnow)
         self.selectedColor  = "one"
         
-        let lastmondaydate = Date(timeInterval: TimeInterval(86400 + timezoneOffset), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400+timezoneOffset+1), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400 + timezoneOffset+1), since: Date().startOfWeek!)
+        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400+1), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400 + 1), since: Date().startOfWeek!)
         
        // print(lastmondaydate.description)
         
@@ -524,7 +524,7 @@ struct HomeBodyView: View {
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         let minuteval = Calendar.current
-            .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: subassignmentlist[self.getsubassignment()].startdatetime)
+            .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(0)), to: subassignmentlist[self.getsubassignment()].startdatetime)
         .minute!
  
         if (minuteval > 720 ) {
@@ -546,7 +546,7 @@ struct HomeBodyView: View {
         for (index, _) in subassignmentlist.enumerated() {
             
             minuteval = Calendar.current
-                .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: subassignmentlist[index].startdatetime)
+                .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(0)), to: subassignmentlist[index].startdatetime)
             .minute!
             //print(minuteval)
             if (minuteval > 0)
@@ -679,7 +679,7 @@ struct HomeBodyView: View {
                                         //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
 //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
                                         if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                                 self.selectedColor = subassignment.color
 //                                                for subassignment in self.subassignmentlist {
@@ -694,7 +694,7 @@ struct HomeBodyView: View {
                             }
                         }
 
-                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), toGranularity: .day)) {
+                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(timeIntervalSinceNow: TimeInterval(0)), toGranularity: .day)) {
                             HStack(spacing: 0) {
                                 Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
                                 Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
@@ -844,7 +844,7 @@ struct SubassignmentListView: View {
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
-        shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
+       // shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.daytitlesfromlastmonday = daytitlesfromlastmonday
         self.datesfromlastmonday = datesfromlastmonday
         
@@ -960,8 +960,9 @@ struct IndividualSubassignmentView: View {
         
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+      //  formatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.starttime = formatter.string(from: subassignment2.startdatetime)
+        print(subassignment2.startdatetime.description, self.starttime)
         self.endtime = formatter.string(from: subassignment2.enddatetime)
 //        print(starttime)
 //        print(endtime)
@@ -983,7 +984,7 @@ struct IndividualSubassignmentView: View {
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
-        shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
+     //   shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
     }
         
     var body: some View {

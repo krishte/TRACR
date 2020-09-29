@@ -430,8 +430,6 @@ struct GradedAssignmentsView: View {
                             Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                             Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
                                 Text("Total time: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-
-                            
                         }
                         VStack {
                             HStack {
@@ -508,7 +506,6 @@ struct GradedAssignmentsView: View {
                                  self.assignment.timeleft = 0
                                  self.assignment.progress = 100
                                  
-
                                  for classity in self.classlist {
                                      if (classity.originalname == self.assignment.subject) {
                                          classity.assignmentnumber -= 1
@@ -529,13 +526,10 @@ struct GradedAssignmentsView: View {
                              }
                          }
                     }
-                    else
-                    {
+                    else {
                         self.dragoffset = .zero
-                        if (self.incompleted == true)
-                        {
-                            if (self.incompletedonce == true)
-                            {
+                        if (self.incompleted == true) {
+                            if (self.incompletedonce == true) {
                                 self.incompletedonce = false;
                                 print("incompleted")
                             }

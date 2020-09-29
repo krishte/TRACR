@@ -1324,6 +1324,11 @@ struct EditAssignmentModalView: View {
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     var assignmentslist: FetchedResults<Assignment>
     
+    @FetchRequest(entity: Subassignmentnew.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
     @State var nameofassignment: String
     @State private var hours: Int
     @State private var minutes: Int
@@ -1339,6 +1344,7 @@ struct EditAssignmentModalView: View {
     @State private var showingAlert = false
     @State private var expandedduedate = false
     @State private var startDate = Date()
+    @State var originalname: String
     var formatter: DateFormatter
     let otherclassgrades = ["E", "D", "C", "B", "A"]
     init(NewAssignmentPresenting: Binding<Bool>, selectedassignment: Int, assignmentname: String, timeleft: Int, duedate: Date, iscompleted: Bool, gradeval: Int, assignmentsubject: String) {
@@ -1357,6 +1363,7 @@ struct EditAssignmentModalView: View {
         self._iscompleted = State(initialValue: iscompleted)
         self._gradeval = State(initialValue: Double(gradeval))
         self._assignmentsubject = State(initialValue: assignmentsubject)
+        self._originalname = State(initialValue: assignmentname)
         
     }
     
@@ -1444,23 +1451,62 @@ struct EditAssignmentModalView: View {
 
                     
                     Section {
-                        Button(action: {
-                                self.expandedduedate.toggle()
-                            
-                        }) {
-                            HStack {
-                                Text("Select due date and time").foregroundColor(Color.black)
-                                Spacer()
-                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                        if #available(iOS 14.0, *) {
+                            Button(action: {
+                                    self.expandedduedate.toggle()
+
+                            }) {
+                                HStack {
+                                    Text("Select due date and time").foregroundColor(Color.black)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                                }
+
+                            }
+                            if (expandedduedate)
+                            {
+                                VStack {
+                                    DatePicker("", selection: $selectedDate, in: startDate..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                }.animation(.spring())
+                            }
+
+                        } else {
+                            Button(action: {
+                                    self.expandedduedate.toggle()
+
+                            }) {
+                                HStack {
+                                    Text("Select due date and time").foregroundColor(Color.black)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                                }
+
+                            }
+                            if (expandedduedate)
+                            {
+                                VStack {
+                                    MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                }.animation(nil)
                             }
                             
                         }
-                        if (expandedduedate)
-                        {
-                            VStack {
-                                MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
-                            }.animation(nil)
-                        }
+//                        Button(action: {
+//                                self.expandedduedate.toggle()
+//
+//                        }) {
+//                            HStack {
+//                                Text("Select due date and time").foregroundColor(Color.black)
+//                                Spacer()
+//                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+//                            }
+//
+//                        }
+//                        if (expandedduedate)
+//                        {
+//                            VStack {
+//                                MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+//                            }.animation(nil)
+//                        }
                         //DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
                     }
                 }
@@ -1477,6 +1523,12 @@ struct EditAssignmentModalView: View {
 //                        }
 
                         if self.createassignmentallowed {
+                            for subassignment in subassignmentlist {
+                                if (subassignment.assignmentname == self.assignmentslist[self.selectedassignment].name)
+                                {
+                                    subassignment.assignmentname = self.nameofassignment
+                                }
+                            }
                             self.assignmentslist[self.selectedassignment].name = self.nameofassignment
                             self.assignmentslist[self.selectedassignment].duedate = Date(timeInterval: 7200, since: self.selectedDate)
                             print(self.hours, self.minutes)
@@ -1494,6 +1546,12 @@ struct EditAssignmentModalView: View {
                                         {
                                             classity.assignmentnumber -= 1
                                         }
+                                    }
+                                }
+                                for (index, subassignment) in subassignmentlist.enumerated() {
+                                    if (subassignment.assignmentname == self.nameofassignment)
+                                    {
+                                        self.managedObjectContext.delete(self.subassignmentlist[index])
                                     }
                                 }
                                 self.assignmentslist[self.selectedassignment].grade = Int64(self.gradeval)

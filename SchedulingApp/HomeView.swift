@@ -371,8 +371,7 @@ struct HomeBodyView: View {
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
-    @FetchRequest(entity: Assignment.entity(),
-                  sortDescriptors: [])
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
     
@@ -417,6 +416,8 @@ struct HomeBodyView: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
  
     @State var timezoneOffset: Int = TimeZone.current.secondsFromGMT()
+    @State var showeditassignment: Bool = false
+    @ObservedObject var sheetnavigator: SheetNavigatorEditClass = SheetNavigatorEditClass()
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, uniformlistshows: Binding<Bool>, NewAssignmentPresenting2: Binding<Bool>) {
         self._verticaloffset = verticaloffset
@@ -519,6 +520,16 @@ struct HomeBodyView: View {
         }
     }
     
+    func getassignmentindex() -> Int {
+        for (index, assignment) in assignmentlist.enumerated() {
+            if (assignment.name == sheetnavigator.selectededitassignment)
+            {
+                return index
+            }
+        }
+        return 0
+    }
+    
     var body: some View {
         VStack {
             if (!self.uniformlistviewshows) {
@@ -565,10 +576,10 @@ struct HomeBodyView: View {
                 HStack {
                     VStack(alignment: .leading) {
                         if (subassignmentlist.count == 0) {
-                            Text("No Upcoming Subassignments")
+                            Text("No Upcoming Tasks").font(.system(size: 22))
                         }
                         else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
-                            Text("No Upcoming Subassignments")
+                            Text("No Upcoming Tasks").font(.system(size: 22))
                         }
                         else {
                             Text("Next Upcoming:").fontWeight(.semibold).animation(.none)
@@ -621,7 +632,7 @@ struct HomeBodyView: View {
                                         //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
 //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
                                         if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: false).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(subassignment.startdatetime.timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                                 self.selectedColor = subassignment.color
 //                                                for subassignment in self.subassignmentlist {
@@ -668,23 +679,17 @@ struct HomeBodyView: View {
 
                     HStack {
                         VStack(alignment: .leading) {
-//                            if (subassignmentlist.count == 0) {
-//                                Text("No Upcoming Subassignments")
-//                            }
-//                            else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
-//                                Text("No Upcoming Subassignments")
-//                            }
-//                            else {
-//                                Text("Next Upcoming:").fontWeight(.semibold).animation(.none)
-//                                Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading).animation(.none)
-//
-//                                Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
-//                                Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
-//                            }
-                            ForEach(self.assignmentlist) { assignment in
-                                if (assignment.name == self.subassignmentassignmentname) {
-                                    Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 80, alignment: .topLeading).offset(y: 5)
+                            HStack(alignment: .center)
+                            {
+                                ForEach(self.assignmentlist) { assignment in
+                                    if (assignment.name == self.subassignmentassignmentname) {
+                                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 80, alignment: .center)//.offset(y: 5)
 
+                                    }
+                                 }
+                                if (self.subassignmentassignmentname == "")
+                                {
+                                    Text("No Task Selected").font(.system(size: 22)).multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width-60, height: 80, alignment: .center)
                                 }
                             }
                         }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
@@ -696,16 +701,17 @@ struct HomeBodyView: View {
                             VStack(alignment: .leading) {
                                 ForEach(self.assignmentlist) { assignment in
                                     if (assignment.name == self.subassignmentassignmentname) {
-                                      //  Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 40, alignment: .topLeading)
-                                        
-                                        Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 15)).fontWeight(.bold).frame(height:40)
+
+                                        Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 15)).fontWeight(.bold).frame(height:30)
                                         Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
-                                        Text("Time Left: " + String(assignment.timeleft + " mintues")).font(.system(size: 12)).frame(height: 15)
-                                        UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
+                                        Text("Time Left: " + String(assignment.timeleft) + " mintues").font(.system(size: 12)).frame(height: 15)
+                                        UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10).animation(.spring())
+                                      //  Text("hello")
                                     }
                                 }
                             }.frame(width: 150)
                         }
+                        
                     }.padding(10)
                 }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
                 ScrollView {
@@ -719,7 +725,7 @@ struct HomeBodyView: View {
                             Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(daytitle == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
                             Spacer()
                         }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
-                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor).animation(.spring())
+                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).animation(.spring())
                     }
                 }.animation(.spring())
 //                ForEach(subassignmentlist) {
@@ -733,7 +739,8 @@ struct HomeBodyView: View {
             }
             }//.transition(.move(edge: .leading)).animation(.spring())
         }
-        }//.transition(.move(edge: .leading)).animation(.easeInOut)
+        }.sheet(isPresented: $showeditassignment, content: {
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)})
     }
     func getsubassignmentsondate(dayIndex: Int) -> Bool {
         for subassignment in subassignmentlist {
@@ -760,9 +767,11 @@ struct SubassignmentListView: View {
     @Binding var addminutes: Int
     @Binding var subassignmentassignmentname: String
     @Binding var selectedcolor: String
+    @Binding var showeditassignment: Bool
+    @Binding var selectededitassignment: String
     var shortdateformatter: DateFormatter
     
-    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>)
+    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>)
     {
         self.daytitle = daytitle
         self._verticaloffset = verticaloffset
@@ -771,6 +780,8 @@ struct SubassignmentListView: View {
         self._addminutes = addminutes
         self._subassignmentassignmentname = subassignmentassignmentname
         self._selectedcolor = selectedcolor
+        self._showeditassignment = showeditassignment
+        self._selectededitassignment = selectededitassignment
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
@@ -794,7 +805,7 @@ struct SubassignmentListView: View {
             ForEach(subassignmentlist) {
                 subassignment in
                 if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
-                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: true).onTapGesture {
+                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment).onTapGesture {
                         selectedcolor = subassignment.color
                         subassignmentassignmentname = subassignment.assignmentname
                     }                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
@@ -861,13 +872,17 @@ struct IndividualSubassignmentView: View {
     @Binding var subassignmentname: String
     @Binding var addhours: Int
     @Binding var addminutes: Int
+    @Binding var showeditassignment: Bool
+    @Binding var selectededitassignment: String
     let screenval = -UIScreen.main.bounds.size.width
     
-    init(subassignment2: Subassignmentnew, verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, fixedHeight: Bool) {
+    init(subassignment2: Subassignmentnew, verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, addhours: Binding<Int>, addminutes: Binding<Int>, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>) {
         self._verticaloffset = verticaloffset
         self._subassignmentname = subassignmentname
         self._addhours = addhours
         self._addminutes = addminutes
+        self._showeditassignment = showeditassignment
+        self._selectededitassignment = selectededitassignment
         
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -946,7 +961,18 @@ struct IndividualSubassignmentView: View {
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                // Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)
-            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).offset(x: self.dragoffset.width).gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
+                Button(action:{
+                    self.showeditassignment = true
+                    self.selectededitassignment = subassignment.assignmentname
+                })
+                {
+                 //   HStack {
+                        Text("Edit Assignment")
+                        Image(systemName: "pencil.circle")
+                   // }
+                }
+            }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
                     //self.isDragged = true
@@ -973,8 +999,12 @@ struct IndividualSubassignmentView: View {
                 }
                 .onEnded { value in
                     self.dragoffset = .zero
-                    //self.isDragged = false
-                    //self.isDraggedleft = false
+                    
+                    //DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(100)) {
+//                        self.isDragged = false
+//                        self.isDraggedleft = false
+                   // }
+                   
                     if (self.incompleted == true) {
                         if (self.incompletedonce == true) {
                             self.incompletedonce = false
@@ -1020,7 +1050,18 @@ struct IndividualSubassignmentView: View {
                                 if (element.name == self.name) {
                                     let minutes = self.subassignmentlength
                                     element.timeleft -= Int64(minutes)
-                                    element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                                    withAnimation(.spring())
+                                    {
+                                        if (element.totaltime != 0)
+                                        {
+                                            element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                                        }
+                                        else
+                                        {
+                                            element.progress = 100
+                                        }
+                                        
+                                    }
                                     if (element.timeleft == 0) {
                                         element.completed = true
                                         for classity in self.classlist {

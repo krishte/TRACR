@@ -404,12 +404,12 @@ struct SettingsView: View {
 }
 
 struct HelpCenterView: View {
-    let faqtitles = ["Payment", "Data usage", "Report a problem","Tutorial" ]
-    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Raul.Sanchezflores@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial."]
-    let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50]
-    let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four"]
+    let faqtitles = ["Payment", "Data usage", "Report a problem", "Tutorial", "Dark Mode"]
+    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Raul.Sanchezflores@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial.", "Dark Mode": "To use our app in dark mode, you have to change this in your phone’s Settings App in Display & Brightness, and that automatically makes our app function in dark mode."]
+    let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50, "Dark Mode" : 100]
+    let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four", "Dark Mode" : "fifteen"]
     
-    @State private var selection: Set<String> = ["Payment", "Data usage", "Report a problem","Tutorial" ]
+    @State private var selection: Set<String> = ["Payment", "Data usage", "Report a problem", "Tutorial", "Dark Mode"]
 
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
@@ -421,7 +421,7 @@ struct HelpCenterView: View {
     
     var body: some View {
             VStack {
-                ScrollView {
+                ScrollView(/*@START_MENU_TOKEN@*/.vertical/*@END_MENU_TOKEN@*/, showsIndicators: false, content: {
                     Spacer().frame(height: 20)
                     ForEach(self.faqtitles,  id: \.self) {
                         title in
@@ -443,12 +443,9 @@ struct HelpCenterView: View {
                             {
                                 Text(self.faqtext[title]!).multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: CGFloat(self.heights[title]!), alignment: .topLeading)
                             }
-                            
                         }
-
-
                     }.animation(.spring())
-                }.animation(.spring())
+                }).animation(.spring())
             }.navigationBarTitle("Help Center", displayMode: .inline)
         
     }

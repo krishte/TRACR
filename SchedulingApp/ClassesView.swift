@@ -541,7 +541,7 @@ struct ClassesView: View {
     var startOfDay: Date {
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
-        return Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
+        return Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
         //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
     }
         func schedulenotifications() {

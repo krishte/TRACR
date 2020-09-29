@@ -155,7 +155,7 @@ struct NewAssignmentModalView: View {
                             newAssignment.name = self.nameofassignment
                             newAssignment.type = self.assignmenttypes[self.assignmenttype]
                             newAssignment.progress = 0
-                            newAssignment.duedate = Date(timeInterval: 7200, since: self.selectedDate)
+                            newAssignment.duedate = self.selectedDate
     //                        print(self.hours)
     //                        print(self.minutes)
                             if (self.hours == 0)
@@ -1359,7 +1359,7 @@ struct EditAssignmentModalView: View {
         self._nameofassignment = State(initialValue: assignmentname)
         self._hours = State(initialValue: timeleft/60)
         self._minutes = State(initialValue: (timeleft%60)/5)
-        self._selectedDate = State(initialValue: Date(timeInterval: -7200, since: duedate))
+        self._selectedDate = State(initialValue: duedate)
         self._iscompleted = State(initialValue: iscompleted)
         self._gradeval = State(initialValue: Double(gradeval))
         self._assignmentsubject = State(initialValue: assignmentsubject)
@@ -1530,7 +1530,7 @@ struct EditAssignmentModalView: View {
                                 }
                             }
                             self.assignmentslist[self.selectedassignment].name = self.nameofassignment
-                            self.assignmentslist[self.selectedassignment].duedate = Date(timeInterval: 7200, since: self.selectedDate)
+                            self.assignmentslist[self.selectedassignment].duedate = self.selectedDate
                             print(self.hours, self.minutes)
                             let change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
                             self.assignmentslist[self.selectedassignment].timeleft += change

@@ -63,7 +63,7 @@ struct ContentView: View {
                 Image(systemName: "chart.bar").resizable().scaledToFit()
                 Text("Progress")                    
             }
-        }
+        } 
     }
 }
 

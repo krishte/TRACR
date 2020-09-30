@@ -1128,7 +1128,6 @@ struct IndividualSubassignmentView: View {
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
                                     let minutes = self.subassignmentlength_actual
-                                    print(minutes)
                                     element.timeleft -= Int64(minutes)
                                     print(element.timeleft)
                                     withAnimation(.spring())

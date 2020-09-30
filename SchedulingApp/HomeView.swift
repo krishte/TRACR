@@ -390,9 +390,17 @@ struct SubassignmentAddTimeAction: View {
                     print(error.localizedDescription)
                 }
                 
-            }, label: {
-                Text("Done").font(.system(size: 17)).fontWeight(.semibold)
-            }).padding(.all, 8).padding(.bottom, -3)
+            }) {
+                HStack {
+                    //Spacer()//.frame(width: UIScreen.main.bounds.size.width/2 - 40)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color("very_light_gray")).frame(width: UIScreen.main.bounds.size.width-80, height: 40)
+                        Text("Done").font(.system(size: 17)).fontWeight(.semibold)
+                    }
+                   
+                   // Spacer()
+                }.frame(width: UIScreen.main.bounds.size.width-80, height: 25)
+            }.padding(.all, 8).padding(.bottom, -3)//.buttonStyle(PlainButtonStyle())
         }.padding(.all, 15).frame(maxHeight: 270).background(Color("very_light_gray")).cornerRadius(18).padding(.all, 15)
     }
 }

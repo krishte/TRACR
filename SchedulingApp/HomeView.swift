@@ -740,7 +740,10 @@ struct HomeBodyView: View {
                                 }
                             }
                         }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
-
+//                        if (self.subassignmentassignmentname == "")
+//                        {
+//                            Spacer().frame(width: 150)
+//                        }
                         if self.subassignmentassignmentname != "" {
                             Spacer().frame(width: 10)
                             Divider().frame(width: 1).background(Color.black)
@@ -962,7 +965,7 @@ struct IndividualSubassignmentView: View {
         formatter.dateFormat = "HH:mm"
       //  formatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.starttime = formatter.string(from: subassignment2.startdatetime)
-        print(subassignment2.startdatetime.description, self.starttime)
+       // print(subassignment2.startdatetime.description, self.starttime)
         self.endtime = formatter.string(from: subassignment2.enddatetime)
 //        print(starttime)
 //        print(endtime)
@@ -1086,7 +1089,7 @@ struct IndividualSubassignmentView: View {
 //                        self.isDragged = false
 //                        self.isDraggedleft = false
                    // }
-                   
+                    print("drag gesture ended")
                     if (self.incompleted == true) {
                         if (self.incompletedonce == true) {
 //                            self.incompletedonce = false
@@ -1108,15 +1111,18 @@ struct IndividualSubassignmentView: View {
                             }
                         }
                     }
-                        
+                    
                     else if (self.deleted == true) {
+                        print("success")
                         if (self.deleteonce == true) {
                             self.deleteonce = false
-                            
+                            print("deleting")
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
-                                    let minutes = self.subassignmentlength
+                                    let minutes = self.subassignmentlength_actual
+                                    print(minutes)
                                     element.timeleft -= Int64(minutes)
+                                    print(element.timeleft)
                                     withAnimation(.spring())
                                     {
                                         if (element.totaltime != 0)

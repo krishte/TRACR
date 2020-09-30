@@ -79,7 +79,7 @@ struct TutorialPageView: View {
             
             Spacer().frame(height: 15)
             
-            Rectangle().frame(width: UIScreen.main.bounds.size.width - 40, height: 0.3)
+            Rectangle().frame(width: UIScreen.main.bounds.size.width - 40, height: 1)
              
             Spacer().frame(height: 15)
             
@@ -90,29 +90,32 @@ struct TutorialPageView: View {
                 Spacer()
             }.padding(.leading, 20)
             
-            ScrollView(.vertical, showsIndicators: false, content: {
-                HStack {
-                    Image(systemName: "1.circle.fill").foregroundColor(tutorialInstructions1 == "" ? Color.white : Color("thirteen"))
+           // ScrollView(.vertical, showsIndicators: false, content: {
+            VStack {
+                HStack(alignment: .top) {
+                    Image(systemName: "1.circle.fill").foregroundColor(tutorialInstructions1 == "" ? Color.white : Color("thirteen"))//.frame( alignment: .topLeading)
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions1)
                     Spacer()
                 }
                 
-                HStack {
+                HStack(alignment: .top) {
                     Image(systemName: "2.circle.fill").foregroundColor(tutorialInstructions2 == "" ? Color.white : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions2)
                     Spacer()
                 }
                 
-                HStack {
+                HStack(alignment: .top) {
                     Image(systemName: "3.circle.fill").foregroundColor(tutorialInstructions3 == "" ? Color.white : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions3)
                     Spacer()
                 }
-            }).padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5) // was 120 for bottom
-        }//.padding(.top, 116)
+            }.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5) // was 120 for bottom
+            
+            Spacer()
+        }//.padding(.top, -100)
     }
 }
 
@@ -171,7 +174,31 @@ struct TutorialPageViewLastPage: View {
 //        //}
 //    }
 //}
-
+struct TutorialView: View {
+    
+    var body: some View
+    {
+        VStack {
+           // Text("hello")
+            if #available(iOS 14.0, *) {
+                TabView {
+                    TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home View", tutorialInstructions1: "The left side of the preview bar shows next upcoming sub assignment.", tutorialInstructions2: "If you click on a sub assignment, it will divide the Preview bar into two and the right side will show a detailed description of the selected assignment.", tutorialInstructions3: "Holding a date will allow you to add an assignment that is due then.")
+                    TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks View", tutorialInstructions1: "Clicking on the switch on the top right side of the home screen will give you a different layout that doesn't schedule your time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "")
+                    TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the add button to add assignment.", tutorialInstructions2: "Hold the add button to add a specific thing (Assignments/Classes/Free Time/Grades)", tutorialInstructions3: "")
+                    TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific class", tutorialInstructions2: "Select your tolerance for this class, meaning how much you like the class.", tutorialInstructions3: "Choose your preferred colour to be displayed for your class and classes' assignments.")
+                    TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free time.", tutorialInstructions2: "Select when the free time should repeat, or the specific date for the free time.", tutorialInstructions3: "To see your free time schedule, click 'view free times'.")
+                    TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes View", tutorialInstructions1: "Hold a Class, and click 'Archive Class' to archive it.", tutorialInstructions2: "Click on the top right switch to view archived classes.", tutorialInstructions3: "Hold class and click 'Add assignment' to add an assignment for that class.")
+                    TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, assignments for that Class are shown.", tutorialInstructions2: "Click on the top right edit button to edit class details.", tutorialInstructions3: "Swipe assignments left to complete them.")
+                    TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments View", tutorialInstructions1: "Click top right button to see completed assignments.", tutorialInstructions2: "The blue progress bar shows how near completion you are for that assignment.", tutorialInstructions3: "Swipe assignments left to complete them.")
+                    TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress View", tutorialInstructions1: "Select what classes you want to appear on the Graph.", tutorialInstructions2: "The Graph shows how your grades have improved over time.", tutorialInstructions3: "Hold a Class to add a grade for the specific Class.")
+                    TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Inside Progress View", tutorialInstructions1: "Inside a Class, a bar graph shows you your grades over time for that Class.", tutorialInstructions2: "Underneath there are some interesting statistics to show how well you're doing compared to everyone else.", tutorialInstructions3: "At the bottom are the completed assignments for your Class.")
+                }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
+            } else {
+                // Fallback on earlier versions
+            }//.frame(height: UIScreen.main.bounds.size.height-200)//.padding(.top, -60)
+        }
+    }
+}
 struct SettingsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
@@ -296,13 +323,8 @@ struct SettingsView: View {
                 Section {
                     if #available(iOS 14.0, *) {
                         NavigationLink(destination:
-                            TabView {
-                                TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")
-                                    TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")
-                                TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")
-                                TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum)
-                           }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
-                        
+                                TutorialView().edgesIgnoringSafeArea(.all)//.padding(.top, -40)
+
 
                         
                         ) {

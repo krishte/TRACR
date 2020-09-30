@@ -18,10 +18,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="Tracr" translatesAutoresizingMaskIntoConstraints="NO" id="NlJ-wu-qE7">
-                                <rect key="frame" x="87" y="368" width="240" height="60"/>
+                                <rect key="frame" x="107" y="348" width="200" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="60" id="MSo-eZ-yf9"/>
-                                    <constraint firstAttribute="width" constant="240" id="UPt-DQ-cM0"/>
+                                    <constraint firstAttribute="height" constant="50" id="MSo-eZ-yf9"/>
+                                    <constraint firstAttribute="width" constant="200" id="UPt-DQ-cM0"/>
                                 </constraints>
                             </imageView>
                         </subviews>
@@ -29,7 +29,7 @@
                         <color key="backgroundColor" name="three"/>
                         <constraints>
                             <constraint firstItem="NlJ-wu-qE7" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="QVE-mL-iWO"/>
-                            <constraint firstItem="NlJ-wu-qE7" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-50" id="nzf-Aq-ikw"/>
+                            <constraint firstItem="NlJ-wu-qE7" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-75" id="nzf-Aq-ikw"/>
                         </constraints>
                     </view>
                 </viewController>

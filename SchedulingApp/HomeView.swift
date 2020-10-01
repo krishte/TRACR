@@ -324,6 +324,7 @@ struct SubassignmentAddTimeActionBody: View {
             }.frame(width: UIScreen.main.bounds.size.width - 75)
             
             Text("\(subassignmentcompletionpercentage.rounded(.down), specifier: "%.0f")%")
+            Text("≈ \(Int((self.subassignmentcompletionpercentage / 100) * Double(self.subassignmentlength) / 5) * 5) minutes").fontWeight(.light)
         }
     }
 }
@@ -703,10 +704,15 @@ struct HomeBodyView: View {
                         }
 
                         if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(timeIntervalSinceNow: TimeInterval(0)), toGranularity: .day)) {
-                            HStack(spacing: 0) {
-                                Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
-                                Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
-                            }.padding(.top, CGFloat(Date().timeIntervalSince1970).truncatingRemainder(dividingBy: 86400)/3600 * 120.7 - 1207)
+                            VStack {
+                                Spacer().frame(height: 19)
+                                HStack(spacing: 0) {
+                                    Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
+                                    Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
+                                    
+                                }.padding(.top, (CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: Date()), to: Date()).second!).truncatingRemainder(dividingBy: 86400))/3600 * 60.35)
+                                Spacer()
+                            }
                         }
                     }//.animation(.spring())
                 }
@@ -1169,7 +1175,6 @@ struct IndividualSubassignmentView: View {
         }.frame(width: UIScreen.main.bounds.size.width-40)
     }
 }
- 
 
 enum ModalView {
     case grade

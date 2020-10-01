@@ -72,12 +72,12 @@ struct TutorialPageView: View {
     var tutorialInstructions1: String
     var tutorialInstructions2: String
     var tutorialInstructions3: String
+    var tutorialInstructions4: String
+    var tutorialInstructions5: String
     
     var body: some View {
         VStack {
             Image(self.tutorialScreenshot).resizable().aspectRatio(contentMode: .fit).frame(height: (UIScreen.main.bounds.size.height / 2) - 20)
-            
-            Spacer().frame(height: 15)
             
             Rectangle().frame(width: UIScreen.main.bounds.size.width - 40, height: 1)
              
@@ -88,112 +88,105 @@ struct TutorialPageView: View {
                 Spacer().frame(width: 15)
                 Text(self.tutorialTitle).font(.title).fontWeight(.light)
                 Spacer()
-            }.padding(.leading, 20)
+            }.padding(.leading, 20).padding(.bottom, 10)
             
-           // ScrollView(.vertical, showsIndicators: false, content: {
-            VStack {
+            ScrollView(.vertical, showsIndicators: false) {
+//            VStack(spacing: 5) {
                 HStack(alignment: .top) {
                     Image(systemName: "1.circle.fill").foregroundColor(tutorialInstructions1 == "" ? Color.white : Color("thirteen"))//.frame( alignment: .topLeading)
                     Spacer().frame(width: 15)
-                    Text(tutorialInstructions1)
+                    Text(tutorialInstructions1).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
                 
                 HStack(alignment: .top) {
                     Image(systemName: "2.circle.fill").foregroundColor(tutorialInstructions2 == "" ? Color.white : Color("thirteen"))
                     Spacer().frame(width: 15)
-                    Text(tutorialInstructions2)
+                    Text(tutorialInstructions2).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
                 
                 HStack(alignment: .top) {
                     Image(systemName: "3.circle.fill").foregroundColor(tutorialInstructions3 == "" ? Color.white : Color("thirteen"))
                     Spacer().frame(width: 15)
-                    Text(tutorialInstructions3)
+                    Text(tutorialInstructions3).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-            }.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5) // was 120 for bottom
-            
-            Spacer()
+                
+                HStack(alignment: .top) {
+                    Image(systemName: "4.circle.fill").foregroundColor(tutorialInstructions4 == "" ? Color.white : Color("thirteen"))
+                    Spacer().frame(width: 15)
+                    Text(tutorialInstructions4).fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                }
+                
+                HStack(alignment: .top) {
+                    Image(systemName: "5.circle.fill").foregroundColor(tutorialInstructions5 == "" ? Color.white : Color("thirteen"))
+                    Spacer().frame(width: 15)
+                    Text(tutorialInstructions5).fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                }
+            }.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 15) // was 120 for bottom
         }//.padding(.top, -100)
     }
 }
 
-struct TutorialPageViewLastPage: View {
-    @Binding var tutorialPageNum: Int
-    
-    var body: some View {
-        VStack {
-            Text("Heyyyy, last page man, go back?? click below then :)")
-            
-            Button(action: {
-                self.tutorialPageNum = 1
-                
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(50)) {
-                    self.tutorialPageNum = 0
-                }
-                
-            }) {
-                ZStack {
-                    //RoundedRectangle(cornerRadius: 8, style: .continuous).frame(width: 200, height: 100) a
-                    
-                    HStack {
-                        Image(systemName: "gobackward")
-                        Spacer()
-                        Text("Restart Tutorial")
-                    }.frame(width: 150, height: 100)
-
-                }
-            }
-        }
-    }
-}
+//struct TutorialPageViewLastPage: View {
+//    @Binding var tutorialPageNum: Int
 //
-//struct TutorialView: View {
 //    var body: some View {
-////        ScrollView(.horizontal, showsIndicators: false)
-////        {
 //        VStack {
-//            ScrollView(.horizontal, showsIndicators: false) {
+//            Text("Heyyyy, last page man, go back?? click below then :)")
 //
-//                HStack {
-//                    Spacer().frame(width: 50)
-//                    Image("Tutorial1").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
-//                    Spacer().frame(width: 100)
-//                    Image("Tutorial2").resizable().frame(width: UIScreen.main.bounds.size.width - 100, height: UIScreen.main.bounds.size.height-280).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
-//                    Spacer().frame(width: 60)
-//                    Image("Tutorial3").resizable().frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.height-600).clipShape(RoundedRectangle(cornerRadius: 50, style: .continuous))
-//                    Spacer().frame(width: 10)
+//            Button(action: {
+//                self.tutorialPageNum = 1
+//
+//                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(50)) {
+//                    self.tutorialPageNum = 0
+//                }
+//
+//            }) {
+//                ZStack {
+//                    //RoundedRectangle(cornerRadius: 8, style: .continuous).frame(width: 200, height: 100) a
+//
+//                    HStack {
+//                        Image(systemName: "gobackward")
+//                        Spacer()
+//                        Text("Restart Tutorial")
+//                    }.frame(width: 150, height: 100)
 //
 //                }
 //            }
-//
-//            Spacer()
-//          //  }
 //        }
-//        //}
 //    }
 //}
+
+
 struct TutorialView: View {
-    
-    var body: some View
-    {
+    var body: some View {
         VStack {
            // Text("hello")
             if #available(iOS 14.0, *) {
                 TabView {
-                    TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home View", tutorialInstructions1: "The left side of the preview bar shows next upcoming sub assignment.", tutorialInstructions2: "If you click on a sub assignment, it will divide the Preview bar into two and the right side will show a detailed description of the selected assignment.", tutorialInstructions3: "Holding a date will allow you to add an assignment that is due then.")
-                    TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks View", tutorialInstructions1: "Clicking on the switch on the top right side of the home screen will give you a different layout that doesn't schedule your time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "")
-                    TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the add button to add assignment.", tutorialInstructions2: "Hold the add button to add a specific thing (Assignments/Classes/Free Time/Grades)", tutorialInstructions3: "")
-                    TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific class", tutorialInstructions2: "Select your tolerance for this class, meaning how much you like the class.", tutorialInstructions3: "Choose your preferred colour to be displayed for your class and classes' assignments.")
-                    TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free time.", tutorialInstructions2: "Select when the free time should repeat, or the specific date for the free time.", tutorialInstructions3: "To see your free time schedule, click 'view free times'.")
-                    TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes View", tutorialInstructions1: "Hold a Class, and click 'Archive Class' to archive it.", tutorialInstructions2: "Click on the top right switch to view archived classes.", tutorialInstructions3: "Hold class and click 'Add assignment' to add an assignment for that class.")
-                    TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, assignments for that Class are shown.", tutorialInstructions2: "Click on the top right edit button to edit class details.", tutorialInstructions3: "Swipe assignments left to complete them.")
-                    TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments View", tutorialInstructions1: "Click top right button to see completed assignments.", tutorialInstructions2: "The blue progress bar shows how near completion you are for that assignment.", tutorialInstructions3: "Swipe assignments left to complete them.")
-                    TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress View", tutorialInstructions1: "Select what classes you want to appear on the Graph.", tutorialInstructions2: "The Graph shows how your grades have improved over time.", tutorialInstructions3: "Hold a Class to add a grade for the specific Class.")
-                    TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Inside Progress View", tutorialInstructions1: "Inside a Class, a bar graph shows you your grades over time for that Class.", tutorialInstructions2: "Underneath there are some interesting statistics to show how well you're doing compared to everyone else.", tutorialInstructions3: "At the bottom are the completed assignments for your Class.")
+                    Group {
+                        TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home Tab", tutorialInstructions1: "The left side of the Preview Bar shows next upcoming Task.", tutorialInstructions2: "If you click on a Task, it will divide the Preview Bar into two, and the right side will show a detailed description of the selected Assignment.", tutorialInstructions3: "Holding a date will allow you to add an Assignment that has a due date set to that date.", tutorialInstructions4: "If you have completed a Task, swipe left on it.", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete your Task or you weren't available, swipe right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "Clicking on the switch indicator on the top-right corner of the Home Tab will give you a diffently structured layout of all of your tasks that doesn't schedule your tasks by time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the Add Button to add an Assignment.", tutorialInstructions2: "Hold the Add Button to choose to specifically add an Assignment, Class, Free Time or Grade.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "Select your Tolerance for this Class, which indicates how much you enjoy working for this Class.", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free Time.", tutorialInstructions2: "Select when the Free Time should repeat, or the specific date for the Free Time if it only takes place once.", tutorialInstructions3: "To see your Free Time schedule, click 'View Free Times'.", tutorialInstructions4: "", tutorialInstructions5: "")
+                    }
+                    
+                    Group {
+                        TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes Tab", tutorialInstructions1: "Hold a Class and click 'Add Assignment' to add an Assignment for that Class.", tutorialInstructions2: "Hold a Class, and click 'Archive Class' to archive it.", tutorialInstructions3: "Click on the top-right switch indicator to view Archived Classes.", tutorialInstructions4: "Click on a Class to see a list of all its Assignments and other details.", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, Assignments for that Class are shown.", tutorialInstructions2: "Click on the edit button (top-right corner) to edit specific Class details.", tutorialInstructions3: "Swipe assignments left to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the Assignment to edit Assignment details.")
+                        TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments Tab", tutorialInstructions1: "Click the top-right button to toggle Completed Assignments.", tutorialInstructions2: "The blue progress bar shows how your progress for the completion of the Assignment.", tutorialInstructions3: "Swipe left on Assignments to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the assignment to edit Assignment details.")
+                        TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows how your grades have been over time.", tutorialInstructions2: "Select which Classes you want to appear on the Graph.", tutorialInstructions3: "Hold a Class to add a Grade for the specific Class.", tutorialInstructions4: "Click on a Class to see detailed information and statistics on your Grades for your Class.", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics.", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "")
+                    }
                 }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
             } else {
+                EmptyView()
                 // Fallback on earlier versions
             }//.frame(height: UIScreen.main.bounds.size.height-200)//.padding(.top, -60)
         }
@@ -321,14 +314,9 @@ struct SettingsView: View {
                 }
                 
                 Section {
-                    if #available(iOS 14.0, *) {
                         NavigationLink(destination:
-                                TutorialView().edgesIgnoringSafeArea(.all)//.padding(.top, -40)
-
-
-                        
+                                        TutorialView().navigationBarTitle("Tutorial", displayMode: .inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
                         ) {
-                            
                             HStack {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
@@ -337,38 +325,36 @@ struct SettingsView: View {
                                 Spacer().frame(width:20)
                                 Text("Tutorial").font(.system(size:20))
                             }.frame(height:40)
-                           
                         }
-                    }
-                    else
-                    {
-                        NavigationLink(destination:
-                        
-                        
-                            PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)
+//                    }
+//                    else {
+//                        NavigationLink(destination:
+//
+//                            EmptyView()
+//                            PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)
    
                         
-                        ) {
-                            
-                            HStack {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
-                                    Image(systemName: "info.circle").resizable().frame(width:25, height:25)
-                                }
-                                Spacer().frame(width:20)
-                                Text("Tutorial").font(.system(size:20))
-                            }.frame(height:40)
-                           
-                        }
-                        
-                    }
+//                        ) {
+//
+//                            HStack {
+//                                ZStack {
+//                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
+//                                    Image(systemName: "info.circle").resizable().frame(width:25, height:25)
+//                                }
+//                                Spacer().frame(width:20)
+//                                Text("Tutorial").font(.system(size:20))
+//                            }.frame(height:40)
+//
+//                        }
+//
+//                    }
                 }
                     
                 Section {
                     HStack {
                         Text("Version:")
                         Spacer()
-                        Text("Developer's Beta 2.0").foregroundColor(.gray)
+                        Text("Developer's Beta 2.1").foregroundColor(.gray)
                     }
                     Button(action: {
                         self.cleardataalert.toggle()

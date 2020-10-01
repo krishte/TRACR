@@ -884,7 +884,7 @@ struct NewFreetimeModalView: View {
                 }.frame(height: 700)
                 List {
                     NavigationLink(destination: FreetimeDetailView()) {
-                        Text("View Free times")
+                        Text("View Free Times")
                     }
                 }
 

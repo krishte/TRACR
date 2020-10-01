@@ -1173,7 +1173,7 @@ struct FreetimeDetailView: View {
                     }
                 }
             }
-        }.navigationBarItems(trailing: Button(action: {
+        }.animation(.spring()).navigationBarItems(trailing: Button(action: {
             if (self.selection.count < 8) {
                 for dayname in self.daylist {
                     if (!self.selection.contains(dayname)) {

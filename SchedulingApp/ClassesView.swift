@@ -657,11 +657,9 @@ struct ClassesView: View {
             }
             approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(15))*15)
            // print(approxlength)
+            //check if doable in totaltime and newd assuming 1 subassignment per day
         }
-        else {
-            approxlength = max(Int(Double(totaltime)/Double(newd)), 30)
-            approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(15))*15)
-        }
+
        // print(totaltime, approxlength, daystilldue)
         //possibly 0...newd or 0..<newd
         var possibledays = 0
@@ -926,7 +924,7 @@ struct ClassesView: View {
         
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
-        var latestDate = Date(timeIntervalSinceNow: TimeInterval(timezoneOffset))
+        var latestDate = Date(timeIntervalSinceNow: TimeInterval(0))
         var dateFreeTimeDict = [Date: Int]()
         var startoffreetimeDict = [Date: Date]()
         var specificdatefreetimedict = [Date: [(Date,Date)]]()
@@ -974,9 +972,8 @@ struct ClassesView: View {
         let actualfreetimeslist = [sunfreetimelist, monfreetimelist, tuefreetimelist, wedfreetimelist, thufreetimelist, frifreetimelist, satfreetimelist, sunfreetimelist]
         
         for (index, element) in generalfreetimelist.enumerated() {
-            if (element % 5 == 4) {
-                generalfreetimelist[index] += 1
-            }
+                generalfreetimelist[index] += Int(Double(generalfreetimelist[index])/Double(5)) * 5
+            
         //    print(generalfreetimelist[index])
         }
         
@@ -986,7 +983,7 @@ struct ClassesView: View {
             latestDate = max(latestDate, assignment.duedate)
         }
         
-        let daystilllatestdate = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: TimeInterval(timezoneOffset)), to: latestDate).day!
+        let daystilllatestdate = Calendar.current.dateComponents([.day], from: Date(timeIntervalSinceNow: TimeInterval(0)), to: latestDate).day!
         
         for i in 0...daystilllatestdate {
             subassignmentdict[i] = []
@@ -1012,7 +1009,7 @@ struct ClassesView: View {
 //
 //        }
         for assignment in assignmentlist {
-            let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: Date(timeInterval: -Double(timezoneOffset), since: assignment.duedate)))).day!
+            let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeInterval: 0, since: assignment.duedate)))).day!
                 //print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))).description, Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate)), daystilldue)
                // print(daystilldue)
                 
@@ -1020,21 +1017,21 @@ struct ClassesView: View {
 
                 let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.totaltime), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
-                print(assignment.name, daystilldue)
+               // print(assignment.name, daystilldue)
                // print(daystilldue)
                 for (daysfromnow, lengthofwork) in subassignments {
                     dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*daysfromnow), since: startOfDay)]! -= lengthofwork
                     subassignmentdict[daysfromnow]!.append((assignment.name, lengthofwork))
-                    print(daysfromnow, lengthofwork)
+                   // print(daysfromnow, lengthofwork)
                 }
         }
         for i in 0...daystilllatestdate {
             if (subassignmentdict[i]!.count > 0)
             {
-               // print(i)
-                for (_, _) in subassignmentdict[i]!
+                print(i)
+                for (name, length) in subassignmentdict[i]!
                 {
-                   //print(name, length)
+                   print(name, length)
                 }
             }
         }
@@ -1346,135 +1343,135 @@ struct ClassesView: View {
                     
                     Button(action: {
                     //    self.createsubassignments()
-                          // self.master()
+                           self.master()
                            // self.schedulenotifications()
                            // MasterStruct().master()
-                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
-                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
-                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
-                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
-                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
-                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
-                            let extendedessay = "Extended Essay"
-                            let tok = "Theory of Knowledge"
-                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
-                               let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
-
-//                            for assignmenttype in assignmenttypes {
-//                                let newType = AssignmentTypes(context: self.managedObjectContext)
-//                                newType.type = assignmenttype
-//                                newType.rangemin = 30
-//                                newType.rangemax = 300
-//                                print(newType.type, newType.rangemin, newType.rangemax)
+//                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
+//                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
+//                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
+//                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
+//                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
+//                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
+//                            let extendedessay = "Extended Essay"
+//                            let tok = "Theory of Knowledge"
+//                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
+//                               let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+//
+////                            for assignmenttype in assignmenttypes {
+////                                let newType = AssignmentTypes(context: self.managedObjectContext)
+////                                newType.type = assignmenttype
+////                                newType.rangemin = 30
+////                                newType.rangemax = 300
+////                                print(newType.type, newType.rangemin, newType.rangemax)
+////                                do {
+////                                    try self.managedObjectContext.save()
+////                                    print("new Subassignment")
+////                                } catch {
+////                                    print(error.localizedDescription)
+////
+////
+////                                }
+////                            }
+//                            for classname in classnames {
+//                                let newClass = Classcool(context: self.managedObjectContext)
+//                                newClass.originalname = classname
+//                                newClass.tolerance = Int64.random(in: 0 ... 10)
+//                                newClass.name = classname
+//                                newClass.assignmentnumber = 0
+//                                newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+//                               // newClass.isarchived = false
+//
 //                                do {
 //                                    try self.managedObjectContext.save()
-//                                    print("new Subassignment")
+//                                    print("Class made")
 //                                } catch {
 //                                    print(error.localizedDescription)
-//
-//
 //                                }
 //                            }
-                            for classname in classnames {
-                                let newClass = Classcool(context: self.managedObjectContext)
-                                newClass.originalname = classname
-                                newClass.tolerance = Int64.random(in: 0 ... 10)
-                                newClass.name = classname
-                                newClass.assignmentnumber = 0
-                                newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-                               // newClass.isarchived = false
-
-                                do {
-                                    try self.managedObjectContext.save()
-                                    print("Class made")
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
-
-                            for classname in classnames {
-                                let randomint = Int.random(in: 1...10)
-                                for i in 0 ..< randomint {
-                                    let newAssignment = Assignment(context: self.managedObjectContext)
-                                    newAssignment.name = classname + " assignment " + String(i)
-                                    newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
-                                    newAssignment.totaltime = Int64.random(in: 2...10)*60
-                                    newAssignment.subject = classname
-                                    newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime/60)*60
-                                    newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
-                                    newAssignment.grade = Int64.random(in: 2...6)
-                                    newAssignment.completed = false
-                                    newAssignment.type = assignmenttypes.randomElement()!
-
-                                    for classity in self.classlist {
-                                        if (classity.name == newAssignment.subject) {
-                                            classity.assignmentnumber += 1
-                                            newAssignment.color = classity.color
-                                            do {
-                                                try self.managedObjectContext.save()
-                                                print("Class number changed")
-                                            } catch {
-                                                print(error.localizedDescription)
-                                            }
-                                        }
-                                    }
-
-                                    let newrandomint = Int.random(in: 2...5)
-                                    var minutesleft = newAssignment.timeleft
-
-                                    for j in 0 ..< newrandomint {
-                                        if (minutesleft == 0) {
-                                            break
-                                        }
-
-                                        else if (minutesleft == 60 || j == (newrandomint - 1)) {
-                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
-                                            newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in: 10000 ... 1700000)
-                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
-                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*minutesleft))
-                                            self.stored  += 20000
-                                            newSubassignment.color = newAssignment.color
-                                            newSubassignment.assignmentduedate = newAssignment.duedate
-                                            print(newSubassignment.assignmentduedate.description)
-                                            minutesleft = 0
-                                            do {
-                                                try self.managedObjectContext.save()
-                                                print("new Subassignment")
-                                            } catch {
-                                                print(error.localizedDescription)
-                                            }
-                                        }
-
-                                        else {
-                                            let thirdrandomint = Int64.random(in: 1...2)*60
-                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
-                                            newSubassignment.assignmentname = newAssignment.name
-                                            let randomDate = Double.random(in:10000 ... 1700000)
-                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
-                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*thirdrandomint))
-                                            self.stored += 20000
-                                            newSubassignment.color = newAssignment.color
-                                            newSubassignment.assignmentduedate = newAssignment.duedate
-                                            print(newSubassignment.assignmentduedate.description)
-                                            minutesleft -= thirdrandomint
-                                            do {
-                                                try self.managedObjectContext.save()
-                                                print("new Subassignment")
-                                            } catch {
-                                                print(error.localizedDescription)
-                                            }
-                                        }
-                                    }
-
-                                    do {
-                                        try self.managedObjectContext.save()
-                                        print("Class made")
-                                    } catch {
-                                        print(error.localizedDescription)
-                                    }
-                                }
-                            }
+//
+//                            for classname in classnames {
+//                                let randomint = Int.random(in: 1...10)
+//                                for i in 0 ..< randomint {
+//                                    let newAssignment = Assignment(context: self.managedObjectContext)
+//                                    newAssignment.name = classname + " assignment " + String(i)
+//                                    newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
+//                                    newAssignment.totaltime = Int64.random(in: 2...10)*60
+//                                    newAssignment.subject = classname
+//                                    newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime/60)*60
+//                                    newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
+//                                    newAssignment.grade = Int64.random(in: 2...6)
+//                                    newAssignment.completed = false
+//                                    newAssignment.type = assignmenttypes.randomElement()!
+//
+//                                    for classity in self.classlist {
+//                                        if (classity.name == newAssignment.subject) {
+//                                            classity.assignmentnumber += 1
+//                                            newAssignment.color = classity.color
+//                                            do {
+//                                                try self.managedObjectContext.save()
+//                                                print("Class number changed")
+//                                            } catch {
+//                                                print(error.localizedDescription)
+//                                            }
+//                                        }
+//                                    }
+//
+//                                    let newrandomint = Int.random(in: 2...5)
+//                                    var minutesleft = newAssignment.timeleft
+//
+//                                    for j in 0 ..< newrandomint {
+//                                        if (minutesleft == 0) {
+//                                            break
+//                                        }
+//
+//                                        else if (minutesleft == 60 || j == (newrandomint - 1)) {
+//                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+//                                            newSubassignment.assignmentname = newAssignment.name
+//                                            let randomDate = Double.random(in: 10000 ... 1700000)
+//                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
+//                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*minutesleft))
+//                                            self.stored  += 20000
+//                                            newSubassignment.color = newAssignment.color
+//                                            newSubassignment.assignmentduedate = newAssignment.duedate
+//                                            print(newSubassignment.assignmentduedate.description)
+//                                            minutesleft = 0
+//                                            do {
+//                                                try self.managedObjectContext.save()
+//                                                print("new Subassignment")
+//                                            } catch {
+//                                                print(error.localizedDescription)
+//                                            }
+//                                        }
+//
+//                                        else {
+//                                            let thirdrandomint = Int64.random(in: 1...2)*60
+//                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+//                                            newSubassignment.assignmentname = newAssignment.name
+//                                            let randomDate = Double.random(in:10000 ... 1700000)
+//                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
+//                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*thirdrandomint))
+//                                            self.stored += 20000
+//                                            newSubassignment.color = newAssignment.color
+//                                            newSubassignment.assignmentduedate = newAssignment.duedate
+//                                            print(newSubassignment.assignmentduedate.description)
+//                                            minutesleft -= thirdrandomint
+//                                            do {
+//                                                try self.managedObjectContext.save()
+//                                                print("new Subassignment")
+//                                            } catch {
+//                                                print(error.localizedDescription)
+//                                            }
+//                                        }
+//                                    }
+//
+//                                    do {
+//                                        try self.managedObjectContext.save()
+//                                        print("Class made")
+//                                    } catch {
+//                                        print(error.localizedDescription)
+//                                    }
+//                                }
+//                            }
 
 
                        // self.schedulenotifications()

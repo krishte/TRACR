@@ -99,12 +99,16 @@ struct TutorialPageView: View {
                     Spacer()
                 }
                 
+                Spacer().frame(height: 5)
+                
                 HStack(alignment: .top) {
                     Image(systemName: "2.circle.fill").foregroundColor(tutorialInstructions2 == "" ? Color.white : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions2).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
+                
+                Spacer().frame(height: 5)
                 
                 HStack(alignment: .top) {
                     Image(systemName: "3.circle.fill").foregroundColor(tutorialInstructions3 == "" ? Color.white : Color("thirteen"))
@@ -113,6 +117,8 @@ struct TutorialPageView: View {
                     Spacer()
                 }
                 
+                Spacer().frame(height: 5)
+                
                 HStack(alignment: .top) {
                     Image(systemName: "4.circle.fill").foregroundColor(tutorialInstructions4 == "" ? Color.white : Color("thirteen"))
                     Spacer().frame(width: 15)
@@ -120,13 +126,17 @@ struct TutorialPageView: View {
                     Spacer()
                 }
                 
+                Spacer().frame(height: 5)
+                
                 HStack(alignment: .top) {
                     Image(systemName: "5.circle.fill").foregroundColor(tutorialInstructions5 == "" ? Color.white : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions5).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-            }.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 15) // was 120 for bottom
+                
+                Spacer().frame(height: 35)
+            }.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5) // was 120 for bottom
         }//.padding(.top, -100)
     }
 }

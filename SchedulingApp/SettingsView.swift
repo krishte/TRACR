@@ -74,10 +74,20 @@ struct TutorialPageView: View {
     var tutorialInstructions3: String
     var tutorialInstructions4: String
     var tutorialInstructions5: String
+    var tutorialposition: [(CGFloat, CGFloat)]
     
     var body: some View {
         VStack {
-            Image(self.tutorialScreenshot).resizable().aspectRatio(contentMode: .fit).frame(height: (UIScreen.main.bounds.size.height / 2) - 20)
+            ZStack {
+                Image(self.tutorialScreenshot).resizable().aspectRatio(contentMode: .fit).frame(height: (UIScreen.main.bounds.size.height / 2) - 20)
+//                ForEach(0..<tutorialposition.count)
+//                {
+//                    coordinatesIndex in
+//
+//                    Image(systemName: String(coordinatesIndex+1) + ".circle.fill").foregroundColor(Color("thirteen")).position(x: tutorialposition[coordinatesIndex].0, y: tutorialposition[coordinatesIndex].1)
+//
+//                }
+            }
             
             Rectangle().frame(width: UIScreen.main.bounds.size.width - 40, height: 1)
              
@@ -93,40 +103,41 @@ struct TutorialPageView: View {
             ScrollView(.vertical, showsIndicators: false) {
 //            VStack(spacing: 5) {
                 HStack(alignment: .top) {
-                    Image(systemName: "1.circle.fill").foregroundColor(tutorialInstructions1 == "" ? Color.white : Color("thirteen"))//.frame( alignment: .topLeading)
+                    Image(systemName: "1.circle.fill").foregroundColor(tutorialInstructions1 == "" ? Color.clear : Color("thirteen"))//.frame( alignment: .topLeading)
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions1).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-                
+                Spacer().frame(height: 5)
                 HStack(alignment: .top) {
-                    Image(systemName: "2.circle.fill").foregroundColor(tutorialInstructions2 == "" ? Color.white : Color("thirteen"))
+                    Image(systemName: "2.circle.fill").foregroundColor(tutorialInstructions2 == "" ? Color.clear : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions2).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-                
+                Spacer().frame(height: 5)
                 HStack(alignment: .top) {
-                    Image(systemName: "3.circle.fill").foregroundColor(tutorialInstructions3 == "" ? Color.white : Color("thirteen"))
+                    Image(systemName: "3.circle.fill").foregroundColor(tutorialInstructions3 == "" ? Color.clear : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions3).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-                
+                Spacer().frame(height: 5)
                 HStack(alignment: .top) {
-                    Image(systemName: "4.circle.fill").foregroundColor(tutorialInstructions4 == "" ? Color.white : Color("thirteen"))
+                    Image(systemName: "4.circle.fill").foregroundColor(tutorialInstructions4 == "" ? Color.clear : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions4).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-                
+                Spacer().frame(height: 5)
                 HStack(alignment: .top) {
-                    Image(systemName: "5.circle.fill").foregroundColor(tutorialInstructions5 == "" ? Color.white : Color("thirteen"))
+                    Image(systemName: "5.circle.fill").foregroundColor(tutorialInstructions5 == "" ? Color.clear : Color("thirteen"))
                     Spacer().frame(width: 15)
                     Text(tutorialInstructions5).fixedSize(horizontal: false, vertical: true)
                     Spacer()
                 }
-            }.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 15) // was 120 for bottom
+                Spacer().frame(height: 35)
+            }.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5) // was 120 for bottom
         }//.padding(.top, -100)
     }
 }
@@ -169,20 +180,20 @@ struct TutorialView: View {
             if #available(iOS 14.0, *) {
                 TabView {
                     Group {
-                        TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home Tab", tutorialInstructions1: "The left side of the Preview Bar shows next upcoming Task.", tutorialInstructions2: "If you click on a Task, it will divide the Preview Bar into two, and the right side will show a detailed description of the selected Assignment.", tutorialInstructions3: "Holding a date will allow you to add an Assignment that has a due date set to that date.", tutorialInstructions4: "If you have completed a Task, swipe left on it.", tutorialInstructions5: "")
-                        TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete your Task or you weren't available, swipe right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "")
-                        TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "Clicking on the switch indicator on the top-right corner of the Home Tab will give you a diffently structured layout of all of your tasks that doesn't schedule your tasks by time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "")
-                        TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the Add Button to add an Assignment.", tutorialInstructions2: "Hold the Add Button to choose to specifically add an Assignment, Class, Free Time or Grade.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "")
-                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "Select your Tolerance for this Class, which indicates how much you enjoy working for this Class.", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "")
-                        TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free Time.", tutorialInstructions2: "Select when the Free Time should repeat, or the specific date for the Free Time if it only takes place once.", tutorialInstructions3: "To see your Free Time schedule, click 'View Free Times'.", tutorialInstructions4: "", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home Tab", tutorialInstructions1: "The left side of the Preview Bar shows next upcoming Task.", tutorialInstructions2: "If you click on a Task, it will divide the Preview Bar into two, and the right side will show a detailed description of the selected Assignment.", tutorialInstructions3: "Holding a date will allow you to add an Assignment that has a due date set to that date.", tutorialInstructions4: "If you have completed a Task, swipe left on it.", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "Clicking on the switch indicator on the top-right corner of the Home Tab will give you a diffently structured layout of all of your tasks that doesn't schedule your tasks by time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete your Task or you weren't available, swipe right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the Add Button to add an Assignment.", tutorialInstructions2: "Hold the Add Button to choose to specifically add an Assignment, Class, Free Time or Grade.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "Select your Tolerance for this Class, which indicates how much you enjoy working for this Class.", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free Time.", tutorialInstructions2: "Select when the Free Time should repeat, or the specific date for the Free Time if it only takes place once.", tutorialInstructions3: "To see your Free Time schedule, click 'View Free Times'.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
                     }
                     
                     Group {
-                        TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes Tab", tutorialInstructions1: "Hold a Class and click 'Add Assignment' to add an Assignment for that Class.", tutorialInstructions2: "Hold a Class, and click 'Archive Class' to archive it.", tutorialInstructions3: "Click on the top-right switch indicator to view Archived Classes.", tutorialInstructions4: "Click on a Class to see a list of all its Assignments and other details.", tutorialInstructions5: "")
-                        TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, Assignments for that Class are shown.", tutorialInstructions2: "Click on the edit button (top-right corner) to edit specific Class details.", tutorialInstructions3: "Swipe assignments left to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the Assignment to edit Assignment details.")
-                        TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments Tab", tutorialInstructions1: "Click the top-right button to toggle Completed Assignments.", tutorialInstructions2: "The blue progress bar shows how your progress for the completion of the Assignment.", tutorialInstructions3: "Swipe left on Assignments to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the assignment to edit Assignment details.")
-                        TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows how your grades have been over time.", tutorialInstructions2: "Select which Classes you want to appear on the Graph.", tutorialInstructions3: "Hold a Class to add a Grade for the specific Class.", tutorialInstructions4: "Click on a Class to see detailed information and statistics on your Grades for your Class.", tutorialInstructions5: "")
-                        TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics.", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "")
+                        TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes Tab", tutorialInstructions1: "Hold a Class and click 'Add Assignment' to add an Assignment for that Class.", tutorialInstructions2: "Hold a Class, and click 'Archive Class' to archive it.", tutorialInstructions3: "Click on the top-right switch indicator to view Archived Classes.", tutorialInstructions4: "Click on a Class to see a list of all its Assignments and other details.", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, Assignments for that Class are shown.", tutorialInstructions2: "Click on the edit button (top-right corner) to edit specific Class details.", tutorialInstructions3: "Swipe assignments left to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the Assignment to edit Assignment details.", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments Tab", tutorialInstructions1: "Click the top-right button to toggle Completed Assignments.", tutorialInstructions2: "The blue progress bar shows how your progress for the completion of the Assignment.", tutorialInstructions3: "Swipe left on Assignments to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the assignment to edit Assignment details.", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows how your grades have been over time.", tutorialInstructions2: "Select which Classes you want to appear on the Graph.", tutorialInstructions3: "Hold a Class to add a Grade for the specific Class.", tutorialInstructions4: "Click on a Class to see detailed information and statistics on your Grades for your Class.", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics.", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
                     }
                 }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
             } else {

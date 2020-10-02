@@ -4,6 +4,7 @@ import SwiftUI
 
 struct NewAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     @EnvironmentObject var changingDate: DisplayedDate
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
@@ -102,7 +103,7 @@ struct NewAssignmentModalView: View {
 
                         }) {
                             HStack {
-                                Text("Select due date and time").foregroundColor(Color.black)
+                                Text("Select due date and time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                 Spacer()
                                 Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                             }
@@ -515,6 +516,7 @@ class FreeTimeNavigator: ObservableObject {
     @Published var updateview: Bool = false
 }
 struct NewFreetimeModalView: View {
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
     @State var repeatlist: [String] = ["Every Monday", "Every Tuesday", "Every Wednesday", "Every Thursday", "Every Friday", "Every Saturday", "Every Sunday"]
     @State private var selection: Set<String> = ["None"]
@@ -626,7 +628,7 @@ struct NewFreetimeModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select start time").foregroundColor(Color.black)
+                                    Text("Select start time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
                                 }
@@ -645,7 +647,7 @@ struct NewFreetimeModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select start time").foregroundColor(Color.black)
+                                    Text("Select start time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
                                 }
@@ -699,7 +701,7 @@ struct NewFreetimeModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select end time").foregroundColor(Color.black)
+                                    Text("Select end time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
                                 }
@@ -719,7 +721,7 @@ struct NewFreetimeModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select end time").foregroundColor(Color.black)
+                                    Text("Select end time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
                                 }
@@ -741,7 +743,7 @@ struct NewFreetimeModalView: View {
                             Text("Repeat").frame(height: 50)
                             Spacer()
                             
-                            Text(repetitionTextCreator(self.selection)).foregroundColor(.gray)
+                            Text(repetitionTextCreator(self.selection)).foregroundColor(colorScheme == .light ? Color.gray : Color.white)
                         }
                     
                         List {
@@ -754,7 +756,7 @@ struct NewFreetimeModalView: View {
                                     }
                                      
                                  }) {
-                                    Text("None").foregroundColor(.black).fontWeight(.light)
+                                    Text("None").foregroundColor(colorScheme == .light ? Color.gray : Color.white).fontWeight(.light)
                                  }
                                 
                                  if (self.selection.contains("None")) {
@@ -777,7 +779,7 @@ struct NewFreetimeModalView: View {
                                             }
                                             
                                         }) {
-                                            Text(repeatoption).foregroundColor(.black).fontWeight(.light)
+                                            Text(repeatoption).foregroundColor(colorScheme == .light ? Color.gray : Color.white).fontWeight(.light)
                                         }
                                         if (self.selection.contains(repeatoption)) {
                                             Spacer()

@@ -228,7 +228,7 @@ struct WeeklyBlockView: View {
 struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
     @Binding var increased: Bool
     @Binding var stopupdating: Bool
-    
+
     var viewControllers: [UIViewController]
  
     func makeCoordinator() -> Coordinator {
@@ -405,7 +405,22 @@ struct SubassignmentAddTimeAction: View {
         }.padding(.all, 15).frame(maxHeight: 270).background(Color("very_light_gray")).cornerRadius(18).padding(.all, 15)
     }
 }
- 
+
+struct TimeIndicator: View {
+    @Binding var dateForTimeIndicator: Date
+    
+    var body: some View {
+        VStack {
+            Spacer().frame(height: 19)
+            HStack(spacing: 0) {
+                Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
+                Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
+                
+            }.padding(.top, (CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: dateForTimeIndicator), to: dateForTimeIndicator).second!).truncatingRemainder(dividingBy: 86400))/3600 * 60.35)
+            Spacer()
+        }
+    }
+}
 
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -468,6 +483,8 @@ struct HomeBodyView: View {
     @State var timezoneOffset: Int = TimeZone.current.secondsFromGMT()
     @State var showeditassignment: Bool = false
     @ObservedObject var sheetnavigator: SheetNavigatorEditClass = SheetNavigatorEditClass()
+    
+    @State var dateForTimeIndicator = Date()
     
     init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, uniformlistshows: Binding<Bool>, NewAssignmentPresenting2: Binding<Bool>) {
         self._verticaloffset = verticaloffset
@@ -695,7 +712,7 @@ struct HomeBodyView: View {
 //                                                    print(subassignment.startdatetime.description)
 //                                                }
                                             }
-                                                //was +122 but had to subtract 2*60.35 to account for GMT + 2 
+                                                //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                         }
                                     }.animation(.spring())
                                 }
@@ -704,20 +721,12 @@ struct HomeBodyView: View {
                         }
 
                         if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(timeIntervalSinceNow: TimeInterval(0)), toGranularity: .day)) {
-                            VStack {
-                                Spacer().frame(height: 19)
-                                HStack(spacing: 0) {
-                                    Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
-                                    Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
-                                    
-                                }.padding(.top, (CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: Date()), to: Date()).second!).truncatingRemainder(dividingBy: 86400))/3600 * 60.35)
-                                Spacer()
+                            TimeIndicator(dateForTimeIndicator: self.$dateForTimeIndicator).onReceive(timer) { input in
+                                self.dateForTimeIndicator = input
                             }
                         }
                     }//.animation(.spring())
                 }
-            }.onReceive(timer) { _ in
-                //
             }
                 }//.transition(.move(edge: .leading)).animation(.spring())
         }
@@ -1455,10 +1464,10 @@ struct HomeView: View {
             defaults.set(self.uniformlistshows, forKey: "savedtoggleview")
         }
     }
+    
     func getcompletedAssignments() -> Bool {
         for assignment in assignmentlist {
-            if (assignment.completed == true && assignment.grade == 0)
-            {
+            if (assignment.completed == true && assignment.grade == 0) {
                 return true;
             }
         }

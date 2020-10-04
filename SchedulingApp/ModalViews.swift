@@ -928,6 +928,7 @@ struct FreetimeDetailView: View {
     
     var body: some View {
         List {
+          //  Text(String(freetimelist.count))
             Group {
                 Button(action: {self.selectDeselect("Monday")}) {
                     HStack {
@@ -1317,6 +1318,7 @@ struct NewGradeModalView: View {
 struct EditAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var changingDate: DisplayedDate
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
@@ -1459,7 +1461,7 @@ struct EditAssignmentModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select due date and time").foregroundColor(Color.black)
+                                    Text("Select due date and time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                                 }
@@ -1478,7 +1480,7 @@ struct EditAssignmentModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select due date and time").foregroundColor(Color.black)
+                                    Text("Select due date and time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                                 }

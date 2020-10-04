@@ -672,9 +672,9 @@ struct ClassesView: View {
             //check if doable in totaltime and newd assuming 1 subassignment per day
         }
         
-        if (Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(daystilldue))/CGFloat(5))*5) > approxlength)
+        if (Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(newd))/CGFloat(5))*5) > approxlength)
         {
-            approxlength = Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(daystilldue))/CGFloat(5))*5)
+            approxlength = Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(newd))/CGFloat(5))*5)
         }
 
        // print(totaltime, approxlength, daystilldue)
@@ -697,7 +697,7 @@ struct ClassesView: View {
             
             if (ntotal == possibledays)
             {
-             //   print("exact number of days")
+                print("exact number of days")
                 var sumsy = 0
                 for i in 0..<ntotal-1 {
                     tempsubassignmentlist.append((possibledayslist[i], approxlength))
@@ -707,7 +707,7 @@ struct ClassesView: View {
             }
             else
             {
-               // print("too many days")
+                print("too many days")
                 let breaks = possibledays-ntotal
                 //print("Breaks: " + String(possibledays-ntotal))
              //   print("Required Days: " + String(ntotal))
@@ -734,9 +734,9 @@ struct ClassesView: View {
             }
         }
         else {
-           // print("not enought time")
+            print("not enought time")
             var extratime = totaltime - approxlength*possibledays
-           // print(totaltime, possibledays, approxlength, extratime)
+            print(totaltime, possibledays, approxlength, extratime, newd)
             for i in 0..<newd {
                 if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! < approxlength) {
                     notpossibledayslist.append(i)
@@ -787,6 +787,28 @@ struct ClassesView: View {
                         }
                     }
                 }
+                else
+                {
+                    for i in 0..<possibledayslist.count {
+                        for j in 0..<tempsubassignmentlist.count {
+                            if (tempsubassignmentlist[j].0 == possibledayslist[i])
+                            {
+                                let value = min(extratime, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*tempsubassignmentlist[j].0), since: startOfDay)]! - tempsubassignmentlist[j].1, 60 )
+                                tempsubassignmentlist[j].1 += value
+                                extratime -= value
+                                if (extratime == 0)
+                                {
+                                    break
+                                }
+                            }
+                            
+                        }
+                        if (extratime == 0)
+                        {
+                            break
+                        }
+                    }
+                }
                 if (extratime != 0)
                 {
                     print(extratime)
@@ -797,7 +819,7 @@ struct ClassesView: View {
             }
         }
         for (daysfromnow, lengthofwork) in tempsubassignmentlist {
-       //     print(daysfromnow, lengthofwork)
+            print(daysfromnow, lengthofwork)
         }
         return (tempsubassignmentlist, newd)
     }
@@ -1079,7 +1101,7 @@ struct ClassesView: View {
                 for (daysfromnow, lengthofwork) in subassignments {
                     dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*daysfromnow), since: startOfDay)]! -= lengthofwork
                     subassignmentdict[daysfromnow]!.append((assignment.name, lengthofwork))
-                    print(daysfromnow, lengthofwork)
+                 //   print(daysfromnow, lengthofwork)
                 }
         }
         for i in 0...daystilllatestdate {

@@ -605,6 +605,7 @@ struct HomeBodyView: View {
     
     var body: some View {
         VStack {
+           // Text(String(subassignmentlist.count))
             if (!self.uniformlistviewshows) {
                 VStack {
                     HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {

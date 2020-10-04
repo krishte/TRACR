@@ -271,7 +271,7 @@ struct FilterView: View {
                                 }
                                 else
                                 {
-                                    self.alertView = .noclass
+                                    self.sheetNavigator.alertView = .noclass
                                     self.NewAlertPresenting = true
                                 }
                                 
@@ -292,7 +292,7 @@ struct FilterView: View {
                                     }
                                     else
                                     {
-                                        self.alertView = .noclass
+                                        self.sheetNavigator.alertView = .noclass
                                         self.NewAlertPresenting = true
                                     }
                                 }) {
@@ -328,7 +328,7 @@ struct FilterView: View {
                                     }
                                     else
                                     {
-                                        self.alertView = .noassignment
+                                        self.sheetNavigator.alertView = .noassignment
                                         self.NewAlertPresenting = true
                                     }
                                     //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
@@ -339,7 +339,9 @@ struct FilterView: View {
                                 }
                                 
                             }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
-                        }.sheet(isPresented: $NewSheetPresenting, content: sheetContent )
+                        }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
+                            Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
+                        }
                         
                         
                         

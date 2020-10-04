@@ -249,7 +249,7 @@ struct SettingsView: View {
                                 Image(systemName: "slider.horizontal.3").resizable().frame(width:25, height:25)
                             }
                             Spacer().frame(width:20)
-                            Text("Preferences").font(.system(size:20))
+                            Text("Type Sliders").font(.system(size:20))
                         }.frame(height:40)
                     }
                // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
@@ -516,7 +516,7 @@ struct PreferencesView: View {
                     }//.animation(.spring())
                 }//.animation(.spring())
            // }.navigationBarTitle("Preferences")
-        }.navigationBarTitle("Preferences")
+        }.navigationBarTitle("Type Sliders")
     }
 }
 struct DetailPreferencesView: View {

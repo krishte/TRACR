@@ -649,6 +649,8 @@ struct ClassesView: View {
         let newd = Int(ceil(Double(daystilldue)*Double(safetyfraction)))
         let totaltime = totaltime
         //let rangeoflengths = [30, 300]
+      //  print(assignment.name)
+     //   print(newd, daystilldue)
         var approxlength = 0
         if (bulk) {
             for classity in classlist {
@@ -658,14 +660,21 @@ struct ClassesView: View {
                         if (assignmenttype.type == assignment.type)
                         {
                             approxlength = Int(assignmenttype.rangemin + ((assignmenttype.rangemax - assignmenttype.rangemin)/5) * classity.tolerance)
-                            print(approxlength)
+                          //  print(approxlength)
                         }
                     }
                 }
             }
+        //    print(approxlength)
             approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(5))*5)
+    //        print(approxlength)
            // print(approxlength)
             //check if doable in totaltime and newd assuming 1 subassignment per day
+        }
+        
+        if (Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(daystilldue))/CGFloat(5))*5) > approxlength)
+        {
+            approxlength = Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(daystilldue))/CGFloat(5))*5)
         }
 
        // print(totaltime, approxlength, daystilldue)
@@ -680,19 +689,52 @@ struct ClassesView: View {
                 possibledayslist.append(i)
             }
         }
-        print(totaltime, approxlength)
+      //  print(totaltime, approxlength)
         let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
      //   print(totaltime, approxlength)
         if (ntotal <= possibledays)
         {
-            var sumsy = 0
-            for i in 0..<ntotal-1 {
-                tempsubassignmentlist.append((possibledayslist[i], approxlength))
-                sumsy += approxlength
+            
+            if (ntotal == possibledays)
+            {
+             //   print("exact number of days")
+                var sumsy = 0
+                for i in 0..<ntotal-1 {
+                    tempsubassignmentlist.append((possibledayslist[i], approxlength))
+                    sumsy += approxlength
+                }
+                tempsubassignmentlist.append((possibledayslist[ntotal-1], totaltime-sumsy))
             }
-            tempsubassignmentlist.append((possibledayslist[ntotal-1], totaltime-sumsy))
+            else
+            {
+               // print("too many days")
+                let breaks = possibledays-ntotal
+                //print("Breaks: " + String(possibledays-ntotal))
+             //   print("Required Days: " + String(ntotal))
+               // print("Possible Days: " + String(possibledays))
+                var groupslist: [Int] = []
+                for _ in 0..<breaks {
+                    groupslist.append(ntotal/breaks)
+                }
+                for i in 0..<(ntotal%breaks)
+                {
+                    groupslist[i] += 1
+                }
+                var counter = 0
+                var sumsy = 0
+                for (_, val) in groupslist.enumerated() {
+                    for _ in 0..<val {
+                        tempsubassignmentlist.append((possibledayslist[counter], approxlength))
+                        sumsy += approxlength
+                        counter += 1
+                    }
+                    counter += 1
+                }
+                tempsubassignmentlist[tempsubassignmentlist.count-1].1 -= (sumsy-totaltime)
+            }
         }
         else {
+           // print("not enought time")
             var extratime = totaltime - approxlength*possibledays
            // print(totaltime, possibledays, approxlength, extratime)
             for i in 0..<newd {
@@ -754,7 +796,9 @@ struct ClassesView: View {
 
             }
         }
-        
+        for (daysfromnow, lengthofwork) in tempsubassignmentlist {
+       //     print(daysfromnow, lengthofwork)
+        }
         return (tempsubassignmentlist, newd)
     }
     func createsubassignments() {
@@ -907,7 +951,7 @@ struct ClassesView: View {
                 }
             }
         }
-        print("epic success")
+      //  print("epic success")
         
         for (index, _) in subassignmentlist.enumerated() {
              self.managedObjectContext.delete(self.subassignmentlist[index])
@@ -938,7 +982,7 @@ struct ClassesView: View {
         var specificdatefreetimedict = [Date: [(Date,Date)]]()
         //initial subassignment objects are added just as (assignmentname, length of subassignment)
         var subassignmentdict = [Int: [(String, Int)]]()
-        print(startOfDay.description)
+       // print(startOfDay.description)
         
         for freetime in freetimelist {
             if (freetime.monday) {
@@ -971,19 +1015,22 @@ struct ClassesView: View {
                 satfreetimelist.append((freetime.startdatetime, freetime.enddatetime))
             }
             if (freetime.sunday) {
+              //  print( Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!, freetime.startdatetime.description)
                 timesunday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 sunfreetimelist.append((freetime.startdatetime, freetime.enddatetime))
             }
         }
+       // print("Time Sunday: " + String(timesunday))//
         var generalfreetimelist = [timesunday, timemonday, timetuesday, timewednesday, timethursday, timefriday, timesaturday]
 
         let actualfreetimeslist = [sunfreetimelist, monfreetimelist, tuefreetimelist, wedfreetimelist, thufreetimelist, frifreetimelist, satfreetimelist, sunfreetimelist]
-        
+     //   print(generalfreetimelist)
         for (index, element) in generalfreetimelist.enumerated() {
-                generalfreetimelist[index] += Int(Double(generalfreetimelist[index])/Double(5)) * 5
-            
+                generalfreetimelist[index] = Int(Double(generalfreetimelist[index])/Double(5) * 5)
+                
         //    print(generalfreetimelist[index])
         }
+     //   print(generalfreetimelist)
         
 
         
@@ -999,6 +1046,7 @@ struct ClassesView: View {
 //            startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = startoffreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
             specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = actualfreetimeslist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
             //print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! )
+           // print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)])
         }
     
         for freetime in freetimelist {
@@ -1022,27 +1070,56 @@ struct ClassesView: View {
                // print(daystilldue)
                 
                 //print(daystilldue)
-
+            print(assignment.name)
                 let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.totaltime), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
-               // print(assignment.name, daystilldue)
+             //   print(assignment.name, daystilldue)
                // print(daystilldue)
+            
                 for (daysfromnow, lengthofwork) in subassignments {
                     dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*daysfromnow), since: startOfDay)]! -= lengthofwork
                     subassignmentdict[daysfromnow]!.append((assignment.name, lengthofwork))
-                   // print(daysfromnow, lengthofwork)
+                    print(daysfromnow, lengthofwork)
                 }
         }
         for i in 0...daystilllatestdate {
             if (subassignmentdict[i]!.count > 0)
             {
-                print(i)
-                for (name, length) in subassignmentdict[i]!
+                
+                if (specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]!.count == 1)
                 {
-                   print(name, length)
+                   // print("Days from now: " + String(i))
+                    let startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
+                   // let startime = specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0
+                 //   print("Start time: " + startime.description)
+                    var timeoffset = 0
+                    for (name, lengthofwork) in subassignmentdict[i]! {
+                        let newSubassignment4 = Subassignmentnew(context: self.managedObjectContext)
+                           newSubassignment4.assignmentname = name
+                        for assignment in assignmentlist {
+                            if (assignment.name == name)
+                            {
+                                newSubassignment4.color = assignment.color
+                                newSubassignment4.assignmentduedate = assignment.duedate
+                            }
+                        }
+                         //  let randomDate = Double.random(in: 10000 ... 1700000)
+                        newSubassignment4.startdatetime = Date(timeInterval:     TimeInterval(timeoffset), since: startime)
+                      //  print(newSubassignment4.startdatetime.description)
+                        newSubassignment4.enddatetime = Date(timeInterval: TimeInterval(timeoffset+lengthofwork*60), since: startime)
+                        timeoffset += lengthofwork*60
+                        do {
+                            try self.managedObjectContext.save()
+                           // print("Subassignments made")
+                        } catch {
+                         //å   print(error.localizedDescription)
+                        }
+                           
+                    }
                 }
             }
         }
+        
 
     }
     
@@ -1261,7 +1338,7 @@ struct ClassesView: View {
                                 }
                                 else
                                 {
-                                    self.alertView = .noclass
+                                    self.sheetNavigator.alertView = .noclass
                                     self.NewAlertPresenting = true
                                 }
                                 
@@ -1282,7 +1359,7 @@ struct ClassesView: View {
                                     }
                                     else
                                     {
-                                        self.alertView = .noclass
+                                        self.sheetNavigator.alertView = .noclass
                                         self.NewAlertPresenting = true
                                     }
                                 }) {
@@ -1318,7 +1395,7 @@ struct ClassesView: View {
                                     }
                                     else
                                     {
-                                        self.alertView = .noassignment
+                                        self.sheetNavigator.alertView = .noassignment
                                         self.NewAlertPresenting = true
                                     }
                                     //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
@@ -1329,7 +1406,9 @@ struct ClassesView: View {
                                 }
                                 
                             }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
-                        }.sheet(isPresented: $NewSheetPresenting, content: sheetContent )
+                        }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
+                            Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
+                        }
                         
                         
                         
@@ -1353,7 +1432,7 @@ struct ClassesView: View {
                     Button(action: {
                         
                            self.master()
-                        self.createsubassignments()
+                        //self.createsubassignments()
                         self.schedulenotifications()
                            // MasterStruct().master()
 //                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]

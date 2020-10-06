@@ -20,7 +20,7 @@ struct DropDown: View {
         self._showCompleted = showCompleted2
     }
     @State var selectedbutton = "Class"
-    let filters: [String] = ["Class", "Due date", "Total time", "Time left", "Name", "Type"]
+    let filters: [String] = ["Class", "Due date", "Assignment Length", "Work Left", "Name", "Type"]
     @State var filterspresented: Bool = false
     var body: some View {
         VStack {

@@ -80,7 +80,7 @@ struct NewAssignmentModalView: View {
                 }
                 
                 Section {
-                    Text("Total time")
+                    Text("Assignment Length")
                     HStack {
                         VStack {
                             Picker(selection: $hours, label: Text("Hour")) {
@@ -121,7 +121,7 @@ struct NewAssignmentModalView: View {
 
                         }) {
                             HStack {
-                                Text("Select due date and time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                Text("Select Due Date and Time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                 Spacer()
                                 Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                             }
@@ -140,7 +140,7 @@ struct NewAssignmentModalView: View {
 
                         }) {
                             HStack {
-                                Text("Select due date and time").foregroundColor(Color.black)
+                                Text("Select Due Date and Time").foregroundColor(Color.black)
                                 Spacer()
                                 Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                             }
@@ -1466,7 +1466,7 @@ struct EditAssignmentModalView: View {
                 {
 
                     Section {
-                        Text("Time left")
+                        Text("Work left")
                         HStack {
                             VStack {
                                 Picker(selection: $hours, label: Text("Hour")) {

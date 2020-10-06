@@ -13,13 +13,32 @@ class DisplayedDate: ObservableObject {
     @Published var score: Int = 0
 }
 
+class AddTimeSubassignment: ObservableObject {
+    @Published var subassignmentname = "SubAssignmentNameBlank"
+    @Published var subassignmentlength = 0
+    @Published var subassignmentcolor = "one"
+    @Published var subassignmentstarttimetext = "aa:bb"
+    @Published var subassignmentendtimetext = "cc:dd"
+    @Published var subassignmentdatetext = "dd/mm/yy"
+    @Published var subassignmentindex = 0
+    @Published var subassignmentcompletionpercentage: Double = 0
+}
+
+class ActionViewPresets: ObservableObject {
+    @Published var actionViewOffset: CGFloat = UIScreen.main.bounds.size.width
+    @Published var actionViewType: String = ""
+    @Published var actionViewHeight: CGFloat = 0
+}
+
+class AddTimeSubassignmentBacklog: ObservableObject {
+    @Published var backlogList: [[String: String]] = []
+}
+
 struct ContentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-    @FetchRequest(entity: Subassignmentnew.entity(),
-                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
+    var assignmenttypeslist: FetchedResults<AssignmentTypes>
     
-    var subassignmentlist: FetchedResults<Subassignmentnew>
-
     init() {
         if #available(iOS 14.0, *) {
             // iOS 14 doesn't have extra separators below the list by default.
@@ -39,6 +58,31 @@ struct ContentView: View {
                 print(error.localizedDescription)
             }
         }
+        
+        let defaults = UserDefaults.standard
+        
+        if !defaults.bool(forKey: "Launched Before") {
+            defaults.set(true, forKey: "Launched Before")
+            let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+            
+            for assignmenttype in assignmenttypes {
+                let newType = AssignmentTypes(context: self.managedObjectContext)
+                
+                newType.type = assignmenttype
+                newType.rangemin = 30
+                newType.rangemax = 300
+                
+                do {
+                    try self.managedObjectContext.save()
+                    print("new Subassignment")
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            defaults.set(Date(), forKey: "lastNudgeDate")
+        }
+        
       //  self.schedulenotifications()
     }
 
@@ -69,6 +113,8 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
+//        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        
         ContentView()
     }
 }

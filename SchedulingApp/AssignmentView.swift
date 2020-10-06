@@ -109,7 +109,7 @@ struct IndividualAssignmentFilterView: View {
                             Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                             Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
                             HStack {
-                                Text("Total time: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
+                                Text("Assignment Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
                                 Spacer()
                                 Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing).padding(5)
                             }
@@ -163,10 +163,10 @@ struct IndividualAssignmentFilterView: View {
                             self.dragoffset = .zero
                         }
                                             
-                        if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
+                        if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 1/2) {
                             self.deleted = true
                         }
-                        else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+                        else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
                             self.incompleted = true
                         }
                         
@@ -185,7 +185,7 @@ struct IndividualAssignmentFilterView: View {
 //                        {
 //                            self.dragoffset = CGSize.zero
 //                        }
-//                        if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+//                        if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
 //                            self.incompleted = true
 //                        }
 //                    }
@@ -429,7 +429,7 @@ struct GradedAssignmentsView: View {
 
                             Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                             Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
-                                Text("Total time: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                                Text("Assignment Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                         }
                         VStack {
                             HStack {
@@ -460,10 +460,10 @@ struct GradedAssignmentsView: View {
                             self.dragoffset = .zero
                         }
                                             
-                        if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
+                        if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 1/2) {
                             self.deleted = true
                         }
-                        else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+                        else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
                             self.incompleted = true
                         }
                     }
@@ -478,7 +478,7 @@ struct GradedAssignmentsView: View {
 //                        {
 //                            self.dragoffset = CGSize.zero
 //                        }
-//                        if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+//                        if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
 //                            self.incompleted = true
 //                        }
 //                    }

@@ -1191,7 +1191,7 @@ struct ClassesView: View {
             Button(action: {
                 print(self.modalView)
             }) {
-                Text("click me")
+                Text("If you are able to read this, please report this as a bug.")
             }
         }
     }

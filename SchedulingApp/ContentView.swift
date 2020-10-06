@@ -58,11 +58,17 @@ struct ContentView: View {
                 print(error.localizedDescription)
             }
         }
-        
+    }
+    
+    func initialize() {
         let defaults = UserDefaults.standard
         
-        if !defaults.bool(forKey: "Launched Before") {
+        if defaults.bool(forKey: "Launched Before") {
+        }
+        else {
+            print("a")
             defaults.set(true, forKey: "Launched Before")
+            print("b")
             let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
             
             for assignmenttype in assignmenttypes {
@@ -79,8 +85,9 @@ struct ContentView: View {
                     print(error.localizedDescription)
                 }
             }
-            
+            print("c")
             defaults.set(Date(), forKey: "lastNudgeDate")
+            print("d")
         }
         
       //  self.schedulenotifications()
@@ -107,7 +114,7 @@ struct ContentView: View {
                 Image(systemName: "chart.bar").resizable().scaledToFit()
                 Text("Progress")                    
             }
-        } 
+        }.onAppear(perform: initialize)
     }
 }
 

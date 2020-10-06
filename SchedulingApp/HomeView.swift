@@ -967,7 +967,7 @@ struct HomeBodyView: View {
                         }.frame(width: 150)
                     }
                 }.padding(10)
-            }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
+            }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring())
 
             VStack {
                 ScrollView {
@@ -1072,7 +1072,7 @@ struct HomeBodyView: View {
                         }
                         
                     }.padding(10)
-                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10)
+                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring())
                 ScrollView {
 
 
@@ -1312,11 +1312,11 @@ struct IndividualSubassignmentView: View {
                 }
                 else
                 {
-                    Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
+                    Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
                 }
                 if (!fixedHeight)
                 {
-                    Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                    Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                 }
                 if (fixedHeight)
                 {

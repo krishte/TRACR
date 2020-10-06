@@ -456,7 +456,7 @@ struct DetailView: View {
                                 Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).scaleEffect(self.scalevalue)
                             }
                         ).shadow(radius: 50)
-                    }.animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool)).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                    }.animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool), preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
                         Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                     }
                 }
@@ -793,7 +793,9 @@ struct ClassesView: View {
                         for j in 0..<tempsubassignmentlist.count {
                             if (tempsubassignmentlist[j].0 == possibledayslist[i])
                             {
-                                let value = min(extratime, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*tempsubassignmentlist[j].0), since: startOfDay)]! - tempsubassignmentlist[j].1, 60 )
+                                print("kewl")
+                                let value = min(extratime, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*tempsubassignmentlist[j].0), since: startOfDay)]! - tempsubassignmentlist[j].1, 90 )
+                                print(value)
                                 tempsubassignmentlist[j].1 += value
                                 extratime -= value
                                 if (extratime == 0)
@@ -823,85 +825,7 @@ struct ClassesView: View {
         }
         return (tempsubassignmentlist, newd)
     }
-    func createsubassignments() {
-        var storedduedate: Date = Date()
-//        for assignment in assignmentlist {
-//            if (assignment.name == "Chemistry IA Final")
-//            {
-//                storedduedate = assignment.duedate
-//            }
-//        }
-//        let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
-//           newSubassignment.assignmentname = "Chemistry IA Final"
-//         //  let randomDate = Double.random(in: 10000 ... 1700000)
-//           newSubassignment.startdatetime = Date(timeInterval: 153000, since: startOfDay)
-//           newSubassignment.enddatetime = Date(timeInterval: 153000+7200, since: startOfDay)
-//           newSubassignment.color = "twelve"
-//           newSubassignment.assignmentduedate = storedduedate
-//           print(newSubassignment.assignmentduedate.description)
-//        
-//        for assignment in assignmentlist {
-//            if (assignment.name == "Trigonometry Packet")
-//            {
-//                storedduedate = assignment.duedate
-//            }
-//        }
-//        let newSubassignment2 = Subassignmentnew(context: self.managedObjectContext)
-//           newSubassignment2.assignmentname = "Trigonometry Packet"
-//         //  let randomDate = Double.random(in: 10000 ... 1700000)
-//           newSubassignment2.startdatetime = Date(timeInterval: 235800, since: startOfDay)
-//           newSubassignment2.enddatetime = Date(timeInterval: 235800+3600+1800, since: startOfDay)
-//           newSubassignment2.color = "one"
-//           newSubassignment2.assignmentduedate = storedduedate
-//           print(newSubassignment2.assignmentduedate.description)
 
-        for assignment in assignmentlist {
-            if (assignment.name == "McDonalds Macroeconomics Essay")
-            {
-                storedduedate = assignment.duedate
-                assignment.timeleft = assignment.totaltime
-                assignment.progress = 0
-            }
-        }
-//        let newSubassignment3 = Subassignmentnew(context: self.managedObjectContext)
-//           newSubassignment3.assignmentname = "McDonalds Macroeconomics Essay"
-//         //  let randomDate = Double.random(in: 10000 ... 1700000)
-//           newSubassignment3.startdatetime = Date(timeInterval: 153000+7200+900, since: startOfDay)
-//           newSubassignment3.enddatetime = Date(timeInterval: 153000+7200+900+4800, since: startOfDay)
-//           newSubassignment3.color = "six"
-//           newSubassignment3.assignmentduedate = storedduedate
-        
-        
-        let newSubassignment4 = Subassignmentnew(context: self.managedObjectContext)
-           newSubassignment4.assignmentname = "McDonalds Macroeconomics Essay"
-         //  let randomDate = Double.random(in: 10000 ... 1700000)
-           newSubassignment4.startdatetime = Date(timeInterval: 67800+900, since: startOfDay)
-           newSubassignment4.enddatetime = Date(timeInterval: 67800+900 + 3600, since: startOfDay)
-           newSubassignment4.color = "six"
-           newSubassignment4.assignmentduedate = storedduedate
-        
-//        let newSubassignment5 = Subassignmentnew(context: self.managedObjectContext)
-//           newSubassignment5.assignmentname = "McDonalds Macroeconomics Essay"
-//         //  let randomDate = Double.random(in: 10000 ... 1700000)
-//           newSubassignment5.startdatetime = Date(timeInterval: 331200, since: startOfDay)
-//           newSubassignment5.enddatetime = Date(timeInterval: 331200+4800, since: startOfDay)
-//           newSubassignment5.color = "six"
-//           newSubassignment5.assignmentduedate = storedduedate
-//        let newSubassignment6 = Subassignmentnew(context: self.managedObjectContext)
-//           newSubassignment6.assignmentname = "McDonalds Macroeconomics Essay"
-//         //  let randomDate = Double.random(in: 10000 ... 1700000)
-//           newSubassignment6.startdatetime = Date(timeInterval: 381600, since: startOfDay)
-//           newSubassignment6.enddatetime = Date(timeInterval: 381600+4800, since: startOfDay)
-//           newSubassignment6.color = "six"
-//           newSubassignment6.assignmentduedate = storedduedate
-        
-        do {
-            try self.managedObjectContext.save()
-            print("new Subassignment")
-        } catch {
-            print(error.localizedDescription)
-        }
-    }
     
     func master() -> Void {
             let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
@@ -1093,7 +1017,7 @@ struct ClassesView: View {
                 
                 //print(daystilldue)
             print(assignment.name)
-                let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.totaltime), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
+                let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.timeleft), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
              //   print(assignment.name, daystilldue)
                // print(daystilldue)
@@ -1137,6 +1061,61 @@ struct ClassesView: View {
                          //å   print(error.localizedDescription)
                         }
                            
+                    }
+                }
+                else
+                {
+                    var startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
+                    var endtime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].1)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].1).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
+                    var counter = 1
+                    var timeoffset = 0
+                    for (name, lengthofwork) in subassignmentdict[i]! {
+                        var lengthofwork2 = lengthofwork
+                        while (lengthofwork2 > 0)
+                        {
+                            let newSubassignment4 = Subassignmentnew(context: self.managedObjectContext)
+                               newSubassignment4.assignmentname = name
+                            for assignment in assignmentlist {
+                                if (assignment.name == name)
+                                {
+                                    newSubassignment4.color = assignment.color
+                                    newSubassignment4.assignmentduedate = assignment.duedate
+                                }
+                            }
+
+                            newSubassignment4.startdatetime = Date(timeInterval: TimeInterval(timeoffset), since: startime)
+                            if (Date(timeInterval: TimeInterval(timeoffset+lengthofwork2*60), since: startime) > endtime)
+                            {
+                                newSubassignment4.enddatetime = endtime
+                                var subtractionval = Calendar.current.dateComponents([.minute], from:Date(timeInterval: TimeInterval(timeoffset), since: startime), to:  endtime).minute!
+                                if (subtractionval % 5 == 4)
+                                {
+                                    subtractionval += 1
+                                }
+                                if (subtractionval % 5 == 1)
+                                {
+                                    subtractionval -= 1
+                                }
+                                lengthofwork2 -= subtractionval
+                                timeoffset = 0
+                                startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].0)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].0).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
+                                endtime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].1)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].1).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
+                                counter += 1
+                            }
+                            else
+                            {
+                                newSubassignment4.enddatetime = Date(timeInterval: TimeInterval(timeoffset+lengthofwork2*60), since: startime)
+                                timeoffset += lengthofwork2*60
+                                lengthofwork2 = 0
+                            }
+                           
+                            do {
+                                try self.managedObjectContext.save()
+                                print("Subassignments made")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                        }
                     }
                 }
             }
@@ -1197,7 +1176,7 @@ struct ClassesView: View {
         }
         else if (self.sheetNavigator.modalView == .assignment)
         {
-            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)
+            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {
@@ -1340,7 +1319,7 @@ struct ClassesView: View {
                         }
                     }
 
-                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.sheetnavigator.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
+                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.sheetnavigator.storedindex, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
                     Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                 }
                 

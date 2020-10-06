@@ -476,8 +476,7 @@ struct PreferencesView: View {
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
     @State private var typeval: Int = 150
     @State private var selection: Set<String> = []
-
-    
+ 
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
             selection.remove(singularassignment)
@@ -510,13 +509,42 @@ struct PreferencesView: View {
                             Text("stuff").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 30, alignment: .topLeading).animation(.spring())
                             Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
                         }
+                    DetailBreakView()
                     ForEach(self.assignmenttypeslist) {
                         assignmenttype in
                         DetailPreferencesView(assignmenttype: assignmenttype)
                     }//.animation(.spring())
                 }//.animation(.spring())
            // }.navigationBarTitle("Preferences")
-        }.navigationBarTitle("Type Sliders")
+        }.navigationBarTitle("Type Sliders").onDisappear {
+           
+        }
+    }
+}
+struct DetailBreakView: View {
+    @State var breakvalue: Double
+    init() {
+        let defaults = UserDefaults.standard
+        print(defaults.object(forKey: "savedbreakvalue") as? Int ?? 10)
+        let breakval = defaults.object(forKey: "savedbreakvalue") as? Int ?? 10
+        _breakvalue = State(initialValue: Double(breakval)/5)
+        
+    }
+    var body: some View {
+        VStack {
+        Divider().frame(width: UIScreen.main.bounds.size.width-60, height: 2)
+        Text("Break").font(.title).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+        
+        Slider(value: $breakvalue, in: 1...4).frame(width: UIScreen.main.bounds.size.width-60)
+        HStack {
+            Text("Time: " + String(Int(5*Int(breakvalue))) + " minutes")
+            Spacer()
+        }.frame(width: UIScreen.main.bounds.size.width-60, height: 30)
+        Divider().frame(width: UIScreen.main.bounds.size.width-60, height: 2)
+        }.onDisappear {
+            let defaults = UserDefaults.standard
+            defaults.set(Int(5*Int(breakvalue)), forKey: "savedbreakvalue")
+        }
     }
 }
 struct DetailPreferencesView: View {

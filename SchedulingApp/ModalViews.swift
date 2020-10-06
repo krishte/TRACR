@@ -17,10 +17,11 @@ struct NewAssignmentModalView: View {
     
     @State var nameofassignment: String = ""
     @State private var selectedclass: Int
+    @State private var preselecteddate: Int
     @State private var assignmenttype = 0
     @State private var hours = 0
     @State private var minutes = 0
-    @State var selectedDate = Date()
+    @State var selectedDate: Date
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
@@ -31,13 +32,30 @@ struct NewAssignmentModalView: View {
     @State private var startDate = Date()
     var formatter: DateFormatter
     
-    init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int) {
+    init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
         formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
         _selectedclass = State(initialValue: selectedClass)
+        self._preselecteddate = State(initialValue: preselecteddate)
+        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
+        if (preselecteddate == -1)
+        {
+            self._selectedDate = State(initialValue: Date())
+        }
+        else
+        {
+            if (Date(timeInterval: TimeInterval(86400*preselecteddate), since: lastmondaydate) < Date())
+            {
+                self._selectedDate = State(initialValue: Date())
+            }
+            else
+            {
+                self._selectedDate = State(initialValue: Date(timeInterval: TimeInterval(86400*preselecteddate), since: lastmondaydate))
+            }
+        }
     }
     
     var body: some View {
@@ -614,7 +632,7 @@ struct NewFreetimeModalView: View {
     
     @State private var hour = 1
     @State private var minute = 0
-
+    @State var changeendtime = false
     let minutes = [0, 15, 30, 45]
 
     var body: some View {
@@ -624,6 +642,10 @@ struct NewFreetimeModalView: View {
                     Section {
                         if #available(iOS 14.0, *) {
                             Button(action: {
+                                if (!self.expandedstart)
+                                {
+                                    changeendtime = true
+                                }
                                     self.expandedstart.toggle()
 
                             }) {
@@ -643,6 +665,11 @@ struct NewFreetimeModalView: View {
 
                         } else {
                             Button(action: {
+                                
+                                if (!self.expandedstart)
+                                {
+                                    changeendtime = true
+                                }
                                     self.expandedstart.toggle()
 
                             }) {
@@ -697,6 +724,11 @@ struct NewFreetimeModalView: View {
 //                        }
                         if #available(iOS 14.0, *) {
                             Button(action: {
+                                if (changeendtime)
+                                {
+                                    selectedenddatetime = Date(timeInterval: 3600, since: selectedstartdatetime)
+                                    changeendtime = false
+                                }
                                     self.expandedend.toggle()
 
                             }) {
@@ -717,6 +749,11 @@ struct NewFreetimeModalView: View {
                         }
                     else {
                             Button(action: {
+                                if (changeendtime)
+                                {
+                                    selectedenddatetime = Date(timeInterval: 3600, since: selectedstartdatetime)
+                                    changeendtime = false
+                                }
                                     self.expandedend.toggle()
 
                             }) {

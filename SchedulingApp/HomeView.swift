@@ -75,6 +75,10 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
         }
     }
 }
+class WeeklyBlockViewDateSelector: ObservableObject {
+    @Published var dateIndex: Int = 0
+  //  @Published var alertView: AlertView = .none
+}
  
 struct WeeklyBlockView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -97,7 +101,7 @@ struct WeeklyBlockView: View {
     let datenumberindices: [Int]
     let datenumbersfromlastmonday: [String]
     let datesfromlastmonday: [Date]
-    
+    @ObservedObject var dateselector: WeeklyBlockViewDateSelector = WeeklyBlockViewDateSelector()
     func getassignmentsbydate(index: Int) -> [String] {
         var ans: [String] = []
      //  print("Index: " + String(index))
@@ -171,11 +175,12 @@ struct WeeklyBlockView: View {
  
                             Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(self.datenumberindices[index] == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? .bold : .regular)
                         }.contextMenu {
-                            Button(action: {self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()}) {
+                            Button(action: {
+                                    self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
+                                dateselector.dateIndex = self.datenumberindices[index]
+                            }) {
                                 Text("Assignment")
                                 Image(systemName: "paperclip")
-                            }.alert(isPresented: self.$noClassesAlert) {
-                                Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                             }
                         }.onTapGesture {
                             withAnimation(.spring()) {
@@ -216,6 +221,8 @@ struct WeeklyBlockView: View {
                     }//.frame(height: 80)
                 }
                 
+            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0, preselecteddate: dateselector.dateIndex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                Alert(title:  Text("No Classes Added"), message: Text("Add a Class First"))
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
 //            HStack {
 //                Rectangle().frame(width: 5).foregroundColor(Color("datenumberred"))
@@ -700,7 +707,11 @@ struct TimeIndicator: View {
 
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    
     @EnvironmentObject var addTimeSubassignment: AddTimeSubassignment
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
+    @EnvironmentObject var changingDate: DisplayedDate
  
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
@@ -759,9 +770,11 @@ struct HomeBodyView: View {
         
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
+      //  daytitleformatter.timeZone = TimeZone(secondsFromGMT: 7200)
         
         datenumberformatter = DateFormatter()
         datenumberformatter.dateFormat = "d"
+     //   datenumberformatter.timeZone = TimeZone(secondsFromGMT: 7200)
         
         formatteryear = DateFormatter()
         formatteryear.dateFormat = "yyyy"
@@ -771,21 +784,24 @@ struct HomeBodyView: View {
         
         formatterday = DateFormatter()
         formatterday.dateFormat = "dd"
+      //  formatterday.timeZone = TimeZone(secondsFromGMT: 7200)
         hourformatter = DateFormatter()
         minuteformatter = DateFormatter()
         self.hourformatter.dateFormat = "HH"
         self.minuteformatter.dateFormat = "mm"
         timeformatter = DateFormatter()
         timeformatter.dateFormat = "HH:mm"
+     //   timeformatter.timeZone = TimeZone(secondsFromGMT: 7200)
         //timeformatter.timeZone = TimeZone(secondsFromGMT: 0)
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
+      //  shortdateformatter.timeZone = TimeZone(secondsFromGMT: 7200)
      //   shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
        // self._selecteddaytitle = State(initialValue: nthdayfromnow)
         self.selectedColor  = "one"
         
-        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400+1), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400 + 1), since: Date().startOfWeek!)
+        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
         
        // print(lastmondaydate.description)
         
@@ -796,6 +812,8 @@ struct HomeBodyView: View {
             
             self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
+       // print(self.datesfromlastmonday[21], daytitlesfromlastmonday[21], datenumbersfromlastmonday[21])
+        //print(self.datesfromlastmonday[20], daytitlesfromlastmonday[20], datenumbersfromlastmonday[20])
 //        for i in 0...27 {
 //            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
 //        }
@@ -1288,10 +1306,17 @@ struct IndividualSubassignmentView: View {
             }
             
             VStack {
-                Text(self.name).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                if (fixedHeight)
+                {
+                    Text(self.name).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                }
+                else
+                {
+                    Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
+                }
                 if (!fixedHeight)
                 {
-                    Text(self.starttime + " - " + self.endtime).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                    Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                 }
                 if (fixedHeight)
                 {
@@ -1485,7 +1510,7 @@ struct HomeView: View {
         }
         else if (self.sheetNavigator.modalView == .assignment)
         {
-            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)
+            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {

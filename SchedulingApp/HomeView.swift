@@ -77,7 +77,7 @@ struct PageViewControllerWeeks: UIViewControllerRepresentable {
 }
  
 struct WeeklyBlockView: View {
-        @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
     var assignmentlist: FetchedResults<Assignment>
@@ -272,27 +272,48 @@ struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
     }
 }
 
-struct SubassignmentAddTimeActionBody: View {
-    @Binding var subassignmentname: String
-    @Binding var subassignmentlength: Int
-    @Binding var subassignmentcolor: String
-    @Binding var subassignmentstarttimetext: String
-    @Binding var subassignmentendtimetext: String
-    @Binding var subassignmentdatetext: String
-    @Binding var subassignmentindex: Int
-    @Binding var subassignmentcompletionpercentage: Double
+struct SubassignmentAddTimeAction: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
-    var body: some View {
+    var assignmentlist: FetchedResults<Assignment>
+    
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @FetchRequest(entity: AddTimeLog.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \AddTimeLog.name, ascending: true)])
+    var addtimeloglist: FetchedResults<AddTimeLog>
+    
+    @EnvironmentObject var addTimeSubassignment: AddTimeSubassignment
+    @EnvironmentObject var actionViewPresets: ActionViewPresets
+    
+    var body : some View {
+        HStack {
+            Text("Add Time to Assignment").font(.system(size: 14)).fontWeight(.light)
+            Spacer()
+            Button(action: {
+                actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                actionViewPresets.actionViewHeight = 0
+                actionViewPresets.actionViewType = ""
+            }, label: {
+                Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
+            })
+        }.frame(width: UIScreen.main.bounds.size.width - 75)
+        
+        Spacer()
+        
         VStack {
             HStack {
-                RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color(self.subassignmentcolor)).frame(width: 30, height: 30).overlay(RoundedRectangle(cornerRadius: 5).stroke(Color.black, lineWidth: 0.6)
+                RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color(addTimeSubassignment.subassignmentcolor)).frame(width: 30, height: 30).overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.black, lineWidth: 0.6)
                 )
                 
                 Spacer().frame(width: 15)
                 
                 VStack {
                     HStack {
-                        Text(self.subassignmentname).font(.system(size: 17)).fontWeight(.medium)
+                        Text(addTimeSubassignment.subassignmentname).font(.system(size: 17)).fontWeight(.medium)
                         
                         Spacer()
                     }
@@ -300,11 +321,11 @@ struct SubassignmentAddTimeActionBody: View {
                     Spacer().frame(height: 6)
                     
                     HStack {
-                        Text(self.subassignmentstarttimetext + " - " + self.subassignmentendtimetext).font(.system(size: 15)).fontWeight(.light)
+                        Text(addTimeSubassignment.subassignmentstarttimetext + " - " + addTimeSubassignment.subassignmentendtimetext).font(.system(size: 15)).fontWeight(.light)
                         
                         Spacer()
                         
-                        Text(self.subassignmentdatetext).font(.system(size: 15)).fontWeight(.light)
+                        Text(addTimeSubassignment.subassignmentdatetext).font(.system(size: 15)).fontWeight(.light)
                         
                         Spacer().frame(width: 15)
                     }
@@ -320,16 +341,63 @@ struct SubassignmentAddTimeActionBody: View {
             }.frame(width: UIScreen.main.bounds.size.width - 75)
             
             Section {
-                Slider(value: $subassignmentcompletionpercentage, in: 0...100)
+                Slider(value: $addTimeSubassignment.subassignmentcompletionpercentage, in: 0...100)
             }.frame(width: UIScreen.main.bounds.size.width - 75)
             
-            Text("\(subassignmentcompletionpercentage.rounded(.down), specifier: "%.0f")%")
-            Text("≈ \(Int((self.subassignmentcompletionpercentage / 100) * Double(self.subassignmentlength) / 5) * 5) minutes").fontWeight(.light)
+            Text("\(addTimeSubassignment.subassignmentcompletionpercentage.rounded(.down), specifier: "%.0f")%")
+            Text("≈ \(Int((addTimeSubassignment.subassignmentcompletionpercentage / 100) * Double(addTimeSubassignment.subassignmentlength) / 5) * 5) minutes").fontWeight(.light)
         }
+        
+        Spacer()
+        
+        Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+        
+        Button(action: {
+            //Storing the AddTime Transactions
+            let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
+
+            newAddTimeLog.name = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentname
+            newAddTimeLog.length = Int64(addTimeSubassignment.subassignmentlength)
+            newAddTimeLog.color = self.subassignmentlist[addTimeSubassignment.subassignmentindex].color
+            newAddTimeLog.starttime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].startdatetime
+            newAddTimeLog.endtime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].enddatetime
+            newAddTimeLog.date = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentduedate
+            newAddTimeLog.completionpercentage = addTimeSubassignment.subassignmentcompletionpercentage
+            
+            //Some Adjustments
+            actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+            actionViewPresets.actionViewHeight = 0
+            actionViewPresets.actionViewType = ""
+            
+            //Deleting the Subsasignment
+            self.managedObjectContext.delete(self.subassignmentlist[addTimeSubassignment.subassignmentindex])
+            
+            //Changing the Assignment
+            for (_, element) in self.assignmentlist.enumerated() {
+                if (element.name == addTimeSubassignment.subassignmentname) {
+                    let minutescompleted = (addTimeSubassignment.subassignmentcompletionpercentage / 100) * Double(addTimeSubassignment.subassignmentlength)
+                    let minutescompletedroundeddown = Int(minutescompleted / 5) * 5
+                    element.timeleft -= Int64(minutescompletedroundeddown)
+                    element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                }
+            }
+                
+            do {
+                try self.managedObjectContext.save()
+                print("AddTime logged")
+            } catch {
+                print(error.localizedDescription)
+            }
+        }) {
+            Text("Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
+        }.padding(.vertical, 8).padding(.bottom, -3)
     }
 }
 
-struct SubassignmentAddTimeAction: View {
+struct SubassignmentBacklogAction: View {
+    @EnvironmentObject var addTimeSubassignmentBacklog: AddTimeSubassignmentBacklog
+    @EnvironmentObject var actionViewPresets: ActionViewPresets
+    
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
@@ -340,24 +408,22 @@ struct SubassignmentAddTimeAction: View {
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
-    @Binding var offsetvar: CGFloat
-    @Binding var subassignmentname: String
-    @Binding var subassignmentlength: Int
-    //remember to work as double for division operations and stuff
-    @Binding var subassignmentcolor: String
-    @Binding var subassignmentstarttimetext: String
-    @Binding var subassignmentendtimetext: String
-    @Binding var subassignmentdatetext: String
-    @Binding var subassignmentindex: Int
-    @Binding var subassignmentcompletionpercentage: Double
+    @State var subPageType: String = "Introduction"
+    @State var subassignmentcompletionpercentage: Double = 0
+    @State var nthTask: Int = 1
     
-    var body : some View {
-        VStack {
+    var body: some View {
+        if self.subPageType == "Introduction" {
             HStack {
-                Text("Add Time to Assignment").font(.system(size: 14)).fontWeight(.light)
+                Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Tasks" : "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Task").font(.system(size: 14)).fontWeight(.light)
                 Spacer()
                 Button(action: {
-                    self.offsetvar = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewHeight = 0
+                    actionViewPresets.actionViewType = ""
+                    
+                    let defaults = UserDefaults.standard
+                    defaults.set(Date(), forKey: "lastNudgeDate")
                 }, label: {
                     Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
                 })
@@ -365,25 +431,172 @@ struct SubassignmentAddTimeAction: View {
             
             Spacer()
             
-            SubassignmentAddTimeActionBody(subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage)
+            VStack {
+                HStack {
+                    Text("You have the following tasks in your backlog:").font(.system(size: 16)).fontWeight(.light)
+                    
+                    Spacer()
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+                
+                Spacer().frame(height: 15)
+                
+                ScrollView() {
+                    ForEach(0..<addTimeSubassignmentBacklog.backlogList.count) { subassignmentindex in
+                        HStack {
+                            RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Color(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentcolor"] ?? "datenumberred")).frame(width: 12, height: 12).overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.black, lineWidth: 0.6)
+                            )
+                            
+                            Spacer().frame(width: 15)
+                            
+                            Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentname"] ?? "FAIL").font(.system(size: 17)).fontWeight(.medium)
+                            
+                            Spacer()
+                            
+                            Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentdatetext"] ?? "FAIL").font(.system(size: 15)).fontWeight(.light)
+                        }.padding(.horizontal, 10).frame(width: UIScreen.main.bounds.size.width - 75, height: 25)
+                    }
+                }.frame(height: CGFloat(min((addTimeSubassignmentBacklog.backlogList.count * 32), 90)))
+                
+                HStack {
+                    Text("Would you like to update your progress on these tasks?").font(.system(size: 16)).fontWeight(.light)
+                    
+                    Spacer()
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+            }
+            
+            Spacer()
+            
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+            
+            HStack {
+                Button(action: {
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewHeight = 0
+                    actionViewPresets.actionViewType = ""
+                    
+                    let defaults = UserDefaults.standard
+                    defaults.set(Date(), forKey: "lastNudgeDate")
+                }) {
+                    Text("Nudge Me Later").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.red).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+                }
+                
+                Spacer()
+                
+                Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
+                
+                Spacer()
+                
+                Button(action: {
+                    self.subPageType = "Tasks"
+                    actionViewPresets.actionViewHeight = 270
+                }) {
+                    Text("Continue").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+                }
+            }.padding(.vertical, 8).padding(.bottom, -3)
+        }
+        
+        //AddTimeActionViews for each task in the backlog
+        else if self.subPageType == "Tasks" {
+            HStack {
+                Text("Tasks Backlog (\(self.nthTask)/\(addTimeSubassignmentBacklog.backlogList.count + self.nthTask - 1))").font(.system(size: 14)).fontWeight(.light)
+                Spacer()
+                Button(action: {
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewHeight = 0
+                    actionViewPresets.actionViewType = ""
+                    
+                    self.subPageType = ""
+                    let defaults = UserDefaults.standard
+                    defaults.set(Date(), forKey: "lastNudgeDate")
+                }, label: {
+                    Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
+                })
+            }.frame(width: UIScreen.main.bounds.size.width - 75)
+            
+            Spacer()
+            
+            VStack {
+                HStack {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color(addTimeSubassignmentBacklog.backlogList[0]["subassignmentcolor"] ?? "one")).frame(width: 30, height: 30).overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.black, lineWidth: 0.6)
+                    )
+
+                    Spacer().frame(width: 15)
+                    
+                    VStack {
+                        HStack {
+                            Text(addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL").font(.system(size: 17)).fontWeight(.medium)
+
+                            Spacer()
+                        }
+
+                        Spacer().frame(height: 6)
+
+                        HStack {
+                            Text((addTimeSubassignmentBacklog.backlogList[0]["subassignmentstarttimetext"] ?? "FAIL") + " - " + (addTimeSubassignmentBacklog.backlogList[0]["subassignmentendtimetext"] ?? "FAIL")).font(.system(size: 15)).fontWeight(.light)
+
+                            Spacer()
+
+                            Text(addTimeSubassignmentBacklog.backlogList[0]["subassignmentdatetext"] ?? "FAIL").font(.system(size: 15)).fontWeight(.light)
+
+                            Spacer().frame(width: 15)
+                        }
+                    }
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+
+                Spacer().frame(height: 15)
+
+                HStack {
+                    Text("How much of the task did you complete?").font(.system(size: 16)).fontWeight(.light)
+
+                    Spacer()
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+
+                Section {
+                    Slider(value: self.$subassignmentcompletionpercentage, in: 0...100)
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+
+                Text("\(self.subassignmentcompletionpercentage.rounded(.down), specifier: "%.0f")%")
+                Text("≈ \(Int((self.subassignmentcompletionpercentage / 100) * (Double(addTimeSubassignmentBacklog.backlogList[0]["subassignmentlength"] ?? "0") ?? 0) / 5) * 5) minutes").fontWeight(.light)
+            }
             
             Spacer()
             
             Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
             
             Button(action: {
-                self.managedObjectContext.delete(self.subassignmentlist[self.subassignmentindex])
-                self.offsetvar = UIScreen.main.bounds.size.width
+                //Storing the AddTime Transactions
+                let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
+
+                newAddTimeLog.name = addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL"
+                newAddTimeLog.length = Int64(addTimeSubassignmentBacklog.backlogList[0]["subassignmentlength"] ?? "0") ?? 0
+                newAddTimeLog.color = addTimeSubassignmentBacklog.backlogList[0]["subassignmentcolor"] ?? "one"
+                newAddTimeLog.starttime = self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0].startdatetime
+                newAddTimeLog.endtime = self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0].enddatetime
+                newAddTimeLog.date = self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0].assignmentduedate
+                newAddTimeLog.completionpercentage = self.subassignmentcompletionpercentage
+                
+                self.nthTask += 1
+
+                if addTimeSubassignmentBacklog.backlogList.count == 1 {
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    self.subPageType = ""
+                    self.nthTask = 1
+                }
+
+                self.managedObjectContext.delete(self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0])
                 
                 for (_, element) in self.assignmentlist.enumerated() {
-                    if (element.name == self.subassignmentname) {
-                        let minutescompleted = (self.subassignmentcompletionpercentage / 100) * Double(self.subassignmentlength)
+                    if (element.name == addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL") {
+                        let lengthAsDouble = Double((addTimeSubassignmentBacklog.backlogList[0]["subassignmentlength"] ?? "0.0").replacingOccurrences(of: "[^\\.\\d+]", with: "", options: [.regularExpression])) ?? 0.0
+                        let minutescompleted = (self.subassignmentcompletionpercentage / 100) * lengthAsDouble
+                        print(lengthAsDouble, minutescompleted)
                         let minutescompletedroundeddown = Int(minutescompleted / 5) * 5
+                        
                         element.timeleft -= Int64(minutescompletedroundeddown)
                         element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
                     }
                 }
-                    
+
                 do {
                     try self.managedObjectContext.save()
                     print("Subassignment time added")
@@ -391,18 +604,81 @@ struct SubassignmentAddTimeAction: View {
                     print(error.localizedDescription)
                 }
                 
+                self.subassignmentcompletionpercentage = 0
+                
+                addTimeSubassignmentBacklog.backlogList.remove(at: 0)
             }) {
-                HStack {
-                    //Spacer()//.frame(width: UIScreen.main.bounds.size.width/2 - 40)
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 18, style: .continuous).fill(Color("very_light_gray")).frame(width: UIScreen.main.bounds.size.width-80, height: 40)
-                        Text("Done").font(.system(size: 17)).fontWeight(.semibold)
-                    }
-                   
-                   // Spacer()
-                }.frame(width: UIScreen.main.bounds.size.width-80, height: 25)
-            }.padding(.all, 8).padding(.bottom, -3)//.buttonStyle(PlainButtonStyle())
-        }.padding(.all, 15).frame(maxHeight: 270).background(Color("very_light_gray")).cornerRadius(18).padding(.all, 15)
+                Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Next" : "Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
+            }.padding(.vertical, 8).padding(.bottom, -3)
+        }
+    }
+}
+
+struct ActionView: View {
+    @EnvironmentObject var actionViewPresets: ActionViewPresets
+    @EnvironmentObject var addTimeSubassignmentBacklog: AddTimeSubassignmentBacklog
+    
+    @Environment(\.managedObjectContext) var managedObjectContext
+ 
+    @FetchRequest(entity: Subassignmentnew.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    func initialize() {
+        addTimeSubassignmentBacklog.backlogList = []
+
+        let timeformatter = DateFormatter()
+        timeformatter.dateFormat = "HH:mm"
+
+        let shortdateformatter = DateFormatter()
+        shortdateformatter.timeStyle = .none
+        shortdateformatter.dateStyle = .short
+        
+        var longDueSubassignment = false
+        
+        for (index, subassignment) in subassignmentlist.enumerated() {
+            if subassignment.enddatetime < Date() {
+                var tempAddTimeSubassignment: [String: String] = ["throwawaykey": "throwawayvalue"]
+
+                tempAddTimeSubassignment["subassignmentname"] = subassignment.assignmentname
+                tempAddTimeSubassignment["subassignmentlength"] = String(Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!)
+                tempAddTimeSubassignment["subassignmentcolor"] = subassignment.color
+                tempAddTimeSubassignment["subassignmentstarttimetext"] = timeformatter.string(from: subassignment.startdatetime)
+                tempAddTimeSubassignment["subassignmentendtimetext"] = timeformatter.string(from: subassignment.enddatetime)
+                tempAddTimeSubassignment["subassignmentdatetext"] = shortdateformatter.string(from: subassignment.startdatetime)
+                tempAddTimeSubassignment["subassignmentindex"] = String(index)
+
+                addTimeSubassignmentBacklog.backlogList.append(tempAddTimeSubassignment)
+                
+                if Date(timeInterval: 86400, since: subassignment.enddatetime) < Date() {
+                    longDueSubassignment = true
+                }
+            }
+        }
+
+        let defaults = UserDefaults.standard
+        let lastNudgeDate = defaults.object(forKey: "lastNudgeDate") as? Date ?? Date()
+        
+        if ((addTimeSubassignmentBacklog.backlogList.count >= 3) || longDueSubassignment) && (Date(timeInterval: 3600, since: lastNudgeDate) < Date()) && (actionViewPresets.actionViewHeight == 0) {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+                actionViewPresets.actionViewOffset = 0
+                actionViewPresets.actionViewType = "SubassignmentBacklogAction"
+                actionViewPresets.actionViewHeight = CGFloat(200 + min((addTimeSubassignmentBacklog.backlogList.count * 32), 90))
+            }
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            if actionViewPresets.actionViewType == "SubassignmentAddTimeAction" {
+                SubassignmentAddTimeAction()
+            }
+            
+            else if actionViewPresets.actionViewType == "SubassignmentBacklogAction" {
+                SubassignmentBacklogAction()
+            }
+        }.onAppear(perform: initialize).padding(.all, 15).frame(maxWidth: UIScreen.main.bounds.size.width, maxHeight: actionViewPresets.actionViewHeight).background(Color("very_light_gray")).cornerRadius(18).padding(.all, 15)
     }
 }
 
@@ -424,8 +700,7 @@ struct TimeIndicator: View {
 
 struct HomeBodyView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-    @EnvironmentObject var changingDate: DisplayedDate
- 
+    @EnvironmentObject var addTimeSubassignment: AddTimeSubassignment
  
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
@@ -460,16 +735,6 @@ struct HomeBodyView: View {
     var shortdateformatter: DateFormatter
     @State var subassignmentassignmentname: String = ""
     
-    @Binding var verticaloffset: CGFloat
-    @Binding var subassignmentname: String
-    @Binding var subassignmentlength: Int
-    @Binding var subassignmentcolor: String
-    @Binding var subassignmentstarttimetext: String
-    @Binding var subassignmentendtimetext: String
-    @Binding var subassignmentdatetext: String
-    @Binding var subassignmentindex: Int
-    @Binding var subassignmentcompletionpercentage: Double
-    
     @State var selectedColor: String = "one"
     
     @State var lastnthdayfromnow: Int
@@ -486,17 +751,7 @@ struct HomeBodyView: View {
     
     @State var dateForTimeIndicator = Date()
     
-    init(verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, uniformlistshows: Binding<Bool>, NewAssignmentPresenting2: Binding<Bool>) {
-        self._verticaloffset = verticaloffset
-        self._subassignmentname = subassignmentname
-        self._subassignmentlength = subassignmentlength
-        self._subassignmentcolor = subassignmentcolor
-        self._subassignmentstarttimetext = subassignmentstarttimetext
-        self._subassignmentendtimetext = subassignmentendtimetext
-        self._subassignmentdatetext = subassignmentdatetext
-        self._subassignmentindex = subassignmentindex
-        self._subassignmentcompletionpercentage = subassignmentcompletionpercentage
-        
+    init(uniformlistshows: Binding<Bool>, NewAssignmentPresenting2: Binding<Bool>) {
         self._uniformlistviewshows = uniformlistshows
         self._NewAssignmentPresenting = NewAssignmentPresenting2
  
@@ -547,7 +802,7 @@ struct HomeBodyView: View {
     }
     
     func upcomingDisplayTime() -> String {
-        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+//        let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         let minuteval = Calendar.current
             .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(0)), to: subassignmentlist[self.getsubassignment()].startdatetime)
@@ -566,7 +821,7 @@ struct HomeBodyView: View {
     }
     
     func getsubassignment() -> Int {
-        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+//        let timezoneOffset =  TimeZone.current.secondsFromGMT()
 
         var minuteval: Int = 0
         for (index, _) in subassignmentlist.enumerated() {
@@ -601,6 +856,20 @@ struct HomeBodyView: View {
             }
         }
         return 0
+    }
+    
+    func getNextColor(currentColor: String) -> Color {
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
+        let existinggradients = ["one", "two", "three", "five", "six", "eleven","thirteen", "fourteen", "fifteen"]
+        if (existinggradients.contains(currentColor)) {
+            return Color(currentColor + "-b")
+        }
+        for color in colorlist {
+            if (color == currentColor) {
+                return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
+            }
+        }
+        return Color("one")
     }
     
     var body: some View {
@@ -640,23 +909,23 @@ struct HomeBodyView: View {
             
             ZStack {
                 if (subassignmentlist.count > 0) {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                 }
 
                 else {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("datenumberred"), Color("datenumberred")]), startPoint: .leading, endPoint: .trailing))
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("three"), Color("three-b")]), startPoint: .leading, endPoint: .trailing))
                 }
 
                 HStack {
                     VStack(alignment: .leading) {
                         if (subassignmentlist.count == 0) {
-                            Text("No Upcoming Tasks").font(.system(size: 22))
+                            Text("No Upcoming Tasks").font(.system(size: 19))
                         }
                         else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
-                            Text("No Upcoming Tasks").font(.system(size: 22))
+                            Text("No Upcoming Tasks").font(.system(size: 19))
                         }
                         else {
-                            Text("Next Upcoming:").fontWeight(.semibold).animation(.none)
+                            Text("Coming Up:").fontWeight(.semibold).animation(.none)
                             Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading).animation(.none)
 
                             Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
@@ -671,7 +940,7 @@ struct HomeBodyView: View {
                         VStack(alignment: .leading) {
                             ForEach(self.assignmentlist) { assignment in
                                 if (assignment.name == self.subassignmentassignmentname) {
-                                    Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 40, alignment: .topLeading)
+                                    Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 25, alignment: .topLeading)
                                     Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12)).frame(height:15)
                                     Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
                                     UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
@@ -706,7 +975,7 @@ struct HomeBodyView: View {
                                         //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
 //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
                                         if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                            IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                            IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                 self.subassignmentassignmentname = subassignment.assignmentname
                                                 self.selectedColor = subassignment.color
 //                                                for subassignment in self.subassignmentlist {
@@ -741,25 +1010,22 @@ struct HomeBodyView: View {
                 
                 ZStack {
                     if (subassignmentlist.count > 0) {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color(subassignmentlist[0].color), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                     }
 
                     else {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("datenumberred"), Color("datenumberred")]), startPoint: .leading, endPoint: .trailing))
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("three"), Color("three-b")]), startPoint: .leading, endPoint: .trailing))
                     }
 
                     HStack {
                         VStack(alignment: .leading) {
-                            HStack(alignment: .center)
-                            {
+                            HStack(alignment: .center) {
                                 ForEach(self.assignmentlist) { assignment in
                                     if (assignment.name == self.subassignmentassignmentname) {
-                                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 80, alignment: .center)//.offset(y: 5)
-
+                                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 80)//.offset(y: 5)
                                     }
-                                 }
-                                if (self.subassignmentassignmentname == "")
-                                {
+                                }
+                                if (self.subassignmentassignmentname == "") {
                                     Text("No Task Selected").font(.system(size: 22)).multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width-60, height: 80, alignment: .center)
                                 }
                             }
@@ -771,7 +1037,7 @@ struct HomeBodyView: View {
                         if self.subassignmentassignmentname != "" {
                             Spacer().frame(width: 10)
                             Divider().frame(width: 1).background(Color.black)
-                            Spacer().frame(width: 10)
+                            Spacer().frame(width: 20)
                             VStack(alignment: .leading) {
                                 ForEach(self.assignmentlist) { assignment in
                                     if (assignment.name == self.subassignmentassignmentname) {
@@ -779,8 +1045,9 @@ struct HomeBodyView: View {
 
                                         Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 15)).fontWeight(.bold).frame(height:40)
                                         Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
-                                        Text("Time Left: " + String(assignment.timeleft) + " mintues").font(.system(size: 12)).frame(height: 15)
-                                        UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
+                                        Text("Work Left: " + String(assignment.timeleft) + " mintues").font(.system(size: 12)).frame(height: 15)
+                                        UpcomingSubassignmentProgressBar(assignment: assignment).frame(height: 10)
+                                        Spacer().frame(height: 10)
                                     }
                                 }
                             }.frame(width: 150)
@@ -799,7 +1066,7 @@ struct HomeBodyView: View {
                             Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(daytitle == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
                             Spacer()
                         }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
-                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle], verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).animation(.spring())
+                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle],  daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).animation(.spring())
                     }
                 }.animation(.spring())
 //                ForEach(subassignmentlist) {
@@ -835,15 +1102,6 @@ struct SubassignmentListView: View {
     var daytitle: String
     var daytitlesfromlastmonday: [String]
     var datesfromlastmonday: [Date]
-    @Binding var verticaloffset: CGFloat
-    @Binding var subassignmentname: String
-    @Binding var subassignmentlength: Int
-    @Binding var subassignmentcolor: String
-    @Binding var subassignmentstarttimetext: String
-    @Binding var subassignmentendtimetext: String
-    @Binding var subassignmentdatetext: String
-    @Binding var subassignmentindex: Int
-    @Binding var subassignmentcompletionpercentage: Double
     
     @Binding var subassignmentassignmentname: String
     @Binding var selectedcolor: String
@@ -851,19 +1109,10 @@ struct SubassignmentListView: View {
     @Binding var selectededitassignment: String
     var shortdateformatter: DateFormatter
     
-    init(daytitle: String,  verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>)
+    init(daytitle: String, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>)
     {
         self.daytitle = daytitle
-        self._verticaloffset = verticaloffset
-        self._subassignmentname = subassignmentname
-        self._subassignmentlength = subassignmentlength
-        self._subassignmentcolor = subassignmentcolor
-        self._subassignmentstarttimetext = subassignmentstarttimetext
-        self._subassignmentendtimetext = subassignmentendtimetext
-        self._subassignmentdatetext = subassignmentdatetext
-        self._subassignmentindex = subassignmentindex
-        self._subassignmentcompletionpercentage = subassignmentcompletionpercentage
-        
+
         self._subassignmentassignmentname = subassignmentassignmentname
         self._selectedcolor = selectedcolor
         self._showeditassignment = showeditassignment
@@ -891,7 +1140,7 @@ struct SubassignmentListView: View {
             ForEach(subassignmentlist) {
                 subassignment in
                 if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
-                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment).onTapGesture {
+                    IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment).onTapGesture {
                         selectedcolor = subassignment.color
                         subassignmentassignmentname = subassignment.assignmentname
                     }                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
@@ -951,18 +1200,12 @@ struct IndividualSubassignmentView: View {
     @State var dragoffset = CGSize.zero
     var fixedHeight: Bool
     
-    var subassignmentlength_actual: Int
+    var subassignmentlength: Int
  
     var subassignment: Subassignmentnew
-    @Binding var verticaloffset: CGFloat
-    @Binding var subassignmentname: String
-    @Binding var subassignmentlength: Int
-    @Binding var subassignmentcolor: String
-    @Binding var subassignmentstarttimetext: String
-    @Binding var subassignmentendtimetext: String
-    @Binding var subassignmentdatetext: String
-    @Binding var subassignmentindex: Int
-    @Binding var subassignmentcompletionpercentage: Double
+    
+    @EnvironmentObject var addTimeSubassignment: AddTimeSubassignment
+    @EnvironmentObject var actionViewPresets: ActionViewPresets
     
     @Binding var showeditassignment: Bool
     @Binding var selectededitassignment: String
@@ -971,17 +1214,8 @@ struct IndividualSubassignmentView: View {
     
     var shortdateformatter: DateFormatter
     
-    init(subassignment2: Subassignmentnew, verticaloffset: Binding<CGFloat>, subassignmentname: Binding<String>, subassignmentlength: Binding<Int>, subassignmentcolor: Binding<String>, subassignmentstarttimetext: Binding<String>, subassignmentendtimetext: Binding<String>, subassignmentdatetext: Binding<String>, subassignmentindex: Binding<Int>, subassignmentcompletionpercentage: Binding<Double>, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>) {
-        self._verticaloffset = verticaloffset
-        self._subassignmentname = subassignmentname
-        self._subassignmentlength = subassignmentlength
-        self._subassignmentcolor = subassignmentcolor
-        self._subassignmentstarttimetext = subassignmentstarttimetext
-        self._subassignmentendtimetext = subassignmentendtimetext
-        self._subassignmentdatetext = subassignmentdatetext
-        self._subassignmentindex = subassignmentindex
-        self._subassignmentcompletionpercentage = subassignmentcompletionpercentage
-        
+    init(subassignment2: Subassignmentnew, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>) {
+
         self._showeditassignment = showeditassignment
         self._selectededitassignment = selectededitassignment
         
@@ -1003,10 +1237,10 @@ struct IndividualSubassignmentView: View {
         self.actualduedate = subassignment2.assignmentduedate
         self.duedate = formatter2.string(from: subassignment2.assignmentduedate)
         let diffComponents = Calendar.current.dateComponents([.minute], from: self.actualstartdatetime, to: self.actualenddatetime)
-        subassignmentlength_actual = diffComponents.minute!
+        subassignmentlength = diffComponents.minute!
         subassignment = subassignment2
         self.fixedHeight = fixedHeight
-        //print(subassignmentlength_actual)
+        //print(subassignmentlength)
         
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
@@ -1020,7 +1254,7 @@ struct IndividualSubassignmentView: View {
                if (isDragged) {
                    ZStack {
                         HStack {
-                            Rectangle().fill(Color("fourteen")) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +    CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35)).offset(x: self.fixedHeight ? UIScreen.main.bounds.size.width - 10 + self.dragoffset.width : UIScreen.main.bounds.size.width-30+self.dragoffset.width)
+                            Rectangle().fill(Color("fourteen")) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +    CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? UIScreen.main.bounds.size.width - 10 + self.dragoffset.width : UIScreen.main.bounds.size.width-30+self.dragoffset.width)
                         }
                         HStack {
                             Spacer()
@@ -1036,7 +1270,7 @@ struct IndividualSubassignmentView: View {
                 if (isDraggedleft) {
                     ZStack {
                         HStack {
-                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
+                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
                         }
                         
                         HStack {
@@ -1062,13 +1296,13 @@ struct IndividualSubassignmentView: View {
                 if (fixedHeight)
                 {
                     Spacer().frame(height: 10)
-                    Text(String(self.subassignmentlength_actual/60) + " hours " + String(self.subassignmentlength_actual % 60) + " minutes").frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                    Text(String(self.subassignmentlength/60) + " hours " + String(self.subassignmentlength % 60) + " minutes").frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                 }
                 Spacer()
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                // Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)
-            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength_actual)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
+            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
                 Button(action:{
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname
@@ -1095,10 +1329,10 @@ struct IndividualSubassignmentView: View {
                         self.deleted = false
                     }
                                         
-                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 3/4) {
+                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 1/2) {
                         self.deleted = true
                     }
-                    else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 3/4) {
+                    else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
                         self.incompleted = true
                     }
                     
@@ -1119,18 +1353,20 @@ struct IndividualSubassignmentView: View {
 //                            self.incompletedonce = false
                             print("incompleted")
                             
-                            self.verticaloffset = 0
-                            self.subassignmentname = self.name
-                            self.subassignmentlength = self.subassignmentlength_actual
-                            self.subassignmentcolor = self.color
-                            self.subassignmentstarttimetext = self.starttime
-                            self.subassignmentendtimetext = self.endtime
-                            self.subassignmentdatetext = self.shortdateformatter.string(from: self.actualstartdatetime)
-                            self.subassignmentcompletionpercentage = 0
+                            actionViewPresets.actionViewOffset = 0
+                            actionViewPresets.actionViewHeight = 270
+                            actionViewPresets.actionViewType = "SubassignmentAddTimeAction"
+                            addTimeSubassignment.subassignmentname = self.name
+                            addTimeSubassignment.subassignmentlength = self.subassignmentlength
+                            addTimeSubassignment.subassignmentcolor = self.color
+                            addTimeSubassignment.subassignmentstarttimetext = self.starttime
+                            addTimeSubassignment.subassignmentendtimetext = self.endtime
+                            addTimeSubassignment.subassignmentdatetext = self.shortdateformatter.string(from: self.actualstartdatetime)
+                            addTimeSubassignment.subassignmentcompletionpercentage = 0
                             
                             for (index, element) in self.subassignmentlist.enumerated() {
                                 if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name) {
-                                    self.subassignmentindex = index
+                                    addTimeSubassignment.subassignmentindex = index
                                 }
                             }
                         }
@@ -1143,7 +1379,7 @@ struct IndividualSubassignmentView: View {
                             print("deleting")
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
-                                    let minutes = self.subassignmentlength_actual
+                                    let minutes = self.subassignmentlength
                                     element.timeleft -= Int64(minutes)
                                     print(element.timeleft)
                                     withAnimation(.spring())
@@ -1206,7 +1442,6 @@ enum AlertView {
 struct HomeView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-    @EnvironmentObject var changingDate: DisplayedDate
  
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
@@ -1214,6 +1449,7 @@ struct HomeView: View {
     @State var NewFreetimePresenting = false
     @State var NewGradePresenting = false
     @State var noAssignmentsAlert = false
+    
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
@@ -1223,19 +1459,10 @@ struct HomeView: View {
     var assignmentlist: FetchedResults<Assignment>
     
     @State var noClassesAlert = false
- 
     
     @State var noCompletedAlert = false
     //completed true and grade != 0
-    @State var verticaloffset: CGFloat = UIScreen.main.bounds.height
-    @State var subassignmentname = "SubAssignmentNameBlank"
-    @State var subassignmentlength = 0
-    @State var subassignmentcolor = "one"
-    @State var subassignmentstarttimetext = "aa:bb"
-    @State var subassignmentendtimetext = "cc:dd"
-    @State var subassignmentdatetext = "dd/mm/yy"
-    @State var subassignmentindex = 0
-    @State var subassignmentcompletionpercentage: Double = 0
+    @EnvironmentObject var actionViewPresets: ActionViewPresets
     
     @State var uniformlistshows: Bool
     @State var showingSettingsView = false
@@ -1244,6 +1471,7 @@ struct HomeView: View {
     @State var NewSheetPresenting = false
     @State var NewAlertPresenting = false
     @ObservedObject var sheetNavigator = SheetNavigator()
+    
     init() {
         let defaults = UserDefaults.standard
         let viewtype = defaults.object(forKey: "savedtoggleview") as? Bool ?? false
@@ -1252,10 +1480,7 @@ struct HomeView: View {
     
     @ViewBuilder
     private func sheetContent() -> some View {
-        
-        if (self.sheetNavigator.modalView == .freetime)
-        {
-            
+        if (self.sheetNavigator.modalView == .freetime) {
             NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
         }
         else if (self.sheetNavigator.modalView == .assignment)
@@ -1275,7 +1500,7 @@ struct HomeView: View {
             Button(action: {
                 print(self.modalView)
             }) {
-                Text("click me")
+                Text("If you are able to read this, please report this as a bug.")
             }
         }
     }
@@ -1287,7 +1512,7 @@ struct HomeView: View {
                     
                     NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                         { EmptyView() }
-                    HomeBodyView(verticaloffset: $verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage, uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).environmentObject(self.changingDate).padding(.top, -40)               // }
+                    HomeBodyView(uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).padding(.top, -40)               // }
                     
                     
                     VStack {
@@ -1408,8 +1633,8 @@ struct HomeView: View {
                     VStack {
                         Spacer()
                          
-                        SubassignmentAddTimeAction(offsetvar: self.$verticaloffset, subassignmentname: self.$subassignmentname, subassignmentlength: self.$subassignmentlength, subassignmentcolor: self.$subassignmentcolor, subassignmentstarttimetext: self.$subassignmentstarttimetext, subassignmentendtimetext: self.$subassignmentendtimetext, subassignmentdatetext: self.$subassignmentdatetext, subassignmentindex: self.$subassignmentindex, subassignmentcompletionpercentage: self.$subassignmentcompletionpercentage).offset(y: self.verticaloffset).animation(.spring())
-                    }.frame(width: UIScreen.main.bounds.size.width).background((self.verticaloffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
+                        ActionView().offset(y: actionViewPresets.actionViewOffset).animation(.spring())
+                    }.frame(width: UIScreen.main.bounds.size.width).background((actionViewPresets.actionViewOffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
                 }
                             .navigationBarItems(leading:
                             //                VStack {
@@ -1479,8 +1704,8 @@ struct HomeView: View {
  
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-             let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
           
-          return HomeView().environment(\.managedObjectContext, context).environmentObject(DisplayedDate())
+        return HomeView().environment(\.managedObjectContext, context).environmentObject(AddTimeSubassignment()).environment(\.managedObjectContext, context).environmentObject(ActionViewPresets()).environment(\.managedObjectContext, context).environmentObject(AddTimeSubassignmentBacklog()).environment(\.managedObjectContext, context)
     }
 }

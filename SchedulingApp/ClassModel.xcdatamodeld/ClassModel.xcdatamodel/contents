@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19F101" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="AddTimeLog" representedClassName="AddTimeLog" syncable="YES" codeGenerationType="class">
+        <attribute name="color" optional="YES" attributeType="String"/>
+        <attribute name="completionpercentage" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="endtime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="length" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="starttime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
     <entity name="Assignment" representedClassName="Assignment" syncable="YES">
         <attribute name="color" optional="YES" attributeType="String"/>
         <attribute name="completed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
@@ -48,5 +57,6 @@
         <element name="Classcool" positionX="0" positionY="9" width="128" height="118"/>
         <element name="Freetime" positionX="18" positionY="90" width="128" height="178"/>
         <element name="Subassignmentnew" positionX="0" positionY="72" width="128" height="118"/>
+        <element name="AddTimeLog" positionX="18" positionY="117" width="128" height="148"/>
     </elements>
 </model>

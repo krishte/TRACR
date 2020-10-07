@@ -76,6 +76,7 @@ struct EditClassModalView: View {
     @Binding var EditClassPresenting: Bool
     @State var classtolerancedouble: Double
     @State var classassignmentnumber: Int
+    @State var masterclass: MasterClass = MasterClass()
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -236,6 +237,8 @@ struct EditClassModalView: View {
                                     } catch {
                                         print(error.localizedDescription)
                                     }
+                                  //  masterclass.master()
+                                    //masterclass.schedulenotifications()
                                 }
                             }
                             self.showeditclass = false
@@ -487,63 +490,39 @@ struct DetailView: View {
     }
 }
 
-struct ClassesView: View {
+class MasterClass: ObservableObject {
+    
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
+    var assignmentlistrequest: FetchRequest<Assignment> = FetchRequest(entity: Assignment.entity(),
+                                                                       sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    var assignmentlist: FetchedResults<Assignment>{assignmentlistrequest.wrappedValue}
+
+    //@FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
-    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
-    
-    var assignmentlist: FetchedResults<Assignment>
+   // var assignmentlist: FetchedResults<Assignment>
     
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+//    var subassignmentlistrequest: FetchRequest<Subassignmentnew> = FetchRequest(entity: Subassignmentnew.entity(),
+//                                                                       sortDescriptors: [])
+//    var subassignmentlist: FetchedResults<Subassignmentnew>{subassignmentlistrequest.wrappedValue}
         @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
     
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
-    @State var NewAssignmentPresenting = false
-    @State var NewClassPresenting = false
-    @State var NewOccupiedtimePresenting = false
-    @State var NewFreetimePresenting = false
-    @State var NewGradePresenting = false
-    @State var noClassesAlert = false
-    @State var NewAssignmentPresenting2 = false
-    @State var stored: Double = 0
-    @State var noAssignmentsAlert = false
-    @State var startedToDelete = false
-    @State var showingSettingsView = false
-    
-    let types = ["Test", "Homework", "Presentation/Oral", "Essay", "Study", "Exam", "Report/Paper", "Essay", "Presentation/Oral", "Essay"]
-    let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
-    let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
-    let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 240]
-    let names = ["Trigonometry Test", "Trigonometry Packet", "German Oral 2", "Othello Essay", "Physics Studying", "Final Exam", "Chemistry IA Final", "McDonalds Macroeconomics Essay", "ToK Final Presentation", "Extended Essay Final Essay"]
-    let classnames = ["Math", "Math", "German", "English", "Physics" , "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
-    let colors = ["one", "one", "two", "three" , "four", "four", "five", "six", "seven", "eight"]
-    let assignmentoriginalclassnames = ["Mathematics: Analysis and Approaches SL","Mathematics: Analysis and Approaches SL","German B: SL", "English A: Language and Literature SL","Physics: HL","Physics: HL","Chemistry: HL", "Economics: HL","Theory of Knowledge",  "Extended Essay"]
-    
-    let bulks = [true, true, true, false, false, false, false, false]
-    let classnameactual = ["Math", "German", "English", "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
-    let originalclassnames = ["Mathematics: Analysis and Approaches SL", "German B: SL","English A: Language and Literature SL",  "Physics: HL","Chemistry: HL", "Economics: HL", "Theory of Knowledge",  "Extended Essay"]
-    let tolerances = [4, 1, 2, 4, 3, 4, 1, 5]
-    let assignmentnumbers = [2, 1, 1, 2, 1, 1, 1, 1]
-    let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
-    @State var modalView: ModalView = .none
-    @State var alertView: AlertView = .noclass
-    @State var NewSheetPresenting = false
-    @State var NewAlertPresenting = false
-    @ObservedObject var sheetNavigator = SheetNavigator()
     var startOfDay: Date {
         let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         return Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
         //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
     }
+    
         func schedulenotifications() {
             
             UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
@@ -616,28 +595,7 @@ struct ClassesView: View {
 
 
             }
-//            print(listofnotifications)
-//            var datelist: [Date] = []
-//            for value in listofnotifications {
-//                let date = calendar.date(from: value)!
-//                datelist.append(date)
-//            }
-//            datelist.sort()
-//            print("")
-//            print(datelist)
-//            let content2 = UNMutableNotificationContent()
-//            content2.title = "Upcoming Task " + "in " + String(times[1]) + " minutes: "
-//               content2.body = subassignmentlist[0].assignmentname
-//        //    content2.body = "Text"
-//               content2.sound = UNNotificationSound.default
-//
-//                let trigger2 = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-//
-//                // choose a random identifier
-//                let request2 = UNNotificationRequest(identifier: UUID().uuidString, content: content2, trigger: trigger2)
-//
-//                // add our notification request
-//                UNUserNotificationCenter.current().add(request2)
+
             print("success")
 
             
@@ -828,79 +786,12 @@ struct ClassesView: View {
 
     
     func master() -> Void {
-            let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+         //   let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 
-//        for assignmenttype in assignmenttypes {
-//            let newType = AssignmentTypes(context: self.managedObjectContext)
-//            newType.type = assignmenttype
-//            newType.rangemin = 30
-//            newType.rangemax = 300
-//            print(newType.type, newType.rangemin, newType.rangemax)
-//            do {
-//                try self.managedObjectContext.save()
-//                print("new Subassignment")
-//            } catch {
-//                print(error.localizedDescription)
-//
-//
-//            }
-//        }
-
-
-        for i in (0...7) {
-            let newClass = Classcool(context: self.managedObjectContext)
-            newClass.originalname = originalclassnames[i]
-            newClass.tolerance = Int64(tolerances[i])
-            newClass.name = classnameactual[i]
-            newClass.assignmentnumber = 0
-            newClass.color = classcolors[i]
-          //  newClass.isarchived = false
-
-            do {
-                try self.managedObjectContext.save()
-                print("Class made")
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-        for i in (0...9) {
-            let newAssignment = Assignment(context: self.managedObjectContext)
-            newAssignment.name = String(names[i])
-            newAssignment.duedate = startOfDay.addingTimeInterval(TimeInterval(86400*duedays[i]))
-            if (duetimes[i] == "night")
-            {
-                newAssignment.duedate.addTimeInterval(79200)
-            }
-            else
-            {
-                newAssignment.duedate.addTimeInterval(28800)
-            }
-
-            newAssignment.totaltime = Int64(totaltimes[i])
-            newAssignment.subject = assignmentoriginalclassnames[i]
-            newAssignment.timeleft = newAssignment.totaltime
-            newAssignment.progress = 0
-            newAssignment.grade = 0
-            newAssignment.completed = false
-            newAssignment.type = types[i]
-
-            for classity in self.classlist {
-                if (classity.originalname == newAssignment.subject) {
-                    classity.assignmentnumber += 1
-                    newAssignment.color = classity.color
-                    do {
-                        try self.managedObjectContext.save()
-                        print("Class number changed")
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
-            }
-        }
-      //  print("epic success")
-        
+        print("kewl")
         for (index, _) in subassignmentlist.enumerated() {
-             self.managedObjectContext.delete(self.subassignmentlist[index])
+            print(index)
+             //self.managedObjectContext.delete(self.subassignmentlist[index])
         }
         
         var timemonday = 0
@@ -1016,7 +907,9 @@ struct ClassesView: View {
                // print(daystilldue)
                 
                 //print(daystilldue)
-            print(assignment.name)
+            if (!assignment.completed)
+            {
+                print(assignment.name)
                 let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.timeleft), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
              //   print(assignment.name, daystilldue)
@@ -1027,6 +920,7 @@ struct ClassesView: View {
                     subassignmentdict[daysfromnow]!.append((assignment.name, lengthofwork))
                  //   print(daysfromnow, lengthofwork)
                 }
+            }
         }
         for i in 0...daystilllatestdate {
             if (subassignmentdict[i]!.count > 0)
@@ -1123,6 +1017,69 @@ struct ClassesView: View {
         
 
     }
+    var body: some View {
+        Text("hello")
+    }
+}
+
+struct ClassesView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    
+    var assignmentlist: FetchedResults<Assignment>
+    
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
+        @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
+    
+    var assignmenttypeslist: FetchedResults<AssignmentTypes>
+    @State var NewAssignmentPresenting = false
+    @State var NewClassPresenting = false
+    @State var NewOccupiedtimePresenting = false
+    @State var NewFreetimePresenting = false
+    @State var NewGradePresenting = false
+    @State var noClassesAlert = false
+    @State var NewAssignmentPresenting2 = false
+    @State var stored: Double = 0
+    @State var noAssignmentsAlert = false
+    @State var startedToDelete = false
+    @State var showingSettingsView = false
+    
+    let types = ["Test", "Homework", "Presentation/Oral", "Essay", "Study", "Exam", "Report/Paper", "Essay", "Presentation/Oral", "Essay"]
+    let duedays = [7, 2, 3, 8, 180, 14, 1, 4 , 300, 150]
+    let duetimes = ["day", "day", "day", "night", "day", "day", "day", "day", "day", "day"]
+    let totaltimes = [600, 90, 240, 210, 4620, 840, 120, 300, 720, 240]
+    let names = ["Trigonometry Test", "Trigonometry Packet", "German Oral 2", "Othello Essay", "Physics Studying", "Final Exam", "Chemistry IA Final", "McDonalds Macroeconomics Essay", "ToK Final Presentation", "Extended Essay Final Essay"]
+    let classnames = ["Math", "Math", "German", "English", "Physics" , "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
+    let colors = ["one", "one", "two", "three" , "four", "four", "five", "six", "seven", "eight"]
+    let assignmentoriginalclassnames = ["Mathematics: Analysis and Approaches SL","Mathematics: Analysis and Approaches SL","German B: SL", "English A: Language and Literature SL","Physics: HL","Physics: HL","Chemistry: HL", "Economics: HL","Theory of Knowledge",  "Extended Essay"]
+    
+    let bulks = [true, true, true, false, false, false, false, false]
+    let classnameactual = ["Math", "German", "English", "Physics", "Chemistry", "Economics", "Theory of Knowledge", "Extended Essay"]
+    let originalclassnames = ["Mathematics: Analysis and Approaches SL", "German B: SL","English A: Language and Literature SL",  "Physics: HL","Chemistry: HL", "Economics: HL", "Theory of Knowledge",  "Extended Essay"]
+    let tolerances = [4, 1, 2, 4, 3, 4, 1, 5]
+    let assignmentnumbers = [2, 1, 1, 2, 1, 1, 1, 1]
+    let classcolors = ["one", "two", "three", "four", "five", "six", "seven", "eight"]
+    @State var modalView: ModalView = .none
+    @State var alertView: AlertView = .noclass
+    @State var NewSheetPresenting = false
+    @State var NewAlertPresenting = false
+    @ObservedObject var sheetNavigator = SheetNavigator()
+    var startOfDay: Date {
+        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+        
+        return Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
+        //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
+    }
+    
     
     func getclassindex(classcool: Classcool) -> Int {
         for (index, element) in classlist.enumerated()
@@ -1241,43 +1198,43 @@ struct ClassesView: View {
                                         }
                                     }
                                     Divider()
-                                    Button(action: {
-                                        self.classdeleter.isdeleting = true
-                                        deletedclassindex = getactualclassnumber(classcool: classcool)
-                                        for (_, element) in self.assignmentlist.enumerated() {
-                                                if (element.subject == self.classlist[deletedclassindex].originalname) {
-                                                    for (index3, element2) in self.subassignmentlist.enumerated() {
-                                                        if (element2.assignmentname == element.name) {
-                                                            self.managedObjectContext.delete(self.subassignmentlist[index3])
-                                                        }
-                                                    }
-
-                                                }
-                                            }
-                                        //DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
-                                            self.managedObjectContext.delete(self.classlist[deletedclassindex])
-                                      
-                                       // }
-                                     //   self.classlist[deletedclassindex].isarchived = true
-                                        self.classdeleter.isdeleting = false
-                                        
-                                        do {
-                                            try self.managedObjectContext.save()
-                                            print("Class deleted")
-                                        } catch {
-                                            print(error.localizedDescription)
-                                        }
-                                        
-                                     //   print("Class deleted")
-                                        deletedclassindex = -1
-                                        
-                                    }) {
-                                        HStack {
-                                            Text("Archive Class")
-                                            Spacer()
-                                            Image(systemName: "trash").foregroundColor(Color.red)
-                                        }
-                                    }.foregroundColor(.red)
+//                                    Button(action: {
+//                                        self.classdeleter.isdeleting = true
+//                                        deletedclassindex = getactualclassnumber(classcool: classcool)
+//                                        for (_, element) in self.assignmentlist.enumerated() {
+//                                                if (element.subject == self.classlist[deletedclassindex].originalname) {
+//                                                    for (index3, element2) in self.subassignmentlist.enumerated() {
+//                                                        if (element2.assignmentname == element.name) {
+//                                                            self.managedObjectContext.delete(self.subassignmentlist[index3])
+//                                                        }
+//                                                    }
+//
+//                                                }
+//                                            }
+//                                        //DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+//                                            self.managedObjectContext.delete(self.classlist[deletedclassindex])
+//                                      
+//                                       // }
+//                                     //   self.classlist[deletedclassindex].isarchived = true
+//                                        self.classdeleter.isdeleting = false
+//                                        
+//                                        do {
+//                                            try self.managedObjectContext.save()
+//                                            print("Class deleted")
+//                                        } catch {
+//                                            print(error.localizedDescription)
+//                                        }
+//                                        
+//                                     //   print("Class deleted")
+//                                        deletedclassindex = -1
+//                                        
+//                                    }) {
+//                                        HStack {
+//                                            Text("Archive Class")
+//                                            Spacer()
+//                                            Image(systemName: "trash").foregroundColor(Color.red)
+//                                        }
+//                                    }.foregroundColor(.red)
                                     
                                 }//.animation(.spring())
     //                            NavigationLink(destination: DetailView(classcool: classcool )) {
@@ -1432,9 +1389,9 @@ struct ClassesView: View {
                     
                     Button(action: {
                         
-                           self.master()
+                     //      self.master()
                         //self.createsubassignments()
-                        self.schedulenotifications()
+                     //   self.schedulenotifications()
                            // MasterStruct().master()
 //                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
 //                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]

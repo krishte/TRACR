@@ -574,6 +574,7 @@ struct DetailPreferencesView: View {
     @State private var newdragoffsetmin = CGSize.zero
     @State private var textvaluemin = 0
     @State private var textvaluemax = 0
+    @State var masterclass: MasterClass = MasterClass()
     
     @State var rectangleWidth = UIScreen.main.bounds.size.width - 60;
     
@@ -664,6 +665,7 @@ struct DetailPreferencesView: View {
                                 }
 
                                 self.newdragoffsetmin = self.currentdragoffsetmin
+                                
                             }
                     )
                     VStack {
@@ -776,6 +778,8 @@ struct DetailPreferencesView: View {
                 } catch {
                     print(error.localizedDescription)
                 }
+               // masterclass.master()
+                //masterclass.schedulenotifications()
             }
 
         
@@ -811,7 +815,7 @@ struct NotificationsView: View {
     @State private var selection: Set<String> = ["None"]
     @State private var selection2: Set<String> = ["None"]
     @State var atbreakend = false
-    
+    @State var masterclass: MasterClass = MasterClass()
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
             selection.remove(singularassignment)
@@ -974,6 +978,7 @@ struct NotificationsView: View {
             defaults.set(array, forKey: "savedassignmentnotifications")
             let array2 = Array(self.selection2)
             defaults.set(array2, forKey: "savedbreaknotifications")
+          //  masterclass.schedulenotifications()
         }
                    // }
                // }//.navigationBarItems(leading: Text("H")).navigationBarTitle("Notifications", displayMode: .inline)

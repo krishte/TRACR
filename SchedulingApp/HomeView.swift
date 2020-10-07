@@ -1327,7 +1327,7 @@ struct IndividualSubassignmentView: View {
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                // Text(self.actualstartdatetime.description)
 //                Text(self.actualenddatetime.description)
-            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(20).contentShape(RoundedRectangle(cornerRadius: 20, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
+            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
                 Button(action:{
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname

@@ -450,7 +450,9 @@ struct NewClassModalView: View {
 
                     VStack {
                         HStack {
-                            Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                         //   Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                            
+                            Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
                             
                             Spacer()
                             
@@ -920,7 +922,7 @@ struct NewFreetimeModalView: View {
                             Text("Add Free Time")
                         }
                     }
-                }.frame(height: 700)
+                }.frame(height: UIScreen.main.bounds.size.height-150)
                 List {
                     NavigationLink(destination: FreetimeDetailView()) {
                         Text("View Free Times")

@@ -20,7 +20,7 @@ struct DropDown: View {
         self._showCompleted = showCompleted2
     }
     @State var selectedbutton = "Class"
-    let filters: [String] = ["Class", "Due date", "Assignment Length", "Work Left", "Name", "Type"]
+    let filters: [String] = ["Class", "Due date", "Length", "Work Left", "Name", "Type"]
     @State var filterspresented: Bool = false
     var body: some View {
         VStack {
@@ -117,7 +117,7 @@ struct AssignmentsView: View {
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
         }
             
-        else if (selectedFilter == "Total time") {
+        else if (selectedFilter == "Length") {
            self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.totaltime, ascending: true)])
         }
@@ -132,7 +132,7 @@ struct AssignmentsView: View {
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.name, ascending: true)])
         }
             
-        else if (selectedFilter == "Time left") {
+        else if (selectedFilter == "Work left") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.timeleft, ascending: true)])
         }

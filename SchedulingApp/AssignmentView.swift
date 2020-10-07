@@ -109,7 +109,7 @@ struct IndividualAssignmentFilterView: View {
                             Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                             Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
                             HStack {
-                                Text("Assignment Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
+                                Text("Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
                                 Spacer()
                                 Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing).padding(5)
                             }

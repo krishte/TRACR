@@ -30,6 +30,7 @@ struct NewAssignmentModalView: View {
     @State private var showingAlert = false
     @State private var expandedduedate = false
     @State private var startDate = Date()
+    @State private var masterclass: MasterClass = MasterClass()
     var formatter: DateFormatter
     
     init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
@@ -192,7 +193,8 @@ struct NewAssignmentModalView: View {
                                     classity.assignmentnumber += 1
                                 }
                             }
-                            
+                        //    masterclass.master()
+                          //  masterclass.schedulenotifications()
                             do {
                                 try self.managedObjectContext.save()
                             } catch {
@@ -554,6 +556,7 @@ struct NewFreetimeModalView: View {
     @State var daysNum: [Int] = []
     @State private var starttime = Date(timeIntervalSince1970: 0)
     @ObservedObject var freetimenavigator: FreeTimeNavigator = FreeTimeNavigator()
+    @State var masterclass: MasterClass = MasterClass()
     
     init(NewFreetimePresenting: Binding<Bool>) {
         self._NewFreetimePresenting = NewFreetimePresenting
@@ -917,12 +920,15 @@ struct NewFreetimeModalView: View {
                                 print(error.localizedDescription)
                             }
                             
+                         //   masterclass.master()
+                           // masterclass.schedulenotifications()
+                            
                             self.NewFreetimePresenting = false
                         }) {
                             Text("Add Free Time")
                         }
                     }
-                }.frame(height: UIScreen.main.bounds.size.height-150)
+                }.frame(height: UIScreen.main.bounds.size.height*3/4)
                 List {
                     NavigationLink(destination: FreetimeDetailView()) {
                         Text("View Free Times")
@@ -945,6 +951,7 @@ struct FreetimeDetailView: View {
     var formatter: DateFormatter
     var formatter2: DateFormatter
     @State private var selection: Set<String> = []
+    @State var masterclass: MasterClass = MasterClass()
     var daylist = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "One-off Dates"]
     
     init() {
@@ -997,6 +1004,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
+                     //   masterclass.master()
+                       // masterclass.schedulenotifications()
                          print("Freetime deleted")
                     }
                 }
@@ -1027,6 +1036,8 @@ struct FreetimeDetailView: View {
                           } catch {
                               print(error.localizedDescription)
                           }
+                  //      masterclass.master()
+                    //    masterclass.schedulenotifications()
                           print("Freetime deleted")
                      }
                 }
@@ -1057,6 +1068,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
+                    //    masterclass.master()
+                    //    masterclass.schedulenotifications()
                          print("Freetime deleted")
                     }
                 }
@@ -1087,6 +1100,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
+                   //     masterclass.master()
+                     //   masterclass.schedulenotifications()
                          print("Freetime deleted")
                     }
                 }
@@ -1117,6 +1132,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
+                   //     masterclass.master()
+                    //    masterclass.schedulenotifications()
                          print("Freetime deleted")
                     }
                 }
@@ -1148,6 +1165,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
+                     //   masterclass.master()
+                     //   masterclass.schedulenotifications()
                          print("Freetime deleted")
                     }
                 }
@@ -1179,6 +1198,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
+                       // masterclass.master()
+                      //  masterclass.schedulenotifications()
                          print("Freetime deleted")
                     }
                 }
@@ -1211,6 +1232,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
+                     //   masterclass.master()
+                     //   masterclass.schedulenotifications()
                          print("Freetime deleted")
                     }
                 }
@@ -1380,6 +1403,7 @@ struct EditAssignmentModalView: View {
     @State var iscompleted: Bool
     @State var gradeval: Double
     @State var assignmentsubject: String
+    @State var masterclass: MasterClass = MasterClass()
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
     
@@ -1633,7 +1657,8 @@ struct EditAssignmentModalView: View {
                             } catch {
                                 print(error.localizedDescription)
                             }
-                            
+                         //   masterclass.master()
+                           // masterclass.schedulenotifications()
                             self.NewAssignmentPresenting = false
                         }
                      

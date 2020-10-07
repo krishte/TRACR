@@ -295,6 +295,7 @@ struct SubassignmentAddTimeAction: View {
     
     @EnvironmentObject var addTimeSubassignment: AddTimeSubassignment
     @EnvironmentObject var actionViewPresets: ActionViewPresets
+    @State var masterclass: MasterClass = MasterClass()
     
     var body : some View {
         HStack {
@@ -395,6 +396,8 @@ struct SubassignmentAddTimeAction: View {
             } catch {
                 print(error.localizedDescription)
             }
+            //masterclass.master()
+            //masterclass.schedulenotifications()
         }) {
             Text("Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
         }.padding(.vertical, 8).padding(.bottom, -3)
@@ -418,7 +421,7 @@ struct SubassignmentBacklogAction: View {
     @State var subPageType: String = "Introduction"
     @State var subassignmentcompletionpercentage: Double = 0
     @State var nthTask: Int = 1
-    
+    @State var masterclass: MasterClass = MasterClass()
     var body: some View {
         if self.subPageType == "Introduction" {
             HStack {
@@ -612,7 +615,8 @@ struct SubassignmentBacklogAction: View {
                 }
                 
                 self.subassignmentcompletionpercentage = 0
-                
+              //  masterclass.master()
+               // masterclass.schedulenotifications()
                 addTimeSubassignmentBacklog.backlogList.remove(at: 0)
             }) {
                 Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Next" : "Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
@@ -1207,6 +1211,12 @@ struct IndividualSubassignmentView: View {
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+    
+    @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
+
+    var assignmenttypeslist: FetchedResults<AssignmentTypes>
     
     var starttime, endtime, color, name, duedate: String
     var actualstartdatetime, actualenddatetime, actualduedate: Date
@@ -1228,6 +1238,7 @@ struct IndividualSubassignmentView: View {
     
     @Binding var showeditassignment: Bool
     @Binding var selectededitassignment: String
+    @State var masterclass: MasterClass = MasterClass()
     
     let screenval = -UIScreen.main.bounds.size.width
     
@@ -1266,7 +1277,7 @@ struct IndividualSubassignmentView: View {
         shortdateformatter.dateStyle = .short
      //   shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
     }
-        
+ 
     var body: some View {
         ZStack {
             VStack {
@@ -1441,6 +1452,11 @@ struct IndividualSubassignmentView: View {
                             } catch {
                                 print(error.localizedDescription)
                             }
+//                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+//                                self.master()
+//                                self.schedulenotifications()
+//                            }
+                            
                         }
                     }
                 }).animation(.spring())

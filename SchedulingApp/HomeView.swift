@@ -580,9 +580,9 @@ struct SubassignmentBacklogAction: View {
                 newAddTimeLog.name = addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL"
                 newAddTimeLog.length = Int64(addTimeSubassignmentBacklog.backlogList[0]["subassignmentlength"] ?? "0") ?? 0
                 newAddTimeLog.color = addTimeSubassignmentBacklog.backlogList[0]["subassignmentcolor"] ?? "one"
-                newAddTimeLog.starttime = self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0].startdatetime
-                newAddTimeLog.endtime = self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0].enddatetime
-                newAddTimeLog.date = self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0].assignmentduedate
+                newAddTimeLog.starttime = self.subassignmentlist[0].startdatetime
+                newAddTimeLog.endtime = self.subassignmentlist[0].enddatetime
+                newAddTimeLog.date = self.subassignmentlist[0].assignmentduedate
                 newAddTimeLog.completionpercentage = self.subassignmentcompletionpercentage
                 
                 self.nthTask += 1
@@ -593,7 +593,7 @@ struct SubassignmentBacklogAction: View {
                     self.nthTask = 1
                 }
 
-                self.managedObjectContext.delete(self.subassignmentlist[Int(addTimeSubassignmentBacklog.backlogList[0]["subassignmentindex"] ?? "0") ?? 0])
+                self.managedObjectContext.delete(self.subassignmentlist[0])
                 
                 for (_, element) in self.assignmentlist.enumerated() {
                     if (element.name == addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL") {
@@ -658,7 +658,6 @@ struct ActionView: View {
                 tempAddTimeSubassignment["subassignmentstarttimetext"] = timeformatter.string(from: subassignment.startdatetime)
                 tempAddTimeSubassignment["subassignmentendtimetext"] = timeformatter.string(from: subassignment.enddatetime)
                 tempAddTimeSubassignment["subassignmentdatetext"] = shortdateformatter.string(from: subassignment.startdatetime)
-                tempAddTimeSubassignment["subassignmentindex"] = String(index)
 
                 addTimeSubassignmentBacklog.backlogList.append(tempAddTimeSubassignment)
                 
@@ -1068,7 +1067,7 @@ struct HomeBodyView: View {
 
                                         Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 15)).fontWeight(.bold).frame(height:40)
                                         Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
-                                        Text("Work Left: " + String(assignment.timeleft) + " mintues").font(.system(size: 12)).frame(height: 15)
+                                        Text("Work Left: \(assignment.timeleft / 60)h \(assignment.timeleft % 60)m").font(.system(size: 12)).frame(height: 15)
                                         UpcomingSubassignmentProgressBar(assignment: assignment).frame(height: 10)
                                         Spacer().frame(height: 10)
                                     }

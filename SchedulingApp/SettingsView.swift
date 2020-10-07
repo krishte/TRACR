@@ -465,7 +465,19 @@ struct HelpCenterView: View {
                         }
                     }.animation(.spring())
                 }).animation(.spring())
-            }.navigationBarTitle("Help Center", displayMode: .inline)
+            }.navigationBarItems(trailing: Button(action: {
+                if (self.selection.count < 5) {
+                    for title in self.faqtitles {
+                        if (!self.selection.contains(title)) {
+                            self.selection.insert(title)
+                        }
+                    }
+                }
+                else {
+                    self.selection.removeAll()
+                }
+                
+            }, label: {selection.count == 5 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("View Free Times", displayMode: .inline)
         
     }
 }
@@ -506,7 +518,7 @@ struct PreferencesView: View {
                     
                         if (self.selection.contains("show"))
                         {
-                            Text("stuff").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 30, alignment: .topLeading).animation(.spring())
+                            Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
                             Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
                         }
                     DetailBreakView()
@@ -532,7 +544,7 @@ struct DetailBreakView: View {
     }
     var body: some View {
         VStack {
-        Divider().frame(width: UIScreen.main.bounds.size.width-60, height: 2)
+     //   Divider().frame(width: UIScreen.main.bounds.size.width-60, height: 2)
         Text("Break").font(.title).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
         
         Slider(value: $breakvalue, in: 1...4).frame(width: UIScreen.main.bounds.size.width-60)

@@ -561,6 +561,17 @@ struct MasterClass: View {
                 try master()
             } catch MasterErrors.ImpossibleDueDate {
                 print("Impossible Due Date Entered.")
+                self.managedObjectContext.delete(self.assignmentlist[0])
+                do {
+                    try self.managedObjectContext.save()
+                    print("AddTime logged")
+                } catch {
+                    print(error.localizedDescription)
+                }
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1500)) {
+                    theBigMaster()
+                }
+
             } catch {
                 print("failed somewhere but moving on for now")
             }

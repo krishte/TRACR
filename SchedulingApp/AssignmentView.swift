@@ -29,6 +29,8 @@ struct IndividualAssignmentFilterView: View {
     
     var assignmentduedate: String
     
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     init(isExpanded2: Bool, isCompleted2: Bool, assignment2: Assignment, selectededit: Binding<String>, showedit: Binding<Bool>)
     {
         isExpanded = isExpanded2
@@ -104,8 +106,6 @@ struct IndividualAssignmentFilterView: View {
 
                             }
 
-                            
-
                             Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                             Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
                             HStack {
@@ -133,27 +133,19 @@ struct IndividualAssignmentFilterView: View {
                     
                     RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
                     HStack {
-                            if (assignment.progress == 100)
-                            {
-
+                            if (assignment.progress == 100) {
                                 RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height: 20, alignment: .leading)
                             }
-                            else
-                            {
+                            else {
                                 RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height:20, alignment: .leading)
                                 Spacer()
                             }
-                        
-
-
                     }
                 }
             }.padding(10).background( Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
-
-                    if (!self.isCompleted)
-                    {
+                    if (!self.isCompleted) {
                         self.dragoffset = value.translation
                         if (self.dragoffset.width < 0) {
                             self.isDraggedleft = false
@@ -197,10 +189,8 @@ struct IndividualAssignmentFilterView: View {
                     {
                         self.dragoffset = .zero
                         // self.isDragged = false
-                        if (self.incompleted == true)
-                        {
-                            if (self.incompletedonce == true)
-                            {
+                        if (self.incompleted == true) {
+                            if (self.incompletedonce == true) {
                                 self.incompletedonce = false;
                                 print("incompleted")
                             }
@@ -231,6 +221,8 @@ struct IndividualAssignmentFilterView: View {
                                  } catch {
                                      print(error.localizedDescription)
                                  }
+                                
+                                masterRunning.masterRunningNow = true
                              }
                          }
                     }

@@ -39,9 +39,11 @@ struct NewAssignmentModalView: View {
     @State private var showingAlert = false
     @State private var expandedduedate = false
     @State private var startDate = Date()
-    @State private var masterclass: MasterClass = MasterClass()
+    
     var formatter: DateFormatter
     
+    @EnvironmentObject var masterRunning: MasterRunning
+
     init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
@@ -104,7 +106,7 @@ struct NewAssignmentModalView: View {
                         VStack {
                             if hours == 0 {
                                 Picker(selection: $minutes, label: Text("Minutes")) {
-                                    ForEach(minutelist[1...].indices) { minuteindex in
+                                    ForEach(minutelist[6...].indices) { minuteindex in
                                         Text(String(self.minutelist[minuteindex]) + " mins")
                                     }
                                 }.pickerStyle(WheelPickerStyle())
@@ -140,11 +142,13 @@ struct NewAssignmentModalView: View {
                         if (expandedduedate)
                         {
                             VStack {
-                                DatePicker("", selection: $selectedDate, in: startDate..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                DatePicker("", selection: $selectedDate, in: Date(timeInterval: TimeInterval(60 * (self.hours == 0 ? self.minutelist[self.minutes+6] : 60*self.hourlist[self.hours] + self.minutelist[self.minutes])), since: startDate)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
                             }.animation(.spring())
                         }
 
-                    } else {
+                    }
+                    
+                    else {
                         Button(action: {
                                 self.expandedduedate.toggle()
 
@@ -158,7 +162,7 @@ struct NewAssignmentModalView: View {
                         }
                         if (expandedduedate)
                         {
-                            VStack {
+                            VStack { //change startDate thing to the time-adjusted one (look at iOS 14 implementation
                                 MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                             }.animation(nil)
                         }
@@ -187,9 +191,10 @@ struct NewAssignmentModalView: View {
                             newAssignment.duedate = self.selectedDate
     //                        print(self.hours)
     //                        print(self.minutes)
+                            
                             if (self.hours == 0)
                             {
-                                newAssignment.totaltime = Int64(self.minutelist[self.minutes+1])
+                                newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
                             }
                             else
                             {
@@ -202,8 +207,11 @@ struct NewAssignmentModalView: View {
                                     classity.assignmentnumber += 1
                                 }
                             }
-                        //    masterclass.master()
-                          //  masterclass.schedulenotifications()
+                            
+                            masterRunning.masterRunningNow = true
+                            masterRunning.displayText = true
+                            print("Signal Sent.")
+                            
                             do {
                                 try self.managedObjectContext.save()
                             } catch {
@@ -225,6 +233,10 @@ struct NewAssignmentModalView: View {
                 }
                 
             }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Assignment", displayMode: .inline)
+        }
+        
+        if masterRunning.masterRunningNow {
+            MasterClass()
         }
     }
 }
@@ -543,9 +555,11 @@ struct MyDatePicker: UIViewRepresentable {
         }
     }
 }
+
 class FreeTimeNavigator: ObservableObject {
     @Published var updateview: Bool = false
 }
+
 struct NewFreetimeModalView: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -565,7 +579,8 @@ struct NewFreetimeModalView: View {
     @State var daysNum: [Int] = []
     @State private var starttime = Date(timeIntervalSince1970: 0)
     @ObservedObject var freetimenavigator: FreeTimeNavigator = FreeTimeNavigator()
-    @State var masterclass: MasterClass = MasterClass()
+    
+    @EnvironmentObject var masterRunning: MasterRunning
     
     init(NewFreetimePresenting: Binding<Bool>) {
         self._NewFreetimePresenting = NewFreetimePresenting
@@ -807,7 +822,7 @@ struct NewFreetimeModalView: View {
                                     }
                                      
                                  }) {
-                                    Text("None").foregroundColor(colorScheme == .light ? Color.gray : Color.white).fontWeight(.light)
+                                    Text("None").foregroundColor(colorScheme == .light ? Color.black : Color.white).fontWeight(.light)
                                  }
                                 
                                  if (self.selection.contains("None")) {
@@ -830,7 +845,7 @@ struct NewFreetimeModalView: View {
                                             }
                                             
                                         }) {
-                                            Text(repeatoption).foregroundColor(colorScheme == .light ? Color.gray : Color.white).fontWeight(.light)
+                                            Text(repeatoption).foregroundColor(colorScheme == .light ? Color.black : Color.white).fontWeight(.light)
                                         }
                                         if (self.selection.contains(repeatoption)) {
                                             Spacer()
@@ -929,8 +944,8 @@ struct NewFreetimeModalView: View {
                                 print(error.localizedDescription)
                             }
                             
-                         //   masterclass.master()
-                           // masterclass.schedulenotifications()
+                            masterRunning.masterRunningNow = true
+                            print("Signal Sent.")
                             
                             self.NewFreetimePresenting = false
                         }) {
@@ -939,14 +954,15 @@ struct NewFreetimeModalView: View {
                     }
                 }.frame(height: UIScreen.main.bounds.size.height*3/4)
                 List {
-                    NavigationLink(destination: FreetimeDetailView()) {
+                    NavigationLink(destination: FreetimeDetailView().environmentObject(self.masterRunning)) {
                         Text("View Free Times")
                     }
                 }
-
-                
             }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
-            
+        }
+        
+        if masterRunning.masterRunningNow {
+            MasterClass()
         }
     }
 
@@ -960,7 +976,9 @@ struct FreetimeDetailView: View {
     var formatter: DateFormatter
     var formatter2: DateFormatter
     @State private var selection: Set<String> = []
-    @State var masterclass: MasterClass = MasterClass()
+    
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     var daylist = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday", "One-off Dates"]
     
     init() {
@@ -1013,9 +1031,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
-                     //   masterclass.master()
-                       // masterclass.schedulenotifications()
-                         print("Freetime deleted")
+
+                        print("Freetime deleted")
                     }
                 }
                 Button(action: {self.selectDeselect("Tuesday")}) {
@@ -1045,9 +1062,8 @@ struct FreetimeDetailView: View {
                           } catch {
                               print(error.localizedDescription)
                           }
-                  //      masterclass.master()
-                    //    masterclass.schedulenotifications()
-                          print("Freetime deleted")
+                        
+                        print("Freetime deleted")
                      }
                 }
                 Button(action: {self.selectDeselect("Wednesday")}) {
@@ -1077,9 +1093,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
-                    //    masterclass.master()
-                    //    masterclass.schedulenotifications()
-                         print("Freetime deleted")
+
+                        print("Freetime deleted")
                     }
                 }
                 Button(action: {self.selectDeselect("Thursday")}) {
@@ -1109,9 +1124,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
-                   //     masterclass.master()
-                     //   masterclass.schedulenotifications()
-                         print("Freetime deleted")
+                        
+                        print("Freetime deleted")
                     }
                 }
                 Button(action: {self.selectDeselect("Friday")}) {
@@ -1141,9 +1155,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
-                   //     masterclass.master()
-                    //    masterclass.schedulenotifications()
-                         print("Freetime deleted")
+                        
+                        print("Freetime deleted")
                     }
                 }
             }
@@ -1174,9 +1187,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
-                     //   masterclass.master()
-                     //   masterclass.schedulenotifications()
-                         print("Freetime deleted")
+                        
+                        print("Freetime deleted")
                     }
                 }
                 
@@ -1207,9 +1219,8 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
-                       // masterclass.master()
-                      //  masterclass.schedulenotifications()
-                         print("Freetime deleted")
+                        
+                        print("Freetime deleted")
                     }
                 }
                 Spacer()
@@ -1241,13 +1252,15 @@ struct FreetimeDetailView: View {
                          } catch {
                              print(error.localizedDescription)
                          }
-                     //   masterclass.master()
-                     //   masterclass.schedulenotifications()
-                         print("Freetime deleted")
+                        
+                        print("Freetime deleted")
                     }
                 }
             }
-        }.animation(.spring()).navigationBarItems(trailing: Button(action: {
+        }.onDisappear(perform: {
+            masterRunning.masterRunningNow = true
+            print("Signal Sent.")
+        }).animation(.spring()).navigationBarItems(trailing: Button(action: {
             if (self.selection.count < 8) {
                 for dayname in self.daylist {
                     if (!self.selection.contains(dayname)) {
@@ -1258,7 +1271,6 @@ struct FreetimeDetailView: View {
             else {
                 self.selection.removeAll()
             }
-            
         }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("View Free Times", displayMode: .inline)
     }
 }
@@ -1412,7 +1424,8 @@ struct EditAssignmentModalView: View {
     @State var iscompleted: Bool
     @State var gradeval: Double
     @State var assignmentsubject: String
-    @State var masterclass: MasterClass = MasterClass()
+
+    @EnvironmentObject var masterRunning: MasterRunning
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
     //@State var textfieldmanager: TextFieldManager = TextFieldManager()
@@ -1668,8 +1681,10 @@ struct EditAssignmentModalView: View {
                             } catch {
                                 print(error.localizedDescription)
                             }
-                         //   masterclass.master()
-                           // masterclass.schedulenotifications()
+
+                            masterRunning.masterRunningNow = true
+                            print("Signal Sent.")
+                            
                             self.NewAssignmentPresenting = false
                         }
                      
@@ -1685,6 +1700,9 @@ struct EditAssignmentModalView: View {
                 }
                 
             }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Assignment", displayMode: .inline)
+        }
+        if masterRunning.masterRunningNow {
+            MasterClass()
         }
     }
 }

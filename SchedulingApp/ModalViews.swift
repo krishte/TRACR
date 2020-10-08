@@ -753,7 +753,7 @@ struct NewFreetimeModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select end time").foregroundColor(colorScheme == .light ? Color.gray : Color.white)
+                                    Text("Select end time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
                                 }

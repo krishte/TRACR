@@ -556,7 +556,7 @@ struct MasterClass: View {
             }
         }
         
-        else {
+        else if masterRunning.masterRunningNow {
             do {
                 try master()
             } catch MasterErrors.ImpossibleDueDate {
@@ -564,13 +564,11 @@ struct MasterClass: View {
             } catch {
                 print("failed somewhere but moving on for now")
             }
-            
+            masterRunning.masterRunningNow = false
             schedulenotifications()
         }
         
         print("Terminating Signal.")
-
-        masterRunning.masterRunningNow = false
     }
     
     func schedulenotifications() {
@@ -933,12 +931,14 @@ struct MasterClass: View {
     
         for freetime in freetimelist {
             if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday) {
-                dateFreeTimeDict[Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                print("sdfdsfdsf")
+                print(startoffreetimeDict)
+                dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 
-                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(timezoneOffset), since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!), to: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!).minute!)
-                 {
+//                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!), to: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!).minute!)
+//                 {
                     startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)] = freetime.startdatetime
-                 }
+//                 }
             }
         }
 //        for i in 0...daystilllatestdate {

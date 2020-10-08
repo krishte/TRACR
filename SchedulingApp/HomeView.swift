@@ -207,7 +207,7 @@ struct WeeklyBlockView: View {
                             }
                         }
                         ZStack {
-                            ForEach(self.getassignmentsbydate(index: index).indices) { index2 in
+                            ForEach(self.getassignmentsbydate(index: index).indices, id: \.self) { index2 in
 //                                if (Int(index2) < self.getlenofassignmentsbydate(index: index))
 //                                {
                                 if (self.getassignmentsbydateindex(index: index, index2: index2) == "zero")
@@ -1481,6 +1481,7 @@ struct IndividualSubassignmentView: View {
                             }
                             
                             masterRunning.masterRunningNow = true
+                            masterRunning.displayText = true
                             print("Signal Sent.")
                         }
                     }

@@ -369,6 +369,14 @@ struct SettingsView: View {
                         Spacer()
                         Text("Developer's Beta 1.2").foregroundColor(.gray)
                     }
+                    NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
+                        Text("This version is running with the following bugs:").font(.title2)
+                        Text("1. Creating an Assignment with an impossible/immediate due date will cause the master function to crash, although the app won't crash itself. To continue using the app, delete this assignment with the impossible due date and the app will function normally again.")
+                        Spacer()
+                    }.padding(.all, 15)) {
+                        Text("Developer's Notes")
+                    }
+                    
                     Button(action: {
                         self.cleardataalert.toggle()
                     }) {

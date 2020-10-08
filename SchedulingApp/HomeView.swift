@@ -1047,7 +1047,7 @@ struct HomeBodyView: View {
     //                                                    print(subassignment.startdatetime.description)
     //                                                }
                                                 }
-                                                    //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                                                    //was +122 but had to subtract 2*60.35 to account for GMT + 
                                             }
                                         }.animation(.spring())
                                     }

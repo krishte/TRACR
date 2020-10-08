@@ -975,13 +975,13 @@ struct HomeBodyView: View {
                                         Text("No Upcoming Tasks").font(.system(size: 19))
                                     }
                                     else {
-                                        Text("Coming Up:").fontWeight(.semibold).animation(.none)
-                                        Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading).animation(.none)
+                                        Text("Coming Up:").fontWeight(.semibold)//.animation(.none)
+                                        Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading)//.animation(.none)
 
                                         Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
                                         Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
                                     }
-                                }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
+                                }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150)//.animation(.none)
 
                                 if self.subassignmentassignmentname != "" {
                                     Spacer().frame(width: 10)
@@ -1121,7 +1121,7 @@ struct HomeBodyView: View {
                                     Text("No Task Selected").font(.system(size: 22)).multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width-60, height: 80, alignment: .center)
                                 }
                             }
-                        }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
+                        }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150)//.animation(.none)
 //                        if (self.subassignmentassignmentname == "")
 //                        {
 //                            Spacer().frame(width: 150)

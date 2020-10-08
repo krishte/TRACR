@@ -1001,7 +1001,7 @@ struct HomeBodyView: View {
                             }.padding(10)
                             
 
-                        }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(x:CGFloat(upcomingoffset))
+                        }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
                             HStack {
                                 
                                 Spacer()
@@ -1023,8 +1023,8 @@ struct HomeBodyView: View {
                                          //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
                                        // if (self.hidingupcoming)
                                      //   {
-                                        RoundedRectangle(cornerRadius: 2.5, style: .continuous).fill(Color.blue).frame(width: 15, height:60)
-                                            Image(systemName: "chevron.compact.right").resizable().frame(width: 5, height: 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
+                                        RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
+                                        Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
                                        // }
 //                                        else
 //                                        {
@@ -1146,7 +1146,7 @@ struct HomeBodyView: View {
                         }
                         
                     }//.padding(10)
-                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(x:CGFloat(upcomingoffset))
+                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
                     HStack {
                         
                         Spacer()
@@ -1168,8 +1168,8 @@ struct HomeBodyView: View {
                                  //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
                                // if (self.hidingupcoming)
                              //   {
-                                RoundedRectangle(cornerRadius: 2.5, style: .continuous).fill(Color.blue).frame(width: 15, height:60)
-                                    Image(systemName: "chevron.compact.right").resizable().frame(width: 5, height: 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
+                                RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
+                                Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
                                // }
 //                                        else
 //                                        {

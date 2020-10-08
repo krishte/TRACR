@@ -1041,7 +1041,6 @@ struct HomeBodyView: View {
                 VStack {
                     ScrollView {
                         ZStack {
-                            
                             HStack(alignment: .top) {
                                 VStack(alignment: .leading) {
                                     ForEach((0...24), id: \.self) { hour in
@@ -1053,7 +1052,7 @@ struct HomeBodyView: View {
                                             MasterClass()
                                         }
                                     }.frame(height: 50).animation(.spring())
-                                    }
+//                                    }
                                 }
                             }
 
@@ -1090,7 +1089,6 @@ struct HomeBodyView: View {
                         }
                     }
                 }.padding(.top, self.hidingupcoming ? -100 : 0).animation(.spring())
-            
             }//.transition(.move(edge: .leading)).animation(.spring())
         }
         else {

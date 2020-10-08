@@ -372,6 +372,7 @@ struct SettingsView: View {
                     NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
                         Text("This version is running with the following bugs:").font(.title2)
                         Text("1. Creating an Assignment with an impossible/immediate due date will cause the master function to crash, although the app won't crash itself. To continue using the app, delete this assignment with the impossible due date and the app will function normally again.")
+                        Text("2. Adding One-off Free times has the same effect. Delete these to conitnue.")
                         Spacer()
                     }.padding(.all, 15)) {
                         Text("Developer's Notes")

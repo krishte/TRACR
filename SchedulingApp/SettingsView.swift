@@ -227,6 +227,8 @@ struct SettingsView: View {
     
     @State var tutorialPageNum = 0
     
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     var body: some View {
         Form {
             List {
@@ -365,14 +367,14 @@ struct SettingsView: View {
                     HStack {
                         Text("Version:")
                         Spacer()
-                        Text("Developer's Beta 2.1").foregroundColor(.gray)
+                        Text("Developer's Beta 1.2").foregroundColor(.gray)
                     }
                     Button(action: {
                         self.cleardataalert.toggle()
                     }) {
                         Text("Clear All Data").foregroundColor(Color.red)
                     }.alert(isPresented:$cleardataalert) {
-                        Alert(title: Text("Are you sure you want to clear all data?"), message: Text("There is no undoing this operation"), primaryButton: .destructive(Text("Clear All Data")) {
+                        Alert(title: Text("Are you sure you want to clear all data?"), message: Text("You cannot undo this operation."), primaryButton: .destructive(Text("Clear All Data")) {
                             self.delete()
                             print("data cleared")
                         }, secondaryButton: .cancel())
@@ -380,6 +382,10 @@ struct SettingsView: View {
                 }
             }
         }.navigationBarTitle("Settings")
+        
+        if masterRunning.masterRunningNow {
+            MasterClass()
+        }
     }
     
     func delete() -> Void {
@@ -497,17 +503,16 @@ struct PreferencesView: View {
         }
     }
     
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     var body: some View {
         VStack {
             //Text(String(assignmenttypeslist.count))
           //  Form {
                 ScrollView(showsIndicators: false) {
-                    
                         Button(action: {
                             self.selectDeselect("show")
-                            
-                            
                         }) {
                             HStack {
                                 Text("What is this?").foregroundColor(.black).fontWeight(.bold)
@@ -516,20 +521,18 @@ struct PreferencesView: View {
                             }.padding(10).background(Color("two")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10)
                         }.animation(.spring())
                     
-                        if (self.selection.contains("show"))
-                        {
+                        if (self.selection.contains("show")) {
                             Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
                             Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
                         }
                     DetailBreakView()
-                    ForEach(self.assignmenttypeslist) {
-                        assignmenttype in
+                    ForEach(self.assignmenttypeslist) { assignmenttype in
                         DetailPreferencesView(assignmenttype: assignmenttype)
                     }//.animation(.spring())
                 }//.animation(.spring())
            // }.navigationBarTitle("Preferences")
         }.navigationBarTitle("Type Sliders").onDisappear {
-           
+            masterRunning.masterRunningNow = true
         }
     }
 }
@@ -574,8 +577,9 @@ struct DetailPreferencesView: View {
     @State private var newdragoffsetmin = CGSize.zero
     @State private var textvaluemin = 0
     @State private var textvaluemax = 0
-    @State var masterclass: MasterClass = MasterClass()
-    
+
+    @EnvironmentObject var masterRunning: MasterRunning
+
     @State var rectangleWidth = UIScreen.main.bounds.size.width - 60;
     
     init(assignmenttype: AssignmentTypes) {
@@ -589,207 +593,184 @@ struct DetailPreferencesView: View {
     }
     
     var body: some View {
-            VStack {
-//                if (setValues())
-//                {
-//
-//                }
-                Text(assignmenttype.type).font(.title).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
-                //Text(String(assignmenttype.rangemin) + " " + String(assignmenttype.rangemax))
+        VStack {
+            Text(assignmenttype.type).font(.title).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+            ZStack {
+                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.rectangleWidth, height: 20, alignment: .leading).overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: self.rectangleWidth, height: 20, alignment: .leading)
+                )
+                Rectangle().fill(Color.green).frame(width: max(self.currentdragoffsetmax.width - self.currentdragoffsetmin.width, 0), height: 19).offset(x: getrectangleoffset())
                 
-//                VStack {
-//                    Slider(value: $typeval, in: 30...300, step: 15)
-//                    Text("Min: " + String(Int(typeval)))
-//                }
-//                VStack {
-//                    Slider(value: $typeval2, in: 30...300, step: 15)
-//                    Text("Max: " + String(Int(typeval2)))
-//                }
-                
-                ZStack {
+                VStack {
+                    Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2)
+                    Text(textvaluemin == 0 ? String(roundto15minutes(roundvalue: getmintext())) : String(textvaluemin))
 
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.rectangleWidth, height: 20, alignment: .leading).overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: self.rectangleWidth, height: 20, alignment: .leading)
-                    )
-                    Rectangle().fill(Color.green).frame(width: max(self.currentdragoffsetmax.width - self.currentdragoffsetmin.width, 0), height: 19).offset(x: getrectangleoffset())
-                    
-                    VStack {
-                        Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2)
-                        Text(textvaluemin == 0 ? String(roundto15minutes(roundvalue: getmintext())) : String(textvaluemin))
+                }.offset(x:  self.currentdragoffsetmin.width, y: 15)
+                    // 3.
+                    .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                        .onChanged { value in
+                           // print(value.translation.width)
 
-                    }.offset(x:  self.currentdragoffsetmin.width, y: 15)
-                        // 3.
-                        .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                            .onChanged { value in
-                               // print(value.translation.width)
-   
-                                self.currentdragoffsetmin = CGSize(width: value.translation.width + self.newdragoffsetmin.width, height: value.translation.height + self.newdragoffsetmin.height)
-                                
-                                if (self.currentdragoffsetmin.width < -1*self.rectangleWidth/2)
-                                {
-                                    self.currentdragoffsetmin.width = -1*self.rectangleWidth/2
-                                }
-                                if (self.currentdragoffsetmin.width > self.rectangleWidth/2)
-                                {
-                                    self.currentdragoffsetmin.width = self.rectangleWidth/2
-                                }
-                                if (self.currentdragoffsetmin.width > self.currentdragoffsetmax.width)
-                                {
-                                    self.currentdragoffsetmin.width = self.currentdragoffsetmax.width
-                                }
-                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
-                                {
-                                 //   print("success1")
-                                    self.currentdragoffsetmin.width = self.currentdragoffsetmax.width - self.rectangleWidth/9 - 1
-                                }
-
-                        }   // 4.
-                            .onEnded { value in
-                               self.currentdragoffsetmin = CGSize(width: value.translation.width + self.newdragoffsetmin.width, height: value.translation.height + self.newdragoffsetmin.height)
-                                if (self.currentdragoffsetmin.width < -1*self.rectangleWidth/2)
-                                {
-                                    self.currentdragoffsetmin.width = -1*self.rectangleWidth/2
-                                }
-                                if (self.currentdragoffsetmin.width > self.rectangleWidth/2)
-                                {
-                                    self.currentdragoffsetmin.width = self.rectangleWidth/2
-                                }
-                                if (self.currentdragoffsetmin.width > self.currentdragoffsetmax.width)
-                                {
-                                    self.currentdragoffsetmin.width = self.currentdragoffsetmax.width
-                                }
-                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
-                                {
-                                 //   print("success2")
-                                    self.currentdragoffsetmin.width = self.currentdragoffsetmax.width - self.rectangleWidth/9 - 1
-                                }
-
-                                self.newdragoffsetmin = self.currentdragoffsetmin
-                                
+                            self.currentdragoffsetmin = CGSize(width: value.translation.width + self.newdragoffsetmin.width, height: value.translation.height + self.newdragoffsetmin.height)
+                            
+                            if (self.currentdragoffsetmin.width < -1*self.rectangleWidth/2)
+                            {
+                                self.currentdragoffsetmin.width = -1*self.rectangleWidth/2
                             }
-                    )
-                    VStack {
-                        Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2)
-                        Text(textvaluemax == 0 ? String(roundto15minutes(roundvalue: getmaxtext())) : String(textvaluemax))
-                    }.offset(x:  self.currentdragoffsetmax.width, y: 15)
-                         // 3.
-                         .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
-                             .onChanged { value in
-                                // print(value.translation.width)
-    
-                                 self.currentdragoffsetmax = CGSize(width: value.translation.width + self.newdragoffsetmax.width, height: value.translation.height + self.newdragoffsetmax.height)
-                                 
-                                 if (self.currentdragoffsetmax.width < -1*self.rectangleWidth/2)
-                                 {
-                                     self.currentdragoffsetmax.width = -1*self.rectangleWidth/2
-                                 }
-                                 if (self.currentdragoffsetmax.width > self.rectangleWidth/2)
-                                 {
-                                     self.currentdragoffsetmax.width = self.rectangleWidth/2
-                                 }
-                                if (self.currentdragoffsetmax.width < self.currentdragoffsetmin.width)
-                                {
-                                    self.currentdragoffsetmax.width = self.currentdragoffsetmin.width
-                                }
-                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
-                                {
-                                    self.currentdragoffsetmax.width = self.currentdragoffsetmin.width + self.rectangleWidth/9 + 1
-                                }
+                            if (self.currentdragoffsetmin.width > self.rectangleWidth/2)
+                            {
+                                self.currentdragoffsetmin.width = self.rectangleWidth/2
+                            }
+                            if (self.currentdragoffsetmin.width > self.currentdragoffsetmax.width)
+                            {
+                                self.currentdragoffsetmin.width = self.currentdragoffsetmax.width
+                            }
+                            if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                            {
+                             //   print("success1")
+                                self.currentdragoffsetmin.width = self.currentdragoffsetmax.width - self.rectangleWidth/9 - 1
+                            }
 
-                         }   // 4.
-                             .onEnded { value in
-                                self.currentdragoffsetmax = CGSize(width: value.translation.width + self.newdragoffsetmax.width, height: value.translation.height + self.newdragoffsetmax.height)
-                                 if (self.currentdragoffsetmax.width < -1*self.rectangleWidth/2)
-                                 {
-                                     self.currentdragoffsetmax.width = -1*self.rectangleWidth/2
-                                 }
-                                 if (self.currentdragoffsetmax.width > self.rectangleWidth/2)
-                                 {
-                                     self.currentdragoffsetmax.width = self.rectangleWidth/2
-                                 }
-                                if (self.currentdragoffsetmax.width < self.currentdragoffsetmin.width)
-                                {
-                                    self.currentdragoffsetmax.width = self.currentdragoffsetmin.width
-                                }
-                                if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
-                                {
-                                    self.currentdragoffsetmax.width = self.currentdragoffsetmin.width + self.rectangleWidth/9 + 1
-                                }
+                    }   // 4.
+                        .onEnded { value in
+                           self.currentdragoffsetmin = CGSize(width: value.translation.width + self.newdragoffsetmin.width, height: value.translation.height + self.newdragoffsetmin.height)
+                            if (self.currentdragoffsetmin.width < -1*self.rectangleWidth/2)
+                            {
+                                self.currentdragoffsetmin.width = -1*self.rectangleWidth/2
+                            }
+                            if (self.currentdragoffsetmin.width > self.rectangleWidth/2)
+                            {
+                                self.currentdragoffsetmin.width = self.rectangleWidth/2
+                            }
+                            if (self.currentdragoffsetmin.width > self.currentdragoffsetmax.width)
+                            {
+                                self.currentdragoffsetmin.width = self.currentdragoffsetmax.width
+                            }
+                            if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                            {
+                             //   print("success2")
+                                self.currentdragoffsetmin.width = self.currentdragoffsetmax.width - self.rectangleWidth/9 - 1
+                            }
 
-                                self.newdragoffsetmax = self.currentdragoffsetmax
+                            self.newdragoffsetmin = self.currentdragoffsetmin
+                            
+                        }
+                )
+                VStack {
+                    Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2)
+                    Text(textvaluemax == 0 ? String(roundto15minutes(roundvalue: getmaxtext())) : String(textvaluemax))
+                }.offset(x:  self.currentdragoffsetmax.width, y: 15)
+                     // 3.
+                     .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                         .onChanged { value in
+                            // print(value.translation.width)
+
+                             self.currentdragoffsetmax = CGSize(width: value.translation.width + self.newdragoffsetmax.width, height: value.translation.height + self.newdragoffsetmax.height)
+                             
+                             if (self.currentdragoffsetmax.width < -1*self.rectangleWidth/2)
+                             {
+                                 self.currentdragoffsetmax.width = -1*self.rectangleWidth/2
                              }
-                     )
+                             if (self.currentdragoffsetmax.width > self.rectangleWidth/2)
+                             {
+                                 self.currentdragoffsetmax.width = self.rectangleWidth/2
+                             }
+                            if (self.currentdragoffsetmax.width < self.currentdragoffsetmin.width)
+                            {
+                                self.currentdragoffsetmax.width = self.currentdragoffsetmin.width
+                            }
+                            if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                            {
+                                self.currentdragoffsetmax.width = self.currentdragoffsetmin.width + self.rectangleWidth/9 + 1
+                            }
 
-                }
+                     }   // 4.
+                         .onEnded { value in
+                            self.currentdragoffsetmax = CGSize(width: value.translation.width + self.newdragoffsetmax.width, height: value.translation.height + self.newdragoffsetmax.height)
+                             if (self.currentdragoffsetmax.width < -1*self.rectangleWidth/2)
+                             {
+                                 self.currentdragoffsetmax.width = -1*self.rectangleWidth/2
+                             }
+                             if (self.currentdragoffsetmax.width > self.rectangleWidth/2)
+                             {
+                                 self.currentdragoffsetmax.width = self.rectangleWidth/2
+                             }
+                            if (self.currentdragoffsetmax.width < self.currentdragoffsetmin.width)
+                            {
+                                self.currentdragoffsetmax.width = self.currentdragoffsetmin.width
+                            }
+                            if (self.currentdragoffsetmax.width - self.currentdragoffsetmin.width < self.rectangleWidth/9 + 1)
+                            {
+                                self.currentdragoffsetmax.width = self.currentdragoffsetmin.width + self.rectangleWidth/9 + 1
+                            }
+
+                            self.newdragoffsetmax = self.currentdragoffsetmax
+                         }
+                 )
+
+            }
 //                HStack {
 //                   // Text("Min: " + String(roundto15minutes(roundvalue: getmintext()))).frame(width: rectangleWidth/2)
 //                 //   Text("Max: " + String(roundto15minutes(roundvalue: getmaxtext()))).frame(width: rectangleWidth/2)
 //                }
-                Spacer().frame(height: 30)
-                HStack {
- //                   Spacer().frame(width: 5)
-                    HStack(spacing: rectangleWidth/9 - 1) {
-                        
-                        ForEach(0 ..< 10)
-                        {
-                            value in
-                            Rectangle().frame(width: 1, height: 10)
-                        }
+            Spacer().frame(height: 30)
+            HStack {
+//                   Spacer().frame(width: 5)
+                HStack(spacing: rectangleWidth/9 - 1) {
+                    
+                    ForEach(0 ..< 10)
+                    {
+                        value in
+                        Rectangle().frame(width: 1, height: 10)
                     }
                 }
-                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.black).frame(width: self.rectangleWidth, height: 1, alignment: .leading).offset(y: -8)
-                HStack {
-                    Text("30m").font(.system(size: 10)).offset(x: 5)
-                    Spacer()
-                    Text("300m").font(.system(size: 10))
-                }.frame(width: rectangleWidth+30).offset(y: -5)
-                Spacer().frame(height: 30)
-                Divider().frame(width: rectangleWidth, height: 2)
+            }
+            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.black).frame(width: self.rectangleWidth, height: 1, alignment: .leading).offset(y: -8)
+            HStack {
+                Text("30m").font(.system(size: 10)).offset(x: 5)
+                Spacer()
+                Text("300m").font(.system(size: 10))
+            }.frame(width: rectangleWidth+30).offset(y: -5)
+            Spacer().frame(height: 30)
+            Divider().frame(width: rectangleWidth, height: 2)
 
-            }.padding(10).onAppear {
-                self.typeval = Double(self.assignmenttype.rangemin)
-                self.typeval2 = Double(self.assignmenttype.rangemax)
-                self.currentdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-165)/135)*self.rectangleWidth/2
-                self.currentdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-165)/135)*self.rectangleWidth/2
-                self.newdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-165)/135)*self.rectangleWidth/2
-                self.newdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-165)/135)*self.rectangleWidth/2
-            }.onDisappear {
+        }.padding(10).onAppear {
+            self.typeval = Double(self.assignmenttype.rangemin)
+            self.typeval2 = Double(self.assignmenttype.rangemax)
+            self.currentdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-165)/135)*self.rectangleWidth/2
+            self.currentdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-165)/135)*self.rectangleWidth/2
+            self.newdragoffsetmin.width = ((CGFloat(self.assignmenttype.rangemin)-165)/135)*self.rectangleWidth/2
+            self.newdragoffsetmax.width = ((CGFloat(self.assignmenttype.rangemax)-165)/135)*self.rectangleWidth/2
+        }.onDisappear {
 //                self.assignmenttype.rangemin = Int64(self.typeval)
 //                self.assignmenttype.rangemax = Int64(self.typeval2)
-                if (self.textvaluemin == 0)
-                {
-                    self.assignmenttype.rangemin  = Int64(self.roundto15minutes(roundvalue: self.getmintext()))
-                }
-                else
-                {
-                    self.assignmenttype.rangemin = Int64(self.textvaluemin)
-                }
-                if (self.textvaluemax == 0)
-                {
-                    self.assignmenttype.rangemax  = Int64(self.roundto15minutes(roundvalue: self.getmaxtext()))
-                }
-                else
-                {
-                    self.assignmenttype.rangemax = Int64(self.textvaluemax)
-                }
-                do {
-                    try self.managedObjectContext.save()
-                    //print("AssignmentTypes rangemin/rangemax changed")
-                } catch {
-                    print(error.localizedDescription)
-                }
-               // masterclass.master()
-                //masterclass.schedulenotifications()
+            if (self.textvaluemin == 0) {
+                self.assignmenttype.rangemin  = Int64(self.roundto15minutes(roundvalue: self.getmintext()))
             }
-
-        
+            else {
+                self.assignmenttype.rangemin = Int64(self.textvaluemin)
+            }
+            if (self.textvaluemax == 0) {
+                self.assignmenttype.rangemax  = Int64(self.roundto15minutes(roundvalue: self.getmaxtext()))
+            }
+            else {
+                self.assignmenttype.rangemax = Int64(self.textvaluemax)
+            }
+            do {
+                try self.managedObjectContext.save()
+                //print("AssignmentTypes rangemin/rangemax changed")
+            } catch {
+                print(error.localizedDescription)
+            }
+            print("Signal Sent.")
+        }
     }
+    
     func roundto15minutes(roundvalue: Int) -> Int {
-        if (roundvalue % 15 <= 7)
-        {
+        if (roundvalue % 15 <= 7) {
             return roundvalue - (roundvalue % 15)
         }
-        else{
+        else {
             return roundvalue + 15 - (roundvalue % 15)
         }
     }
@@ -815,7 +796,10 @@ struct NotificationsView: View {
     @State private var selection: Set<String> = ["None"]
     @State private var selection2: Set<String> = ["None"]
     @State var atbreakend = false
-    @State var masterclass: MasterClass = MasterClass()
+    
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var masterRunning: MasterRunning
+
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
             selection.remove(singularassignment)
@@ -978,7 +962,11 @@ struct NotificationsView: View {
             defaults.set(array, forKey: "savedassignmentnotifications")
             let array2 = Array(self.selection2)
             defaults.set(array2, forKey: "savedbreaknotifications")
-          //  masterclass.schedulenotifications()
+            
+            masterRunning.masterRunningNow = true
+            masterRunning.onlyNotifications = true
+            print("Signal Sent.")
+            print(masterRunning.onlyNotifications)
         }
                    // }
                // }//.navigationBarItems(leading: Text("H")).navigationBarTitle("Notifications", displayMode: .inline)

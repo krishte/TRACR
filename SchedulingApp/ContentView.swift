@@ -34,10 +34,33 @@ class AddTimeSubassignmentBacklog: ObservableObject {
     @Published var backlogList: [[String: String]] = []
 }
 
+class MasterRunning: ObservableObject {
+    @Published var masterRunningNow: Bool = false
+    @Published var masterDisplay: Bool = false
+    @Published var onlyNotifications: Bool = false
+    @Published var displayText: Bool = false
+}
+
+struct MasterRunningDisplay: View {
+    @EnvironmentObject var masterRunning: MasterRunning
+    
+    var body: some View {
+        VStack {
+            Text("Optimizing Schedule")
+            ZStack(alignment: .leading) {
+                Rectangle().foregroundColor(.blue).opacity(0.6).frame(width: 163, height: 3)
+                Rectangle().foregroundColor(.blue).frame(width: masterRunning.masterDisplay ? 163 : 0, height: 3).animation(.linear(duration: 0.9))
+            }.cornerRadius(3)
+        }.padding(.all, 15).frame(maxHeight: 70).background(Color.white).cornerRadius(10).padding(.all, 15).shadow(radius: 3)
+    }
+}
+
 struct ContentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
+    
+    @EnvironmentObject var masterRunning: MasterRunning
     
     init() {
         if #available(iOS 14.0, *) {
@@ -63,12 +86,9 @@ struct ContentView: View {
     func initialize() {
         let defaults = UserDefaults.standard
         
-        if defaults.bool(forKey: "Launched Before") {
-        }
-        else {
-            print("a")
+        if !defaults.bool(forKey: "Launched Before") {
             defaults.set(true, forKey: "Launched Before")
-            print("b")
+            
             let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
             
             for assignmenttype in assignmenttypes {
@@ -85,36 +105,40 @@ struct ContentView: View {
                     print(error.localizedDescription)
                 }
             }
-            print("c")
+            
             defaults.set(Date(), forKey: "lastNudgeDate")
-            print("d")
         }
-        
-      //  self.schedulenotifications()
     }
 
     var body: some View {
-        TabView {
-            HomeView().tabItem {
-                Image(systemName: "house").resizable().scaledToFill()
-                Text("Home").font(.body)
-            }
+        ZStack {
+            TabView {
+                HomeView().tabItem {
+                    Image(systemName: "house").resizable().scaledToFill()
+                    Text("Home").font(.body)
+                }
+                
+                FilterView().tabItem {
+                    Image(systemName:"paperclip").resizable().scaledToFill()
+                    Text("Assignments")
+                }
+                
+                ClassesView().tabItem {
+                    Image(systemName: "list.dash").resizable().scaledToFill()
+                    Text("Classes")
+                }
+                
+                ProgressView().tabItem {
+                    Image(systemName: "chart.bar").resizable().scaledToFit()
+                    Text("Progress")
+                }
+            }.onAppear(perform: initialize)
             
-            FilterView().tabItem {
-                Image(systemName:"paperclip").resizable().scaledToFill()
-                Text("Assignments")
-            }
-            
-            ClassesView().tabItem {
-                Image(systemName: "list.dash").resizable().scaledToFill()
-                Text("Classes")
-            }
-            
-            ProgressView().tabItem {
-                Image(systemName: "chart.bar").resizable().scaledToFit()
-                Text("Progress")                    
-            }
-        }.onAppear(perform: initialize)
+            VStack {
+                MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())
+                Spacer()
+            }.frame(width: UIScreen.main.bounds.size.width).background((masterRunning.masterDisplay ? Color(UIColor.label).opacity(0.15) : Color.clear).edgesIgnoringSafeArea(.all))
+        }
     }
 }
 

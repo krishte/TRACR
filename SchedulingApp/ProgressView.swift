@@ -138,6 +138,8 @@ struct DetailProgressView: View {
     @State var noAssignmentsAlert = false
     @State private var selection: Set<Assignment> = []
 
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     var body: some View {
         ZStack {
             VStack {
@@ -358,7 +360,7 @@ struct DetailProgressView: View {
                             
                         }
                     }.sheet(isPresented: $showassignmentedit, content: {
-                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
                     if (getUngradedAssignments() > 0)
                     {
                         Spacer().frame(height:10)
@@ -379,7 +381,7 @@ struct DetailProgressView: View {
                                 }.padding(-5).animation(.spring())
                             }
                         }.sheet(isPresented: $showassignmentedit, content: {
-                            EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
+                            EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
                     }
                 }.animation(.spring())
                 
@@ -745,17 +747,20 @@ struct ProgressView: View {
         return false
         
     }
+    
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     @ViewBuilder
     private func sheetContent() -> some View {
         
         if (self.sheetNavigator.modalView == .freetime)
         {
             
-            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
         else if (self.sheetNavigator.modalView == .assignment)
         {
-            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)
+            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {

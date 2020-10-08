@@ -76,8 +76,9 @@ struct EditClassModalView: View {
     @Binding var EditClassPresenting: Bool
     @State var classtolerancedouble: Double
     @State var classassignmentnumber: Int
-    @State var masterclass: MasterClass = MasterClass()
     
+    @EnvironmentObject var masterRunning: MasterRunning
+
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
     let colorsc = ["eleven", "twelve", "thirteen", "fourteen", "fifteen"]
@@ -237,8 +238,9 @@ struct EditClassModalView: View {
                                     } catch {
                                         print(error.localizedDescription)
                                     }
-                                  //  masterclass.master()
-                                    //masterclass.schedulenotifications()
+
+                                    masterRunning.masterRunningNow = true
+                                    print("Signal Sent.")
                                 }
                             }
                             self.showeditclass = false
@@ -299,6 +301,10 @@ struct EditClassModalView: View {
                                                     self.EditClassPresenting = false
                 
             }, label: {Text("Cancel")})).navigationBarTitle("Edit Class", displayMode: .inline)
+        }
+
+        if masterRunning.masterRunningNow {
+            MasterClass()
         }
     }
     
@@ -374,18 +380,19 @@ struct DetailView: View {
         return 0
     }
     
+    @EnvironmentObject var masterRunning: MasterRunning
     
     @ViewBuilder
     private func sheetContent() -> some View {
         
         if (!self.sheetnavigator.showeditclass)
         {
-            EditAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)
+            EditAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
             
         }
         else
         {
-            EditClassModalView(showeditclass: self.$sheetnavigator.showeditclass , currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$NewSheetPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber), classcolor: self.classcool.color).environment(\.managedObjectContext, self.managedObjectContext)
+            EditClassModalView(showeditclass: self.$sheetnavigator.showeditclass , currentclassname: self.classcool.name, classnamechanged: self.classcool.name, EditClassPresenting: self.$NewSheetPresenting, classtolerancedouble: Double(self.classcool.tolerance) + 0.5, classassignmentnumber: Int(self.classcool.assignmentnumber), classcolor: self.classcool.color).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
     }
     var body: some View {
@@ -404,7 +411,7 @@ struct DetailView: View {
                             }
                         }
                     }.sheet(isPresented: $showeditassignment, content: {
-                        EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
+                        EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
                     if (!getexistingassignments())
                     {
                         Spacer().frame(height: 100)
@@ -434,6 +441,10 @@ struct DetailView: View {
 //                        .sheet(isPresented: $showeditassignment, content: {
 //                            EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
                     }
+                    
+                    if masterRunning.masterRunningNow {
+                        MasterClass()
+                    }
                 }
             }.navigationBarItems(trailing: Button(action: {
                 self.NewSheetPresenting = true
@@ -459,7 +470,7 @@ struct DetailView: View {
                                 Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).scaleEffect(self.scalevalue)
                             }
                         ).shadow(radius: 50)
-                    }.animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool), preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
+                    }.animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool), preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {
                         Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                     }
                 }
@@ -490,15 +501,17 @@ struct DetailView: View {
     }
 }
 
-class MasterClass: ObservableObject {
-    
+enum MasterErrors: Error {
+    case ImpossibleDueDate
+}
+
+struct MasterClass: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
-    var assignmentlistrequest: FetchRequest<Assignment> = FetchRequest(entity: Assignment.entity(),
-                                                                       sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    var assignmentlistrequest: FetchRequest<Assignment> = FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     var assignmentlist: FetchedResults<Assignment>{assignmentlistrequest.wrappedValue}
 
     //@FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
@@ -517,51 +530,104 @@ class MasterClass: ObservableObject {
     
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
     var startOfDay: Date {
-        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+//        let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         return Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
         //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
     }
     
-        func schedulenotifications() {
+    @EnvironmentObject var masterRunning: MasterRunning
+    
+    func theBigMaster() {
+        print("Signal Received.")
+        
+        if masterRunning.displayText {
+            masterRunning.masterDisplay = true
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1500)) {
+                masterRunning.masterDisplay = false
+            }
+            masterRunning.displayText = false
+        }
+        
+        if masterRunning.onlyNotifications {
+            schedulenotifications()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(200)) {
+                masterRunning.onlyNotifications = false
+            }
+        }
+        
+        else {
+            do {
+                try master()
+            } catch MasterErrors.ImpossibleDueDate {
+                print("Impossible Due Date Entered.")
+            } catch {
+                print("failed somewhere but moving on for now")
+            }
             
-            UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-            
-           
-            let calendar = Calendar.current
-            
-            let times = [0, 5, 10, 15, 30]
+            schedulenotifications()
+        }
+        
+        print("Terminating Signal.")
 
-            // show this notification five seconds from now
-         //   print(subassignmentlist.count)
-            let defaults = UserDefaults.standard
-            let array = defaults.object(forKey: "savedassignmentnotifications") as? [String] ?? ["None"]
-            let array2 = defaults.object(forKey: "savedbreaknotifications") as? [String] ?? ["None"]
-            //let array2 = defaults.object(forKey: "savedbreaknotifications") as? [String] ?? ["None"]
-            let beforeassignmenttimes = ["At Start", "5 minutes", "10 minutes", "15 minutes", "30 minutes"]
+        masterRunning.masterRunningNow = false
+    }
+    
+    func schedulenotifications() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+       
+        let calendar = Calendar.current
+        
+        let times = [0, 5, 10, 15, 30]
 
+        // show this notification five seconds from now
+     //   print(subassignmentlist.count)
+        let defaults = UserDefaults.standard
+        let array = defaults.object(forKey: "savedassignmentnotifications") as? [String] ?? ["None"]
+        let array2 = defaults.object(forKey: "savedbreaknotifications") as? [String] ?? ["None"]
+        //let array2 = defaults.object(forKey: "savedbreaknotifications") as? [String] ?? ["None"]
+        let beforeassignmenttimes = ["At Start", "5 minutes", "10 minutes", "15 minutes", "30 minutes"]
 
-            var listofnotifications: [DateComponents] = []
-            for subassignment in subassignmentlist {
-                for (index, val) in beforeassignmenttimes.enumerated() {
-                    if (array.contains(val))
+        var listofnotifications: [DateComponents] = []
+        for subassignment in subassignmentlist {
+            for (index, val) in beforeassignmenttimes.enumerated() {
+                if (array.contains(val))
+                {
+                    let content = UNMutableNotificationContent()
+                    if (index == 0)
+                    {
+                        content.title = "Task starting now: "
+                    }
+                    else{
+                        
+                        content.title = "Upcoming Task " + "in " + String(times[index]) + " minutes: "
+                    }
+                    
+                       content.body = subassignment.assignmentname
+                       content.sound = UNNotificationSound.default
+
+                    let datevalue = Date(timeInterval: TimeInterval(-1*times[index]*60), since: subassignment.startdatetime)
+                        let components = calendar.dateComponents([Calendar.Component.minute,Calendar.Component.hour,Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: datevalue)
+                        listofnotifications.append(components)
+                        let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
+
+                        // choose a random identifier
+                        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+
+                        // add our notification request
+                        UNUserNotificationCenter.current().add(request)
+
+                }
+                    if (array2.contains(val))
                     {
                         let content = UNMutableNotificationContent()
-                        if (index == 0)
-                        {
-                            content.title = "Task starting now: "
-                        }
-                        else{
-                            
-                            content.title = "Upcoming Task " + "in " + String(times[index]) + " minutes: "
-                        }
-                        
-                           content.body = subassignment.assignmentname
+                           content.title = "Task Ending " + "in " + String(times[index]) + " minutes: "
+                              content.body = subassignment.assignmentname
                            content.sound = UNNotificationSound.default
 
-                        let datevalue = Date(timeInterval: TimeInterval(-1*times[index]*60), since: subassignment.startdatetime)
+                        let datevalue = Date(timeInterval: TimeInterval(-1*times[index]*60), since: subassignment.enddatetime)
                             let components = calendar.dateComponents([Calendar.Component.minute,Calendar.Component.hour,Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: datevalue)
-                            listofnotifications.append(components)
+                        listofnotifications.append(components)
                             let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
 
                             // choose a random identifier
@@ -569,42 +635,20 @@ class MasterClass: ObservableObject {
 
                             // add our notification request
                             UNUserNotificationCenter.current().add(request)
-
                     }
-                        if (array2.contains(val))
-                        {
-                            let content = UNMutableNotificationContent()
-                               content.title = "Task Ending " + "in " + String(times[index]) + " minutes: "
-                                  content.body = subassignment.assignmentname
-                               content.sound = UNNotificationSound.default
-
-                            let datevalue = Date(timeInterval: TimeInterval(-1*times[index]*60), since: subassignment.enddatetime)
-                                let components = calendar.dateComponents([Calendar.Component.minute,Calendar.Component.hour,Calendar.Component.day, Calendar.Component.month, Calendar.Component.year], from: datevalue)
-                            listofnotifications.append(components)
-                                let trigger = UNCalendarNotificationTrigger(dateMatching: components, repeats: false)
-
-                                // choose a random identifier
-                                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-
-                                // add our notification request
-                                UNUserNotificationCenter.current().add(request)
-
-                        }
-
-                }
-
-
             }
-
-            print("success")
-
-            
         }
-    func bulk(assignment: Assignment, daystilldue: Int, totaltime: Int, bulk: Bool, dateFreeTimeDict: [Date: Int]) -> ([(Int, Int)], Int)
+        print("success")
+    }
+    
+    func bulk(assignment: Assignment, daystilldue: Int, totaltime: Int, bulk: Bool, dateFreeTimeDict: [Date: Int]) throws -> ([(Int, Int)], Int)
     {
         let safetyfraction:Double = daystilldue > 20 ? (daystilldue > 100 ? 0.95 : 0.9) : (daystilldue > 7 ? 0.75 : 1)
         var tempsubassignmentlist: [(Int, Int)] = []
         let newd = Int(ceil(Double(daystilldue)*Double(safetyfraction)))
+        guard newd > 0 else {
+            throw MasterErrors.ImpossibleDueDate
+        }
         let totaltime = totaltime
         //let rangeoflengths = [30, 300]
       //  print(assignment.name)
@@ -785,13 +829,13 @@ class MasterClass: ObservableObject {
     }
 
     
-    func master() -> Void {
+    func master() throws -> Void {
          //   let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 
         print("kewl")
         for (index, _) in subassignmentlist.enumerated() {
             print(index)
-             //self.managedObjectContext.delete(self.subassignmentlist[index])
+             self.managedObjectContext.delete(self.subassignmentlist[index])
         }
         
         var timemonday = 0
@@ -879,6 +923,7 @@ class MasterClass: ObservableObject {
         
         for i in 0...daystilllatestdate {
             subassignmentdict[i] = []
+            
             dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = generalfreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
 //            startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = startoffreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
             specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = actualfreetimeslist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
@@ -910,7 +955,7 @@ class MasterClass: ObservableObject {
             if (!assignment.completed)
             {
                 print(assignment.name)
-                let (subassignments, _) = bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.timeleft), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
+                let (subassignments, _) = try bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.timeleft), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
              //   print(assignment.name, daystilldue)
                // print(daystilldue)
@@ -1014,11 +1059,10 @@ class MasterClass: ObservableObject {
                 }
             }
         }
-        
-
     }
+    
     var body: some View {
-        Text("hello")
+        Text("sfdsf").offset(y: UIScreen.main.bounds.size.width).onAppear(perform: theBigMaster)
     }
 }
 
@@ -1123,17 +1167,19 @@ struct ClassesView: View {
         return 0
     }
     
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     @ViewBuilder
     private func sheetContent() -> some View {
         
         if (self.sheetNavigator.modalView == .freetime)
         {
             
-            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
         else if (self.sheetNavigator.modalView == .assignment)
         {
-            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)
+            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {
@@ -1276,7 +1322,7 @@ struct ClassesView: View {
                         }
                     }
 
-                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.sheetnavigator.storedindex, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noClassesAlert) {
+                }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.sheetnavigator.storedindex, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: self.$noClassesAlert) {
                     Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                 }
                 
@@ -1367,10 +1413,6 @@ struct ClassesView: View {
                         }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                             Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                         }
-                        
-                        
-                        
-                        
                     }
                 }
             }

@@ -23,22 +23,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B6537AA9-EAE8-42CA-B0AD-B76009DCDA32"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SchedulingApp/ModalViews.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "23"
-            endingLineNumber = "23"
-            landmarkName = "NewAssignmentModalView"
-            landmarkType = "14">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "65BA328D-54F8-4569-8BC4-475C10D47DD2"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -46,8 +30,8 @@
             filePath = "SchedulingApp/AssignmentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "235"
-            endingLineNumber = "235"
+            startingLineNumber = "227"
+            endingLineNumber = "227"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -62,8 +46,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "994"
-            endingLineNumber = "994"
+            startingLineNumber = "999"
+            endingLineNumber = "999"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>

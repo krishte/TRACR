@@ -110,6 +110,7 @@ struct AssignmentsView: View {
     @State var selectedassignmentedit: String = ""
     @ObservedObject var sheetnavigator: SheetNavigatorFilterView = SheetNavigatorFilterView()
     
+    @EnvironmentObject var masterRunning: MasterRunning
     
     init(selectedFilter:String, value: Bool){
         if (selectedFilter == "Due date") {
@@ -173,10 +174,14 @@ struct AssignmentsView: View {
                         }
                     }
                 }.animation(.spring())
+                
+                if masterRunning.masterRunningNow {
+                    MasterClass()
+                }
             }
             
         }.sheet(isPresented: self.$showassignmentedit, content: {
-                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)})//.animation(.spring())
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})//.animation(.spring())
     }
     func getassignmentindex() -> Int {
         print(sheetnavigator.selectedassignmentedit)
@@ -217,17 +222,19 @@ struct FilterView: View {
     @State var NewAlertPresenting = false
     @ObservedObject var sheetNavigator = SheetNavigator()
     
+    @EnvironmentObject var masterRunning: MasterRunning
+    
     @ViewBuilder
     private func sheetContent() -> some View {
         
         if (self.sheetNavigator.modalView == .freetime)
         {
             
-            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
         else if (self.sheetNavigator.modalView == .assignment)
         {
-            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext)
+            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {

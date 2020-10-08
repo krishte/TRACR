@@ -48,8 +48,8 @@ struct MasterRunningDisplay: View {
         VStack {
             Text("Optimizing Schedule")
             ZStack(alignment: .leading) {
-                Rectangle().foregroundColor(.blue).opacity(0.6).frame(width: 163, height: 3)
-                Rectangle().foregroundColor(.blue).frame(width: masterRunning.masterDisplay ? 163 : 0, height: 3).animation(.linear(duration: 0.9))
+                Rectangle().foregroundColor(.gray).opacity(0.6).frame(width: 163, height: 3)
+                Rectangle().foregroundColor(.blue).frame(width: masterRunning.masterDisplay ? 163 : 0, height: 3).animation(.spring())
             }.cornerRadius(3)
         }.padding(.all, 15).frame(maxHeight: 70).background(Color.white).cornerRadius(10).padding(.all, 15).shadow(radius: 3)
     }

@@ -561,7 +561,14 @@ struct MasterClass: View {
                 try master()
             } catch MasterErrors.ImpossibleDueDate {
                 print("Impossible Due Date Entered.")
-                self.managedObjectContext.delete(self.assignmentlist[0])
+                
+//                for classity in self.classlist {
+//                    if (classity.originalname == self.assignmentlist[0].subject) {
+//                        //newAssignment.color = classity.color
+//                        classity.assignmentnumber -= 1
+//                    }
+//                }
+//                self.managedObjectContext.delete(self.assignmentlist[0])
                 do {
                     try self.managedObjectContext.save()
                     print("AddTime logged")

@@ -2,6 +2,15 @@ import Foundation
 import UIKit
 import SwiftUI
 
+class TextFieldManager: ObservableObject {
+    @Published var userInput = "" {
+            didSet {
+                if userInput.count > 20 {
+                    userInput = String(userInput.prefix(20))
+                }
+            }
+        }
+}
 struct NewAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
@@ -1419,7 +1428,7 @@ struct EditAssignmentModalView: View {
     @EnvironmentObject var masterRunning: MasterRunning
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
     let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
-    
+    //@State var textfieldmanager: TextFieldManager = TextFieldManager()
     @State private var createassignmentallowed = true
     @State private var showingAlert = false
     @State private var expandedduedate = false
@@ -1437,6 +1446,8 @@ struct EditAssignmentModalView: View {
        // formatter.timeZone = TimeZone(secondsFromGMT: 0)
         self._selectedassignment = State(initialValue: selectedassignment)
         self._nameofassignment = State(initialValue: assignmentname)
+        
+        //self.textfieldmanager.userInput = assignmentname
         self._hours = State(initialValue: timeleft/60)
         self._minutes = State(initialValue: (timeleft%60)/5)
         self._selectedDate = State(initialValue: duedate)
@@ -1451,7 +1462,7 @@ struct EditAssignmentModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.default)
+                    TextField("Assignment Name", text: self.$nameofassignment).keyboardType(.default)//.disabled(nameofassignment.count > (20 - 1))
                 }
                 
                 Toggle(isOn: $iscompleted) {

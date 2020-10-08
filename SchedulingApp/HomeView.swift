@@ -123,7 +123,7 @@ struct WeeklyBlockView: View {
             }
             //print(assignment.name)
         }
- 
+        print(index, ans.count)
         //print(ans.count)
         return ans
     }
@@ -765,6 +765,8 @@ struct HomeBodyView: View {
     
     @State var dateForTimeIndicator = Date()
     @State var scrolling = false
+    @State var hidingupcoming = false
+    @State var upcomingoffset = 0
     
     init(uniformlistshows: Binding<Bool>, NewAssignmentPresenting2: Binding<Bool>) {
         self._uniformlistviewshows = uniformlistshows
@@ -929,97 +931,139 @@ struct HomeBodyView: View {
                         DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
                     }
             
-            ZStack {
-                if (subassignmentlist.count > 0) {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
-                }
-
-                else {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("three"), Color("three-b")]), startPoint: .leading, endPoint: .trailing))
-                }
-
-                HStack {
-                    VStack(alignment: .leading) {
-                        if (subassignmentlist.count == 0) {
-                            Text("No Upcoming Tasks").font(.system(size: 19))
-                        }
-                        else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
-                            Text("No Upcoming Tasks").font(.system(size: 19))
-                        }
-                        else {
-                            Text("Coming Up:").fontWeight(.semibold).animation(.none)
-                            Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading).animation(.none)
-
-                            Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
-                            Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
-                        }
-                    }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
-
-                    if self.subassignmentassignmentname != "" {
-                        Spacer().frame(width: 10)
-                        Divider().frame(width: 1).background(Color.black)
-                        Spacer().frame(width: 10)
-                        VStack(alignment: .leading) {
-                            ForEach(self.assignmentlist) { assignment in
-                                if (assignment.name == self.subassignmentassignmentname) {
-                                    Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 25, alignment: .topLeading)
-                                    Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12)).frame(height:15)
-                                    Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
-                                    UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
-                                }
+                  //  if (!self.hidingupcoming)
+                   // {
+                        ZStack {
+                        ZStack {
+                            if (subassignmentlist.count > 0) {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                             }
-                        }.frame(width: 150)
-                    }
-                }.padding(10)
-            }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring())
 
-            VStack {
-                ScrollView {
-                    ZStack {
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading) {
-                                ForEach((0...24), id: \.self) { hour in
-                                    HStack {
-                                        Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
-                                        Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                            else {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("three"), Color("three-b")]), startPoint: .leading, endPoint: .trailing))
+                            }
+
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    if (subassignmentlist.count == 0) {
+                                        Text("No Upcoming Tasks").font(.system(size: 19))
                                     }
-                                }.frame(height: 50)
-                            }
-                        }
+                                    else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
+                                        Text("No Upcoming Tasks").font(.system(size: 19))
+                                    }
+                                    else {
+                                        Text("Coming Up:").fontWeight(.semibold).animation(.none)
+                                        Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading).animation(.none)
 
-                        HStack(alignment: .top) {
-                            Spacer()
-                            VStack {
-                                Spacer().frame(height: 25)
-                                
-                                ZStack(alignment: .topTrailing) {
-                                    ForEach(subassignmentlist) { subassignment in
-                                        //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
-//                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
-                                        if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                            IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
-                                                self.subassignmentassignmentname = subassignment.assignmentname
-                                                self.selectedColor = subassignment.color
-//                                                for subassignment in self.subassignmentlist {
-//                                                    print(subassignment.startdatetime.description)
-//                                                }
+                                        Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
+                                        Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
+                                    }
+                                }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150).animation(.none)
+
+                                if self.subassignmentassignmentname != "" {
+                                    Spacer().frame(width: 10)
+                                    Divider().frame(width: 1).background(Color.black)
+                                    Spacer().frame(width: 10)
+                                    VStack(alignment: .leading) {
+                                        ForEach(self.assignmentlist) { assignment in
+                                            if (assignment.name == self.subassignmentassignmentname) {
+                                                Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 25, alignment: .topLeading)
+                                                Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12)).frame(height:15)
+                                                Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
+                                                UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
                                             }
-                                                //was +122 but had to subtract 2*60.35 to account for GMT + 2
                                         }
-                                    }.animation(.spring())
+                                    }.frame(width: 150)
                                 }
-                                Spacer()
-                            }
-                        }
+                            }.padding(10)
+                            
 
-                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(timeIntervalSinceNow: TimeInterval(0)), toGranularity: .day)) {
-                            TimeIndicator(dateForTimeIndicator: self.$dateForTimeIndicator).onReceive(timer) { input in
-                                self.dateForTimeIndicator = input
+                        }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(x:CGFloat(upcomingoffset))
+                            HStack {
+                                
+                                Spacer()
+                                Button(action:{
+                                    self.hidingupcoming.toggle()
+                                    print(hidingupcoming)
+                                    if (self.hidingupcoming)
+                                    {
+                                        upcomingoffset = Int(UIScreen.main.bounds.size.width)
+                                    }
+                                    else
+                                    {
+                                        upcomingoffset = 0
+                                    }
+                                    print(upcomingoffset)
+                                }) {
+                                    ZStack {
+                                    
+                                         //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
+                                       // if (self.hidingupcoming)
+                                     //   {
+                                        RoundedRectangle(cornerRadius: 2.5, style: .continuous).fill(Color.blue).frame(width: 15, height:60)
+                                            Image(systemName: "chevron.compact.right").resizable().frame(width: 5, height: 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
+                                       // }
+//                                        else
+//                                        {
+//                                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width: 12, height:70)
+//                                            Image(systemName: "chevron.compact.right").resizable().frame(width: 8, height: 40).foregroundColor(colorScheme == .light ? Color.white : Color.black)
+//                                        }
+                                    }
+                                }.rotationEffect(Angle(degrees: self.hidingupcoming ? 90 : 0), anchor: .top).animation(.spring())
+                            }.padding(.top, self.hidingupcoming ? -50 : 0)
+                        }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
+                                                    
+                  //  }
+
+                VStack {
+                    ScrollView {
+                        ZStack {
+                            
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading) {
+                                    ForEach((0...24), id: \.self) { hour in
+                                        HStack {
+                                            Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
+                                            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                        }
+                                    }.frame(height: 50)
+                                }
+                            }
+
+                            HStack(alignment: .top) {
+                                Spacer()
+                                VStack {
+                                    Spacer().frame(height: 25)
+                                    
+                                    ZStack(alignment: .topTrailing) {
+                                        ForEach(subassignmentlist) { subassignment in
+                                            //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
+    //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+                                            if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
+                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                                    self.subassignmentassignmentname = subassignment.assignmentname
+                                                    self.selectedColor = subassignment.color
+    //                                                for subassignment in self.subassignmentlist {
+    //                                                    print(subassignment.startdatetime.description)
+    //                                                }
+                                                }
+                                                    //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                                            }
+                                        }.animation(.spring())
+                                    }
+                                    Spacer()
+                                }
+                            }
+
+                            if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: Date(timeIntervalSinceNow: TimeInterval(0)), toGranularity: .day)) {
+                                TimeIndicator(dateForTimeIndicator: self.$dateForTimeIndicator).onReceive(timer) { input in
+                                    self.dateForTimeIndicator = input
+                                }
                             }
                         }
                     }
-                }
-            }
+                }.padding(.top, self.hidingupcoming ? -100 : 0).animation(.spring())
+            
             }//.transition(.move(edge: .leading)).animation(.spring())
         }
         else {
@@ -1030,6 +1074,7 @@ struct HomeBodyView: View {
                     Spacer()
                 }.padding(.all, 10).padding(.leading, 10)
                 
+                ZStack {
                 ZStack {
                     if (subassignmentlist.count > 0) {
                         RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
@@ -1075,8 +1120,41 @@ struct HomeBodyView: View {
                             }.frame(width: 150)
                         }
                         
-                    }.padding(10)
-                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring())
+                    }//.padding(10)
+                }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(x:CGFloat(upcomingoffset))
+                    HStack {
+                        
+                        Spacer()
+                        Button(action:{
+                            self.hidingupcoming.toggle()
+                            print(hidingupcoming)
+                            if (self.hidingupcoming)
+                            {
+                                upcomingoffset = Int(UIScreen.main.bounds.size.width)
+                            }
+                            else
+                            {
+                                upcomingoffset = 0
+                            }
+                            print(upcomingoffset)
+                        }) {
+                            ZStack {
+                            
+                                 //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
+                               // if (self.hidingupcoming)
+                             //   {
+                                RoundedRectangle(cornerRadius: 2.5, style: .continuous).fill(Color.blue).frame(width: 15, height:60)
+                                    Image(systemName: "chevron.compact.right").resizable().frame(width: 5, height: 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
+                               // }
+//                                        else
+//                                        {
+//                                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width: 12, height:70)
+//                                            Image(systemName: "chevron.compact.right").resizable().frame(width: 8, height: 40).foregroundColor(colorScheme == .light ? Color.white : Color.black)
+//                                        }
+                            }
+                        }.rotationEffect(Angle(degrees: self.hidingupcoming ? 90 : 0), anchor: .top).animation(.spring())
+                    }.padding(.top, self.hidingupcoming ? -50 : 0)
+                }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                 ScrollView {
 
 
@@ -1099,7 +1177,7 @@ struct HomeBodyView: View {
 //
 //                    }
 //                }
-            }
+                }.padding(.top, self.hidingupcoming ? -100 : 0).animation(.spring())
             }//.transition(.move(edge: .leading)).animation(.spring())
         }
         }.sheet(isPresented: $showeditassignment, content: {

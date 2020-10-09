@@ -126,7 +126,7 @@ struct WeeklyBlockView: View {
             }
             //print(assignment.name)
         }
-        print(index, ans.count)
+       // print(index, ans.count)
         //print(ans.count)
         return ans
     }
@@ -954,8 +954,7 @@ struct HomeBodyView: View {
                         DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
                     }
             
-                  //  if (!self.hidingupcoming)
-                   // {
+
                         ZStack {
                         ZStack {
                             if (subassignmentlist.count > 0) {
@@ -1003,7 +1002,7 @@ struct HomeBodyView: View {
 
                         }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
                             HStack {
-                                
+
                                 Spacer()
                                 Button(action:{
                                     self.hidingupcoming.toggle()
@@ -1019,18 +1018,9 @@ struct HomeBodyView: View {
                                     print(upcomingoffset)
                                 }) {
                                     ZStack {
-                                    
-                                         //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
-                                       // if (self.hidingupcoming)
-                                     //   {
+
                                         RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
-                                        Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
-                                       // }
-//                                        else
-//                                        {
-//                                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width: 12, height:70)
-//                                            Image(systemName: "chevron.compact.right").resizable().frame(width: 8, height: 40).foregroundColor(colorScheme == .light ? Color.white : Color.black)
-//                                        }
+                                        Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                                     }
                                 }.rotationEffect(Angle(degrees: self.hidingupcoming ? 90 : 0), anchor: .top).animation(.spring())
                             }.padding(.top, self.hidingupcoming ? -50 : 0)
@@ -1038,6 +1028,34 @@ struct HomeBodyView: View {
                                                     
                   //  }
 
+//                    HStack {
+//
+//                        Spacer()
+//                        Button(action:{
+//                            self.hidingupcoming.toggle()
+//                            print(hidingupcoming)
+//                            if (self.hidingupcoming)
+//                            {
+//                                upcomingoffset = Int(UIScreen.main.bounds.size.width)
+//                            }
+//                            else
+//                            {
+//                                upcomingoffset = 0
+//                            }
+//                            print(upcomingoffset)
+//                        }) {
+//                            ZStack {
+//
+//                                 //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
+//                               // if (self.hidingupcoming)
+//                             //   {
+//                                RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 2.5, style: .continuous).fill(Color.blue).frame(width: 60, height: self.hidingupcoming ? 15 : 15)
+//                                Image(systemName: "chevron.compact.up").resizable().frame(width: 30, height: 6).foregroundColor(colorScheme == .light ? Color.white : Color.black)
+//                            }
+//                        }.rotationEffect(Angle(degrees: self.hidingupcoming ? 180 : 0), anchor: .center).animation(.spring())
+//                        Spacer().frame(width: 20)
+//                    }.padding(.top, self.hidingupcoming ? -120 : -20)
+                    
                 VStack {
                     ScrollView {
                         ZStack {
@@ -1066,7 +1084,7 @@ struct HomeBodyView: View {
                                             //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
     //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
                                             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                     self.subassignmentassignmentname = subassignment.assignmentname
                                                     self.selectedColor = subassignment.color
     //                                                for subassignment in self.subassignmentlist {
@@ -1261,15 +1279,55 @@ struct SubassignmentListView: View {
         }
         return ""
     }
+    func isrepeatedsubassignment(assignmentname: String) -> Bool {
+        var counter = 0
+        for subassignment in subassignmentlist {
+            if (subassignment.assignmentname == assignmentname && self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring())
+            {
+                counter += 1
+            }
+        }
+        if (counter >= 2)
+        {
+            return true
+        }
+        return false
+    }
+    func isfirstofgroup(subassignment3: Subassignmentnew) -> Bool {
+        for subassignment in subassignmentlist {
+            if (subassignment3.assignmentname == subassignment.assignmentname &&  self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring() )
+            {
+                if (subassignment.startdatetime == subassignment3.startdatetime)
+                {
+                    return true
+                }
+                return false
+            }
+        }
+        return false
+    }
     var body: some View {
       //  ScrollView {
         ForEach(subassignmentlist) {
             subassignment in
             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
-                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment).onTapGesture {
-                    selectedcolor = subassignment.color
-                    subassignmentassignmentname = subassignment.assignmentname
-                }                        //was +122 but had to subtract 2*60.35 to account for GMT + 2
+                if (isrepeatedsubassignment(assignmentname: subassignment.assignmentname))
+                {
+                    if (isfirstofgroup(subassignment3: subassignment))
+                    {
+                        IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: true).onTapGesture {
+                            selectedcolor = subassignment.color
+                            subassignmentassignmentname = subassignment.assignmentname
+                        }
+                    }
+                }
+                else
+                {
+                    IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: false).onTapGesture {
+                        selectedcolor = subassignment.color
+                        subassignmentassignmentname = subassignment.assignmentname
+                    }
+                }//was +122 but had to subtract 2*60.35 to account for GMT + 2
             }
             
         }.animation(.spring())
@@ -1334,6 +1392,8 @@ struct IndividualSubassignmentView: View {
     @State var incompleted: Bool = false
     @State var incompletedonce: Bool = true
     @State var dragoffset = CGSize.zero
+    
+    @State var isrepeated: Bool
     var fixedHeight: Bool
     
     var subassignmentlength: Int
@@ -1352,7 +1412,7 @@ struct IndividualSubassignmentView: View {
     
     var shortdateformatter: DateFormatter
     
-    init(subassignment2: Subassignmentnew, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>) {
+    init(subassignment2: Subassignmentnew, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>, isrepeated: Bool) {
 
         self._showeditassignment = showeditassignment
         self._selectededitassignment = selectededitassignment
@@ -1379,11 +1439,27 @@ struct IndividualSubassignmentView: View {
         subassignment = subassignment2
         self.fixedHeight = fixedHeight
         //print(subassignmentlength)
-        
+        self._isrepeated = State(initialValue: isrepeated)
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
      //   shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
+    }
+    
+    func getgrouplength() -> Int {
+        var totallength = 0
+        for subassignment2 in subassignmentlist {
+            if (Calendar.current.startOfDay(for: subassignment2.startdatetime) == Calendar.current.startOfDay(for: self.actualstartdatetime) && self.name == subassignment2.assignmentname)
+            {
+                totallength += Calendar.current.dateComponents([.minute], from: subassignment2.startdatetime, to: subassignment2.enddatetime).minute!
+            }
+        }
+        return totallength
+    }
+    func simpleSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+        print("phone vibrated")
     }
  
     var body: some View {
@@ -1436,12 +1512,20 @@ struct IndividualSubassignmentView: View {
                 }
                 if (!fixedHeight)
                 {
+                    
                     Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                 }
                 if (fixedHeight)
                 {
                     Spacer().frame(height: 10)
-                    Text(String(self.subassignmentlength/60) + " hours " + String(self.subassignmentlength % 60) + " minutes").frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                    if (self.isrepeated)
+                    {
+                        Text(String(self.getgrouplength()/60) + " hours " + String(self.getgrouplength() % 60) + " minutes").frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                    }
+                    else
+                    {
+                        Text(String(self.subassignmentlength/60) + " hours " + String(self.subassignmentlength % 60) + " minutes").frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                    }
                 }
                 Spacer()
 //                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
@@ -1502,7 +1586,14 @@ struct IndividualSubassignmentView: View {
                             actionViewPresets.actionViewHeight = 280
                             actionViewPresets.actionViewType = "SubassignmentAddTimeAction"
                             addTimeSubassignment.subassignmentname = self.name
-                            addTimeSubassignment.subassignmentlength = self.subassignmentlength
+                            if (isrepeated)
+                            {
+                                addTimeSubassignment.subassignmentlength = self.getgrouplength()
+                            }
+                            else
+                            {
+                                addTimeSubassignment.subassignmentlength = self.subassignmentlength
+                            }
                             addTimeSubassignment.subassignmentcolor = self.color
                             addTimeSubassignment.subassignmentstarttimetext = self.starttime
                             addTimeSubassignment.subassignmentendtimetext = self.endtime
@@ -1524,7 +1615,16 @@ struct IndividualSubassignmentView: View {
                             print("deleting")
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
-                                    let minutes = self.subassignmentlength
+                                    var minutes = self.subassignmentlength
+                                    if (isrepeated)
+                                    {
+                                        minutes = self.getgrouplength()
+                                    }
+                                    else
+                                    {
+                                        minutes = self.subassignmentlength
+                                    }
+                                    
                                     element.timeleft -= Int64(minutes)
                                     print(element.timeleft)
                                     withAnimation(.spring()) {
@@ -1546,8 +1646,18 @@ struct IndividualSubassignmentView: View {
                                 }
                             }
                             for (index, element) in self.subassignmentlist.enumerated() {
-                                if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name) {
-                                    self.managedObjectContext.delete(self.subassignmentlist[index])
+                                if (isrepeated)
+                                {
+                                    if (Calendar.current.startOfDay(for: element.startdatetime) == Calendar.current.startOfDay(for: self.actualstartdatetime) && element.assignmentname == self.name)
+                                    {
+                                        self.managedObjectContext.delete(self.subassignmentlist[index])
+                                    }
+                                }
+                                else
+                                {
+                                    if (element.startdatetime == self.actualstartdatetime && element.assignmentname == self.name) {
+                                        self.managedObjectContext.delete(self.subassignmentlist[index])
+                                    }
                                 }
                             }
                             do {
@@ -1556,7 +1666,7 @@ struct IndividualSubassignmentView: View {
                             } catch {
                                 print(error.localizedDescription)
                             }
-                            
+                            simpleSuccess()
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
                             print("Signal Sent.")
@@ -1646,11 +1756,12 @@ struct HomeView: View {
         }
         else
         {
-            Button(action: {
-                print(self.modalView)
-            }) {
-                Text("If you are able to read this, please report this as a bug.")
-            }
+            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+//            Button(action: {
+//                print(self.modalView)
+//            }) {
+//                Text("If you are able to read this, please report this as a bug.")
+//            }
         }
     }
     

@@ -195,6 +195,46 @@ struct EditClassModalView: View {
                     }.padding(.vertical, 10)
                 }
                 
+               
+                Section {
+                    Text("Preview")
+                    ZStack {
+                        if self.coloraselectedindex != -1 {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex])]), startPoint: .leading, endPoint: .trailing))
+                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                            
+                        }
+                        else if self.colorbselectedindex != -1 {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex])]), startPoint: .leading, endPoint: .trailing))
+                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                            
+                        }
+                        else if self.colorcselectedindex != -1 {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex])]), startPoint: .leading, endPoint: .trailing))
+                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                            
+                        }
+
+                        VStack {
+                            HStack {
+                                Text(self.classnamechanged).font(.system(size: 22)).fontWeight(.bold)
+                                
+                                Spacer()
+                                
+                                if classassignmentnumber == 0 {
+                                    Text("No Assignments").font(.body).fontWeight(.light)
+                                }
+                                    
+                                else {
+                                    Text(String(classassignmentnumber)).font(.title).fontWeight(.bold)
+                                }
+                            }
+                        }.padding(.horizontal, 25)
+                    }
+                }
                 Section {
                     Button(action: {
                         let testname = self.classnamechanged
@@ -255,45 +295,6 @@ struct EditClassModalView: View {
                         Text("Save Changes")
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
-                    }
-                }
-                Section {
-                    Text("Preview")
-                    ZStack {
-                        if self.coloraselectedindex != -1 {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                            
-                        }
-                        else if self.colorbselectedindex != -1 {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                            
-                        }
-                        else if self.colorcselectedindex != -1 {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                            
-                        }
-
-                        VStack {
-                            HStack {
-                                Text(self.classnamechanged).font(.system(size: 22)).fontWeight(.bold)
-                                
-                                Spacer()
-                                
-                                if classassignmentnumber == 0 {
-                                    Text("No Assignments").font(.body).fontWeight(.light)
-                                }
-                                    
-                                else {
-                                    Text(String(classassignmentnumber)).font(.title).fontWeight(.bold)
-                                }
-                            }
-                        }.padding(.horizontal, 25)
                     }
                 }
             }.navigationBarItems(trailing: Button(action: {
@@ -949,14 +950,14 @@ struct MasterClass: View {
     
         for freetime in freetimelist {
             if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday) {
-                print("sdfdsfdsf")
-                print(startoffreetimeDict)
+                //print("sdfdsfdsf")
+                //print(startoffreetimeDict)
                 dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                
-//                if ( Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute! < Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!), to: startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)]!).minute!)
-//                 {
-                    startoffreetimeDict[Calendar.current.startOfDay(for: freetime.startdatetime)] = freetime.startdatetime
-//                 }
+                print(dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!)
+                specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!.append((freetime.startdatetime, freetime.enddatetime))
+                for (x,y) in specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! {
+                    print(x.description, y.description)
+                }
             }
         }
 //        for i in 0...daystilllatestdate {
@@ -985,6 +986,7 @@ struct MasterClass: View {
                 }
             }
         }
+        //creating subassignments according to freetimes
         for i in 0...daystilllatestdate {
             if (subassignmentdict[i]!.count > 0)
             {
@@ -1209,11 +1211,7 @@ struct ClassesView: View {
         }
         else
         {
-            Button(action: {
-                print(self.modalView)
-            }) {
-                Text("If you are able to read this, please report this as a bug.")
-            }
+            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
     }
     @State var selectedClass: Int? = 0
@@ -1334,7 +1332,7 @@ struct ClassesView: View {
     //                                }
     //
     //                            }
-                                Image(systemName: "moon.zzz").resizable().frame(width: UIScreen.main.bounds.size.width-200, height: 250)
+                                Image(systemName: "moon.zzz").resizable().frame(width: 200, height: 250)
                                 Text("No classes created").font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, height: 30, alignment: .center).offset(y: 175)
                             }
                         }

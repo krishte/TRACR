@@ -179,6 +179,10 @@ struct NewAssignmentModalView: View {
                                 self.createassignmentallowed = false
                             }
                         }
+                        if (self.nameofassignment == "")
+                        {
+                            self.createassignmentallowed = false
+                        }
 
                         if self.createassignmentallowed {
                             let newAssignment = Assignment(context: self.managedObjectContext)
@@ -228,7 +232,7 @@ struct NewAssignmentModalView: View {
                     }) {
                         Text("Add Assignment")
                     }.alert(isPresented: $showingAlert) {
-                        Alert(title: Text("Assignment Already Exists"), message: Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+                        Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
                     }
                 }
                 
@@ -397,6 +401,43 @@ struct NewClassModalView: View {
                     }.padding(.vertical, 10)
                 }
                 
+               
+                Section {
+                    Text("Preview")
+                    ZStack {
+                    if self.coloraselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                        
+                    }
+                    else if self.colorbselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                        
+                    }
+                    else if self.colorcselectedindex != nil {
+                        RoundedRectangle(cornerRadius: 25, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                        
+                    }
+
+                    VStack {
+                        HStack {
+                         //   Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                            
+                            Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            Text("No Assignments").font(.body).fontWeight(.light)
+                            }
+                        }.padding(.horizontal, 25)
+                        
+                    }
+                }
                 Section {
                     Button(action: {
                         let testname = !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])"
@@ -448,44 +489,7 @@ struct NewClassModalView: View {
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
-                }
-                Section {
-                    Text("Preview")
-                    ZStack {
-                    if self.coloraselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                        
-                    }
-                    else if self.colorbselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                        
-                    }
-                    else if self.colorcselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                        
-                    }
-
-                    VStack {
-                        HStack {
-                         //   Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
-                            
-                            Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
-                            
-                            Spacer()
-                            
-                            Text("No Assignments").font(.body).fontWeight(.light)
-                            }
-                        }.padding(.horizontal, 25)
-                        
-                    }
-                }
-            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
+                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
         }
     }
     func getNextColor(currentColor: String) -> Color {
@@ -565,6 +569,7 @@ struct NewFreetimeModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State var repeatlist: [String] = ["Every Monday", "Every Tuesday", "Every Wednesday", "Every Thursday", "Every Friday", "Every Saturday", "Every Sunday"]
     @State private var selection: Set<String> = ["None"]
+    @State var daylist: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [])
     var freetimelist: FetchedResults<Freetime>
     @Binding var NewFreetimePresenting: Bool
@@ -659,9 +664,13 @@ struct NewFreetimeModalView: View {
         return repetitionText
     }
     
+    @State var showingfreetimedetailview = false
+    
     @State private var hour = 1
     @State private var minute = 0
     @State var changeendtime = false
+    @State var showingalert = false
+    @State var createfreetimeallowed = true
     let minutes = [0, 15, 30, 45]
 
     var body: some View {
@@ -864,9 +873,9 @@ struct NewFreetimeModalView: View {
                     }
                     Section {
                         Button(action: {
-                            let newFreetime = Freetime(context: self.managedObjectContext)
-
-                            if (self.selection.contains("None")) {
+                            self.createfreetimeallowed = true
+                            if (self.selection.contains("None"))
+                            {
                                 let calendar = Calendar.current
                                 let dateComponents = calendar.dateComponents([.day, .month, .year], from: self.selectedDate)
                                 let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: self.selectedstartdatetime)
@@ -880,83 +889,283 @@ struct NewFreetimeModalView: View {
                                 newComponents.minute = timeComponents.minute
                                 newComponents.second = timeComponents.second
                                  
-                                newFreetime.startdatetime = calendar.date(from: newComponents)!
+                                //newFreetime.startdatetime = calendar.date(from: newComponents)!
                                 
                                 let timeComponents2 = calendar.dateComponents([.hour, .minute, .second], from: self.selectedenddatetime)
                                 
                                 var newComponents2 = DateComponents()
-                                newComponents.day = dateComponents.day
-                                newComponents.month = dateComponents.month
-                                newComponents.year = dateComponents.year
+                                newComponents2.day = dateComponents.day
+                                newComponents2.month = dateComponents.month
+                                newComponents2.year = dateComponents.year
                                 newComponents2.hour = timeComponents2.hour
                                 newComponents2.minute = timeComponents2.minute
                                 newComponents2.second = timeComponents2.second
                                 
-                                newFreetime.enddatetime = calendar.date(from: newComponents2)!
-                            }
- 
-                            else {
-                                newFreetime.startdatetime = self.selectedstartdatetime
-                                newFreetime.enddatetime = self.selectedenddatetime
-                            }
-                            
-                            newFreetime.monday = false
-                            newFreetime.tuesday = false
-                            newFreetime.wednesday = false
-                            newFreetime.thursday = false
-                            newFreetime.friday = false
-                            newFreetime.saturday = false
-                            newFreetime.sunday = false
-                            
-                            if (self.selection.contains("Every Monday")) {
-                                newFreetime.monday = true
-                            }
-                            if (self.selection.contains("Every Tuesday"))
-                            {
-                                newFreetime.tuesday = true
-                            }
-                            if (self.selection.contains("Every Wednesday"))
-                            {
-                                newFreetime.wednesday = true
-                            }
-                            if (self.selection.contains("Every Thursday"))
-                            {
-                                newFreetime.thursday = true
-                            }
-                            if (self.selection.contains("Every Friday"))
-                            {
-                                newFreetime.friday = true
-                            }
-                            if (self.selection.contains("Every Saturday"))
-                            {
-                                newFreetime.saturday = true
-                            }
-                            if (self.selection.contains("Every Sunday"))
-                            {
-                                newFreetime.sunday = true
-                            }
+                                let startingval = calendar.date(from: newComponents)!
+                               // let endingval = calendar.date(from: newComponents)!
+                                
+                                for freetime in freetimelist {
+                                    if ((!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday))
+                                    {
+                                        if (Calendar.current.startOfDay(for: startingval) == Calendar.current.startOfDay(for: freetime.startdatetime))
+                                        {
+                                            let setstartminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.selectedstartdatetime), to: self.selectedstartdatetime).minute!
+                                            let setendminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.selectedenddatetime), to: self.selectedenddatetime).minute!
+                                            let foundstartminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for:freetime.startdatetime), to: freetime.startdatetime).minute!
+                                            let foundendminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for:freetime.enddatetime), to: freetime.enddatetime).minute!
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
 
-                            do {
-                                try self.managedObjectContext.save()
-                                print("object saved")
-                                print(newFreetime.monday)
-                            } catch {
-                                print(error.localizedDescription)
+                                    }
+                                }
+                                let dayval = self.daylist[(Calendar.current.component(.weekday, from: startingval) - 1)]
+                                for freetime in freetimelist {
+                                    let setstartminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.selectedstartdatetime), to: self.selectedstartdatetime).minute!
+                                    let setendminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.selectedenddatetime), to: self.selectedenddatetime).minute!
+                                    let foundstartminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for:freetime.startdatetime), to: freetime.startdatetime).minute!
+                                    let foundendminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for:freetime.enddatetime), to: freetime.enddatetime).minute!
+                                    if (dayval == "Sunday")
+                                    {
+                                        if (freetime.sunday)
+                                        {
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    else if (dayval == "Monday")
+                                    {
+                                        if (freetime.monday)
+                                        {
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    else if (dayval == "Tuesday")
+                                    {
+                                        if (freetime.tuesday)
+                                        {
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    else if (dayval == "Wednesday")
+                                    {
+                                        if (freetime.wednesday)
+                                        {
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    else if (dayval == "Thursday")
+                                    {
+                                        if (freetime.thursday)
+                                        {
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    else if (dayval == "Friday")
+                                    {
+                                        if (freetime.friday)
+                                        {
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    else if (dayval == "Saturday")
+                                    {
+                                        if (freetime.saturday)
+                                        {
+                                            if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                            {
+                                                self.createfreetimeallowed = false
+                                                break
+                                            }
+                                        }
+                                    }
+                                    
+                                }
                             }
-                            
-                            masterRunning.masterRunningNow = true
-                            print("Signal Sent.")
-                            
-                            self.NewFreetimePresenting = false
+                            else
+                            {
+                                for freetime in freetimelist {
+                                    if ((freetime.monday && self.selection.contains("Every Monday")) || (freetime.tuesday && self.selection.contains("Every Tuesday")) || (freetime.wednesday && self.selection.contains("Every Wednesday")) || (freetime.thursday && self.selection.contains("Every Thursday")) || (freetime.friday && self.selection.contains("Every Friday")) || (freetime.saturday && self.selection.contains("Every Saturday")) || (freetime.sunday && self.selection.contains("Every Sunday")))
+                                    {
+                                        let setstartminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.selectedstartdatetime), to: self.selectedstartdatetime).minute!
+                                        let setendminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.selectedenddatetime), to: self.selectedenddatetime).minute!
+                                        let foundstartminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for:freetime.startdatetime), to: freetime.startdatetime).minute!
+                                        let foundendminutes = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for:freetime.enddatetime), to: freetime.enddatetime).minute!
+                                        if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
+                                        {
+                                            self.createfreetimeallowed = false
+                                            print(freetime.startdatetime.description, freetime.enddatetime.description)
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+                            if (self.createfreetimeallowed)
+                            {
+                                let newFreetime = Freetime(context: self.managedObjectContext)
+
+                                if (self.selection.contains("None")) {
+                                    let calendar = Calendar.current
+                                    let dateComponents = calendar.dateComponents([.day, .month, .year], from: self.selectedDate)
+                                    let timeComponents = calendar.dateComponents([.hour, .minute, .second], from: self.selectedstartdatetime)
+                                     
+                                    var newComponents = DateComponents()
+                                    newComponents.timeZone = .current
+                                    newComponents.day = dateComponents.day
+                                    newComponents.month = dateComponents.month
+                                    newComponents.year = dateComponents.year
+                                    newComponents.hour = timeComponents.hour
+                                    newComponents.minute = timeComponents.minute
+                                    newComponents.second = timeComponents.second
+                                     
+                                    newFreetime.startdatetime = calendar.date(from: newComponents)!
+                                    
+                                    let timeComponents2 = calendar.dateComponents([.hour, .minute, .second], from: self.selectedenddatetime)
+                                    
+                                    var newComponents2 = DateComponents()
+                                    newComponents2.day = dateComponents.day
+                                    newComponents2.month = dateComponents.month
+                                    newComponents2.year = dateComponents.year
+                                    newComponents2.hour = timeComponents2.hour
+                                    newComponents2.minute = timeComponents2.minute
+                                    newComponents2.second = timeComponents2.second
+                                    
+                                    newFreetime.enddatetime = calendar.date(from: newComponents2)!
+                                }
+     
+                                else {
+                                    let dateComponents = Calendar.current.dateComponents([.day, .month, .year], from: Date(timeIntervalSince1970: 0))
+                                    let timeComponents = Calendar.current.dateComponents([.hour, .minute, .second], from: self.selectedstartdatetime)
+                                    let timeComponents2 = Calendar.current.dateComponents([.hour, .minute, .second], from: self.selectedenddatetime)
+                                    var newComponents = DateComponents()
+                                    newComponents.timeZone = .current
+                                    newComponents.day = dateComponents.day
+                                    newComponents.month = dateComponents.month
+                                    newComponents.year = dateComponents.year
+                                    newComponents.hour = timeComponents.hour
+                                    newComponents.minute = timeComponents.minute
+                                    newComponents.second = timeComponents.second
+                                    
+                                    var newComponents2 = DateComponents()
+                                    newComponents2.day = dateComponents.day
+                                    newComponents2.month = dateComponents.month
+                                    newComponents2.year = dateComponents.year
+                                    newComponents2.hour = timeComponents2.hour
+                                    newComponents2.minute = timeComponents2.minute
+                                    newComponents2.second = timeComponents2.second
+                                    
+                                    newFreetime.startdatetime = Calendar.current.date(from: newComponents)!
+                                    
+                                    newFreetime.enddatetime = Calendar.current.date(from: newComponents2)!
+                                }
+                                
+                                newFreetime.monday = false
+                                newFreetime.tuesday = false
+                                newFreetime.wednesday = false
+                                newFreetime.thursday = false
+                                newFreetime.friday = false
+                                newFreetime.saturday = false
+                                newFreetime.sunday = false
+                                
+                                if (self.selection.contains("Every Monday")) {
+                                    newFreetime.monday = true
+                                }
+                                if (self.selection.contains("Every Tuesday"))
+                                {
+                                    newFreetime.tuesday = true
+                                }
+                                if (self.selection.contains("Every Wednesday"))
+                                {
+                                    newFreetime.wednesday = true
+                                }
+                                if (self.selection.contains("Every Thursday"))
+                                {
+                                    newFreetime.thursday = true
+                                }
+                                if (self.selection.contains("Every Friday"))
+                                {
+                                    newFreetime.friday = true
+                                }
+                                if (self.selection.contains("Every Saturday"))
+                                {
+                                    newFreetime.saturday = true
+                                }
+                                if (self.selection.contains("Every Sunday"))
+                                {
+                                    newFreetime.sunday = true
+                                }
+
+                                do {
+                                    try self.managedObjectContext.save()
+                                    print("object saved")
+                                    //print(newFreetime.monday)
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
+                                
+                                masterRunning.masterRunningNow = true
+                                print("Signal Sent.")
+                                
+                                self.NewFreetimePresenting = false
+                            }
+                            else
+                            {
+                                print("Overlapping free times")
+                                self.showingalert = true
+                            }
                         }) {
                             Text("Add Free Time")
+                        }.alert(isPresented: $showingalert) {
+                            Alert(title: Text("Overlapping Free Times"), message: Text("Change Free Time so it doesn't overlap with existing Free Times"), dismissButton: .default(Text("Continue")))
                         }
                     }
                 }.frame(height: UIScreen.main.bounds.size.height*3/4)
-                List {
-                    NavigationLink(destination: FreetimeDetailView().environmentObject(self.masterRunning)) {
-                        Text("View Free Times")
+                VStack {
+                    Divider().frame(width: UIScreen.main.bounds.size.width-20, height: 3)
+                    Spacer().frame(height:10)
+                    NavigationLink(destination: FreetimeDetailView().environmentObject(self.masterRunning), isActive: self.$showingfreetimedetailview) {
+                        EmptyView()
                     }
+                    
+                       // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
+                        Button(action:{self.showingfreetimedetailview.toggle()})
+                        {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("graphbackgroundtop")).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
+                                HStack {
+                                    Text("View Free Times")
+                                    Spacer()
+                                    Image(systemName: "chevron.right").foregroundColor(Color.black)
+                                }.padding(.horizontal, 20)
+                            }
+                        }.buttonStyle(PlainButtonStyle()).foregroundColor(.black).frame(width: UIScreen.main.bounds.size.width-40)
+                    
                 }
             }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
         }
@@ -1607,11 +1816,19 @@ struct EditAssignmentModalView: View {
                     Button(action: {
                         self.createassignmentallowed = true
                         
-//                        for assignment in self.assignmentslist {
-//                            if assignment.name == self.nameofassignment {
-//                                self.createassignmentallowed = false
-//                            }
-//                        }
+
+                        if (self.nameofassignment != self.originalname)
+                        {
+                            for assignment in self.assignmentslist {
+                                if assignment.name == self.nameofassignment {
+                                    self.createassignmentallowed = false
+                                }
+                            }
+                        }
+                        if (self.nameofassignment == "")
+                        {
+                            createassignmentallowed = false
+                        }
 
                         if self.createassignmentallowed {
                             for subassignment in subassignmentlist {
@@ -1695,7 +1912,7 @@ struct EditAssignmentModalView: View {
                     }) {
                         Text("Save Changes")
                     }.alert(isPresented: $showingAlert) {
-                        Alert(title: Text("Assignment Already Exists"), message: Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+                        Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
                     }
                 }
                 

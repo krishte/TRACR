@@ -222,6 +222,8 @@ struct IndividualAssignmentFilterView: View {
                                      print(error.localizedDescription)
                                  }
                                 
+                                simpleSuccess()
+                                
                                 masterRunning.masterRunningNow = true
                              }
                          }
@@ -255,6 +257,11 @@ struct IndividualAssignmentFilterView: View {
         {
             return String(minutenumber/60) + " h " + String(minutenumber%60) + " min"
         }
+    }
+    func simpleSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+        print("phone vibrated")
     }
 }
 

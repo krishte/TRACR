@@ -246,11 +246,7 @@ struct FilterView: View {
         }
         else
         {
-            Button(action: {
-                print(self.modalView)
-            }) {
-                Text("click me")
-            }
+            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
     }
 

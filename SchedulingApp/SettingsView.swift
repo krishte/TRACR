@@ -94,7 +94,7 @@ struct TutorialPageView: View {
             Spacer().frame(height: 15)
             
             HStack {
-                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 40, height: 40)
+                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 40, height: 40).cornerRadius(5)
                 Spacer().frame(width: 15)
                 Text(self.tutorialTitle).font(.title).fontWeight(.light)
                 Spacer()

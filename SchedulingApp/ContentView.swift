@@ -43,10 +43,11 @@ class MasterRunning: ObservableObject {
 
 struct MasterRunningDisplay: View {
     @EnvironmentObject var masterRunning: MasterRunning
-    
+  //  @Environment(\.colorScheme) var colorScheme: ColorScheme
+
     var body: some View {
         VStack {
-            Text("Optimizing Schedule")
+            Text("Optimizing Schedule").foregroundColor(Color.black)
             ZStack(alignment: .leading) {
                 Rectangle().foregroundColor(.gray).opacity(0.6).frame(width: 163, height: 3)
                 Rectangle().foregroundColor(.blue).frame(width: masterRunning.masterDisplay ? 163 : 0, height: 3).animation(.spring())
@@ -132,6 +133,8 @@ struct ContentView: View {
                     Image(systemName: "chart.bar").resizable().scaledToFit()
                     Text("Progress")
                 }
+                
+
             }.onAppear(perform: initialize)
             
             VStack {

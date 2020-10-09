@@ -605,6 +605,7 @@ struct SubassignmentBacklogAction: View {
                     actionViewPresets.actionViewHeight = 1
                     self.subPageType = ""
                     self.nthTask = 1
+                    masterRunning.displayText = true
                 }
 
                 self.managedObjectContext.delete(self.subassignmentlist[0])
@@ -633,7 +634,6 @@ struct SubassignmentBacklogAction: View {
                 addTimeSubassignmentBacklog.backlogList.remove(at: 0)
                 
                 masterRunning.masterRunningNow = true
-                masterRunning.displayText = true
                 print("Signal Sent.")
             }) {
                 Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Next" : "Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)

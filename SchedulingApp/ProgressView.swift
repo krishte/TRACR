@@ -637,7 +637,7 @@ struct Line: View {
         let points = self.data
         return Path.lineChart(points: points, step: CGPoint(x: stepWidth, y: stepHeight))
     }
-    
+
     public var body: some View {
         
    //     ZStack {

@@ -23,4 +23,5 @@ extension Classcool {
     @NSManaged public var assignmentnumber: Int64
     @NSManaged public var color: String
     @NSManaged public var originalname: String
+    @NSManaged public var isTrash: Bool
 }

@@ -139,7 +139,7 @@ struct DetailProgressView: View {
     @State private var selection: Set<Assignment> = []
 
     @EnvironmentObject var masterRunning: MasterRunning
-    
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     var body: some View {
         ZStack {
             VStack {
@@ -360,7 +360,7 @@ struct DetailProgressView: View {
                             
                         }
                     }.sheet(isPresented: $showassignmentedit, content: {
-                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
                     if (getUngradedAssignments() > 0)
                     {
                         Spacer().frame(height:10)
@@ -381,7 +381,7 @@ struct DetailProgressView: View {
                                 }.padding(-5).animation(.spring())
                             }
                         }.sheet(isPresented: $showassignmentedit, content: {
-                            EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
+                            EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
                     }
                 }.animation(.spring())
                 
@@ -703,6 +703,8 @@ struct ProgressView: View {
     @State var NewSheetPresenting = false
     @State var NewAlertPresenting = false
     @ObservedObject var sheetNavigator = SheetNavigator()
+    
+    
     
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
@@ -1120,7 +1122,26 @@ struct ProgressView: View {
          }.onDisappear {
             self.showingSettingsView = false
             self.selectedClass = 0
-        }
+         }.onAppear {
+//            var found = true
+//            while (found == true)
+//            {
+//                found = false
+//                for (index, classity) in classlist.enumerated() {
+//                    if (classity.isTrash)
+//                    {
+//                        self.managedObjectContext.delete(self.classlist[index])
+//                        found = true
+//                           do {
+//                               try self.managedObjectContext.save()
+//                               print("AddTime logged")
+//                           } catch {
+//                               print(error.localizedDescription)
+//                           }
+//                    }
+//                }
+//            }
+         }
     }
     
     func getcompletedAssignments() -> Bool {

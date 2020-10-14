@@ -109,7 +109,8 @@ struct AssignmentsView: View {
     @State var showassignmentedit: Bool = false
     @State var selectedassignmentedit: String = ""
     @ObservedObject var sheetnavigator: SheetNavigatorFilterView = SheetNavigatorFilterView()
-    
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+
     @EnvironmentObject var masterRunning: MasterRunning
     
     init(selectedFilter:String, value: Bool){
@@ -181,7 +182,7 @@ struct AssignmentsView: View {
             }
             
         }.sheet(isPresented: self.$showassignmentedit, content: {
-                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})//.animation(.spring())
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist2[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})//.animation(.spring())
     }
     func getassignmentindex() -> Int {
         print(sheetnavigator.selectedassignmentedit)

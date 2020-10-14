@@ -475,7 +475,7 @@ struct HelpCenterView: View {
                         
                             if (self.selection.contains(title))
                             {
-                                Text(self.faqtext[title]!).multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: CGFloat(self.heights[title]!), alignment: .topLeading)
+                                Text(self.faqtext[title]!).multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, alignment: .topLeading)
                             }
                         }
                     }.animation(.spring())

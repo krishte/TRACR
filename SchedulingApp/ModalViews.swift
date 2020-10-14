@@ -5,11 +5,16 @@ import SwiftUI
 class TextFieldManager: ObservableObject {
     @Published var userInput = "" {
             didSet {
-                if userInput.count > 20 {
-                    userInput = String(userInput.prefix(20))
+                if userInput.count > 35 {
+                    userInput = String(userInput.prefix(35))
                 }
             }
         }
+    
+    init(blah: String)
+    {
+        userInput = blah
+    }
 }
 struct NewAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -43,6 +48,7 @@ struct NewAssignmentModalView: View {
     var formatter: DateFormatter
     
     @EnvironmentObject var masterRunning: MasterRunning
+    @ObservedObject var textfieldmanager: TextFieldManager = TextFieldManager(blah: "")
 
     init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
@@ -74,7 +80,7 @@ struct NewAssignmentModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.default)
+                    TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.default)
                 }
                 Section {
                     Picker(selection: $selectedclass, label: Text("Class")) {
@@ -175,11 +181,11 @@ struct NewAssignmentModalView: View {
                         self.createassignmentallowed = true
                         
                         for assignment in self.assignmentslist {
-                            if assignment.name == self.nameofassignment {
+                            if assignment.name == self.textfieldmanager.userInput {
                                 self.createassignmentallowed = false
                             }
                         }
-                        if (self.nameofassignment == "")
+                        if (self.textfieldmanager.userInput == "")
                         {
                             self.createassignmentallowed = false
                         }
@@ -189,7 +195,7 @@ struct NewAssignmentModalView: View {
                             newAssignment.completed = false
                             newAssignment.grade = 0
                             newAssignment.subject = self.classlist[self.selectedclass].originalname
-                            newAssignment.name = self.nameofassignment
+                            newAssignment.name = self.textfieldmanager.userInput
                             newAssignment.type = self.assignmenttypes[self.assignmenttype]
                             newAssignment.progress = 0
                             newAssignment.duedate = self.selectedDate
@@ -460,6 +466,7 @@ struct NewClassModalView: View {
                             newClass.name = shortenedtestname
                             newClass.assignmentnumber = 0
                             newClass.originalname = testname
+                            newClass.isTrash = false
                          //   newClass.isarchived = false
                             if self.coloraselectedindex != nil {
                                 newClass.color = self.colorsa[self.coloraselectedindex!]
@@ -1607,6 +1614,8 @@ struct NewGradeModalView: View {
 }
 
 
+
+
 struct EditAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var changingDate: DisplayedDate
@@ -1624,7 +1633,7 @@ struct EditAssignmentModalView: View {
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
-    
+    let assignmenttypes2 = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     @State var nameofassignment: String
     @State private var hours: Int
     @State private var minutes: Int
@@ -1633,6 +1642,7 @@ struct EditAssignmentModalView: View {
     @State var iscompleted: Bool
     @State var gradeval: Double
     @State var assignmentsubject: String
+    @State var assignmenttype: Int
 
     @EnvironmentObject var masterRunning: MasterRunning
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
@@ -1644,8 +1654,9 @@ struct EditAssignmentModalView: View {
     @State private var startDate = Date()
     @State var originalname: String
     var formatter: DateFormatter
+    
     let otherclassgrades = ["E", "D", "C", "B", "A"]
-    init(NewAssignmentPresenting: Binding<Bool>, selectedassignment: Int, assignmentname: String, timeleft: Int, duedate: Date, iscompleted: Bool, gradeval: Int, assignmentsubject: String) {
+    init(NewAssignmentPresenting: Binding<Bool>, selectedassignment: Int, assignmentname: String, timeleft: Int, duedate: Date, iscompleted: Bool, gradeval: Int, assignmentsubject: String, assignmenttype: Int) {
         print(selectedassignment)
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
@@ -1664,6 +1675,7 @@ struct EditAssignmentModalView: View {
         self._gradeval = State(initialValue: Double(gradeval))
         self._assignmentsubject = State(initialValue: assignmentsubject)
         self._originalname = State(initialValue: assignmentname)
+        self._assignmenttype = State(initialValue: assignmenttype)
         
     }
     
@@ -1682,7 +1694,9 @@ struct EditAssignmentModalView: View {
                         self.hours = 0
                         self.minutes = 0
                     }
+                    print(assignmenttype)
                 }
+                //Text(String(assignmenttype))
                 if (self.iscompleted)
                 {
                     Section {
@@ -1723,6 +1737,17 @@ struct EditAssignmentModalView: View {
                 }
                 if (!self.iscompleted)
                 {
+//                    Section {
+//
+//                            Picker(selection: $assignmenttype, label: Text("Type")) {
+//                                ForEach(assignmenttypes2.indices) {
+//                                    index in
+//                                    Text(self.assignmenttypes2[index])
+//                                }
+//                            }
+//
+//                    }
+
 
                     Section {
                         Text("Work left")
@@ -1839,6 +1864,7 @@ struct EditAssignmentModalView: View {
                             }
                             self.assignmentslist[self.selectedassignment].name = self.nameofassignment
                             self.assignmentslist[self.selectedassignment].duedate = self.selectedDate
+                            self.assignmentslist[self.selectedassignment].type = self.assignmenttypes2[self.assignmenttype]
                             print(self.hours, self.minutes)
                             let change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
                             self.assignmentslist[self.selectedassignment].timeleft += change

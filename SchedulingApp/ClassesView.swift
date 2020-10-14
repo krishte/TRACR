@@ -78,6 +78,7 @@ struct EditClassModalView: View {
     @State var classassignmentnumber: Int
     
     @EnvironmentObject var masterRunning: MasterRunning
+    @ObservedObject var textfieldmanager: TextFieldManager
 
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -98,7 +99,7 @@ struct EditClassModalView: View {
         self._EditClassPresenting = EditClassPresenting
         self._classtolerancedouble = State(initialValue: classtolerancedouble)
         self._classassignmentnumber = State(initialValue: classassignmentnumber)
-        
+        textfieldmanager = TextFieldManager(blah: classnamechanged)
         self._coloraselectedindex = State(initialValue: -1)
         self._colorbselectedindex = State(initialValue: -1)
         self._colorcselectedindex = State(initialValue: -1)
@@ -132,7 +133,7 @@ struct EditClassModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Class Name", text: $classnamechanged)
+                    TextField("Class Name", text: $textfieldmanager.userInput)
                 }
                 
                 Section {
@@ -220,7 +221,7 @@ struct EditClassModalView: View {
 
                         VStack {
                             HStack {
-                                Text(self.classnamechanged).font(.system(size: 22)).fontWeight(.bold)
+                                Text(self.textfieldmanager.userInput).font(.system(size: 22)).fontWeight(.bold)
                                 
                                 Spacer()
                                 
@@ -237,7 +238,7 @@ struct EditClassModalView: View {
                 }
                 Section {
                     Button(action: {
-                        let testname = self.classnamechanged
+                        let testname = self.textfieldmanager.userInput
                         
                         self.createclassallowed = true
                         
@@ -351,7 +352,7 @@ struct DetailView: View {
     @State var selectededitassignment: String = ""
     @State var NewSheetPresenting: Bool = false
     @ObservedObject var sheetnavigator: SheetNavigatorEditClass = SheetNavigatorEditClass()
-    
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
     private func selectDeselect(_ singularassignment: Assignment) {
         if selection.contains(singularassignment) {
             selection.remove(singularassignment)
@@ -388,7 +389,7 @@ struct DetailView: View {
         
         if (!self.sheetnavigator.showeditclass)
         {
-            EditAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+            EditAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
             
         }
         else
@@ -412,7 +413,7 @@ struct DetailView: View {
                             }
                         }
                     }.sheet(isPresented: $showeditassignment, content: {
-                        EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
+                        EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
                     if (!getexistingassignments())
                     {
                         Spacer().frame(height: 100)
@@ -663,6 +664,9 @@ struct MasterClass: View {
         let safetyfraction:Double = daystilldue > 20 ? (daystilldue > 100 ? 0.95 : 0.9) : (daystilldue > 7 ? 0.75 : 1)
         var tempsubassignmentlist: [(Int, Int)] = []
         let newd = Int(ceil(Double(daystilldue)*Double(safetyfraction)))
+        let defaults = UserDefaults.standard
+        print(defaults.object(forKey: "savedbreakvalue") as? Int ?? 10)
+        let breakval = defaults.object(forKey: "savedbreakvalue") as? Int ?? 10
         guard newd > 0 else {
             throw MasterErrors.ImpossibleDueDate
         }
@@ -849,9 +853,9 @@ struct MasterClass: View {
     func master() throws -> Void {
          //   let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 
-        print("kewl")
+        //  print("kewl")
         for (index, _) in subassignmentlist.enumerated() {
-            print(index)
+         //   print(index)
              self.managedObjectContext.delete(self.subassignmentlist[index])
         }
         
@@ -872,11 +876,11 @@ struct MasterClass: View {
 
         var monfreetimelist:[(Date, Date)] = [], tuefreetimelist:[(Date, Date)] = [], wedfreetimelist:[(Date, Date)] = [], thufreetimelist:[(Date, Date)] = [], frifreetimelist:[(Date, Date)] = [], satfreetimelist:[(Date, Date)] = [], sunfreetimelist:[(Date, Date)] = []
         
-        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+        //let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         var latestDate = Date(timeIntervalSinceNow: TimeInterval(0))
         var dateFreeTimeDict = [Date: Int]()
-        var startoffreetimeDict = [Date: Date]()
+        //var startoffreetimeDict = [Date: Date]()
         var specificdatefreetimedict = [Date: [(Date,Date)]]()
         //initial subassignment objects are added just as (assignmentname, length of subassignment)
         var subassignmentdict = [Int: [(String, Int)]]()
@@ -928,6 +932,7 @@ struct MasterClass: View {
                 
         //    print(generalfreetimelist[index])
         }
+        
      //   print(generalfreetimelist)
         
 
@@ -953,13 +958,47 @@ struct MasterClass: View {
                 //print("sdfdsfdsf")
                 //print(startoffreetimeDict)
                 dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                print(dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!)
+                //print(dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!)
                 specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!.append((freetime.startdatetime, freetime.enddatetime))
-                for (x,y) in specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! {
-                    print(x.description, y.description)
-                }
+//                for (x,y) in specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! {
+//                    print(x.description, y.description)
+//                }
             }
         }
+        print("Free Time Today = " + String(dateFreeTimeDict[startOfDay]!))
+        var deletelist: [Int] = []
+        var changelist: [Int] = []
+        for (index,(start, end)) in specificdatefreetimedict[startOfDay]!.enumerated()
+        {
+            if (Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: end), to: end).minute! <  Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: Date()), to: Date()).minute!)
+            {
+                dateFreeTimeDict[startOfDay]! -= Calendar.current.dateComponents([.minute], from: start, to: end).minute!
+                deletelist.append(index)
+            }
+            else if (Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: start), to: start).minute! < Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: Date()), to: Date()).minute! && Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: end), to: end).minute! > Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: Date()), to: Date()).minute!)
+            {
+                dateFreeTimeDict[startOfDay]! -= (Calendar.current.dateComponents([.minute], from: startOfDay, to: Date()).minute! - Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: start), to: start).minute! )
+                dateFreeTimeDict[startOfDay]! -= (dateFreeTimeDict[startOfDay]! % 5)
+                changelist.append(index)
+            }
+        }
+        print("deletelist", deletelist)
+        print("changelist", changelist)
+        for index in changelist
+        {
+            var minutesfromstart = Calendar.current.dateComponents([.minute], from: startOfDay, to: Date()).minute!
+            minutesfromstart += 5 - (minutesfromstart % 5)
+            specificdatefreetimedict[startOfDay]![index].0 = Date(timeInterval: TimeInterval(minutesfromstart*60), since: startOfDay)
+        }
+        var counter = 0
+        
+        let deletelistsize = deletelist.count
+        for index in 0..<deletelistsize
+        {
+            specificdatefreetimedict[startOfDay]!.remove(at: index-counter)
+            counter += 1
+        }
+        print("Free Time Today = " + String(dateFreeTimeDict[startOfDay]!))
 //        for i in 0...daystilllatestdate {
 //
 //         //   print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! ,startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]?.description )
@@ -1235,8 +1274,8 @@ struct ClassesView: View {
                     if (getnumofclasses())
                     {
                         ForEach(self.classlist) { classcool in
-                        //    if (!classcool.isarchived)
-                          //  {
+                            if (!classcool.isTrash)
+                            {
                                 
                                 
                                 NavigationLink(destination: DetailView(classcool: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {
@@ -1260,6 +1299,16 @@ struct ClassesView: View {
                                         }
                                     }
                                     Divider()
+                                    Button(action: {
+                                        classcool.isTrash = true
+                                    })
+                                    {
+                                        HStack {
+                                            Text("Delete Class")
+                                            Spacer()
+                                            Image(systemName: "trash")
+                                        }
+                                    }
 //                                    Button(action: {
 //                                        self.classdeleter.isdeleting = true
 //                                        deletedclassindex = getactualclassnumber(classcool: classcool)
@@ -1310,7 +1359,7 @@ struct ClassesView: View {
     //                                    }
     //                                }
     //                            }.buttonStyle(PlainButtonStyle())
-                          //  }
+                            }
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                         
                     }
@@ -1451,16 +1500,16 @@ struct ClassesView: View {
                         //self.createsubassignments()
                      //   self.schedulenotifications()
                            // MasterStruct().master()
-//                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
-//                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
-//                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
-//                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
-//                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
-//                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
-//                            let extendedessay = "Extended Essay"
-//                            let tok = "Theory of Knowledge"
-//                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
-//                               let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
+                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
+                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
+                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
+                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
+                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
+                            let extendedessay = "Extended Essay"
+                            let tok = "Theory of Knowledge"
+                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
+                               let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 //
 ////                            for assignmenttype in assignmenttypes {
 ////                                let newType = AssignmentTypes(context: self.managedObjectContext)
@@ -1477,22 +1526,23 @@ struct ClassesView: View {
 ////
 ////                                }
 ////                            }
-//                            for classname in classnames {
-//                                let newClass = Classcool(context: self.managedObjectContext)
-//                                newClass.originalname = classname
-//                                newClass.tolerance = Int64.random(in: 0 ... 10)
-//                                newClass.name = classname
-//                                newClass.assignmentnumber = 0
-//                                newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-//                               // newClass.isarchived = false
-//
-//                                do {
-//                                    try self.managedObjectContext.save()
-//                                    print("Class made")
-//                                } catch {
-//                                    print(error.localizedDescription)
-//                                }
-//                            }
+                            for classname in classnames {
+                                let newClass = Classcool(context: self.managedObjectContext)
+                                newClass.originalname = classname
+                                newClass.tolerance = Int64.random(in: 0 ... 10)
+                                newClass.name = classname
+                                newClass.assignmentnumber = 0
+                                newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+                                newClass.isTrash = false
+                               // newClass.isarchived = false
+
+                                do {
+                                    try self.managedObjectContext.save()
+                                    print("Class made")
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
+                            }
 //
 //                            for classname in classnames {
 //                                let randomint = Int.random(in: 1...10)
@@ -1595,6 +1645,8 @@ struct ClassesView: View {
         }.onDisappear() {
             self.showingSettingsView = false
             self.selectedClass = 0
+
+
         }
     }
     func getcompletedAssignments() -> Bool {

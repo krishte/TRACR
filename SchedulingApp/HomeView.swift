@@ -107,38 +107,29 @@ struct WeeklyBlockView: View {
     
     func getassignmentsbydate(index: Int) -> [String] {
         var ans: [String] = []
-     //  print("Index: " + String(index))
+
         
         for assignment in assignmentlist {
-            //refreshview.toggle()
-           // let diff = Calendar.current.dateComponents([.day], from: self.datesfromlastmonday[self.datenumberindices[index]], to:
-            //assignment.duedate).day
+
             if (assignment.completed == false)
             {
                 let diff = Calendar.current.isDate(Date(timeInterval: 0, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: 0, since: assignment.duedate), toGranularity: .day)
-             //   print(self.datesfromlastmonday[self.datenumberindices[index]], assignment.duedate.description)
                 if (diff == true)
                 {
-                    //print(assignment.name)
                     ans.append(assignment.color)
                 }
                     
             }
-            //print(assignment.name)
         }
-       // print(index, ans.count)
-        //print(ans.count)
         return ans
     }
     
     func getassignmentsbydateindex(index: Int, index2: Int) -> String {
-        //return getassignmentsbydate(index:index).count
         if (index2 < self.getassignmentsbydate(index: index).count)
         {
             return self.getassignmentsbydate(index: index)[index2]
         }
     
-    //    print("one")
         return "zero"
         
     }
@@ -175,7 +166,6 @@ struct WeeklyBlockView: View {
                     VStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("datenumberred")).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).opacity(self.datenumberindices[index] == self.nthdayfromnow ? 1 : 0)
-                          //  Circle().fill(Color("one")).frame(width: 5, height: 5)
  
                             Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(self.datenumberindices[index] == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? .bold : .regular)
                         }.contextMenu {
@@ -208,8 +198,6 @@ struct WeeklyBlockView: View {
                         }
                         ZStack {
                             ForEach(self.getassignmentsbydate(index: index).indices, id: \.self) { index2 in
-//                                if (Int(index2) < self.getlenofassignmentsbydate(index: index))
-//                                {
                                 if (self.getassignmentsbydateindex(index: index, index2: index2) == "zero")
                                 {
                                     
@@ -218,20 +206,16 @@ struct WeeklyBlockView: View {
                                 {
                                     Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
                                 }
-//                                }
                             }
                         }
                         Spacer()
-                    }//.frame(height: 80)
+                    }
                 }
                 
             }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0, preselecteddate: dateselector.dateIndex).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {
                 Alert(title:  Text("No Classes Added"), message: Text("Add a Class First"))
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
-//            HStack {
-//                Rectangle().frame(width: 5).foregroundColor(Color("datenumberred"))
-//                Spacer()
-//            }
+
         }
     }
 }
@@ -368,7 +352,6 @@ struct SubassignmentAddTimeAction: View {
             MasterClass()
         }
         Button(action: {
-            //Storing the AddTime Transactions
             let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
 
             newAddTimeLog.name = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentname
@@ -379,17 +362,11 @@ struct SubassignmentAddTimeAction: View {
             newAddTimeLog.date = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentduedate
             newAddTimeLog.completionpercentage = addTimeSubassignment.subassignmentcompletionpercentage
             
-            //Some Adjustments
             actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
             actionViewPresets.actionViewHeight = 1
-//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(500)) {
-//                actionViewPresets.actionViewType = ""
-//            }
             
-            //Deleting the Subsasignment
             self.managedObjectContext.delete(self.subassignmentlist[addTimeSubassignment.subassignmentindex])
             
-            //Changing the Assignment
             for (_, element) in self.assignmentlist.enumerated() {
                 if (element.name == addTimeSubassignment.subassignmentname) {
                     let minutescompleted = (addTimeSubassignment.subassignmentcompletionpercentage / 100) * Double(addTimeSubassignment.subassignmentlength)
@@ -518,7 +495,6 @@ struct SubassignmentBacklogAction: View {
             }.padding(.vertical, 8).padding(.bottom, -3)
         }
         
-        //AddTimeActionViews for each task in the backlog
         else if self.subPageType == "Tasks" {
             HStack {
                 Text("Tasks Backlog (\(self.nthTask)/\(addTimeSubassignmentBacklog.backlogList.count + self.nthTask - 1))").font(.system(size: 14)).fontWeight(.light)
@@ -587,7 +563,6 @@ struct SubassignmentBacklogAction: View {
             Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
             
             Button(action: {
-                //Storing the AddTime Transactions
                 let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
 
                 newAddTimeLog.name = addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL"
@@ -790,7 +765,8 @@ struct HomeBodyView: View {
     @State var upcomingoffset = 0
     
     @EnvironmentObject var masterRunning: MasterRunning
-    
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+
     init(uniformlistshows: Binding<Bool>, NewAssignmentPresenting2: Binding<Bool>) {
         self._uniformlistviewshows = uniformlistshows
         self._NewAssignmentPresenting = NewAssignmentPresenting2
@@ -799,11 +775,9 @@ struct HomeBodyView: View {
         
         daytitleformatter = DateFormatter()
         daytitleformatter.dateFormat = "EEEE, d MMMM"
-      //  daytitleformatter.timeZone = TimeZone(secondsFromGMT: 7200)
         
         datenumberformatter = DateFormatter()
         datenumberformatter.dateFormat = "d"
-     //   datenumberformatter.timeZone = TimeZone(secondsFromGMT: 7200)
         
         formatteryear = DateFormatter()
         formatteryear.dateFormat = "yyyy"
@@ -813,26 +787,21 @@ struct HomeBodyView: View {
         
         formatterday = DateFormatter()
         formatterday.dateFormat = "dd"
-      //  formatterday.timeZone = TimeZone(secondsFromGMT: 7200)
         hourformatter = DateFormatter()
         minuteformatter = DateFormatter()
         self.hourformatter.dateFormat = "HH"
         self.minuteformatter.dateFormat = "mm"
         timeformatter = DateFormatter()
         timeformatter.dateFormat = "HH:mm"
-     //   timeformatter.timeZone = TimeZone(secondsFromGMT: 7200)
-        //timeformatter.timeZone = TimeZone(secondsFromGMT: 0)
+
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
-      //  shortdateformatter.timeZone = TimeZone(secondsFromGMT: 7200)
-     //   shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
-       // self._selecteddaytitle = State(initialValue: nthdayfromnow)
+
         self.selectedColor  = "one"
         
         let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
         
-       // print(lastmondaydate.description)
         
         for eachdayfromlastmonday in 0...27 {
             self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
@@ -841,15 +810,11 @@ struct HomeBodyView: View {
             
             self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
         }
-       // print(self.datesfromlastmonday[21], daytitlesfromlastmonday[21], datenumbersfromlastmonday[21])
-        //print(self.datesfromlastmonday[20], daytitlesfromlastmonday[20], datenumbersfromlastmonday[20])
-//        for i in 0...27 {
-//            print(self.datesfromlastmonday[i], self.daytitlesfromlastmonday[i], self.datenumbersfromlastmonday[i])
-//        }
+
     }
     
     func upcomingDisplayTime() -> String {
-//        let timezoneOffset =  TimeZone.current.secondsFromGMT()
+
         
         let minuteval = Calendar.current
             .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(0)), to: subassignmentlist[self.getsubassignment()].startdatetime)
@@ -868,7 +833,6 @@ struct HomeBodyView: View {
     }
     
     func getsubassignment() -> Int {
-//        let timezoneOffset =  TimeZone.current.secondsFromGMT()
 
         var minuteval: Int = 0
         for (index, _) in subassignmentlist.enumerated() {
@@ -876,7 +840,6 @@ struct HomeBodyView: View {
             minuteval = Calendar.current
                 .dateComponents([.minute], from: Date(timeIntervalSinceNow: TimeInterval(0)), to: subassignmentlist[index].startdatetime)
             .minute!
-            //print(minuteval)
             if (minuteval > 0)
             {
                 return index
@@ -921,7 +884,6 @@ struct HomeBodyView: View {
     
     var body: some View {
         VStack {
-           // Text(String(subassignmentlist.count))
             if (!self.uniformlistviewshows) {
                 VStack {
                     HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
@@ -929,7 +891,6 @@ struct HomeBodyView: View {
                             Text(self.daysoftheweekabr[dayofthweekabrindex]).font(.system(size: (UIScreen.main.bounds.size.width / 25))).fontWeight(.light).frame(width: (UIScreen.main.bounds.size.width / 29) * 3)
                         }
                     }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
-                  //  SpecialView()
                     if #available(iOS 14.0, *) {
                         TabView() {
                             WeeklyBlockView(nthdayfromnow: self.$nthdayfromnow, lastnthdayfromnow: self.$lastnthdayfromnow, increased: self.$increased, stopupdating: self.$stopupdating, NewAssignmentPresenting: $NewAssignmentPresenting, datenumberindices: [0, 1, 2, 3, 4, 5, 6], datenumbersfromlastmonday: self.datenumbersfromlastmonday, datesfromlastmonday: self.datesfromlastmonday).environment(\.managedObjectContext, self.managedObjectContext).tag(0)
@@ -1026,35 +987,7 @@ struct HomeBodyView: View {
                             }.padding(.top, self.hidingupcoming ? -50 : 0)
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                                                     
-                  //  }
-
-//                    HStack {
-//
-//                        Spacer()
-//                        Button(action:{
-//                            self.hidingupcoming.toggle()
-//                            print(hidingupcoming)
-//                            if (self.hidingupcoming)
-//                            {
-//                                upcomingoffset = Int(UIScreen.main.bounds.size.width)
-//                            }
-//                            else
-//                            {
-//                                upcomingoffset = 0
-//                            }
-//                            print(upcomingoffset)
-//                        }) {
-//                            ZStack {
-//
-//                                 //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
-//                               // if (self.hidingupcoming)
-//                             //   {
-//                                RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 2.5, style: .continuous).fill(Color.blue).frame(width: 60, height: self.hidingupcoming ? 15 : 15)
-//                                Image(systemName: "chevron.compact.up").resizable().frame(width: 30, height: 6).foregroundColor(colorScheme == .light ? Color.white : Color.black)
-//                            }
-//                        }.rotationEffect(Angle(degrees: self.hidingupcoming ? 180 : 0), anchor: .center).animation(.spring())
-//                        Spacer().frame(width: 20)
-//                    }.padding(.top, self.hidingupcoming ? -120 : -20)
+              
                     
                 VStack {
                     ScrollView {
@@ -1070,7 +1003,6 @@ struct HomeBodyView: View {
                                             MasterClass()
                                         }
                                     }.frame(height: 50).animation(.spring())
-//                                    }
                                 }
                             }
 
@@ -1081,15 +1013,12 @@ struct HomeBodyView: View {
                                     
                                     ZStack(alignment: .topTrailing) {
                                         ForEach(subassignmentlist) { subassignment in
-                                            //bug: some subassignments are being displayed one day to late. Specifically ones around midnight
-    //                                        if (Calendar.current.isDate(self.datesfromlastmonday[self.nthdayfromnow], equalTo: subassignment.startdatetime, toGranularity: .day)) {
+
                                             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
                                                 IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                     self.subassignmentassignmentname = subassignment.assignmentname
                                                     self.selectedColor = subassignment.color
-    //                                                for subassignment in self.subassignmentlist {
-    //                                                    print(subassignment.startdatetime.description)
-    //                                                }
+
                                                 }
                                                     //was +122 but had to subtract 2*60.35 to account for GMT + 
                                             }
@@ -1110,7 +1039,6 @@ struct HomeBodyView: View {
             }//.transition(.move(edge: .leading)).animation(.spring())
         }
         else {
-            //Spacer().frame(height:40)
             VStack {
                 HStack {
                     Text("Tasks").font(.largeTitle).bold()
@@ -1140,10 +1068,7 @@ struct HomeBodyView: View {
                                 }
                             }
                         }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150)//.animation(.none)
-//                        if (self.subassignmentassignmentname == "")
-//                        {
-//                            Spacer().frame(width: 150)
-//                        }
+
                         if self.subassignmentassignmentname != "" {
                             Spacer().frame(width: 10)
                             Divider().frame(width: 1).background(Color.black)
@@ -1151,7 +1076,7 @@ struct HomeBodyView: View {
                             VStack(alignment: .leading) {
                                 ForEach(self.assignmentlist) { assignment in
                                     if (assignment.name == self.subassignmentassignmentname) {
-                                      //  Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 40, alignment: .topLeading)
+
 
                                         Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 15)).fontWeight(.bold).frame(height:40)
                                         Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
@@ -1183,17 +1108,9 @@ struct HomeBodyView: View {
                         }) {
                             ZStack {
                             
-                                 //.padding(.leading, (UIScreen.main.bounds.size.width-60)/2)//.offset(x: UIScreen.main.bounds.size.width-30)
-                               // if (self.hidingupcoming)
-                             //   {
+
                                 RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
-                                Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)//.rotationEffect(self.hidingupcoming ? .degrees(0) : .degrees(90)).animation(.spring())
-                               // }
-//                                        else
-//                                        {
-//                                            RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width: 12, height:70)
-//                                            Image(systemName: "chevron.compact.right").resizable().frame(width: 8, height: 40).foregroundColor(colorScheme == .light ? Color.white : Color.black)
-//                                        }
+                                Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                             }
                         }.rotationEffect(Angle(degrees: self.hidingupcoming ? 90 : 0), anchor: .top).animation(.spring())
                     }.padding(.top, self.hidingupcoming ? -50 : 0)
@@ -1212,19 +1129,12 @@ struct HomeBodyView: View {
                         SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle],  daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).animation(.spring())
                     }
                 }.animation(.spring())
-//                ForEach(subassignmentlist) {
-//                    subassignment in
-//                    IndividualSubassignmentView(subassignment2: subassignment, verticaloffset: self.$verticaloffset, subassignmentname: self.$subassignmentname, addhours: self.$addhours, addminutes: self.$addminutes).onTapGesture {
-//                        self.subassignmentassignmentname = subassignment.assignmentname
-//                        self.selectedColor = subassignment.color
-//
-//                    }
-//                }
+
                 }.padding(.top, self.hidingupcoming ? -100 : 0).animation(.spring())
             }//.transition(.move(edge: .leading)).animation(.spring())
         }
         }.sheet(isPresented: $showeditassignment, content: {
-                    EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})
     }
     func getsubassignmentsondate(dayIndex: Int) -> Bool {
         for subassignment in subassignmentlist {
@@ -1266,7 +1176,6 @@ struct SubassignmentListView: View {
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
-       // shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.daytitlesfromlastmonday = daytitlesfromlastmonday
         self.datesfromlastmonday = datesfromlastmonday
     }
@@ -1335,7 +1244,6 @@ struct SubassignmentListView: View {
         if masterRunning.masterRunningNow {
             MasterClass()
         }
-    //    }.animation(.spring())
     }
     func computesubassignmentlength(subassignment: Subassignmentnew) -> Int
     {
@@ -1419,12 +1327,9 @@ struct IndividualSubassignmentView: View {
         
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-      //  formatter.timeZone = TimeZone(secondsFromGMT: 0)
         self.starttime = formatter.string(from: subassignment2.startdatetime)
-       // print(subassignment2.startdatetime.description, self.starttime)
         self.endtime = formatter.string(from: subassignment2.enddatetime)
-//        print(starttime)
-//        print(endtime)
+
         let formatter2 = DateFormatter()
         formatter2.dateStyle = .short
         formatter2.timeStyle = .none
@@ -1438,12 +1343,10 @@ struct IndividualSubassignmentView: View {
         subassignmentlength = diffComponents.minute!
         subassignment = subassignment2
         self.fixedHeight = fixedHeight
-        //print(subassignmentlength)
         self._isrepeated = State(initialValue: isrepeated)
         shortdateformatter = DateFormatter()
         shortdateformatter.timeStyle = .none
         shortdateformatter.dateStyle = .short
-     //   shortdateformatter.timeZone = TimeZone(secondsFromGMT: 0)
     }
     
     func getgrouplength() -> Int {
@@ -1472,12 +1375,8 @@ struct IndividualSubassignmentView: View {
                         }
                         HStack {
                             Spacer()
-//                            if (self.dragoffset.width < -110) {
-//                                Text("Complete").foregroundColor(Color.white).frame(width:self.fixedHeight ? 100 : 120)
-//                            }
-//                            else {
+
                                 Text("Complete").foregroundColor(Color.white).frame(width:self.dragoffset.width < -110 ? self.fixedHeight ? 100 : 120 : 120).offset(x: self.dragoffset.width < -110 ? 0: self.fixedHeight ? self.dragoffset.width + 120 : self.dragoffset.width + 110)
-              //              }
                         }
                     }
                 }
@@ -1488,14 +1387,9 @@ struct IndividualSubassignmentView: View {
                         }
                         
                         HStack {
-//                            if (self.dragoffset.width > 150) {
-//                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -120)
-//                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -160)
-//                            }
-//                            else {
+
                             Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width > 150 ? self.fixedHeight ? -120 : -150 : self.fixedHeight ? self.dragoffset.width - 270 : self.dragoffset.width-300)
                             Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width > 150 ? self.fixedHeight ? -160 : -190 : self.fixedHeight ? self.dragoffset.width - 310 : self.dragoffset.width-340)
-                 //           }
                         }
                     }
                 }
@@ -1528,24 +1422,19 @@ struct IndividualSubassignmentView: View {
                     }
                 }
                 Spacer()
-//                Text("Due Date: " + self.duedate).frame(width: UIScreen.main.bounds.size.width-80, alignment: .topLeading)
-               // Text(self.actualstartdatetime.description)
-//                Text(self.actualenddatetime.description)
+
             }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
                 Button(action:{
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname
                 })
                 {
-                 //   HStack {
                         Text("Edit Assignment")
                         Image(systemName: "pencil.circle")
-                   // }
                 }
             }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
-                    //self.isDragged = true
  
                     if (self.dragoffset.width < 0) {
                         self.isDraggedleft = false
@@ -1572,14 +1461,10 @@ struct IndividualSubassignmentView: View {
                 .onEnded { value in
                     self.dragoffset = .zero
                     
-                    //DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(100)) {
-//                        self.isDragged = false
-//                        self.isDraggedleft = false
-                   // }
+
                     print("drag gesture ended")
                     if (self.incompleted == true) {
                         if (self.incompletedonce == true) {
-//                            self.incompletedonce = false
                             print("incompleted")
                             
                             actionViewPresets.actionViewOffset = 0
@@ -1718,7 +1603,6 @@ struct HomeView: View {
     @State var noClassesAlert = false
     
     @State var noCompletedAlert = false
-    //completed true and grade != 0
     @EnvironmentObject var actionViewPresets: ActionViewPresets
     
     @State var uniformlistshows: Bool
@@ -1757,11 +1641,7 @@ struct HomeView: View {
         else
         {
             NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
-//            Button(action: {
-//                print(self.modalView)
-//            }) {
-//                Text("If you are able to read this, please report this as a bug.")
-//            }
+
         }
     }
     
@@ -1772,7 +1652,7 @@ struct HomeView: View {
                     
                     NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                         { EmptyView() }
-                    HomeBodyView(uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).padding(.top, -40)               // }
+                    HomeBodyView(uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).padding(.top, -40)
                     
                     
                     VStack {
@@ -1780,14 +1660,13 @@ struct HomeView: View {
                         HStack {
                             Spacer()
                             ZStack {
-                                // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
+
                                 Button(action: {
                                     if (classlist.count > 0)
                                     {
                                         self.sheetNavigator.modalView = .assignment
                                         print(self.modalView)
                                         self.NewSheetPresenting = true
-                                       // self.NewGradePresenting = true
                                     }
                                     else
                                     {
@@ -1798,7 +1677,6 @@ struct HomeView: View {
                                 }) {
                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                         ZStack {
-                                            //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                             Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
                                         }
                                     )
@@ -1827,10 +1705,7 @@ struct HomeView: View {
                                         Text("Class")
                                         Image(systemName: "list.bullet")
                                     }
-                                    //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                    //                                Text("Occupied Time")
-                                    //                                Image(systemName: "clock.fill")
-                                    //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+
                                     Button(action: {
                                         self.sheetNavigator.modalView = .freetime
                                         print(self.modalView)
@@ -1851,14 +1726,13 @@ struct HomeView: View {
                                             self.sheetNavigator.alertView = .noassignment
                                             self.NewAlertPresenting = true
                                         }
-                                        //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
                                         
                                     }) {
                                         Text("Grade")
                                         Image(systemName: "percent")
                                     }
                                     
-                                }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
+                                }
                             }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                                 Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                             }
@@ -1868,28 +1742,7 @@ struct HomeView: View {
                             
                         }
                     }
-                    //                .sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noClassesAlert) {
-                    //                    Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
-                    //                }
-                    //                .sheet(isPresented: $NewClassPresenting, content: {
-                    //                            NewClassModalView(NewClassPresenting: self.$NewClassPresenting).environment(\.managedObjectContext, self.managedObjectContext)})
-                    
-                    
-                    //                .sheet(isPresented: $NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: -1).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: $noAssignmentsAlert) {
-                    //                    Alert(title: Text("No Assignments Completed"), message: Text("Complete an Assignment First"))
-                    //                }
-                    
-                    //            NavigationView {
-                    //                NavigationLink(destination:
-                    //                    ZStack {
-                    //                       // Rectangle().fill(self.colorScheme == .light ? Color.white : Color.black).frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)
-                    //                        SettingsView()
-                    //                    }
-                    //
-                    //
-                    //                    , isActive: self.$showingSettingsView)
-                    //                { Text("") }
-                    //            }
+               
                     VStack {
                         Spacer()
                          
@@ -1915,34 +1768,12 @@ struct HomeView: View {
                                                         Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                                                     }
                                                 }.padding(.top, -5).frame(height: 40)
-//                .toolbar() {
-//                    ToolbarItem(placement: .navigationBarLeading) {
-//                        Button(action: {self.showingSettingsView = true}) {
-//                            Image(systemName: "gear").resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12).frame(height: 100)
-//                        }.buttonStyle(PlainButtonStyle()).foregroundColor(colorScheme == .light ? Color.black : Color.white).padding(.leading, 2.0)
-//                    }
-//                    ToolbarItem(placement: .navigationBarTrailing) {
-//                        Button(action: {
-//                           // withAnimation(.spring())
-//                           // {
-//                                self.uniformlistshows.toggle()
-//                            //}
-//
-//                        }) {
-//                            Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12).frame(height: 100)
-//                        }.buttonStyle(PlainButtonStyle())
-//                    }
-//                    ToolbarItem(placement: .principal) {
-//                        Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5).frame(height: 100)
-//                    }
-//                }
+
                 )
             } else {
                 // Fallback on earlier versions
             }
-                                //Spacer().frame(height: 10)
-                                
-            //.navigationBarTitle(self.uniformlistshows ? "Tasks" : "")
+                               
 
         }.onDisappear() {
             let defaults = UserDefaults.standard

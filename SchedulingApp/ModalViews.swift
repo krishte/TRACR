@@ -248,7 +248,28 @@ struct NewAssignmentModalView: View {
     }
 }
 
+extension Color {
+    var components: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
+
+        typealias NativeColor = UIColor
+
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var o: CGFloat = 0
+
+        guard NativeColor(self).getRed(&r, green: &g, blue: &b, alpha: &o) else {
+            // You can handle the failure here as you want
+            return (0, 0, 0, 0)
+        }
+
+        return (r, g, b, o)
+    }
+}
+
+
 struct NewClassModalView: View {
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
@@ -278,6 +299,10 @@ struct NewClassModalView: View {
     @State private var createclassallowed = true
     @State private var showingAlert = false
     
+    @State var customcolor1: Color = Color("one")
+    @State var customcolor2: Color = Color("one-b")
+    @State var customcolorchosen: Bool = false
+
     var body: some View {
         NavigationView {
             Form {
@@ -352,20 +377,25 @@ struct NewClassModalView: View {
                         }.frame(height: 30)
                         Slider(value: $classtolerancedouble, in: 1...5)
                         ZStack {
-                            Image(systemName: "circle").resizable().frame(width: 40, height: 40)
+                            Image(systemName: "circle").resizable().frame(width: 45, height: 45)
                             HStack {
                                 Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
-                                Spacer().frame(width: 7)
+                                Spacer().frame(width: 8)
                                 Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
-                            }.padding(.top, -7)
-                            
+                            }.padding(.top, -8)
+                            GeometryReader { geometry in
+                                Path { path in
+                                    path.move(to: CGPoint(x: (geometry.size.width / 2) - 9, y: (geometry.size.height / 2) + 7))
+                                    path.addQuadCurve(to: CGPoint(x: (geometry.size.width / 2) + 9, y: (geometry.size.height / 2) + 7), control: CGPoint(x: (geometry.size.width / 2), y: ((geometry.size.height / 2) + 7) + CGFloat(5 * (self.classtolerancedouble - 3))))
+                                }.stroke((colorScheme == .light ? Color.black : Color.white), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                            }
                         }
-                    }
+                    }.padding(.bottom, 8)
                 }
                 
                 Section {
                     HStack {
-                        Text("Color:")
+                        Text("Color Presets").fontWeight(self.customcolorchosen ? .regular : .semibold)
                         
                         Spacer()
                         
@@ -411,43 +441,89 @@ struct NewClassModalView: View {
                             }
                         }
                     }.padding(.vertical, 10)
+                    
+                    VStack {
+                        HStack {
+                            Button(action: {
+                                self.customcolorchosen.toggle()
+                            }) {
+                                Text("Custom Gradient").fontWeight(self.customcolorchosen ? .semibold : .regular).foregroundColor(Color.black)
+                            }
+                            
+                            Spacer()
+                            
+                            if self.customcolorchosen {
+                                Image(systemName: "checkmark").foregroundColor(Color.green)
+                            }
+                        }
+                        
+                        if self.customcolorchosen {
+                            Spacer().frame(height: 17)
+                            
+                            HStack {
+                                VStack {
+                                    ColorPicker("Color 1:", selection: $customcolor1, supportsOpacity: false)
+                                }
+                                
+                                Spacer().frame(width: 15)
+                                Rectangle().frame(width: 1)
+                                Spacer().frame(width: 15)
+                                
+                                VStack {
+                                    ColorPicker("Color 2:", selection: $customcolor2, supportsOpacity: false)
+                                }
+                            }.animation(.spring())
+                        }
+                    }.padding(.vertical, 10)
                 }
                 
                
                 Section {
-                    Text("Preview")
-                    ZStack {
-                    if self.coloraselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                        
-                    }
-                    else if self.colorbselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                        
-                    }
-                    else if self.colorcselectedindex != nil {
-                        RoundedRectangle(cornerRadius: 25, style: .continuous)
-                            .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
-                            .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                        
-                    }
-
                     VStack {
                         HStack {
-                            Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
-                            
+                            Text("Preview")
                             Spacer()
-                            
-                            Text("No Assignments").font(.body).fontWeight(.light)
-                            }
-                        }.padding(.horizontal, 25)
+                        }
                         
-                    }
+                        ZStack {
+                            if self.customcolorchosen {
+                                RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [customcolor1, customcolor2]), startPoint: .leading, endPoint: .trailing))
+                                    .frame(width: UIScreen.main.bounds.size.width - 80, height: (120))
+                            }
+                            
+                            else {
+                                if self.coloraselectedindex != nil {
+                                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex!]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                        .frame(width: UIScreen.main.bounds.size.width - 80, height: (120))
+                                }
+                                else if self.colorbselectedindex != nil {
+                                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex!]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                        .frame(width: UIScreen.main.bounds.size.width - 80, height: (120))
+                                    
+                                }
+                                else if self.colorcselectedindex != nil {
+                                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex!]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex!])]), startPoint: .leading, endPoint: .trailing))
+                                        .frame(width: UIScreen.main.bounds.size.width - 80, height: (120))
+                                }
+                            }
+
+                            VStack {
+                                HStack {
+                                    Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                                    
+                                    Spacer()
+                                    
+                                    Text("No Assignments").font(.body).fontWeight(.light)
+                                }
+                            }.padding(.horizontal, 25)
+                        }
+                    }.padding(.top, 8)
                 }
+                
                 Section {
                     Button(action: {
                         let testname = !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])"
@@ -469,14 +545,21 @@ struct NewClassModalView: View {
                             newClass.originalname = testname
                             newClass.isTrash = false
                          //   newClass.isarchived = false
-                            if self.coloraselectedindex != nil {
-                                newClass.color = self.colorsa[self.coloraselectedindex!]
+                            
+                            if self.customcolorchosen {
+                                newClass.color = "rgbcode1-\(Double(round(1000*customcolor1.components.red)/1000))-\(Double(round(1000*customcolor1.components.green)/1000))-\(Double(round(1000*customcolor1.components.blue)/1000))-rgbcode2-\(Double(round(1000*customcolor2.components.red)/1000))-\(Double(round(1000*customcolor2.components.green)/1000))-\(Double(round(1000*customcolor2.components.blue)/1000))"
                             }
-                            else if self.colorbselectedindex != nil {
-                                newClass.color = self.colorsb[self.colorbselectedindex!]
-                            }
-                            else if self.colorcselectedindex != nil {
-                                newClass.color = self.colorsc[self.colorcselectedindex!]
+                            
+                            else {
+                                if self.coloraselectedindex != nil {
+                                    newClass.color = self.colorsa[self.coloraselectedindex!]
+                                }
+                                else if self.colorbselectedindex != nil {
+                                    newClass.color = self.colorsb[self.colorbselectedindex!]
+                                }
+                                else if self.colorcselectedindex != nil {
+                                    newClass.color = self.colorsc[self.colorcselectedindex!]
+                                }
                             }
 
                             do {

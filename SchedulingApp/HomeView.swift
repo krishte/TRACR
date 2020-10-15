@@ -979,7 +979,6 @@ struct HomeBodyView: View {
                                     print(upcomingoffset)
                                 }) {
                                     ZStack {
-
                                         RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
                                         Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                                     }

@@ -367,16 +367,15 @@ struct SettingsView: View {
                     HStack {
                         Text("Version:")
                         Spacer()
-                        Text("Developer's Beta 1.2").foregroundColor(.gray)
+                        Text("Developer's Beta 0.9").foregroundColor(.gray)
                     }
-                    NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
-                        Text("This version is running with the following bugs:").font(.title2)
-                        Text("1. Creating an Assignment with an impossible/immediate due date will cause the master function to crash, although the app won't crash itself. To continue using the app, delete this assignment with the impossible due date and the app will function normally again.")
-                        Text("2. Adding One-off Free times has the same effect. Delete these to conitnue.")
-                        Spacer()
-                    }.padding(.all, 15)) {
-                        Text("Developer's Notes")
-                    }
+//                    NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
+//                        Text("This version is running with the following bugs:").font(.title2)
+//                        Text("1. Creating an Assignment that is due on the current day will cause an internal error. As a result, the app will not be able to schedule any assignments. To continue using the app functionally, please complete this assignment and the app will function normally again.")
+//                        Spacer()
+//                    }.padding(.all, 22)) {
+//                        Text("Developer's Notes")
+//                    }
                     
                     Button(action: {
                         self.cleardataalert.toggle()
@@ -534,7 +533,7 @@ struct PreferencesView: View {
                             Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
                             Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
                         }
-                    DetailBreakView()
+//                    DetailBreakView()
                     ForEach(self.assignmenttypeslist) { assignmenttype in
                         DetailPreferencesView(assignmenttype: assignmenttype)
                     }//.animation(.spring())

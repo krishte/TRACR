@@ -20,8 +20,7 @@ struct ClassView: View {
         ZStack {
             if (classcool.color != "") {
                 RoundedRectangle(cornerRadius: 25, style: .continuous)
-                    .fill(LinearGradient(gradient: Gradient(colors: [getcurrentolor(currentColor: classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .topLeading, endPoint: .bottomTrailing))
-                    //.fill(getcurrentolor(currentColor: classcool.color))
+                    .fill(LinearGradient(gradient: Gradient(colors: classcool.color.contains("rgbcode") ? [GetColorFromRGBCode(rgbcode: classcool.color, number: 1), GetColorFromRGBCode(rgbcode: classcool.color, number: 2)] : [getcurrentolor(currentColor: classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .topLeading, endPoint: .bottomTrailing))
                     .frame(width: UIScreen.main.bounds.size.width - 20, height: (120)).shadow(radius: 5)
             }
 
@@ -29,7 +28,7 @@ struct ClassView: View {
                 Text(classcool.name).font(.system(size: 24)).fontWeight(.bold).frame(width: classcool.assignmentnumber == 0 ? UIScreen.main.bounds.size.width/2 - 20 : UIScreen.main.bounds.size.width/2 + 40, height: 120, alignment: .leading)
                 Spacer()
                 if classcool.assignmentnumber == 0 && !self.startedToDelete {
-                    Text("No Assignments").font(.body).fontWeight(.light)
+                    Text("No Assignments!").font(.system(size: 17)).fontWeight(.light)
                 }
                 else {
                     Text(String(classcool.assignmentnumber)).font(.title).fontWeight(.bold)
@@ -40,6 +39,15 @@ struct ClassView: View {
     func getcurrentolor(currentColor: String) -> Color {
         return Color(currentColor)
     }
+    
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+    
     func getNextColor(currentColor: String) -> Color {
 
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
@@ -59,6 +67,7 @@ struct ClassView: View {
 }
 
 struct EditClassModalView: View {
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
@@ -91,6 +100,10 @@ struct EditClassModalView: View {
     @State private var createclassallowed = true
     @State private var showingAlert = false
     
+    @State var customcolor1: Color
+    @State var customcolor2: Color
+    @State var customcolorchosen: Bool
+
     init(showeditclass: Binding<Bool>, currentclassname: String, classnamechanged: String, EditClassPresenting: Binding<Bool>, classtolerancedouble: Double, classassignmentnumber: Int, classcolor: String)
     {
         self._showeditclass = showeditclass
@@ -106,28 +119,49 @@ struct EditClassModalView: View {
         if (colorsa.contains(classcolor))
         {
             self._coloraselectedindex = State(initialValue: colorsa.firstIndex(of: classcolor)!)
+            self._customcolor1 = State(initialValue: Color("one"))
+            self._customcolor2 = State(initialValue: Color("one-b"))
+            self._customcolorchosen = State(initialValue: false)
 
             //print(1)
         }
         else if (colorsb.contains(classcolor))
         {
             self._colorbselectedindex = State(initialValue: colorsb.firstIndex(of: classcolor)!)
+            self._customcolor1 = State(initialValue: Color("one"))
+            self._customcolor2 = State(initialValue: Color("one-b"))
+            self._customcolorchosen = State(initialValue: false)
 
            // print(colorsb.firstIndex(of: classcolor)!)
             //print(2)
         }
-        else
+        else if (colorsc.contains(classcolor))
         {
             self._colorcselectedindex = State(initialValue: colorsc.firstIndex(of: classcolor)!)
+            self._customcolor1 = State(initialValue: Color("one"))
+            self._customcolor2 = State(initialValue: Color("one-b"))
+            self._customcolorchosen = State(initialValue: false)
 
            // print(3)
+        }
+        
+        else { //custom color
+            self._customcolor1 = State(initialValue: Color(.sRGB, red: Double(classcolor[9..<14])!, green: Double(classcolor[15..<20])!, blue: Double(classcolor[21..<26])!, opacity: 1))
+            self._customcolor2 = State(initialValue: Color(.sRGB, red: Double(classcolor[36..<41])!, green: Double(classcolor[42..<47])!, blue: Double(classcolor[48..<53])!, opacity: 1))
+            self._customcolorchosen = State(initialValue: true)
         }
         //print(coloraselectedindex!, colorbselectedindex!, colorcselectedindex!)
         print(classcolor)
         
     }
     
-
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
     
     var body: some View {
         NavigationView {
@@ -143,12 +177,28 @@ struct EditClassModalView: View {
                             Spacer()
                         }.frame(height: 30)
                         Slider(value: $classtolerancedouble, in: 1...5)
-                    }
+                        ZStack {
+                            Image(systemName: "circle").resizable().frame(width: 45, height: 45)
+                            HStack {
+                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+                                Spacer().frame(width: 8)
+                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+                            }.padding(.top, -8)
+                            GeometryReader { geometry in
+                                Path { path in
+                                    path.move(to: CGPoint(x: (geometry.size.width / 2) - 9, y: (geometry.size.height / 2) + 7))
+                                    path.addQuadCurve(to: CGPoint(x: (geometry.size.width / 2) + 9, y: (geometry.size.height / 2) + 7), control: CGPoint(x: (geometry.size.width / 2), y: ((geometry.size.height / 2) + 7) + CGFloat(4 * (self.classtolerancedouble - 3))))
+                                }.stroke((colorScheme == .light ? Color.black : Color.white), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+                            }
+                        }
+                    }.padding(.bottom, 8)
                 }
+                
+                
                 
                 Section {
                     HStack {
-                        Text("Color:")
+                        Text("Color Presets").fontWeight(self.customcolorchosen ? .regular : .semibold)
                         
                         Spacer()
                         
@@ -163,6 +213,7 @@ struct EditClassModalView: View {
                                         self.coloraselectedindex = colorindexa
                                         self.colorbselectedindex = -1
                                         self.colorcselectedindex = -1
+                                        self.customcolorchosen = false
                                     }
                                 }
                             }
@@ -176,6 +227,7 @@ struct EditClassModalView: View {
                                         self.coloraselectedindex = -1
                                         self.colorbselectedindex = colorindexb
                                         self.colorcselectedindex = -1
+                                        self.customcolorchosen = false
                                     }
                                 }
                             }
@@ -189,53 +241,106 @@ struct EditClassModalView: View {
                                         self.coloraselectedindex = -1
                                         self.colorbselectedindex = -1
                                         self.colorcselectedindex = colorindexc
+                                        self.customcolorchosen = false
                                     }
                                 }
                             }
                         }
+                    }.contentShape(Rectangle()).onTapGesture {
+                        self.customcolorchosen = false
+                    }.padding(.vertical, 10)
+                    
+                    VStack {
+                        HStack {
+                            Button(action: {
+                                self.customcolorchosen.toggle()
+                            }) {
+                                Text("Custom Gradient").fontWeight(self.customcolorchosen ? .semibold : .regular).foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                            }
+                            
+                            Spacer()
+                            
+                            if self.customcolorchosen {
+                                Image(systemName: "checkmark").foregroundColor(Color.green)
+                            }
+                        }
+                        
+                        if self.customcolorchosen {
+                            Spacer().frame(height: 17)
+                            
+                            HStack {
+                                VStack {
+                                    ColorPicker("Color 1:", selection: $customcolor1, supportsOpacity: false)
+                                }
+                                
+                                Spacer().frame(width: 15)
+                                Rectangle().frame(width: 1)
+                                Spacer().frame(width: 15)
+                                
+                                VStack {
+                                    ColorPicker("Color 2:", selection: $customcolor2, supportsOpacity: false)
+                                }
+                            }.animation(.spring())
+                        }
                     }.padding(.vertical, 10)
                 }
                 
+                
                
                 Section {
-                    Text("Preview")
-                    ZStack {
-                        if self.coloraselectedindex != -1 {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                            
+                    VStack {
+                        HStack {
+                            Text("Preview")
+                            Spacer()
                         }
-                        else if self.colorbselectedindex != -1 {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                        
+                        ZStack {
+                            if self.customcolorchosen {
+                                RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                    .fill(LinearGradient(gradient: Gradient(colors: [customcolor1, customcolor2]), startPoint: .leading, endPoint: .trailing))
+                                    .frame(width: UIScreen.main.bounds.size.width - 80, height: (120))
+                            }
                             
-                        }
-                        else if self.colorcselectedindex != -1 {
-                            RoundedRectangle(cornerRadius: 25, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex])]), startPoint: .leading, endPoint: .trailing))
-                                .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
-                            
-                        }
-
-                        VStack {
-                            HStack {
-                                Text(self.textfieldmanager.userInput).font(.system(size: 22)).fontWeight(.bold)
-                                
-                                Spacer()
-                                
-                                if classassignmentnumber == 0 {
-                                    Text("No Assignments").font(.body).fontWeight(.light)
-                                }
+                            else {
+                                if self.coloraselectedindex != -1 {
+                                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsa[self.coloraselectedindex]), getNextColor(currentColor: self.colorsa[self.coloraselectedindex])]), startPoint: .leading, endPoint: .trailing))
+                                        .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
                                     
-                                else {
-                                    Text(String(classassignmentnumber)).font(.title).fontWeight(.bold)
+                                }
+                                else if self.colorbselectedindex != -1 {
+                                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsb[self.colorbselectedindex]), getNextColor(currentColor: self.colorsb[self.colorbselectedindex])]), startPoint: .leading, endPoint: .trailing))
+                                        .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                                    
+                                }
+                                else if self.colorcselectedindex != -1 {
+                                    RoundedRectangle(cornerRadius: 25, style: .continuous)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [Color(self.colorsc[self.colorcselectedindex]), getNextColor(currentColor: self.colorsc[self.colorcselectedindex])]), startPoint: .leading, endPoint: .trailing))
+                                        .frame(width: UIScreen.main.bounds.size.width - 80, height: (120 ))
+                                    
                                 }
                             }
-                        }.padding(.horizontal, 25)
-                    }
+
+                            VStack {
+                                HStack {
+                                    Text(self.textfieldmanager.userInput).font(.system(size: 22)).fontWeight(.bold)
+                                    
+                                    Spacer()
+                                    
+                                    if classassignmentnumber == 0 {
+                                        Text("No Assignments").font(.body).fontWeight(.light)
+                                    }
+                                        
+                                    else {
+                                        Text(String(classassignmentnumber)).font(.title).fontWeight(.bold)
+                                    }
+                                }
+                            }.padding(.horizontal, 25)
+                        }
+                    }.padding(.top, 8)
                 }
+                
                 Section {
                     Button(action: {
                         let testname = self.textfieldmanager.userInput
@@ -254,14 +359,40 @@ struct EditClassModalView: View {
                                 if (classity.name == self.currentclassname) {
                                     classity.name = testname
                                     classity.tolerance  = Int64(self.classtolerancedouble.rounded(.down))
-                                    if self.coloraselectedindex != -1 {
-                                        classity.color = self.colorsa[self.coloraselectedindex]
+                                    
+                                    if self.customcolorchosen {
+                                        let r1 = String(format: "%.3f", customcolor1.components.red)
+                                        let g1 = String(format: "%.3f", customcolor1.components.green)
+                                        let b1 = String(format: "%.3f", customcolor1.components.blue)
+                                        var r2 = String(format: "%.3f", customcolor2.components.red)
+                                        var g2 = String(format: "%.3f", customcolor2.components.green)
+                                        var b2 = String(format: "%.3f", customcolor2.components.blue)
+                                        
+                                        if r1 == r2 {
+                                            r2 = String(Double(r2)! + 0.001)
+                                        }
+                                        
+                                        else if g1 == g2 {
+                                            g2 = String(Double(g2)! + 0.001)
+                                        }
+                                        
+                                        else if b1 == b2 {
+                                            b2 = String(Double(b2)! + 0.001)
+                                        }
+                                        
+                                        classity.color = "rgbcode1-\(r1)-\(g1)-\(b1)-rgbcode2-\(r2)-\(g2)-\(b2)"
                                     }
-                                    else if self.colorbselectedindex != -1 {
-                                        classity.color = self.colorsb[self.colorbselectedindex]
-                                    }
-                                    else if self.colorcselectedindex != -1 {
-                                        classity.color = self.colorsc[self.colorcselectedindex]
+                                    
+                                    else {
+                                        if self.coloraselectedindex != -1 {
+                                            classity.color = self.colorsa[self.coloraselectedindex]
+                                        }
+                                        else if self.colorbselectedindex != -1 {
+                                            classity.color = self.colorsb[self.colorbselectedindex]
+                                        }
+                                        else if self.colorcselectedindex != -1 {
+                                            classity.color = self.colorsc[self.colorcselectedindex]
+                                        }
                                     }
                                     
                                     for assignment in self.assignmentlist {
@@ -707,7 +838,7 @@ struct MasterClass: View {
         var notpossibledayslist: [Int] = []
 
         for i in 0..<newd {
-            if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! >= approxlength) {
+            if ( dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! >= approxlength) {
                 possibledays += 1
                 possibledayslist.append(i)
             }
@@ -761,7 +892,7 @@ struct MasterClass: View {
             var extratime = totaltime - approxlength*possibledays
             print(totaltime, possibledays, approxlength, extratime, newd)
             for i in 0..<newd {
-                if ( dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! < approxlength) {
+                if ( dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! < approxlength) {
                     notpossibledayslist.append(i)
                 }
             }
@@ -771,13 +902,14 @@ struct MasterClass: View {
                 //print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
                // print(possibledays)
                 //print(extratime)
-                if (dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]! >= 30) // could be a different more dynamic bound
+                
+                if (dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]! >= 30) // could be a different more dynamic bound
                 {
 
-                    if (extratime > dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!) {
-                        tempsubassignmentlist.append((value,dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]! ))
+                    if (extratime > dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]!) {
+                        tempsubassignmentlist.append((value,dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]! ))
                        // print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
-                        extratime -= dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!
+                        extratime -= dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]!
                     }
                     else {
                         // print(extratime)
@@ -803,7 +935,7 @@ struct MasterClass: View {
                 if (extratime <= 15)
                 {
                     for i in 0..<tempsubassignmentlist.count {
-                        if (dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*tempsubassignmentlist[i].0), since: startOfDay)]! >= tempsubassignmentlist[i].1 + extratime)
+                        if (dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[i].0, to: startOfDay)!]! >= tempsubassignmentlist[i].1 + extratime)
                         {
                             tempsubassignmentlist[i].1 += extratime
                             extratime = 0;
@@ -817,7 +949,7 @@ struct MasterClass: View {
                             if (tempsubassignmentlist[j].0 == possibledayslist[i])
                             {
                                 print("kewl")
-                                let value = min(extratime, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*tempsubassignmentlist[j].0), since: startOfDay)]! - tempsubassignmentlist[j].1, 90 )
+                                let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 90 )
                                 print(value)
                                 tempsubassignmentlist[j].1 += value
                                 extratime -= value
@@ -946,11 +1078,11 @@ struct MasterClass: View {
         for i in 0...daystilllatestdate {
             subassignmentdict[i] = []
             
-            dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = generalfreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
-//            startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = startoffreetimelist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
-            specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)] = actualfreetimeslist[(Calendar.current.component(.weekday, from: Date(timeInterval: TimeInterval(86400*i), since: startOfDay)) - 1)]
-            //print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! )
-           // print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)])
+            dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!] = generalfreetimelist[(Calendar.current.component(.weekday, from: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!) - 1)]
+//            startoffreetimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!] = startoffreetimelist[(Calendar.current.component(.weekday, from: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!) - 1)]
+            specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!] = actualfreetimeslist[(Calendar.current.component(.weekday, from: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!) - 1)]
+            //print( Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!.description, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! )
+           // print(dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!])
         }
     
         for freetime in freetimelist {
@@ -1001,7 +1133,7 @@ struct MasterClass: View {
         print("Free Time Today = " + String(dateFreeTimeDict[startOfDay]!))
 //        for i in 0...daystilllatestdate {
 //
-//         //   print( Date(timeInterval: TimeInterval(86400*i), since: startOfDay).description, dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]! ,startoffreetimeDict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]?.description )
+//         //   print( Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!.description, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! ,startoffreetimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]?.description )
 //
 //        }
         for assignment in assignmentlist {
@@ -1017,9 +1149,9 @@ struct MasterClass: View {
 
              //   print(assignment.name, daystilldue)
                // print(daystilldue)
-            
+                            
                 for (daysfromnow, lengthofwork) in subassignments {
-                    dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*daysfromnow), since: startOfDay)]! -= lengthofwork
+                    dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: daysfromnow, to: startOfDay)!]! -= lengthofwork
                     subassignmentdict[daysfromnow]!.append((assignment.name, lengthofwork))
                  //   print(daysfromnow, lengthofwork)
                 }
@@ -1029,12 +1161,11 @@ struct MasterClass: View {
         for i in 0...daystilllatestdate {
             if (subassignmentdict[i]!.count > 0)
             {
-                
-                if (specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]!.count == 1)
+                if (specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]!.count == 1)
                 {
                    // print("Days from now: " + String(i))
-                    let startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
-                   // let startime = specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0
+                    let startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0)), to: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0).minute!*60), since: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!)
+                   // let startime = specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0
                  //   print("Start time: " + startime.description)
                     var timeoffset = 0
                     for (name, lengthofwork) in subassignmentdict[i]! {
@@ -1063,8 +1194,8 @@ struct MasterClass: View {
                 }
                 else
                 {
-                    var startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].0).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
-                    var endtime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].1)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![0].1).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
+                    var startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0)), to:  specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0).minute!*60), since: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!)
+                    var endtime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].1)), to:  specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].1).minute!*60), since: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!)
                     var counter = 1
                     var timeoffset = 0
                     for (name, lengthofwork) in subassignmentdict[i]! {
@@ -1094,10 +1225,11 @@ struct MasterClass: View {
                                 {
                                     subtractionval -= 1
                                 }
+                                
                                 lengthofwork2 -= subtractionval
                                 timeoffset = 0
-                                startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].0)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].0).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
-                                endtime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].1)), to:  specificdatefreetimedict[Date(timeInterval: TimeInterval(86400*i), since: startOfDay)]![counter].1).minute!*60), since: Date(timeInterval: TimeInterval(86400*i), since: startOfDay))
+                                startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![counter].0)), to:  specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![counter].0).minute!*60), since: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!)
+                                endtime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![counter].1)), to:  specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![counter].1).minute!*60), since: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!)
                                 counter += 1
                             }
                             else
@@ -1177,7 +1309,6 @@ struct ClassesView: View {
     @State var NewAlertPresenting = false
     @ObservedObject var sheetNavigator = SheetNavigator()
     var startOfDay: Date {
-        let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         return Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0)))
         //may need to be changed to timeintervalsincenow: 0 because startOfDay automatically adds 2 hours to input date before calculating start of day
@@ -1281,7 +1412,7 @@ struct ClassesView: View {
                 ScrollView {
                     if (getnumofclasses())
                     {
-                        ForEach(self.classlist) { classcool in
+                        ForEach(self.classlist, id: \.self) { classcool in
                             if (!classcool.isTrash)
                             {
                                 
@@ -1470,147 +1601,147 @@ struct ClassesView: View {
                     
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)                       // Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
                     
-                    Button(action: {
-                        
-                     //      self.master()
-                        //self.createsubassignments()
-                     //   self.schedulenotifications()
-                           // MasterStruct().master()
-                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
-                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
-                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
-                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
-                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
-                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
-                            let extendedessay = "Extended Essay"
-                            let tok = "Theory of Knowledge"
-                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
-                               let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
-//
-////                            for assignmenttype in assignmenttypes {
-////                                let newType = AssignmentTypes(context: self.managedObjectContext)
-////                                newType.type = assignmenttype
-////                                newType.rangemin = 30
-////                                newType.rangemax = 300
-////                                print(newType.type, newType.rangemin, newType.rangemax)
-////                                do {
-////                                    try self.managedObjectContext.save()
-////                                    print("new Subassignment")
-////                                } catch {
-////                                    print(error.localizedDescription)
+//                    Button(action: {
+//                        
+//                     //      self.master()
+//                        //self.createsubassignments()
+//                     //   self.schedulenotifications()
+//                           // MasterStruct().master()
+//                            let group1 = ["English A: Literature SL", "English A: Literature HL", "English A: Language and Literature SL", "English A: Language and Literature HL"]
+//                            let group2 = ["German B: SL", "German B: HL", "French B: SL", "French B: HL", "German A: Literature SL", "German A: Literature HL", "German A: Language and Literatue SL", "German A: Language and Literatue HL","French A: Literature SL", "French A: Literature HL", "French A: Language and Literatue SL", "French A: Language and Literatue HL" ]
+//                            let group3 = ["Geography: SL", "Geography: HL", "History: SL", "History: HL", "Economics: SL", "Economics: HL", "Psychology: SL", "Psychology: HL", "Global Politics: SL", "Global Politics: HL"]
+//                            let group4 = ["Biology: SL", "Biology: HL", "Chemistry: SL", "Chemistry: HL", "Physics: SL", "Physics: HL", "Computer Science: SL", "Computer Science: HL", "Design Technology: SL", "Design Technology: HL", "Environmental Systems and Societies: SL", "Sport Science: SL", "Sport Science: HL"]
+//                            let group5 = ["Mathematics: Analysis and Approaches SL", "Mathematics: Analysis and Approaches HL", "Mathematics: Applications and Interpretation SL", "Mathematics: Applications and Interpretation HL"]
+//                            let group6 = ["Music: SL", "Music: HL", "Visual Arts: SL", "Visual Arts: HL", "Theatre: SL" , "Theatre: HL" ]
+//                            let extendedessay = "Extended Essay"
+//                            let tok = "Theory of Knowledge"
+//                            let classnames = [group1.randomElement()!, group2.randomElement()!, group3.randomElement()!, group4.randomElement()!, group5.randomElement()!, group6.randomElement()!, extendedessay, tok ]
+//                               let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
 ////
-////
-////                                }
-////                            }
-                            for classname in classnames {
-                                let newClass = Classcool(context: self.managedObjectContext)
-                                newClass.originalname = classname
-                                newClass.tolerance = Int64.random(in: 0 ... 10)
-                                newClass.name = classname
-                                newClass.assignmentnumber = 0
-                                newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
-                                newClass.isTrash = false
-                               // newClass.isarchived = false
-
-                                do {
-                                    try self.managedObjectContext.save()
-                                    print("Class made")
-                                } catch {
-                                    print(error.localizedDescription)
-                                }
-                            }
-//
+//////                            for assignmenttype in assignmenttypes {
+//////                                let newType = AssignmentTypes(context: self.managedObjectContext)
+//////                                newType.type = assignmenttype
+//////                                newType.rangemin = 30
+//////                                newType.rangemax = 300
+//////                                print(newType.type, newType.rangemin, newType.rangemax)
+//////                                do {
+//////                                    try self.managedObjectContext.save()
+//////                                    print("new Subassignment")
+//////                                } catch {
+//////                                    print(error.localizedDescription)
+//////
+//////
+//////                                }
+//////                            }
 //                            for classname in classnames {
-//                                let randomint = Int.random(in: 1...10)
-//                                for i in 0 ..< randomint {
-//                                    let newAssignment = Assignment(context: self.managedObjectContext)
-//                                    newAssignment.name = classname + " assignment " + String(i)
-//                                    newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
-//                                    newAssignment.totaltime = Int64.random(in: 2...10)*60
-//                                    newAssignment.subject = classname
-//                                    newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime/60)*60
-//                                    newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
-//                                    newAssignment.grade = Int64.random(in: 2...6)
-//                                    newAssignment.completed = false
-//                                    newAssignment.type = assignmenttypes.randomElement()!
+//                                let newClass = Classcool(context: self.managedObjectContext)
+//                                newClass.originalname = classname
+//                                newClass.tolerance = Int64.random(in: 0 ... 10)
+//                                newClass.name = classname
+//                                newClass.assignmentnumber = 0
+//                                newClass.color = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"].randomElement()!
+//                                newClass.isTrash = false
+//                               // newClass.isarchived = false
 //
-//                                    for classity in self.classlist {
-//                                        if (classity.name == newAssignment.subject) {
-//                                            classity.assignmentnumber += 1
-//                                            newAssignment.color = classity.color
-//                                            do {
-//                                                try self.managedObjectContext.save()
-//                                                print("Class number changed")
-//                                            } catch {
-//                                                print(error.localizedDescription)
-//                                            }
-//                                        }
-//                                    }
-//
-//                                    let newrandomint = Int.random(in: 2...5)
-//                                    var minutesleft = newAssignment.timeleft
-//
-//                                    for j in 0 ..< newrandomint {
-//                                        if (minutesleft == 0) {
-//                                            break
-//                                        }
-//
-//                                        else if (minutesleft == 60 || j == (newrandomint - 1)) {
-//                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
-//                                            newSubassignment.assignmentname = newAssignment.name
-//                                            let randomDate = Double.random(in: 10000 ... 1700000)
-//                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
-//                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*minutesleft))
-//                                            self.stored  += 20000
-//                                            newSubassignment.color = newAssignment.color
-//                                            newSubassignment.assignmentduedate = newAssignment.duedate
-//                                            print(newSubassignment.assignmentduedate.description)
-//                                            minutesleft = 0
-//                                            do {
-//                                                try self.managedObjectContext.save()
-//                                                print("new Subassignment")
-//                                            } catch {
-//                                                print(error.localizedDescription)
-//                                            }
-//                                        }
-//
-//                                        else {
-//                                            let thirdrandomint = Int64.random(in: 1...2)*60
-//                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
-//                                            newSubassignment.assignmentname = newAssignment.name
-//                                            let randomDate = Double.random(in:10000 ... 1700000)
-//                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
-//                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*thirdrandomint))
-//                                            self.stored += 20000
-//                                            newSubassignment.color = newAssignment.color
-//                                            newSubassignment.assignmentduedate = newAssignment.duedate
-//                                            print(newSubassignment.assignmentduedate.description)
-//                                            minutesleft -= thirdrandomint
-//                                            do {
-//                                                try self.managedObjectContext.save()
-//                                                print("new Subassignment")
-//                                            } catch {
-//                                                print(error.localizedDescription)
-//                                            }
-//                                        }
-//                                    }
-//
-//                                    do {
-//                                        try self.managedObjectContext.save()
-//                                        print("Class made")
-//                                    } catch {
-//                                        print(error.localizedDescription)
-//                                    }
+//                                do {
+//                                    try self.managedObjectContext.save()
+//                                    print("Class made")
+//                                } catch {
+//                                    print(error.localizedDescription)
 //                                }
 //                            }
-
-
-                       // self.schedulenotifications()
-                    }
-                    )
-                    {
-                    Image(systemName: "archivebox").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font(Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width/12)
-                    }.padding(.trailing, 2.0)
+////
+////                            for classname in classnames {
+////                                let randomint = Int.random(in: 1...10)
+////                                for i in 0 ..< randomint {
+////                                    let newAssignment = Assignment(context: self.managedObjectContext)
+////                                    newAssignment.name = classname + " assignment " + String(i)
+////                                    newAssignment.duedate = Date(timeIntervalSinceNow: Double.random(in: 100000 ... 1000000))
+////                                    newAssignment.totaltime = Int64.random(in: 2...10)*60
+////                                    newAssignment.subject = classname
+////                                    newAssignment.timeleft = Int64.random(in: 1 ... newAssignment.totaltime/60)*60
+////                                    newAssignment.progress = Int64((Double(newAssignment.totaltime - newAssignment.timeleft)/Double(newAssignment.totaltime)) * 100)
+////                                    newAssignment.grade = Int64.random(in: 2...6)
+////                                    newAssignment.completed = false
+////                                    newAssignment.type = assignmenttypes.randomElement()!
+////
+////                                    for classity in self.classlist {
+////                                        if (classity.name == newAssignment.subject) {
+////                                            classity.assignmentnumber += 1
+////                                            newAssignment.color = classity.color
+////                                            do {
+////                                                try self.managedObjectContext.save()
+////                                                print("Class number changed")
+////                                            } catch {
+////                                                print(error.localizedDescription)
+////                                            }
+////                                        }
+////                                    }
+////
+////                                    let newrandomint = Int.random(in: 2...5)
+////                                    var minutesleft = newAssignment.timeleft
+////
+////                                    for j in 0 ..< newrandomint {
+////                                        if (minutesleft == 0) {
+////                                            break
+////                                        }
+////
+////                                        else if (minutesleft == 60 || j == (newrandomint - 1)) {
+////                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+////                                            newSubassignment.assignmentname = newAssignment.name
+////                                            let randomDate = Double.random(in: 10000 ... 1700000)
+////                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
+////                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*minutesleft))
+////                                            self.stored  += 20000
+////                                            newSubassignment.color = newAssignment.color
+////                                            newSubassignment.assignmentduedate = newAssignment.duedate
+////                                            print(newSubassignment.assignmentduedate.description)
+////                                            minutesleft = 0
+////                                            do {
+////                                                try self.managedObjectContext.save()
+////                                                print("new Subassignment")
+////                                            } catch {
+////                                                print(error.localizedDescription)
+////                                            }
+////                                        }
+////
+////                                        else {
+////                                            let thirdrandomint = Int64.random(in: 1...2)*60
+////                                            let newSubassignment = Subassignmentnew(context: self.managedObjectContext)
+////                                            newSubassignment.assignmentname = newAssignment.name
+////                                            let randomDate = Double.random(in:10000 ... 1700000)
+////                                            newSubassignment.startdatetime = Date(timeIntervalSinceNow: randomDate)
+////                                            newSubassignment.enddatetime = Date(timeIntervalSinceNow: randomDate + Double(60*thirdrandomint))
+////                                            self.stored += 20000
+////                                            newSubassignment.color = newAssignment.color
+////                                            newSubassignment.assignmentduedate = newAssignment.duedate
+////                                            print(newSubassignment.assignmentduedate.description)
+////                                            minutesleft -= thirdrandomint
+////                                            do {
+////                                                try self.managedObjectContext.save()
+////                                                print("new Subassignment")
+////                                            } catch {
+////                                                print(error.localizedDescription)
+////                                            }
+////                                        }
+////                                    }
+////
+////                                    do {
+////                                        try self.managedObjectContext.save()
+////                                        print("Class made")
+////                                    } catch {
+////                                        print(error.localizedDescription)
+////                                    }
+////                                }
+////                            }
+//
+//
+//                       // self.schedulenotifications()
+//                    }
+//                    )
+//                    {
+//                    Image(systemName: "archivebox").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font(Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width/12)
+//                    }.padding(.trailing, 2.0)
 
 //                        Button(action: {
 //                            self.NewClassPresenting.toggle()

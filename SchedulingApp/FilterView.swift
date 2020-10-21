@@ -154,9 +154,22 @@ struct AssignmentsView: View {
         }
     }
     
+    @State var incompleteAssignmentsThereBool: Bool = false
+    
+    func incompleteAssignmentsThereFunc() {
+        incompleteAssignmentsThereBool = true
+    }
+    
     var body: some View {
         VStack {
             Text(self.showCompleted ? "Completed Assignments" : "Incomplete Assignments").animation(.none)
+            
+            if !incompleteAssignmentsThereBool && !self.showCompleted {
+                Spacer().frame(height: 100)
+                Image("emptyassignment").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+                Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
+            }
+            
             ScrollView {
                 ForEach(assignmentlist) { assignment in
                   if (assignment.completed == self.showCompleted) {
@@ -170,7 +183,7 @@ struct AssignmentsView: View {
                             else {
                                 IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
-                                    }.animation(.spring()).shadow(radius: 10)
+                                }.animation(.spring()).shadow(radius: 10).onAppear(perform: incompleteAssignmentsThereFunc)
                             }
                         }
                     }

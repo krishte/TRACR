@@ -158,6 +158,14 @@ struct WeeklyBlockView: View {
         return CGFloat(CGFloat(assignmentsindex)/CGFloat(length) * 20 - 10)
     }
     
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+
     
     var body: some View {
         ZStack {
@@ -166,14 +174,18 @@ struct WeeklyBlockView: View {
                     VStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("datenumberred")).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).opacity(self.datenumberindices[index] == self.nthdayfromnow ? 1 : 0)
- 
-                            Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(self.datenumberindices[index] == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? .bold : .regular)
+                            
+                            let calendar = Calendar.current
+                            
+//                            calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
+                            
+                            Text(self.datenumbersfromlastmonday[self.datenumberindices[index]]).font(.system(size: (UIScreen.main.bounds.size.width / 29) * (4 / 3))).fontWeight(self.datenumberindices[index] == Calendar.current.dateComponents([.day], from: calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? calendar.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day! ? .bold : .regular)
                         }.contextMenu {
                             Button(action: {
                                     self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
                                 dateselector.dateIndex = self.datenumberindices[index]
                             }) {
-                                Text("Assignment")
+                                Text("Add Assignment")
                                 Image(systemName: "paperclip")
                             }
                         }.onTapGesture {
@@ -204,7 +216,7 @@ struct WeeklyBlockView: View {
                                 }
                                 else
                                 {
-                                    Circle().fill(Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
+                                    Circle().fill(self.getassignmentsbydateindex(index: index, index2: index2).contains("rgbcode") ? GetColorFromRGBCode(rgbcode: self.getassignmentsbydateindex(index: index, index2: index2)) : Color(self.getassignmentsbydateindex(index: index, index2: index2))).frame(width: 5, height:  5).offset(x: self.getoffsetfromindex(assignmentsindex: index2, index: index))
                                 }
                             }
                         }
@@ -286,6 +298,14 @@ struct SubassignmentAddTimeAction: View {
 
     @EnvironmentObject var masterRunning: MasterRunning
     
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+
     var body : some View {
         HStack {
             Text("Add Time to Assignment").font(.system(size: 14)).fontWeight(.light)
@@ -303,7 +323,7 @@ struct SubassignmentAddTimeAction: View {
         
         VStack {
             HStack {
-                RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color(addTimeSubassignment.subassignmentcolor)).frame(width: 30, height: 30).overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.black, lineWidth: 0.6)
+                RoundedRectangle(cornerRadius: 6, style: .continuous).fill(addTimeSubassignment.subassignmentcolor.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: addTimeSubassignment.subassignmentcolor) : Color(addTimeSubassignment.subassignmentcolor)).frame(width: 30, height: 30).overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.black, lineWidth: 0.6)
                 )
                 
                 Spacer().frame(width: 15)
@@ -412,6 +432,14 @@ struct SubassignmentBacklogAction: View {
     
     @EnvironmentObject var masterRunning: MasterRunning
 
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+    
     var body: some View {
         if self.subPageType == "Introduction" {
             HStack {
@@ -443,7 +471,8 @@ struct SubassignmentBacklogAction: View {
                 ScrollView() {
                     ForEach(0..<addTimeSubassignmentBacklog.backlogList.count) { subassignmentindex in
                         HStack {
-                            RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Color(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentcolor"] ?? "datenumberred")).frame(width: 12, height: 12).overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.black, lineWidth: 0.6)
+                            let subassignmentcolortemp = addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentcolor"] ?? "datenumberred"
+                            RoundedRectangle(cornerRadius: 3, style: .continuous).fill(subassignmentcolortemp.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: subassignmentcolortemp) : Color(subassignmentcolortemp)).frame(width: 12, height: 12).overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.black, lineWidth: 0.6)
                             )
                             
                             Spacer().frame(width: 15)
@@ -516,7 +545,8 @@ struct SubassignmentBacklogAction: View {
             
             VStack {
                 HStack {
-                    RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color(addTimeSubassignmentBacklog.backlogList[0]["subassignmentcolor"] ?? "one")).frame(width: 30, height: 30).overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.black, lineWidth: 0.6)
+                    let subassignmentcolortemp2 = addTimeSubassignmentBacklog.backlogList[0]["subassignmentcolor"] ?? "one"
+                    RoundedRectangle(cornerRadius: 6, style: .continuous).fill(subassignmentcolortemp2.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: subassignmentcolortemp2) : Color(subassignmentcolortemp2)).frame(width: 30, height: 30).overlay(RoundedRectangle(cornerRadius: 6).stroke(Color.black, lineWidth: 0.6)
                     )
 
                     Spacer().frame(width: 15)
@@ -621,6 +651,81 @@ struct SubassignmentBacklogAction: View {
     }
 }
 
+struct NoClassesOrFreetime: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var actionViewPresets: ActionViewPresets
+
+//    @EnvironmentObject var masterRunning: MasterRunning
+//
+//    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+//        if number == 1 {
+//            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+//        }
+//
+//        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+//    }
+    @State var NewSheetPresenting = false
+    
+    @State var subpage: String = "None"
+    
+    var body : some View {
+        HStack {
+            Text("Quick Setup").font(.system(size: 28))
+            Spacer()
+        }
+        
+        Spacer().frame(height: 20)
+        
+        HStack {
+            Image(systemName: "clock")
+            Spacer().frame(width: 30)
+            Text("Free Time").font(.system(size: 24))
+            Spacer()
+            Image(systemName: "checkmark")
+        }
+        
+        Spacer().frame(height: 20)
+
+        HStack {
+            Image(systemName: "list.bullet")
+            Spacer().frame(width: 30)
+            Text("Classes").font(.system(size: 24))
+            Spacer()
+            Image(systemName: "checkmark")
+        }
+        
+        HStack {
+            Button(action: {
+                actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                actionViewPresets.actionViewHeight = 1
+                actionViewPresets.actionViewType = ""
+            }) {
+                Text("Skip").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.red).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+            }
+            
+            Spacer()
+            
+            Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
+            
+            Spacer()
+            
+            Button(action: {
+                actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                actionViewPresets.actionViewHeight = UIScreen.main.bounds.size.height
+                subpage = "Class"
+                
+                self.NewSheetPresenting = true
+            }) {
+                Text("Continue Setup").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+            }
+        }.padding(.vertical, 8).padding(.bottom, -3)
+        
+        if subpage == "Class" {
+            NewClassModalView(NewClassPresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+        }
+    }
+}
+
 struct ActionView: View {
     @EnvironmentObject var actionViewPresets: ActionViewPresets
     @EnvironmentObject var addTimeSubassignmentBacklog: AddTimeSubassignmentBacklog
@@ -631,6 +736,15 @@ struct ActionView: View {
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    var classlist: FetchedResults<Classcool>
+    
+    @State var nofreetime: Bool = false
+    @State var noclasses: Bool = false
     
     func initialize() {
         addTimeSubassignmentBacklog.backlogList = []
@@ -657,7 +771,9 @@ struct ActionView: View {
 
                 addTimeSubassignmentBacklog.backlogList.append(tempAddTimeSubassignment)
                 
-                if Date(timeInterval: 86400, since: subassignment.enddatetime) < Date() {
+                var calendar = Calendar.current
+                
+                if calendar.date(byAdding: .day, value: 1, to: subassignment.enddatetime)! < Date() {
                     longDueSubassignment = true
                 }
             }
@@ -673,6 +789,31 @@ struct ActionView: View {
                 actionViewPresets.actionViewHeight = CGFloat(200 + min((addTimeSubassignmentBacklog.backlogList.count * 32), 90))
             }
         }
+        
+        //Dealing with No Classes/Freetime
+        if freetimelist.isEmpty {
+            nofreetime = true
+        }
+        
+        else {
+            nofreetime = false
+        }
+        
+        if classlist.isEmpty {
+            noclasses = true
+        }
+        
+        else {
+            noclasses = false
+        }
+        
+        if nofreetime || noclasses {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+                actionViewPresets.actionViewOffset = 0
+                actionViewPresets.actionViewType = "NoClassesOrFreetime"
+                actionViewPresets.actionViewHeight = CGFloat(400)
+            }
+        }
     }
     
     var body: some View {
@@ -683,6 +824,10 @@ struct ActionView: View {
             
             else if actionViewPresets.actionViewType == "SubassignmentBacklogAction" {
                 SubassignmentBacklogAction()
+            }
+            
+            else if actionViewPresets.actionViewType == "NoClassesOrFreetime" {
+                NoClassesOrFreetime()
             }
         }.onAppear(perform: initialize).padding(.all, 15).frame(maxWidth: UIScreen.main.bounds.size.width, maxHeight: actionViewPresets.actionViewHeight).background(Color("very_light_gray")).cornerRadius(18).padding(.all, 15)
     }
@@ -734,7 +879,7 @@ struct HomeBodyView: View {
     
     let daysoftheweekabr = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     
-    @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day!
+    @State var nthdayfromnow: Int = Calendar.current.dateComponents([.day], from: Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day!
     
     @State var nthweekfromnow: Int = 0
     
@@ -800,15 +945,16 @@ struct HomeBodyView: View {
 
         self.selectedColor  = "one"
         
-        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
+        let calendar = Calendar.current
         
+        let lastmondaydate = calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? calendar.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
         
         for eachdayfromlastmonday in 0...27 {
-            self.datesfromlastmonday.append(Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate))
+            self.datesfromlastmonday.append(calendar.date(byAdding: .day, value: eachdayfromlastmonday, to: lastmondaydate)!)
             
-            self.daytitlesfromlastmonday.append(daytitleformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
+            self.daytitlesfromlastmonday.append(daytitleformatter.string(from: calendar.date(byAdding: .day, value: eachdayfromlastmonday, to: lastmondaydate)!))
             
-            self.datenumbersfromlastmonday.append(datenumberformatter.string(from: Date(timeInterval: TimeInterval((86400 * eachdayfromlastmonday)), since: lastmondaydate)))
+            self.datenumbersfromlastmonday.append(datenumberformatter.string(from: calendar.date(byAdding: .day, value: eachdayfromlastmonday, to: lastmondaydate)!))
         }
 
     }
@@ -882,6 +1028,15 @@ struct HomeBodyView: View {
         return Color("one")
     }
     
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+
+    
     var body: some View {
         VStack {
             if (!self.uniformlistviewshows) {
@@ -908,8 +1063,7 @@ struct HomeBodyView: View {
                                 index in
                                 Text(daytitlesfromlastmonday[index]).font(.title).fontWeight(.medium).tag(index)//.frame(height: 40)
                             }
-                            
-                        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 40).disabled(true)
+                        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 40).disabled(true)//.animation(.spring())
                         
                     } else {
                         DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
@@ -919,9 +1073,10 @@ struct HomeBodyView: View {
                         ZStack {
                         ZStack {
                             if (subassignmentlist.count > 0) {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: selectedColor.contains("rgbcode") ? [GetColorFromRGBCode(rgbcode: selectedColor, number: 1), GetColorFromRGBCode(rgbcode: selectedColor, number: 2)] : [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                             }
-
+                            
+                            
                             else {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("three"), Color("three-b")]), startPoint: .leading, endPoint: .trailing))
                             }
@@ -979,7 +1134,6 @@ struct HomeBodyView: View {
                                     print(upcomingoffset)
                                 }) {
                                     ZStack {
-
                                         RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
                                         Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                                     }
@@ -987,8 +1141,6 @@ struct HomeBodyView: View {
                             }.padding(.top, self.hidingupcoming ? -50 : 0)
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                                                     
-              
-                    
                 VStack {
                     ScrollView {
                         ZStack {
@@ -1048,7 +1200,7 @@ struct HomeBodyView: View {
                 ZStack {
                 ZStack {
                     if (subassignmentlist.count > 0) {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: selectedColor.contains("rgbcode") ? [GetColorFromRGBCode(rgbcode: selectedColor, number: 1), GetColorFromRGBCode(rgbcode: selectedColor, number: 2)] : [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
                     }
 
                     else {
@@ -1107,8 +1259,6 @@ struct HomeBodyView: View {
                             print(upcomingoffset)
                         }) {
                             ZStack {
-                            
-
                                 RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
                                 Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                             }
@@ -1117,18 +1267,20 @@ struct HomeBodyView: View {
                 }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                 ScrollView {
 
+                    let calendar = Calendar.current
 
                 ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
-                    if (Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! <= daytitle)
+                    if (Calendar.current.dateComponents([.day], from: calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? calendar.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day! <= daytitle)
                     {
-                        HStack {
-                            Spacer().frame(width: 10)
-                            Text(self.daytitlesfromlastmonday[daytitle]).font(.system(size: 20)).foregroundColor(daytitle == Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!), to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
-                            Spacer()
-                        }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
                         SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle],  daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).animation(.spring())
                     }
                 }.animation(.spring())
+                    
+                if subassignmentlist.count == 0 {
+                    Spacer().frame(height: 100)
+                    Image("emptyassignment").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+                    Text("No Tasks!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
+                }
 
                 }.padding(.top, self.hidingupcoming ? -100 : 0).animation(.spring())
             }//.transition(.move(edge: .leading)).animation(.spring())
@@ -1215,8 +1367,28 @@ struct SubassignmentListView: View {
         }
         return false
     }
+    
+    @State var tasksThereBool: Bool = false
+    
+    func tasksThereFunc() {
+        tasksThereBool = true
+    }
+    
     var body: some View {
       //  ScrollView {
+        
+        if tasksThereBool {
+            HStack {
+                Spacer().frame(width: 10)
+                Text(daytitle).font(.system(size: 20)).foregroundColor(daytitlesfromlastmonday.firstIndex(of: daytitle) == Calendar.current.dateComponents([.day], from: Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
+                Spacer()
+            }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
+        }
+        
+//        else {
+//            Rectangle().fill(Color.black).frame(height: 1).padding(.all, 0).position(x: 0, y: 0)
+//        }
+        
         ForEach(subassignmentlist) {
             subassignment in
             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
@@ -1227,7 +1399,7 @@ struct SubassignmentListView: View {
                         IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: true).onTapGesture {
                             selectedcolor = subassignment.color
                             subassignmentassignmentname = subassignment.assignmentname
-                        }
+                        }.onAppear(perform: tasksThereFunc)
                     }
                 }
                 else
@@ -1235,7 +1407,7 @@ struct SubassignmentListView: View {
                     IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: false).onTapGesture {
                         selectedcolor = subassignment.color
                         subassignmentassignmentname = subassignment.assignmentname
-                    }
+                    }.onAppear(perform: tasksThereFunc)
                 }//was +122 but had to subtract 2*60.35 to account for GMT + 2
             }
             
@@ -1365,6 +1537,15 @@ struct IndividualSubassignmentView: View {
         print("phone vibrated")
     }
  
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+
+    
     var body: some View {
         ZStack {
             VStack {
@@ -1423,7 +1604,7 @@ struct IndividualSubassignmentView: View {
                 }
                 Spacer()
 
-            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
+            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: color) : Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
                 Button(action:{
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname

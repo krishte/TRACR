@@ -1207,10 +1207,18 @@ struct ClassesView: View {
     }
     func getactualclassnumber(classcool: Classcool) -> Int
     {
+        var counter = 0
         for (index, element) in classlist.enumerated() {
-            if (element.name == classcool.name)
+            if (!element.isTrash)
             {
-                return index
+                if (element.name == classcool.name)
+                {
+                    return index-counter
+                }
+            }
+            else
+            {
+                counter += 1
             }
         }
         return 0
@@ -1301,6 +1309,23 @@ struct ClassesView: View {
                                     Divider()
                                     Button(action: {
                                         classcool.isTrash = true
+                                        for (index2, element) in self.assignmentlist.enumerated() {
+                                            if (element.subject == classcool.originalname) {
+                                                for (index3, element2) in self.subassignmentlist.enumerated() {
+                                                    if (element2.assignmentname == element.name) {
+                                                        self.managedObjectContext.delete(self.subassignmentlist[index3])
+                                                    }
+                                                }
+                                                self.managedObjectContext.delete(self.assignmentlist[index2])
+
+                                            }
+                                        }
+                                        do {
+                                            try self.managedObjectContext.save()
+                                            print("Class deleted")
+                                        } catch {
+                                            print(error.localizedDescription)
+                                        }
                                     })
                                     {
                                         HStack {
@@ -1309,56 +1334,7 @@ struct ClassesView: View {
                                             Image(systemName: "trash")
                                         }
                                     }
-//                                    Button(action: {
-//                                        self.classdeleter.isdeleting = true
-//                                        deletedclassindex = getactualclassnumber(classcool: classcool)
-//                                        for (_, element) in self.assignmentlist.enumerated() {
-//                                                if (element.subject == self.classlist[deletedclassindex].originalname) {
-//                                                    for (index3, element2) in self.subassignmentlist.enumerated() {
-//                                                        if (element2.assignmentname == element.name) {
-//                                                            self.managedObjectContext.delete(self.subassignmentlist[index3])
-//                                                        }
-//                                                    }
-//
-//                                                }
-//                                            }
-//                                        //DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
-//                                            self.managedObjectContext.delete(self.classlist[deletedclassindex])
-//                                      
-//                                       // }
-//                                     //   self.classlist[deletedclassindex].isarchived = true
-//                                        self.classdeleter.isdeleting = false
-//                                        
-//                                        do {
-//                                            try self.managedObjectContext.save()
-//                                            print("Class deleted")
-//                                        } catch {
-//                                            print(error.localizedDescription)
-//                                        }
-//                                        
-//                                     //   print("Class deleted")
-//                                        deletedclassindex = -1
-//                                        
-//                                    }) {
-//                                        HStack {
-//                                            Text("Archive Class")
-//                                            Spacer()
-//                                            Image(systemName: "trash").foregroundColor(Color.red)
-//                                        }
-//                                    }.foregroundColor(.red)
-                                    
-                                }//.animation(.spring())
-    //                            NavigationLink(destination: DetailView(classcool: classcool )) {
-    //                                ClassView(classcool: classcool, startedToDelete: self.$startedToDelete).contextMenu {
-    //                                    Button(action: {
-    //                                        self.classlist.count > 0 ? self.NewAssignmentPresenting2.toggle() : self.noClassesAlert.toggle()
-    //                                        self.storedindex = self.getactualclassnumber(classcool: classcool)
-    //                                    }) {
-    //                                        Text("Add Assignment")
-    //                                        Image(systemName: "paperclip")
-    //                                    }
-    //                                }
-    //                            }.buttonStyle(PlainButtonStyle())
+                                }
                             }
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                         

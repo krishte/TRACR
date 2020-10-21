@@ -439,7 +439,7 @@ struct SettingsView: View {
 
 struct HelpCenterView: View {
     let faqtitles = ["Payment", "Data usage", "Report a problem", "Tutorial", "Dark Mode"]
-    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Raul.Sanchezflores@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial.", "Dark Mode": "To use our app in dark mode, you have to change this in your phone’s Settings App in Display & Brightness, and that automatically makes our app function in dark mode."]
+    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email: tracrteam@gmail.com","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial.", "Dark Mode": "To use our app in dark mode, you have to change this in your phone’s Settings App in Display & Brightness, and that automatically makes our app function in dark mode."]
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50, "Dark Mode" : 100]
     let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four", "Dark Mode" : "fifteen"]
     

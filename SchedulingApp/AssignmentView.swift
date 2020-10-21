@@ -4,7 +4,8 @@ struct IndividualAssignmentFilterView: View {
     @ObservedObject var assignment: Assignment
     @Environment(\.managedObjectContext) var managedObjectContext
     @State var dragoffset = CGSize.zero
-    
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
     
     @State var isDragged: Bool = false
     @State var isDraggedleft: Bool = false
@@ -121,7 +122,7 @@ struct IndividualAssignmentFilterView: View {
                                     self.selectededitassignment = self.assignment.name
                                     self.showeditassignment = true
                                 }) {
-                                    Image(systemName: "pencil.circle").resizable().frame(width: 30, height: 30).padding(.top, 10).padding(.trailing, 10).foregroundColor(Color.black)
+                                    Image(systemName: "pencil.circle").resizable().frame(width: 30, height: 30).padding(.top, 10).padding(.trailing, 10).foregroundColor(colorScheme == .light ? Color.black : Color.white)//.foregroundColor(Color.black)
                                 }
                             }
                             Spacer()
@@ -270,7 +271,8 @@ struct GradedAssignmentsView: View {
     @ObservedObject var assignment: Assignment
     @Environment(\.managedObjectContext) var managedObjectContext
     @State var dragoffset = CGSize.zero
-    
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
     
     @State var isDragged: Bool = false
     @State var isDraggedleft: Bool = false
@@ -437,7 +439,7 @@ struct GradedAssignmentsView: View {
                                     self.selectededitassignment = self.assignment.name
                                     self.showeditassignment = true
                                 }) {
-                                    Image(systemName: "pencil.circle").resizable().frame(width: 30, height: 30).padding(.top, 10).padding(.trailing, 10).foregroundColor(Color.black)
+                                    Image(systemName: "pencil.circle").resizable().frame(width: 30, height: 30).padding(.top, 10).padding(.trailing, 10).foregroundColor(colorScheme == .light ? Color.black : Color.white)//.foregroundColor(Color.black)
                                 }
                             }
                             Spacer()

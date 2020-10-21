@@ -465,6 +465,8 @@ struct DetailView: View {
     @State var EditClassPresenting = false
     @ObservedObject var classcool: Classcool
     @State private var selection: Set<Assignment> = []
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
     @Environment(\.managedObjectContext) var managedObjectContext
     
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
@@ -548,7 +550,7 @@ struct DetailView: View {
                     if (!getexistingassignments())
                     {
                         Spacer().frame(height: 100)
-                        Image("emptyassignment").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+                        Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
                         Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
                         
                     }

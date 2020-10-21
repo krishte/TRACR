@@ -29,8 +29,8 @@ class ActionViewPresets: ObservableObject {
     @Published var actionViewType: String = ""
     @Published var actionViewHeight: CGFloat = 0
     
-    @Published var setupLaunchClass: Bool = false
-    @Published var setupLaunchFreetime: Bool = false
+//    @Published var setupLaunchClass: Bool = false
+//    @Published var setupLaunchFreetime: Bool = false
 }
 
 class AddTimeSubassignmentBacklog: ObservableObject {

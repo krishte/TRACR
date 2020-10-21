@@ -655,8 +655,8 @@ struct NoClassesOrFreetime: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var actionViewPresets: ActionViewPresets
 
-    @EnvironmentObject var masterRunning: MasterRunning
-
+//    @EnvironmentObject var masterRunning: MasterRunning
+//
 //    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
 //        if number == 1 {
 //            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
@@ -673,7 +673,7 @@ struct NoClassesOrFreetime: View {
     var body : some View {
         VStack {
             HStack {
-                Text("Quick Setup").font(.system(size: subpage == "None" ? 29 : 20)).fontWeight(.light)
+                Text("Quick Setup – Reminder").font(.system(size: subpage == "None" ? 29 : 20)).fontWeight(.light)
                 Spacer()
             }.padding(.all, 5).padding(.horizontal, subpage == "None" ? 0 : 19)
             
@@ -716,47 +716,18 @@ struct NoClassesOrFreetime: View {
             Spacer()
             
             if subpage == "None" {
-                HStack {
-                    Button(action: {
-                        actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
-                        actionViewPresets.actionViewHeight = 1
-                        actionViewPresets.actionViewType = ""
-                    }) {
-                        Text("Skip").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.red).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
-                    }
-                    
-                    Spacer()
-                    
-                    Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        actionViewPresets.actionViewHeight = UIScreen.main.bounds.size.height
-                        if noclasses {
-                            actionViewPresets.setupLaunchClass = true
-                            subpage = "Class"
-                        }
-                        
-                        if nofreetime {
-                            actionViewPresets.setupLaunchFreetime = true
-                            subpage = "Freetime"
-                        }
-                        
-                        self.NewSheetPresenting = true
-                    }) {
-                        Text("Continue Setup").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
-                    }
+                Button(action: {
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewHeight = 1
+                    actionViewPresets.actionViewType = ""
+                }) {
+                    Text("Okay, Got it!").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25).foregroundColor(.green)
                 }.padding(.vertical, 8).padding(.bottom, -3)
             }
             
-            if subpage == "Class" && actionViewPresets.setupLaunchClass {
-                NewClassModalView(NewClassPresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
-            }
-            
-            else if subpage == "Freetime" && actionViewPresets.setupLaunchFreetime {
-                NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
-            }
+//            if subpage == "Class" {
+//                NewClassModalView(NewClassPresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+//            }
         }.frame(width: subpage == "None" ? UIScreen.main.bounds.size.width-60 : UIScreen.main.bounds.size.width)
     }
 }

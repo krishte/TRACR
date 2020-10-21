@@ -310,8 +310,6 @@ struct NewClassModalView: View {
 
     @Binding var NewClassPresenting: Bool
     
-    @EnvironmentObject var actionViewPresets: ActionViewPresets
-    
     @State private var classgroupnameindex = 0
     @State private var classnameindex = 0
     @State private var classlevelindex = 0
@@ -638,14 +636,12 @@ struct NewClassModalView: View {
                             print("Class with Same Name Exists; Change Name")
                             self.showingAlert = true
                         }
-                        
-                        actionViewPresets.setupLaunchClass = false
                     }) {
                         Text("Add Class")
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
-                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")}).disabled(actionViewPresets.setupLaunchClass)).navigationBarTitle("Add Class", displayMode: .inline)
+                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
         }
     }
     func getNextColor(currentColor: String) -> Color {

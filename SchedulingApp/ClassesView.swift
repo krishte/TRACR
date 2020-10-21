@@ -28,7 +28,7 @@ struct ClassView: View {
                 Text(classcool.name).font(.system(size: 24)).fontWeight(.bold).frame(width: classcool.assignmentnumber == 0 ? UIScreen.main.bounds.size.width/2 - 20 : UIScreen.main.bounds.size.width/2 + 40, height: 120, alignment: .leading)
                 Spacer()
                 if classcool.assignmentnumber == 0 && !self.startedToDelete {
-                    Text("No Assignments!").font(.system(size: 17)).fontWeight(.light)
+                    Text("No Assignments").font(.system(size: 17)).fontWeight(.light)
                 }
                 else {
                     Text(String(classcool.assignmentnumber)).font(.title).fontWeight(.bold)
@@ -549,7 +549,7 @@ struct DetailView: View {
                     {
                         Spacer().frame(height: 100)
                         Image("emptyassignment").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
-                        Text("No Assignments").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
+                        Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
                         
                     }
                     if (getCompletedAssignmentNumber() > 0)

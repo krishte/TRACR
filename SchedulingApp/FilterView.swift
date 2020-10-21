@@ -95,6 +95,7 @@ class SheetNavigatorFilterView: ObservableObject {
 struct AssignmentsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @State private var selection: Set<Assignment> = []
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
 
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.completed, ascending: true), NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
@@ -166,7 +167,7 @@ struct AssignmentsView: View {
             
             if !incompleteAssignmentsThereBool && !self.showCompleted {
                 Spacer().frame(height: 100)
-                Image("emptyassignment").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+                Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
                 Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
             }
             

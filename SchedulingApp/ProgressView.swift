@@ -17,12 +17,19 @@ struct ClassProgressView: View {
     
     var assignmentlist: FetchedResults<Assignment>
  
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
     
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                // .fill(LinearGradient(gradient: Gradient(colors: [Color(classcool.color), getNextColor(currentColor: classcool.color)]), startPoint: .leading, endPoint: .trailing))
-                .fill(Color(classcool.color))
+                .fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color))
                 .frame(width: (UIScreen.main.bounds.size.width - 40)/2, height: (100 ))
                // .shadow(radius: 10)
             VStack {
@@ -637,13 +644,21 @@ struct Line: View {
         let points = self.data
         return Path.lineChart(points: points, step: CGPoint(x: stepWidth, y: stepHeight))
     }
-
+    
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+    
     public var body: some View {
         
    //     ZStack {
  
             self.path
-                .stroke(Color(classcool.color) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+                .stroke(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
            
       //  }
     }
@@ -778,6 +793,13 @@ struct ProgressView: View {
         }
     }
 
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
  
     
     var body: some View {
@@ -872,7 +894,7 @@ struct ProgressView: View {
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Color.orange)
+                                    .fill(Color("thirteen"))
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
                                 VStack {
                                     Text("Textual Insights").font(.headline).foregroundColor(Color.black)
@@ -898,7 +920,7 @@ struct ProgressView: View {
                                                     {
                                                         HStack {
                                                             
-                                                            Rectangle().fill(Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                            Rectangle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
                                                             Spacer()
                                                             Button(action: {self.selectDeselect(classcool.name)})
                                                             {

@@ -45,6 +45,14 @@ struct IndividualAssignmentFilterView: View {
         
     }
     
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+    
     var body: some View {
         ZStack {
             VStack {
@@ -142,7 +150,7 @@ struct IndividualAssignmentFilterView: View {
                             }
                     }
                 }
-            }.padding(10).background( Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
+            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
                     if (!self.isCompleted) {
@@ -310,6 +318,14 @@ struct GradedAssignmentsView: View {
         
     }
     
+    func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
+        if number == 1 {
+            return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
+        }
+        
+        return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+    
     var body: some View {
         ZStack {
             VStack {
@@ -444,7 +460,7 @@ struct GradedAssignmentsView: View {
                         }
                     }
                 }
-            }.padding(10).background( Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
 

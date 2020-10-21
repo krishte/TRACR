@@ -367,16 +367,15 @@ struct SettingsView: View {
                     HStack {
                         Text("Version:")
                         Spacer()
-                        Text("Developer's Beta 1.2").foregroundColor(.gray)
+                        Text("Developer's Beta 0.9").foregroundColor(.gray)
                     }
-                    NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
-                        Text("This version is running with the following bugs:").font(.title2)
-                        Text("1. Creating an Assignment with an impossible/immediate due date will cause the master function to crash, although the app won't crash itself. To continue using the app, delete this assignment with the impossible due date and the app will function normally again.")
-                        Text("2. Adding One-off Free times has the same effect. Delete these to conitnue.")
-                        Spacer()
-                    }.padding(.all, 15)) {
-                        Text("Developer's Notes")
-                    }
+//                    NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
+//                        Text("This version is running with the following bugs:").font(.title2)
+//                        Text("1. Creating an Assignment that is due on the current day will cause an internal error. As a result, the app will not be able to schedule any assignments. To continue using the app functionally, please complete this assignment and the app will function normally again.")
+//                        Spacer()
+//                    }.padding(.all, 22)) {
+//                        Text("Developer's Notes")
+//                    }
                     
                     Button(action: {
                         self.cleardataalert.toggle()
@@ -439,7 +438,7 @@ struct SettingsView: View {
 
 struct HelpCenterView: View {
     let faqtitles = ["Payment", "Data usage", "Report a problem", "Tutorial", "Dark Mode"]
-    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email; Raul.Sanchezflores@isbasel.ch","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial.", "Dark Mode": "To use our app in dark mode, you have to change this in your phone’s Settings App in Display & Brightness, and that automatically makes our app function in dark mode."]
+    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email: tracrteam@gmail.com","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial.", "Dark Mode": "To use our app in dark mode, you have to change this in your phone’s Settings App in Display & Brightness, and that automatically makes our app function in dark mode."]
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50, "Dark Mode" : 100]
     let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four", "Dark Mode" : "fifteen"]
     
@@ -534,7 +533,7 @@ struct PreferencesView: View {
                             Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
                             Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
                         }
-                    DetailBreakView()
+//                    DetailBreakView()
                     ForEach(self.assignmenttypeslist) { assignmenttype in
                         DetailPreferencesView(assignmenttype: assignmenttype)
                     }//.animation(.spring())

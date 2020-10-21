@@ -85,6 +85,7 @@ struct ContentView: View {
     }
     
     func initialize() {
+        print("sfsdfsdgasgs")
         let defaults = UserDefaults.standard
         
         if !defaults.bool(forKey: "Launched Before") {
@@ -96,8 +97,8 @@ struct ContentView: View {
                 let newType = AssignmentTypes(context: self.managedObjectContext)
                 
                 newType.type = assignmenttype
-                newType.rangemin = 30
-                newType.rangemax = 300
+                newType.rangemin = 60
+                newType.rangemax = 180
                 
                 do {
                     try self.managedObjectContext.save()

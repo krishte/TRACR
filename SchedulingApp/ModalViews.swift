@@ -57,20 +57,23 @@ struct NewAssignmentModalView: View {
         formatter.timeStyle = .short
         _selectedclass = State(initialValue: selectedClass)
         self._preselecteddate = State(initialValue: preselecteddate)
-        let lastmondaydate = Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!) > Date() ? Date(timeInterval: TimeInterval(-518400), since: Date().startOfWeek!) : Date(timeInterval: TimeInterval(86400), since: Date().startOfWeek!)
+                
+        let lastmondaydate = Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
+            
         if (preselecteddate == -1)
         {
-            self._selectedDate = State(initialValue: Date())
+            self._selectedDate = State(initialValue: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!))//bugfixtemp
         }
         else
         {
-            if (Date(timeInterval: TimeInterval(86400*preselecteddate), since: lastmondaydate) < Date())
+            
+            if (Calendar.current.date(byAdding: .day, value: preselecteddate, to: lastmondaydate)! < Date())
             {
-                self._selectedDate = State(initialValue: Date())
+                self._selectedDate = State(initialValue: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!))
             }
             else
             {
-                self._selectedDate = State(initialValue: Date(timeInterval: TimeInterval(86400*preselecteddate), since: lastmondaydate))
+                self._selectedDate = State(initialValue: Calendar.current.date(byAdding: .day, value: preselecteddate, to: lastmondaydate)!)
             }
         }
     }
@@ -147,7 +150,7 @@ struct NewAssignmentModalView: View {
                         if (expandedduedate)
                         {
                             VStack {
-                                DatePicker("", selection: $selectedDate, in: Date(timeInterval: TimeInterval(60 * (self.hours == 0 ? self.minutelist[self.minutes+6] : 60*self.hourlist[self.hours] + self.minutelist[self.minutes])), since: startDate)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                DatePicker("", selection: $selectedDate, in: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
                             }.animation(.spring())
                         }
 
@@ -184,6 +187,7 @@ struct NewAssignmentModalView: View {
                                 self.createassignmentallowed = false
                             }
                         }
+                        
                         if (self.textfieldmanager.userInput == "")
                         {
                             self.createassignmentallowed = false
@@ -229,7 +233,6 @@ struct NewAssignmentModalView: View {
                         }
                      
                         else {
-                            print("Assignment with Same Name Exists; Change Name")
                             self.showingAlert = true
                         }
                     }) {
@@ -250,9 +253,8 @@ struct NewAssignmentModalView: View {
 
 extension Color {
     var components: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
-
         typealias NativeColor = UIColor
-
+        
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
@@ -267,6 +269,14 @@ extension Color {
     }
 }
 
+extension String {
+    subscript(_ range: CountableRange<Int>) -> String {
+        let start = index(startIndex, offsetBy: max(0, range.lowerBound))
+        let end = index(start, offsetBy: min(self.count - range.lowerBound,
+                                             range.upperBound - range.lowerBound))
+        return String(self[start..<end])
+    }
+}
 
 struct NewClassModalView: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
@@ -404,12 +414,13 @@ struct NewClassModalView: View {
                                 ForEach(0 ..< 5) { colorindexa in
                                     ZStack{
                                         RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsa[colorindexa])).frame(width: 25, height: 25)
-                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(colorScheme == .light ? Color.black : Color.white
                                             , lineWidth: (self.coloraselectedindex == colorindexa ? 3 : 1)).frame(width: 25, height: 25)
                                     }.onTapGesture {
                                         self.coloraselectedindex = colorindexa
                                         self.colorbselectedindex = nil
                                         self.colorcselectedindex = nil
+                                        self.customcolorchosen = false
                                     }
                                 }
                             }
@@ -417,12 +428,13 @@ struct NewClassModalView: View {
                                 ForEach(0 ..< 5) { colorindexb in
                                     ZStack {
                                         RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsb[colorindexb])).frame(width: 25, height: 25)
-                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(colorScheme == .light ? Color.black : Color.white
                                         , lineWidth: (self.colorbselectedindex == colorindexb ? 3 : 1)).frame(width: 25, height: 25)
                                     }.onTapGesture {
                                         self.coloraselectedindex = nil
                                         self.colorbselectedindex = colorindexb
                                         self.colorcselectedindex = nil
+                                        self.customcolorchosen = false
                                     }
                                 }
                             }
@@ -430,16 +442,19 @@ struct NewClassModalView: View {
                                 ForEach(0 ..< 5) { colorindexc in
                                     ZStack {
                                         RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color(self.colorsc[colorindexc])).frame(width: 25, height: 25)
-                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(Color.black
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).stroke(colorScheme == .light ? Color.black : Color.white
                                     , lineWidth: (self.colorcselectedindex == colorindexc ? 3 : 1)).frame(width: 25, height: 25)
                                     }.onTapGesture {
                                         self.coloraselectedindex = nil
                                         self.colorbselectedindex = nil
                                         self.colorcselectedindex = colorindexc
+                                        self.customcolorchosen = false
                                     }
                                 }
                             }
                         }
+                    }.contentShape(Rectangle()).onTapGesture {
+                        self.customcolorchosen = false
                     }.padding(.vertical, 10)
                     
                     VStack {
@@ -447,7 +462,7 @@ struct NewClassModalView: View {
                             Button(action: {
                                 self.customcolorchosen.toggle()
                             }) {
-                                Text("Custom Gradient").fontWeight(self.customcolorchosen ? .semibold : .regular).foregroundColor(Color.black)
+                                Text("Custom Gradient").fontWeight(self.customcolorchosen ? .semibold : .regular).foregroundColor(colorScheme == .light ? Color.black : Color.white)
                             }
                             
                             Spacer()
@@ -532,7 +547,7 @@ struct NewClassModalView: View {
                         self.createclassallowed = true
                         
                         for classity in self.classlist {
-                            if classity.name == testname {
+                            if classity.name == shortenedtestname || classity.name == testname {
                                 self.createclassallowed = false
                             }
                         }
@@ -547,7 +562,26 @@ struct NewClassModalView: View {
                          //   newClass.isarchived = false
                             
                             if self.customcolorchosen {
-                                newClass.color = "rgbcode1-\(Double(round(1000*customcolor1.components.red)/1000))-\(Double(round(1000*customcolor1.components.green)/1000))-\(Double(round(1000*customcolor1.components.blue)/1000))-rgbcode2-\(Double(round(1000*customcolor2.components.red)/1000))-\(Double(round(1000*customcolor2.components.green)/1000))-\(Double(round(1000*customcolor2.components.blue)/1000))"
+                                let r1 = String(format: "%.3f", customcolor1.components.red)
+                                let g1 = String(format: "%.3f", customcolor1.components.green)
+                                let b1 = String(format: "%.3f", customcolor1.components.blue)
+                                var r2 = String(format: "%.3f", customcolor2.components.red)
+                                var g2 = String(format: "%.3f", customcolor2.components.green)
+                                var b2 = String(format: "%.3f", customcolor2.components.blue)
+                                
+                                if r1 == r2 {
+                                    r2 = String(Double(r2)! + 0.001)
+                                }
+                                
+                                else if g1 == g2 {
+                                    g2 = String(Double(g2)! + 0.001)
+                                }
+                                
+                                else if b1 == b2 {
+                                    b2 = String(Double(b2)! + 0.001)
+                                }
+                                
+                                newClass.color = "rgbcode1-\(r1)-\(g1)-\(b1)-rgbcode2-\(r2)-\(g2)-\(b2)"
                             }
                             
                             else {

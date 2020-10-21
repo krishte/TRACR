@@ -28,6 +28,9 @@ class ActionViewPresets: ObservableObject {
     @Published var actionViewOffset: CGFloat = UIScreen.main.bounds.size.width
     @Published var actionViewType: String = ""
     @Published var actionViewHeight: CGFloat = 0
+    
+    @Published var setupLaunchClass: Bool = false
+    @Published var setupLaunchFreetime: Bool = false
 }
 
 class AddTimeSubassignmentBacklog: ObservableObject {

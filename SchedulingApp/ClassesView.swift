@@ -951,7 +951,7 @@ struct MasterClass: View {
                             if (tempsubassignmentlist[j].0 == possibledayslist[i])
                             {
                                 print("kewl")
-                                let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 90 )
+                                let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 30 )
                                 print(value)
                                 tempsubassignmentlist[j].1 += value
                                 extratime -= value

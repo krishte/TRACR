@@ -309,6 +309,9 @@ struct NewClassModalView: View {
     var classlist: FetchedResults<Classcool>
 
     @Binding var NewClassPresenting: Bool
+    
+    @EnvironmentObject var actionViewPresets: ActionViewPresets
+    
     @State private var classgroupnameindex = 0
     @State private var classnameindex = 0
     @State private var classlevelindex = 0
@@ -318,7 +321,7 @@ struct NewClassModalView: View {
     
     let groups = [["English A: Literature", "English A: Language and Literatue", "English B"], ["German B", "French B", "Spanish B", "German A: Literature", "French A: Literature", "Spanish A: Literature", "German A: Language and Literatue", "French A: Language and Literatue", "Spanish A: Language and Literatue", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "Environmental Systems and Societies SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "Environmental Systems and Societies SL"], ["Mathematics: Analysis and Approaches", "Mathematics: Applications and Interpretation"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["Extended Essay"], ["Theory of Knowledge"]]
     
-    let shortenedgroups = [["English A: Lit", "English A: Lang and Lit", "English B"], ["German B", "French B", "Spanish B", "German A: Lit", "French A: Lit", "Spanish A: Lit", "German A: Lang and Lit", "French A: Lang and Lit", "Spanish A: Lang and Lit", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "ESS SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "ESS SL"], ["Mathematics: AA", "Mathematics: AI"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["EE"], ["EE"]]
+    let shortenedgroups = [["English A: Lit", "English A: Lang and Lit", "English B"], ["German B", "French B", "Spanish B", "German A: Lit", "French A: Lit", "Spanish A: Lit", "German A: Lang and Lit", "French A: Lang and Lit", "Spanish A: Lang and Lit", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "ESS SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "ESS SL"], ["Mathematics: AA", "Mathematics: AI"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["EE"], ["TOK"]]
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -635,12 +638,14 @@ struct NewClassModalView: View {
                             print("Class with Same Name Exists; Change Name")
                             self.showingAlert = true
                         }
+                        
+                        actionViewPresets.setupLaunchClass = false
                     }) {
                         Text("Add Class")
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
-                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
+                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")}).disabled(actionViewPresets.setupLaunchClass)).navigationBarTitle("Add Class", displayMode: .inline)
         }
     }
     func getNextColor(currentColor: String) -> Color {

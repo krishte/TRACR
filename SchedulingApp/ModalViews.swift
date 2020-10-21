@@ -52,7 +52,6 @@ struct NewAssignmentModalView: View {
 
     init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
-       // selectedDate = changingDate.displayedDate
         formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
@@ -221,8 +220,6 @@ struct NewAssignmentModalView: View {
                             newAssignment.type = self.assignmenttypes[self.assignmenttype]
                             newAssignment.progress = 0
                             newAssignment.duedate = self.selectedDate
-    //                        print(self.hours)
-    //                        print(self.minutes)
                             
                             if (self.hours == 0)
                             {
@@ -376,6 +373,15 @@ struct NewClassModalView: View {
                             Spacer()
                         }.frame(height: 30)
                         Slider(value: $classtolerancedouble, in: 1...5)
+                        ZStack {
+                            Image(systemName: "circle").resizable().frame(width: 40, height: 40)
+                            HStack {
+                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+                                Spacer().frame(width: 7)
+                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+                            }.padding(.top, -7)
+                            
+                        }
                     }
                 }
                 
@@ -454,8 +460,6 @@ struct NewClassModalView: View {
 
                     VStack {
                         HStack {
-                         //   Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
-                            
                             Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
                             
                             Spacer()
@@ -485,8 +489,6 @@ struct NewClassModalView: View {
 
                         if self.createclassallowed {
                             let newClass = Classcool(context: self.managedObjectContext)
-                            //print(Int(self.classtolerancedouble))
-                            //print(self.classnameindex)
                             newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
                             newClass.name = shortenedtestname
                             newClass.assignmentnumber = 0
@@ -549,12 +551,7 @@ struct NewOccupiedtimeModalView: View {
     }
 }
 
-//struct RepeatView: View {
-//    var isChecked: Bool
-//    var body: some View {
-//        Text("hello")
-//    }
-//}
+
 struct MyDatePicker: UIViewRepresentable {
     @Binding var selection: Date
     @Binding var starttime: Date
@@ -566,7 +563,6 @@ struct MyDatePicker: UIViewRepresentable {
 
     func makeUIView(context: UIViewRepresentableContext<MyDatePicker>) -> UIDatePicker {
         let picker = UIDatePicker()
-        // listen to changes coming from the date picker, and use them to update the state variable
         picker.addTarget(context.coordinator, action: #selector(Coordinator.dateChanged), for: .valueChanged)
         picker.minuteInterval = 5
         picker.datePickerMode = dateandtimedisplayed ? .dateAndTime : .time
@@ -758,40 +754,9 @@ struct NewFreetimeModalView: View {
                             }
                             
                         }
-//                        Button(action: {
-//                            self.expandedstart.toggle()
-//                        }) {
-//                            HStack {
-//                                Text("Select start time").foregroundColor(Color.black)
-//                                Spacer()
-//                                Text(formatter.string(from: selectedstartdatetime)).foregroundColor(expandedstart ? Color.blue: Color.gray)
-//                            }
-//                        }
-//                        if (expandedstart) {
-//                            VStack {
-//                                MyDatePicker(selection: $selectedstartdatetime, starttime: $starttime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
-//                            }.animation(nil)
-//                        }
-//
-//                       DatePicker("", selection: $selectedstartdatetime, in: Date(timeIntervalSince1970: 0)..., displayedComponents:  .hourAndMinute)//.pickerStyle(WheelPickerStyle())
                     }
                     
                     Section {
-//                        Button(action: {
-//                                self.expandedend.toggle()
-//
-//                        }) {
-//                            HStack {
-//                                Text("Select end time").foregroundColor(Color.black)
-//                                Spacer()
-//                                Text(formatter.string(from: selectedenddatetime)).foregroundColor(expandedend ? Color.blue: Color.gray)
-//                            }
-//                        }
-//                        if (expandedend) {
-//                            VStack {
-//                                MyDatePicker(selection: $selectedenddatetime, starttime: $selectedstartdatetime, dateandtimedisplayed: false).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
-//                            }.animation(nil)
-//                        }
                         if #available(iOS 14.0, *) {
                             Button(action: {
                                 if (changeendtime)
@@ -842,7 +807,6 @@ struct NewFreetimeModalView: View {
                             }
                             
                         }
-//                        DatePicker("Select end time", selection: $selectedenddatetime, in: selectedstartdatetime..., displayedComponents: .hourAndMinute).pickerStyle(WheelPickerStyle())
                     }
 
                     Section {
@@ -920,9 +884,7 @@ struct NewFreetimeModalView: View {
                                 newComponents.hour = timeComponents.hour
                                 newComponents.minute = timeComponents.minute
                                 newComponents.second = timeComponents.second
-                                 
-                                //newFreetime.startdatetime = calendar.date(from: newComponents)!
-                                
+                                                                 
                                 let timeComponents2 = calendar.dateComponents([.hour, .minute, .second], from: self.selectedenddatetime)
                                 
                                 var newComponents2 = DateComponents()
@@ -934,8 +896,6 @@ struct NewFreetimeModalView: View {
                                 newComponents2.second = timeComponents2.second
                                 
                                 let startingval = calendar.date(from: newComponents)!
-                               // let endingval = calendar.date(from: newComponents)!
-                                
                                 for freetime in freetimelist {
                                     if ((!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday))
                                     {
@@ -1156,7 +1116,6 @@ struct NewFreetimeModalView: View {
                                 do {
                                     try self.managedObjectContext.save()
                                     print("object saved")
-                                    //print(newFreetime.monday)
                                 } catch {
                                     print(error.localizedDescription)
                                 }
@@ -1185,7 +1144,6 @@ struct NewFreetimeModalView: View {
                         EmptyView()
                     }
                     
-                       // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
                         Button(action:{self.showingfreetimedetailview.toggle()})
                         {
                             ZStack {
@@ -1242,7 +1200,6 @@ struct FreetimeDetailView: View {
     
     var body: some View {
         List {
-          //  Text(String(freetimelist.count))
             Group {
                 Button(action: {self.selectDeselect("Monday")}) {
                     HStack {

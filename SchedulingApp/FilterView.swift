@@ -182,7 +182,17 @@ struct AssignmentsView: View {
             }
             
         }.sheet(isPresented: self.$showassignmentedit, content: {
-                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist2[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})//.animation(.spring())
+                    EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist2[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist2[self.getassignmentindex()].timeleft), duedate: self.assignmentlist2[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist2[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist2[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist2[self.getassignmentindex()].subject, assignmenttype: getassignmenttype()).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})//.animation(.spring())
+    }
+    func getassignmenttype() -> Int {
+        for (index, assignmenttype) in assignmenttypes.enumerated() {
+            if (assignmenttype ==  self.assignmentlist2[self.getassignmentindex()].type )
+            {
+                return index
+            }
+        }
+        return 0
+       // return Int(self.assignmenttypes.firstIndex(of: self.assignmentlist2[self.getassignmentindex()].type)!)
     }
     func getassignmentindex() -> Int {
         print(sheetnavigator.selectedassignmentedit)

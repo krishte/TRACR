@@ -74,6 +74,18 @@ struct NewAssignmentModalView: View {
             }
         }
     }
+    func getnontrashclasslist() -> [Int]
+    {
+        var classitylist: [Int] = []
+        for (index, classity) in classlist.enumerated()
+        {
+            if (!classity.isTrash)
+            {
+                classitylist.append(index)
+            }
+        }
+        return classitylist
+    }
     
     var body: some View {
         NavigationView {
@@ -83,10 +95,20 @@ struct NewAssignmentModalView: View {
                 }
                 Section {
                     Picker(selection: $selectedclass, label: Text("Class")) {
-                        ForEach(0 ..< classlist.count) {
-                            Text(self.classlist[$0].name)
+                        ForEach(0 ..< getnontrashclasslist().count) {
+                            if ($0 < self.getnontrashclasslist().count)
+                            {
+                                Text(self.classlist[self.getnontrashclasslist()[$0]].name)
+                            }
+                            
                         }
                     }
+//                    ForEach(0 ..< getgradableassignments().count) {
+//                        if ($0 < self.getgradableassignments().count)
+//                        {
+//                            Text(self.assignmentlist[self.getgradableassignments()[$0]].name)
+//                        }
+//                    }
                 }
                 Section {
                     Picker(selection: $assignmenttype, label: Text("Type")) {
@@ -193,7 +215,7 @@ struct NewAssignmentModalView: View {
                             let newAssignment = Assignment(context: self.managedObjectContext)
                             newAssignment.completed = false
                             newAssignment.grade = 0
-                            newAssignment.subject = self.classlist[self.selectedclass].originalname
+                            newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
                             newAssignment.name = self.textfieldmanager.userInput
                             newAssignment.type = self.assignmenttypes[self.assignmenttype]
                             newAssignment.progress = 0
@@ -456,8 +478,12 @@ struct NewClassModalView: View {
                         self.createclassallowed = true
                         
                         for classity in self.classlist {
-                            if classity.name == testname {
-                                self.createclassallowed = false
+                            if (classity.name == shortenedtestname || classity.name == testname) {
+                                // print("sdfds")
+                                if (!classity.isTrash)
+                                {
+                                    self.createclassallowed = false
+                                }
                             }
                         }
 
@@ -1125,10 +1151,10 @@ struct NewFreetimeModalView: View {
                                 HStack {
                                     Text("View Free Times")
                                     Spacer()
-                                    Image(systemName: "chevron.right").foregroundColor(Color.black)
+                                    Image(systemName: "chevron.right").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                 }.padding(.horizontal, 20)
                             }
-                        }.buttonStyle(PlainButtonStyle()).foregroundColor(.black).frame(width: UIScreen.main.bounds.size.width-40)
+                        }.buttonStyle(PlainButtonStyle()).foregroundColor(colorScheme == .light ? Color.black : Color.white).frame(width: UIScreen.main.bounds.size.width-40)
                     
                 }
             }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
@@ -1598,7 +1624,7 @@ struct EditAssignmentModalView: View {
     @State var iscompleted: Bool
     @State var gradeval: Double
     @State var assignmentsubject: String
-    @State var assignmenttype: Int
+    @State var assignmenttypeval: Int
 
     @EnvironmentObject var masterRunning: MasterRunning
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
@@ -1613,7 +1639,7 @@ struct EditAssignmentModalView: View {
     
     let otherclassgrades = ["E", "D", "C", "B", "A"]
     init(NewAssignmentPresenting: Binding<Bool>, selectedassignment: Int, assignmentname: String, timeleft: Int, duedate: Date, iscompleted: Bool, gradeval: Int, assignmentsubject: String, assignmenttype: Int) {
-        print(selectedassignment)
+       // print(selectedassignment)
         self._NewAssignmentPresenting = NewAssignmentPresenting
        // selectedDate = changingDate.displayedDate
         formatter = DateFormatter()
@@ -1631,7 +1657,8 @@ struct EditAssignmentModalView: View {
         self._gradeval = State(initialValue: Double(gradeval))
         self._assignmentsubject = State(initialValue: assignmentsubject)
         self._originalname = State(initialValue: assignmentname)
-        self._assignmenttype = State(initialValue: assignmenttype)
+        self._assignmenttypeval = State(initialValue: assignmenttype) // State(initialValue: assignmenttype)
+        print(type(of: assignmenttypeval))
         
     }
     
@@ -1649,8 +1676,9 @@ struct EditAssignmentModalView: View {
                      {
                         self.hours = 0
                         self.minutes = 0
+                      //  print(!self.iscompleted)
                     }
-                    print(assignmenttype)
+                    print(assignmenttypeval)
                 }
                 //Text(String(assignmenttype))
                 if (self.iscompleted)
@@ -1693,16 +1721,17 @@ struct EditAssignmentModalView: View {
                 }
                 if (!self.iscompleted)
                 {
-//                    Section {
-//
-//                            Picker(selection: $assignmenttype, label: Text("Type")) {
-//                                ForEach(assignmenttypes2.indices) {
-//                                    index in
-//                                    Text(self.assignmenttypes2[index])
-//                                }
-//                            }
-//
-//                    }
+                   // Text("asdofijasfsod")
+                    Section {
+
+                            Picker(selection: $assignmenttypeval, label: Text("Type")) {
+                                ForEach(assignmenttypes2.indices) {
+                                    indexval in
+                                    Text(self.assignmenttypes2[indexval])
+                                }
+                            }
+
+                    }
 
 
                     Section {
@@ -1710,26 +1739,34 @@ struct EditAssignmentModalView: View {
                         HStack {
                             VStack {
                                 Picker(selection: $hours, label: Text("Hour")) {
-                                    ForEach(hourlist.indices) { hourindex in
-                                        Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
+                                    ForEach(0 ..< hourlist.count) {
+                                        
+                                        Text(String(self.hourlist[$0]) + (self.hourlist[$0] == 1 ? " hour" : " hours"))
+                                        
                                      }
                                  }.pickerStyle(WheelPickerStyle())
                             }.frame(minWidth: 100, maxWidth: .infinity)
                             .clipped()
                             
+
+                            
                             VStack {
 
                                     Picker(selection: $minutes, label: Text("Minutes")) {
                                         ForEach(minutelist.indices) { minuteindex in
-                                            Text(String(self.minutelist[minuteindex]) + " mins")
+                                            if (minuteindex < minutelist.count)
+                                            {
+                                                Text(String(self.minutelist[minuteindex]) + " mins")
+                                            }
                                         }
                                     }.pickerStyle(WheelPickerStyle())
+                                
+                               
                                 
                             }.frame(minWidth: 100, maxWidth: .infinity)
                             .clipped()
                         }
                     }
-
                     
                     Section {
                         if #available(iOS 14.0, *) {
@@ -1769,26 +1806,9 @@ struct EditAssignmentModalView: View {
                                     MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
                                 }.animation(nil)
                             }
-                            
+
                         }
-//                        Button(action: {
-//                                self.expandedduedate.toggle()
-//
-//                        }) {
-//                            HStack {
-//                                Text("Select due date and time").foregroundColor(Color.black)
-//                                Spacer()
-//                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
-//                            }
-//
-//                        }
-//                        if (expandedduedate)
-//                        {
-//                            VStack {
-//                                MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
-//                            }.animation(nil)
-//                        }
-                        //DatePicker("Select due date and time", selection: $selectedDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+
                     }
                 }
                 
@@ -1820,7 +1840,7 @@ struct EditAssignmentModalView: View {
                             }
                             self.assignmentslist[self.selectedassignment].name = self.nameofassignment
                             self.assignmentslist[self.selectedassignment].duedate = self.selectedDate
-                            self.assignmentslist[self.selectedassignment].type = self.assignmenttypes2[self.assignmenttype]
+                            self.assignmentslist[self.selectedassignment].type = self.assignmenttypes2[self.assignmenttypeval]
                             print(self.hours, self.minutes)
                             let change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
                             self.assignmentslist[self.selectedassignment].timeleft += change
@@ -1896,6 +1916,39 @@ struct EditAssignmentModalView: View {
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
                     }
+                }
+                Section
+                {
+                    Button(action:{
+                        
+                        
+                        for (index, assignmentval) in assignmentslist.enumerated()
+                        {
+                            if (assignmentval.name == self.originalname)
+                            {
+                                self.managedObjectContext.delete(self.assignmentslist[index])
+                            }
+                            for (index2, classcool) in classlist.enumerated()
+                            {
+                                if (classcool.originalname == assignmentval.subject)
+                                {
+                                    classcool.assignmentnumber -= 1
+                                }
+                            }
+                     
+
+                         do {
+                             try self.managedObjectContext.save()
+                         } catch {
+                             print(error.localizedDescription)
+                         }
+                            
+                        }
+                        self.NewAssignmentPresenting = false
+                    })
+                    {
+                        Text("Delete Assignment")
+                    }.foregroundColor(Color.red)
                 }
                 
             }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Assignment", displayMode: .inline)

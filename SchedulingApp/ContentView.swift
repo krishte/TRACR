@@ -60,6 +60,9 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
     
     @EnvironmentObject var masterRunning: MasterRunning
     
@@ -109,6 +112,15 @@ struct ContentView: View {
             
             defaults.set(Date(), forKey: "lastNudgeDate")
         }
+        for (index, element) in classlist.enumerated()
+        {
+            if (element.isTrash)
+            {
+                self.managedObjectContext.delete(self.classlist[index])
+            }
+        }
+        
+        
     }
 
     var body: some View {

@@ -906,10 +906,10 @@ struct HomeBodyView: View {
                         TabView(selection: self.$nthdayfromnow) {
                             ForEach(daytitlesfromlastmonday.indices) {
                                 index in
-                                Text(daytitlesfromlastmonday[index]).font(.title).fontWeight(.medium).tag(index).frame(height: 40)
+                                Text(daytitlesfromlastmonday[index]).font(.title).fontWeight(.medium).tag(index)//.frame(height: 40)
                             }
                             
-                        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 40).animation(.spring())
+                        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 40).disabled(true)
                         
                     } else {
                         DummyPageViewControllerForDates(increased: self.$increased, stopupdating: self.$stopupdating, viewControllers: [UIHostingController(rootView: Text(daytitlesfromlastmonday[self.nthdayfromnow]).font(.title).fontWeight(.medium))]).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
@@ -996,7 +996,7 @@ struct HomeBodyView: View {
                                 VStack(alignment: .leading) {
                                     ForEach((0...24), id: \.self) { hour in
                                         HStack {
-                                            Text(String(format: "%02d", hour)).font(.footnote).frame(width: 20, height: 20)
+                                            Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
                                             Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
                                         }
                                         if masterRunning.masterRunningNow {
@@ -1640,7 +1640,7 @@ struct HomeView: View {
         }
         else
         {
-            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+           NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
 
         }
     }

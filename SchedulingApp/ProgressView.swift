@@ -914,8 +914,8 @@ struct ProgressView: View {
                                             
                                             ForEach(classlist) {
                                                 classcool in
-                                           //     if (!classcool.isarchived)
-                                       //         {
+                                                if (!classcool.isTrash)
+                                                {
                                                     if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
                                                     {
                                                         HStack {
@@ -935,7 +935,7 @@ struct ProgressView: View {
                                                             Spacer()
                                                         }
                                                     }
-                                         //       }
+                                                }
                                                 
                                             }
                                     }
@@ -947,16 +947,16 @@ struct ProgressView: View {
  
                        // Text("Classes").font(.system(size: 35)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, alignment: .leading)
                         Spacer().frame(height: 10)
-                        if (classlist.count > 0)
-                        {
-                            ForEach(0..<classlist.count) {
+
+                            ForEach(0..<classlist.count, id: \.self) {
                                 value in
-                              //  if(!self.classlist[value].isarchived)
-                          //      {
+//                                if (self.classlist[value].isTrash)
+//                                {
                                     NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
                                         EmptyView()
                                     }
                                     HStack {
+                                        
                                         Button(action: {
                                             self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
                                         }) {
@@ -981,6 +981,7 @@ struct ProgressView: View {
                                             }
                                             
                                         }.padding(0)
+                                        
                                         Button(action: {
                                             self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
                                         }) {
@@ -1001,13 +1002,13 @@ struct ProgressView: View {
                                         }.padding(0)
                                         
                                     }
-                            //    }
+                               // }
                                 
                             }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.sheetnavigator.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
                                 Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                             }
                             
-                        }
+                        
 //                        ForEach(classlist) {
 //                            classcool in
 //                            NavigationLink(destination: DetailProgressView(classcool2: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {

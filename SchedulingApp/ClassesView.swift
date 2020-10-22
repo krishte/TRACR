@@ -991,6 +991,31 @@ struct MasterClass: View {
         for (index, _) in subassignmentlist.enumerated() {
          //   print(index)
              self.managedObjectContext.delete(self.subassignmentlist[index])
+            do {
+                try self.managedObjectContext.save()
+                print("new Subassignment")
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        
+        var counterb: Int = 0
+        
+        for classitye in classlist {
+            counterb = 0
+            for assignmentye in assignmentlist {
+                if (assignmentye.subject == classitye.originalname) && (assignmentye.completed == false) {
+                    counterb = counterb + 1
+                }
+            }
+            classitye.assignmentnumber = Int64(counterb)
+            
+            do {
+                try self.managedObjectContext.save()
+                print("new Subassignment")
+            } catch {
+                print(error.localizedDescription)
+            }
         }
         
         var timemonday = 0
@@ -1507,18 +1532,19 @@ struct ClassesView: View {
                         ZStack {
                             // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             Button(action: {
-                                if (classlist.count > 0)
-                                {
-                                    self.sheetNavigator.modalView = .assignment
-                                    print(self.modalView)
+//                                if (classlist.count > 0)
+//                                {
+//                                    self.sheetNavigator.modalView = .assignment
+//                                    print(self.modalView)
+//                                    self.NewSheetPresenting = true
+//                                   // self.NewGradePresenting = true
+//                                }
+//                                else
+//                                {
+                                    self.sheetNavigator.modalView = .classity
                                     self.NewSheetPresenting = true
-                                   // self.NewGradePresenting = true
-                                }
-                                else
-                                {
-                                    self.sheetNavigator.alertView = .noclass
-                                    self.NewAlertPresenting = true
-                                }
+                                    self.NewClassPresenting = true
+//                                }
                                 
                             }) {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
@@ -1594,7 +1620,6 @@ struct ClassesView: View {
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                         Button(action: {
-                            
                             self.showingSettingsView = true
                         })
                         {

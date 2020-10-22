@@ -69,6 +69,8 @@ struct ContentView: View {
     
     @EnvironmentObject var masterRunning: MasterRunning
     
+    @State var firstLaunchTutorial: Bool = false
+    
     init() {
         if #available(iOS 14.0, *) {
             // iOS 14 doesn't have extra separators below the list by default.
@@ -115,6 +117,8 @@ struct ContentView: View {
             }
             
             defaults.set(Date(), forKey: "lastNudgeDate")
+            
+            self.firstLaunchTutorial = true
         }
         for (index, element) in classlist.enumerated()
         {

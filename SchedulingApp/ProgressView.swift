@@ -1036,13 +1036,13 @@ struct ProgressView: View {
                         ZStack {
                             // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             Button(action: {                                
-                                if freetimelist.isEmpty {
-                                    self.sheetNavigator.modalView = .freetime
-                                    self.NewSheetPresenting = true
-                                }
-                                
-                                else {
-                                    if (classlist.count > 0) {
+////                                if freetimelist.isEmpty {
+////                                    self.sheetNavigator.modalView = .freetime
+////                                    self.NewSheetPresenting = true
+////                                }
+////
+////                                else {
+//                                    if (classlist.count > 0) {
                                         if (self.getcompletedAssignments())
                                         {
                                             self.sheetNavigator.modalView = .grade
@@ -1053,13 +1053,13 @@ struct ProgressView: View {
                                             self.sheetNavigator.alertView = .noassignment
                                             self.NewAlertPresenting = true
                                         }
-                                    }
-                                    else {
-                                        self.sheetNavigator.modalView = .classity
-                                        self.NewSheetPresenting = true
-                                        self.NewClassPresenting = true
-                                    }
-                                }
+//                                    }
+//                                    else {
+//                                        self.sheetNavigator.modalView = .classity
+//                                        self.NewSheetPresenting = true
+//                                        self.NewClassPresenting = true
+//                                    }
+//                                }
                             }) {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {

@@ -589,26 +589,29 @@ struct NewClassModalView: View {
                          //   newClass.isarchived = false
                             
                             if self.customcolorchosen {
-                                let r1 = String(format: "%.3f", customcolor1.components.red)
-                                let g1 = String(format: "%.3f", customcolor1.components.green)
-                                let b1 = String(format: "%.3f", customcolor1.components.blue)
-                                var r2 = String(format: "%.3f", customcolor2.components.red)
-                                var g2 = String(format: "%.3f", customcolor2.components.green)
-                                var b2 = String(format: "%.3f", customcolor2.components.blue)
+                                let r1 = String(format: "%.3f", abs(customcolor1.components.red))
+                                let g1 = String(format: "%.3f", abs(customcolor1.components.green))
+                                let b1 = String(format: "%.3f", abs(customcolor1.components.blue))
+                                var r2 = String(format: "%.3f", abs(customcolor2.components.red))
+                                var g2 = String(format: "%.3f", abs(customcolor2.components.green))
+                                var b2 = String(format: "%.3f", abs(customcolor2.components.blue))
+                                
+                                print(r1, g1, b1, r2, b2, g2)
                                 
                                 if r1 == r2 {
-                                    r2 = String(Double(r2)! + 0.001)
+                                    r2 = String(Double(r2)! + 0.01)
                                 }
                                 
                                 else if g1 == g2 {
-                                    g2 = String(Double(g2)! + 0.001)
+                                    g2 = String(Double(g2)! + 0.01)
                                 }
                                 
                                 else if b1 == b2 {
-                                    b2 = String(Double(b2)! + 0.001)
+                                    b2 = String(Double(b2)! + 0.01)
                                 }
                                 
                                 newClass.color = "rgbcode1-\(r1)-\(g1)-\(b1)-rgbcode2-\(r2)-\(g2)-\(b2)"
+                                print(newClass.color)
                             }
                             
                             else {

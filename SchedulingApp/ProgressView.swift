@@ -1033,16 +1033,26 @@ struct ProgressView: View {
                         ZStack {
                             // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             Button(action: {
-                                if (classlist.count > 0)
+//                                if (classlist.count > 0)
+//                                {
+//                                    self.sheetNavigator.modalView = .assignment
+//                                    print(self.modalView)
+//                                    self.NewSheetPresenting = true
+//                                   // self.NewGradePresenting = true
+//                                }
+//                                else
+//                                {
+//                                    self.sheetNavigator.alertView = .noclass
+//                                    self.NewAlertPresenting = true
+//                                }
+                                if (self.getcompletedAssignments())
                                 {
-                                    self.sheetNavigator.modalView = .assignment
-                                    print(self.modalView)
+                                    self.sheetNavigator.modalView = .grade
                                     self.NewSheetPresenting = true
-                                   // self.NewGradePresenting = true
                                 }
                                 else
                                 {
-                                    self.sheetNavigator.alertView = .noclass
+                                    self.sheetNavigator.alertView = .noassignment
                                     self.NewAlertPresenting = true
                                 }
                                 

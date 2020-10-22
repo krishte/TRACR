@@ -309,6 +309,7 @@ struct NewClassModalView: View {
     var classlist: FetchedResults<Classcool>
 
     @Binding var NewClassPresenting: Bool
+    
     @State private var classgroupnameindex = 0
     @State private var classnameindex = 0
     @State private var classlevelindex = 0

@@ -666,63 +666,69 @@ struct NoClassesOrFreetime: View {
 //    }
     @State var NewSheetPresenting = false
     
-    @State var subpage: String = "None"
+    @Binding var noclasses: Bool
+    @Binding var nofreetime: Bool
+    @Binding var subpage: String
     
     var body : some View {
-        HStack {
-            Text("Quick Setup").font(.system(size: 28))
-            Spacer()
-        }
-        
-        Spacer().frame(height: 20)
-        
-        HStack {
-            Image(systemName: "clock")
-            Spacer().frame(width: 30)
-            Text("Free Time").font(.system(size: 24))
-            Spacer()
-            Image(systemName: "checkmark")
-        }
-        
-        Spacer().frame(height: 20)
-
-        HStack {
-            Image(systemName: "list.bullet")
-            Spacer().frame(width: 30)
-            Text("Classes").font(.system(size: 24))
-            Spacer()
-            Image(systemName: "checkmark")
-        }
-        
-        HStack {
-            Button(action: {
-                actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
-                actionViewPresets.actionViewHeight = 1
-                actionViewPresets.actionViewType = ""
-            }) {
-                Text("Skip").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.red).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+        VStack {
+            HStack {
+                Text("Quick Setup – Reminder").font(.system(size: subpage == "None" ? 29 : 20)).fontWeight(.light)
+                Spacer()
+            }.padding(.all, 5).padding(.horizontal, subpage == "None" ? 0 : 19)
+            
+            if subpage == "None" {
+                HStack {
+                    Text("In order to plan your schedule, you need to first add your free times and add at least one class. You can do this by holding on the blue Add button and selecting 'Free Time' and 'Class'.").font(.system(size: 14)).fontWeight(.light)
+                    Spacer()
+                }.padding(.horizontal, 5)
             }
             
             Spacer()
+            //test in dark mode
             
-            Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
+            HStack {
+                Image(systemName: "clock").resizable().scaledToFit().frame(width: subpage == "None" ? 23 : 15)
+                Spacer().frame(width: subpage == "None" ? 30 : 15)
+                Text("Free Time").font(.system(size: subpage == "None" ? 21 : 15)).fontWeight(.light)
+                Spacer()
+                if nofreetime {
+                    Image(systemName: "xmark").foregroundColor(.red)
+                }
+                else {
+                    Image(systemName: "checkmark").foregroundColor(.green)
+                }
+            }.padding(.all, subpage == "None" ? 10 : 5).padding(.horizontal, subpage == "None" ? 10 : 30)
+            
+            HStack {
+                Image(systemName: "list.bullet").resizable().scaledToFit().frame(width: subpage == "None" ? 23 : 15)
+                Spacer().frame(width: subpage == "None" ? 30 : 15)
+                Text("Classes").font(.system(size: subpage == "None" ? 21 : 15)).fontWeight(.light)
+                Spacer()
+                if noclasses {
+                    Image(systemName: "xmark").foregroundColor(.red)
+                }
+                else {
+                    Image(systemName: "checkmark").foregroundColor(.green)
+                }
+            }.padding(.all, subpage == "None" ? 10 : 5).padding(.horizontal, subpage == "None" ? 10 : 30)
             
             Spacer()
             
-            Button(action: {
-                actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
-                actionViewPresets.actionViewHeight = UIScreen.main.bounds.size.height
-                subpage = "Class"
-                
-                self.NewSheetPresenting = true
-            }) {
-                Text("Continue Setup").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+            if subpage == "None" {
+                Button(action: {
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewHeight = 1
+                    actionViewPresets.actionViewType = ""
+                }) {
+                    Text("Okay, Got it!").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25).foregroundColor(.green)
+                }.padding(.vertical, 8).padding(.bottom, -3)
             }
-        }.padding(.vertical, 8).padding(.bottom, -3)
-        
-        if subpage == "Class" {
-            NewClassModalView(NewClassPresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
-        }
+            
+//            if subpage == "Class" {
+//                NewClassModalView(NewClassPresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext)
+//            }
+        }.frame(width: subpage == "None" ? UIScreen.main.bounds.size.width-60 : UIScreen.main.bounds.size.width)
     }
 }
 
@@ -745,6 +751,8 @@ struct ActionView: View {
     
     @State var nofreetime: Bool = false
     @State var noclasses: Bool = false
+    
+    @State var subpageSetup: String = "None"
     
     func initialize() {
         addTimeSubassignmentBacklog.backlogList = []
@@ -807,11 +815,11 @@ struct ActionView: View {
             noclasses = false
         }
         
-        if nofreetime || noclasses {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+        if (nofreetime || noclasses) && subpageSetup == "None" {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
                 actionViewPresets.actionViewOffset = 0
                 actionViewPresets.actionViewType = "NoClassesOrFreetime"
-                actionViewPresets.actionViewHeight = CGFloat(400)
+                actionViewPresets.actionViewHeight = CGFloat(320)
             }
         }
     }
@@ -827,7 +835,7 @@ struct ActionView: View {
             }
             
             else if actionViewPresets.actionViewType == "NoClassesOrFreetime" {
-                NoClassesOrFreetime()
+                NoClassesOrFreetime(noclasses: $noclasses, nofreetime: $nofreetime, subpage: $subpageSetup)
             }
         }.onAppear(perform: initialize).padding(.all, 15).frame(maxWidth: UIScreen.main.bounds.size.width, maxHeight: actionViewPresets.actionViewHeight).background(Color("very_light_gray")).cornerRadius(18).padding(.all, 15)
     }

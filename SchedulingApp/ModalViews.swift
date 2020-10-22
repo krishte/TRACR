@@ -318,7 +318,7 @@ struct NewClassModalView: View {
     
     let groups = [["English A: Literature", "English A: Language and Literatue", "English B"], ["German B", "French B", "Spanish B", "German A: Literature", "French A: Literature", "Spanish A: Literature", "German A: Language and Literatue", "French A: Language and Literatue", "Spanish A: Language and Literatue", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "Environmental Systems and Societies SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "Environmental Systems and Societies SL"], ["Mathematics: Analysis and Approaches", "Mathematics: Applications and Interpretation"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["Extended Essay"], ["Theory of Knowledge"]]
     
-    let shortenedgroups = [["English A: Lit", "English A: Lang and Lit", "English B"], ["German B", "French B", "Spanish B", "German A: Lit", "French A: Lit", "Spanish A: Lit", "German A: Lang and Lit", "French A: Lang and Lit", "Spanish A: Lang and Lit", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "ESS SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "ESS SL"], ["Mathematics: AA", "Mathematics: AI"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["EE"], ["EE"]]
+    let shortenedgroups = [["English A: Lit", "English A: Lang and Lit", "English B"], ["German B", "French B", "Spanish B", "German A: Lit", "French A: Lit", "Spanish A: Lit", "German A: Lang and Lit", "French A: Lang and Lit", "Spanish A: Lang and Lit", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "ESS SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "ESS SL"], ["Mathematics: AA", "Mathematics: AI"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["EE"], ["TOK"]]
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -1742,6 +1742,7 @@ struct EditAssignmentModalView: View {
     @State var gradeval: Double
     @State var assignmentsubject: String
     @State var assignmenttypeval: Int
+    @State var deleteassignmentallowed: Bool = true
 
     @EnvironmentObject var masterRunning: MasterRunning
     let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
@@ -2038,28 +2039,38 @@ struct EditAssignmentModalView: View {
                 {
                     Button(action:{
                         
-                        
-                        for (index, assignmentval) in assignmentslist.enumerated()
+                        if (self.deleteassignmentallowed)
                         {
-                            if (assignmentval.name == self.originalname)
+                            for (index, assignmentval) in assignmentslist.enumerated()
                             {
-                                self.managedObjectContext.delete(self.assignmentslist[index])
-                            }
-                            for (index2, classcool) in classlist.enumerated()
-                            {
-                                if (classcool.originalname == assignmentval.subject)
+                                if (assignmentval.name == self.originalname)
                                 {
-                                    classcool.assignmentnumber -= 1
+                                    self.managedObjectContext.delete(self.assignmentslist[index])
+                                    for (index2, classcool) in classlist.enumerated()
+                                    {
+                                        if (classcool.originalname == assignmentval.subject)
+                                        {
+                                            classcool.assignmentnumber -= 1
+                                        }
+                                        do {
+                                            try self.managedObjectContext.save()
+                                        } catch {
+                                            print(error.localizedDescription)
+                                        }
+                                    }
                                 }
-                            }
-                     
+                                
+                         
 
-                         do {
-                             try self.managedObjectContext.save()
-                         } catch {
-                             print(error.localizedDescription)
-                         }
+                             do {
+                                 try self.managedObjectContext.save()
+                             } catch {
+                                 print(error.localizedDescription)
+                             }
+                                
+                            }
                             
+                            self.deleteassignmentallowed = false
                         }
                         self.NewAssignmentPresenting = false
                     })

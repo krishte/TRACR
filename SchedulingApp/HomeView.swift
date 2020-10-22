@@ -679,7 +679,7 @@ struct NoClassesOrFreetime: View {
             
             if subpage == "None" {
                 HStack {
-                    Text("In order for Tracr to plan your schedule, you need to first add your free times and add at least one class.").font(.system(size: 14)).fontWeight(.light)
+                    Text("In order to plan your schedule, you need to first add your free times and add at least one class. You can do this by holding on the blue Add button and selecting 'Free Time' and 'Class'.").font(.system(size: 14)).fontWeight(.light)
                     Spacer()
                 }.padding(.horizontal, 5)
             }
@@ -819,7 +819,7 @@ struct ActionView: View {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
                 actionViewPresets.actionViewOffset = 0
                 actionViewPresets.actionViewType = "NoClassesOrFreetime"
-                actionViewPresets.actionViewHeight = CGFloat(280)
+                actionViewPresets.actionViewHeight = CGFloat(320)
             }
         }
     }

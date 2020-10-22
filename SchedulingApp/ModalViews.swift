@@ -596,22 +596,37 @@ struct NewClassModalView: View {
                                 var g2 = String(format: "%.3f", abs(customcolor2.components.green))
                                 var b2 = String(format: "%.3f", abs(customcolor2.components.blue))
                                 
-                                print(r1, g1, b1, r2, b2, g2)
-                                
                                 if r1 == r2 {
-                                    r2 = String(Double(r2)! + 0.01)
+                                    if r2 == "1.000" {
+                                        r2 = String(Double(r2)! - 0.001)
+                                    }
+                                    
+                                    else {
+                                        r2 = String(Double(r2)! + 0.001)
+                                    }
                                 }
                                 
                                 else if g1 == g2 {
-                                    g2 = String(Double(g2)! + 0.01)
+                                    if g2 == "1.000" {
+                                        g2 = String(Double(g2)! - 0.001)
+                                    }
+                                    
+                                    else {
+                                        g2 = String(Double(g2)! + 0.001)
+                                    }
                                 }
                                 
                                 else if b1 == b2 {
-                                    b2 = String(Double(b2)! + 0.01)
+                                    if b2 == "1.000" {
+                                        b2 = String(Double(b2)! - 0.001)
+                                    }
+                                    
+                                    else {
+                                        b2 = String(Double(b2)! + 0.001)
+                                    }
                                 }
                                 
                                 newClass.color = "rgbcode1-\(r1)-\(g1)-\(b1)-rgbcode2-\(r2)-\(g2)-\(b2)"
-                                print(newClass.color)
                             }
                             
                             else {

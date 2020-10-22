@@ -361,26 +361,45 @@ struct EditClassModalView: View {
                                     classity.tolerance  = Int64(self.classtolerancedouble.rounded(.down))
                                     
                                     if self.customcolorchosen {
-                                        let r1 = String(format: "%.3f", customcolor1.components.red)
-                                        let g1 = String(format: "%.3f", customcolor1.components.green)
-                                        let b1 = String(format: "%.3f", customcolor1.components.blue)
-                                        var r2 = String(format: "%.3f", customcolor2.components.red)
-                                        var g2 = String(format: "%.3f", customcolor2.components.green)
-                                        var b2 = String(format: "%.3f", customcolor2.components.blue)
+                                        let r1 = String(format: "%.3f", abs(customcolor1.components.red))
+                                        let g1 = String(format: "%.3f", abs(customcolor1.components.green))
+                                        let b1 = String(format: "%.3f", abs(customcolor1.components.blue))
+                                        var r2 = String(format: "%.3f", abs(customcolor2.components.red))
+                                        var g2 = String(format: "%.3f", abs(customcolor2.components.green))
+                                        var b2 = String(format: "%.3f", abs(customcolor2.components.blue))
                                         
                                         if r1 == r2 {
-                                            r2 = String(Double(r2)! + 0.001)
+                                            if r2 == "1.000" {
+                                                r2 = String(Double(r2)! - 0.001)
+                                            }
+                                            
+                                            else {
+                                                r2 = String(Double(r2)! + 0.001)
+                                            }
                                         }
                                         
                                         else if g1 == g2 {
-                                            g2 = String(Double(g2)! + 0.001)
+                                            if g2 == "1.000" {
+                                                g2 = String(Double(g2)! - 0.001)
+                                            }
+                                            
+                                            else {
+                                                g2 = String(Double(g2)! + 0.001)
+                                            }
                                         }
                                         
                                         else if b1 == b2 {
-                                            b2 = String(Double(b2)! + 0.001)
+                                            if b2 == "1.000" {
+                                                b2 = String(Double(b2)! - 0.001)
+                                            }
+                                            
+                                            else {
+                                                b2 = String(Double(b2)! + 0.001)
+                                            }
                                         }
                                         
                                         classity.color = "rgbcode1-\(r1)-\(g1)-\(b1)-rgbcode2-\(r2)-\(g2)-\(b2)"
+                                        print(classity.color)
                                     }
                                     
                                     else {
@@ -1532,20 +1551,16 @@ struct ClassesView: View {
                         ZStack {
                             // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             Button(action: {
-//                                if (classlist.count > 0)
-//                                {
-//                                    self.sheetNavigator.modalView = .assignment
-//                                    print(self.modalView)
-//                                    self.NewSheetPresenting = true
-//                                   // self.NewGradePresenting = true
-//                                }
-//                                else
-//                                {
+                                if freetimelist.isEmpty {
+                                    self.sheetNavigator.modalView = .freetime
+                                    self.NewSheetPresenting = true
+                                }
+                                
+                                else {
                                     self.sheetNavigator.modalView = .classity
                                     self.NewSheetPresenting = true
                                     self.NewClassPresenting = true
-//                                }
-                                
+                                }
                             }) {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {

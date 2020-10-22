@@ -119,6 +119,7 @@ struct ContentView: View {
             {
                 self.managedObjectContext.delete(self.classlist[index])
             }
+
         }
         
         

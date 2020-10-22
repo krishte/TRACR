@@ -691,7 +691,6 @@ struct NoClassesOrFreetime: View {
             }
             
             Spacer()
-            //test in dark mode
             
             HStack {
                 Image(systemName: "clock").resizable().scaledToFit().frame(width: subpage == "None" ? 23 : 15)
@@ -722,12 +721,31 @@ struct NoClassesOrFreetime: View {
             Spacer()
             
             if subpage == "None" {
-                Button(action: {
-                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
-                    actionViewPresets.actionViewHeight = 1
-                    actionViewPresets.actionViewType = ""
-                }) {
-                    Text("Okay, Got it!").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25).foregroundColor(.green)
+                HStack {
+                    NavigationLink(destination:
+                                    TutorialView().navigationBarTitle("Tutorial", displayMode: .inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
+                    ) {
+                        HStack {
+                            Text("Head to Tutorial").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+                        }.frame(height: 40)
+                    }
+                    
+                    Spacer()
+                    
+                    Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                        actionViewPresets.actionViewHeight = 1
+                        actionViewPresets.actionViewType = ""
+                        
+                        let defaults = UserDefaults.standard
+                        defaults.set(Date(), forKey: "lastNudgeDate")
+                    }) {
+                        Text("Okay, Got it!").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.green).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+                    }
                 }.padding(.vertical, 8).padding(.bottom, -3)
             }
             
@@ -825,7 +843,7 @@ struct ActionView: View {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
                 actionViewPresets.actionViewOffset = 0
                 actionViewPresets.actionViewType = "NoClassesOrFreetime"
-                actionViewPresets.actionViewHeight = CGFloat(320)
+                actionViewPresets.actionViewHeight = CGFloat(330)
             }
         }
     }
@@ -1860,23 +1878,25 @@ struct HomeView: View {
                             ZStack {
 
                                 Button(action: {
-                                    if freetimelist.isEmpty {
-                                        self.sheetNavigator.modalView = .freetime
-                                        self.NewSheetPresenting = true
-                                    }
+//                                    if freetimelist.isEmpty {
+//                                        self.sheetNavigator.modalView = .freetime
+//                                        self.NewSheetPresenting = true
+//                                    }
                                     
-                                    else {
+//                                    else {
                                         if (classlist.count > 0) {
                                             self.sheetNavigator.modalView = .assignment
                                             self.NewSheetPresenting = true
                                             self.NewAssignmentPresenting = true
                                         }
                                         else {
-                                            self.sheetNavigator.modalView = .classity
-                                            self.NewSheetPresenting = true
-                                            self.NewClassPresenting = true
+                                            self.sheetNavigator.alertView = .noclass
+                                            self.NewAlertPresenting = true
+//                                            self.sheetNavigator.modalView = .classity
+//                                            self.NewSheetPresenting = true
+//                                            self.NewClassPresenting = true
                                         }
-                                    }
+//                                    }
                                     
                                 }) {
                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(

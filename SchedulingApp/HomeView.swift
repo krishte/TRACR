@@ -678,10 +678,16 @@ struct NoClassesOrFreetime: View {
             }.padding(.all, 5).padding(.horizontal, subpage == "None" ? 0 : 19)
             
             if subpage == "None" {
-                HStack {
-                    Text("In order to plan your schedule, you need to first add your free times and add at least one class. You can do this by holding the blue Add button and selecting 'Free Time' and 'Class'.").font(.system(size: 14)).fontWeight(.light)
-                    Spacer()
-                }.padding(.horizontal, 5)
+                VStack(spacing: 5) {
+                    HStack {
+                        Text("In order to plan your schedule, you need to first add your free times and add at least one class.").font(.system(size: 14)).fontWeight(.light)
+                        Spacer()
+                    }.padding(.horizontal, 5)
+                    HStack {
+                        Text("You can do this by holding the blue Add button and selecting 'Free Time' and 'Class'").font(.system(size: 14)).fontWeight(.semibold)
+                        Spacer()
+                    }.padding(.horizontal, 5)
+                }
             }
             
             Spacer()

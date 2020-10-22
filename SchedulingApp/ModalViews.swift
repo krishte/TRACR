@@ -243,7 +243,7 @@ struct NewAssignmentModalView: View {
                             
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
-                            print("Signal Sent.")
+                            print("Signal Sent. asfoij")
                             
                             do {
                                 try self.managedObjectContext.save()

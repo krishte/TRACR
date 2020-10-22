@@ -1004,18 +1004,15 @@ struct MasterClass: View {
 
     
     func master() throws -> Void {
-         //   let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
-
-        //  print("kewl")
         for (index, _) in subassignmentlist.enumerated() {
-         //   print(index)
              self.managedObjectContext.delete(self.subassignmentlist[index])
-            do {
-                try self.managedObjectContext.save()
-                print("new Subassignment")
-            } catch {
-                print(error.localizedDescription)
-            }
+        }
+        
+        do {
+            try self.managedObjectContext.save()
+            print("new Subassignment")
+        } catch {
+            print(error.localizedDescription)
         }
         
         var counterb: Int = 0
@@ -1028,13 +1025,13 @@ struct MasterClass: View {
                 }
             }
             classitye.assignmentnumber = Int64(counterb)
-            
-            do {
-                try self.managedObjectContext.save()
-                print("new Subassignment")
-            } catch {
-                print(error.localizedDescription)
-            }
+        }
+        
+        do {
+            try self.managedObjectContext.save()
+            print("new Subassignment")
+        } catch {
+            print(error.localizedDescription)
         }
         
         var timemonday = 0
@@ -1214,7 +1211,9 @@ struct MasterClass: View {
                    // let startime = specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0
                  //   print("Start time: " + startime.description)
                     var timeoffset = 0
+                    
                     for (name, lengthofwork) in subassignmentdict[i]! {
+                        
                         let newSubassignment4 = Subassignmentnew(context: self.managedObjectContext)
                            newSubassignment4.assignmentname = name
                         for assignment in assignmentlist {
@@ -1224,18 +1223,23 @@ struct MasterClass: View {
                                 newSubassignment4.assignmentduedate = assignment.duedate
                             }
                         }
+                        
+                        print("algebra")
                          //  let randomDate = Double.random(in: 10000 ... 1700000)
                         newSubassignment4.startdatetime = Date(timeInterval:     TimeInterval(timeoffset), since: startime)
+                        print("algebra2")
                       //  print(newSubassignment4.startdatetime.description)
                         newSubassignment4.enddatetime = Date(timeInterval: TimeInterval(timeoffset+lengthofwork*60), since: startime)
+                        print("algebra3")
                         timeoffset += lengthofwork*60
+                        print("algebra4")
                         do {
                             try self.managedObjectContext.save()
                            // print("Subassignments made")
                         } catch {
                          //å   print(error.localizedDescription)
                         }
-                           
+                        print("algebra5")
                     }
                 }
                 else

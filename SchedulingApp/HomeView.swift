@@ -679,7 +679,7 @@ struct NoClassesOrFreetime: View {
             
             if subpage == "None" {
                 HStack {
-                    Text("In order to plan your schedule, you need to first add your free times and add at least one class. You can do this by holding on the blue Add button and selecting 'Free Time' and 'Class'.").font(.system(size: 14)).fontWeight(.light)
+                    Text("In order to plan your schedule, you need to first add your free times and add at least one class. You can do this by holding the blue Add button and selecting 'Free Time' and 'Class'.").font(.system(size: 14)).fontWeight(.light)
                     Spacer()
                 }.padding(.horizontal, 5)
             }
@@ -1789,6 +1789,9 @@ struct HomeView: View {
     
     var assignmentlist: FetchedResults<Assignment>
     
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+    
     @State var noClassesAlert = false
     
     @State var noCompletedAlert = false
@@ -1851,16 +1854,22 @@ struct HomeView: View {
                             ZStack {
 
                                 Button(action: {
-                                    if (classlist.count > 0)
-                                    {
-                                        self.sheetNavigator.modalView = .assignment
-                                        print(self.modalView)
+                                    if freetimelist.isEmpty {
+                                        self.sheetNavigator.modalView = .freetime
                                         self.NewSheetPresenting = true
                                     }
-                                    else
-                                    {
-                                        self.sheetNavigator.alertView = .noclass
-                                        self.NewAlertPresenting = true
+                                    
+                                    else {
+                                        if (classlist.count > 0) {
+                                            self.sheetNavigator.modalView = .assignment
+                                            self.NewSheetPresenting = true
+                                            self.NewAssignmentPresenting = true
+                                        }
+                                        else {
+                                            self.sheetNavigator.modalView = .classity
+                                            self.NewSheetPresenting = true
+                                            self.NewClassPresenting = true
+                                        }
                                     }
                                     
                                 }) {

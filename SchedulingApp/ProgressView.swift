@@ -800,6 +800,9 @@ struct ProgressView: View {
         
         return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
     }
+    
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
  
     
     var body: some View {
@@ -1032,30 +1035,31 @@ struct ProgressView: View {
                         Spacer()
                         ZStack {
                             // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
-                            Button(action: {
-//                                if (classlist.count > 0)
-//                                {
-//                                    self.sheetNavigator.modalView = .assignment
-//                                    print(self.modalView)
-//                                    self.NewSheetPresenting = true
-//                                   // self.NewGradePresenting = true
-//                                }
-//                                else
-//                                {
-//                                    self.sheetNavigator.alertView = .noclass
-//                                    self.NewAlertPresenting = true
-//                                }
-                                if (self.getcompletedAssignments())
-                                {
-                                    self.sheetNavigator.modalView = .grade
+                            Button(action: {                                
+                                if freetimelist.isEmpty {
+                                    self.sheetNavigator.modalView = .freetime
                                     self.NewSheetPresenting = true
                                 }
-                                else
-                                {
-                                    self.sheetNavigator.alertView = .noassignment
-                                    self.NewAlertPresenting = true
-                                }
                                 
+                                else {
+                                    if (classlist.count > 0) {
+                                        if (self.getcompletedAssignments())
+                                        {
+                                            self.sheetNavigator.modalView = .grade
+                                            self.NewSheetPresenting = true
+                                        }
+                                        else
+                                        {
+                                            self.sheetNavigator.alertView = .noassignment
+                                            self.NewAlertPresenting = true
+                                        }
+                                    }
+                                    else {
+                                        self.sheetNavigator.modalView = .classity
+                                        self.NewSheetPresenting = true
+                                        self.NewClassPresenting = true
+                                    }
+                                }
                             }) {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {

@@ -1838,7 +1838,7 @@ struct HomeView: View {
     @EnvironmentObject var masterRunning: MasterRunning
     
     @ViewBuilder
-    private func sheetContent() -> some View {
+    private func sheetContent() -> some View {        
         if (self.sheetNavigator.modalView == .freetime) {
             NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }

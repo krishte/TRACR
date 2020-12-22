@@ -1228,22 +1228,17 @@ struct MasterClass: View {
                             }
                         }
                         
-                        print("algebra")
                          //  let randomDate = Double.random(in: 10000 ... 1700000)
                         newSubassignment4.startdatetime = Date(timeInterval:     TimeInterval(timeoffset), since: startime)
-                        print("algebra2")
                       //  print(newSubassignment4.startdatetime.description)
                         newSubassignment4.enddatetime = Date(timeInterval: TimeInterval(timeoffset+lengthofwork*60), since: startime)
-                        print("algebra3")
                         timeoffset += lengthofwork*60
-                        print("algebra4")
                         do {
                             try self.managedObjectContext.save()
                            // print("Subassignments made")
                         } catch {
                          //å   print(error.localizedDescription)
                         }
-                        print("algebra5")
                     }
                 }
                 else
@@ -1307,7 +1302,7 @@ struct MasterClass: View {
     }
     
     var body: some View {
-        Text("").offset(y: UIScreen.main.bounds.size.height).onAppear(perform: theBigMaster)
+        Text("").background(Color.clear).offset(y: UIScreen.main.bounds.size.height).onAppear(perform: theBigMaster)
     }
 }
 

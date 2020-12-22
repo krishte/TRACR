@@ -172,28 +172,54 @@ struct TutorialPageView: View {
 //    }
 //}
 
+struct TutorialFirstPageView: View {
+    @Binding var tutorialPageSelected: Int
+    
+    let TutorialTitles: [String] = ["Home Tab", "Tasks", "Add Time to Assignments", "Add Button", "Adding a Class", "Adding Free Time", "Classes Tab", "Inside a Class", "Assignments Tab", "Progress Tab", "Progress of Individual Classes"]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("Tutorial Contents").font(.largeTitle)
+            
+            Spacer().frame(height: 20)
+            
+            ForEach(1..<12) { tag in
+                Button(action: {
+                    withAnimation(.spring()) {
+                        self.tutorialPageSelected = tag
+                    }
+                }) {
+                    Text("\(tag). \(self.TutorialTitles[tag - 1])").font(.system(size: 20)).padding(.all, 7)
+                }
+            }
+        }.frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)//.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5)
+    }
+}
 
 struct TutorialView: View {
+    @State var tutorialPageSelected: Int = 0
+    
     var body: some View {
         VStack {
            // Text("hello")
             if #available(iOS 14.0, *) {
-                TabView {
+                TabView(selection: $tutorialPageSelected) {
                     Group {
-                        TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home Tab", tutorialInstructions1: "The left side of the Preview Bar shows next upcoming Task.", tutorialInstructions2: "If you click on a Task, it will divide the Preview Bar into two, and the right side will show a detailed description of the selected Assignment.", tutorialInstructions3: "Holding a date will allow you to add an Assignment that has a due date set to that date.", tutorialInstructions4: "If you have completed a Task, swipe left on it.", tutorialInstructions5: "", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "Clicking on the switch indicator on the top-right corner of the Home Tab will give you a diffently structured layout of all of your tasks that doesn't schedule your tasks by time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete your Task or you weren't available, swipe right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the Add Button to add an Assignment.", tutorialInstructions2: "Hold the Add Button to choose to specifically add an Assignment, Class, Free Time or Grade.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "Select your Tolerance for this Class, which indicates how much you enjoy working for this Class.", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free Time.", tutorialInstructions2: "Select when the Free Time should repeat, or the specific date for the Free Time if it only takes place once.", tutorialInstructions3: "To see your Free Time schedule, click 'View Free Times'.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialFirstPageView(tutorialPageSelected: self.$tutorialPageSelected).tag(0)
+                        TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home Tab", tutorialInstructions1: "The left side of the Preview Bar shows next upcoming Task.", tutorialInstructions2: "If you click on a Task, it will divide the Preview Bar into two, and the right side will show a detailed description of the selected Assignment.", tutorialInstructions3: "Holding a date will allow you to add an Assignment that has a due date set to that date.", tutorialInstructions4: "If you have completed a Task, swipe left on it.", tutorialInstructions5: "", tutorialposition: []).tag(1)
+                        TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "Clicking on the switch indicator on the top-right corner of the Home Tab will give you a diffently structured layout of all of your tasks that doesn't schedule your tasks by time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(2)
+                        TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete your Task or you weren't available, swipe right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(3)
+                        TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the Add Button to add an Assignment in the Home and Assignments Tabs, a Class in the Classes Tab and a Grade in the Progress Tab.", tutorialInstructions2: "Hold the Add Button to choose to specifically add an Assignment, Class, Free Time or Grade.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(4)
+                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "Select your Tolerance for this Class, which indicates how much you enjoy working for this Class. The tolerance is used to plan a personalized and appropriate schedule.", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(5)
+                        TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free Time.", tutorialInstructions2: "Select when the Free Time should repeat, or the specific date for the Free Time if it only takes place once.", tutorialInstructions3: "To view and delete your Free Times, click 'View Free Times'.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(6)
                     }
                     
                     Group {
-                        TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes Tab", tutorialInstructions1: "Hold a Class and click 'Add Assignment' to add an Assignment for that Class.", tutorialInstructions2: "Hold a Class, and click 'Archive Class' to archive it.", tutorialInstructions3: "Click on the top-right switch indicator to view Archived Classes.", tutorialInstructions4: "Click on a Class to see a list of all its Assignments and other details.", tutorialInstructions5: "", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, Assignments for that Class are shown.", tutorialInstructions2: "Click on the edit button (top-right corner) to edit specific Class details.", tutorialInstructions3: "Swipe assignments left to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the Assignment to edit Assignment details.", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments Tab", tutorialInstructions1: "Click the top-right button to toggle Completed Assignments.", tutorialInstructions2: "The blue progress bar shows how your progress for the completion of the Assignment.", tutorialInstructions3: "Swipe left on Assignments to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the assignment to edit Assignment details.", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows how your grades have been over time.", tutorialInstructions2: "Select which Classes you want to appear on the Graph.", tutorialInstructions3: "Hold a Class to add a Grade for the specific Class.", tutorialInstructions4: "Click on a Class to see detailed information and statistics on your Grades for your Class.", tutorialInstructions5: "", tutorialposition: [])
-                        TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics.", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: [])
+                        TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes Tab", tutorialInstructions1: "Hold a Class and click 'Add Assignment' to add an Assignment for that Class.", tutorialInstructions2: "Hold a Class, and click 'Delete Class' to delete it.", tutorialInstructions3: "Click on a Class to see a list of all its Assignments and other details.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(7)
+                        TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, Assignments for that Class are shown.", tutorialInstructions2: "Click on the 'Edit' button (top-right corner) to edit specific Class details.", tutorialInstructions3: "Swipe assignments left to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the Assignment to edit Assignment details.", tutorialposition: []).tag(8)
+                        TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments Tab", tutorialInstructions1: "Click the top-right button to toggle Completed Assignments.", tutorialInstructions2: "The blue progress bar shows your progress for the completion of the Assignment.", tutorialInstructions3: "Swipe left on Assignments to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the assignment to edit Assignment details.", tutorialposition: []).tag(9)
+                        TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows your grades for all your classes over time.", tutorialInstructions2: "Select which Classes you want to appear on the Graph.", tutorialInstructions3: "Hold a Class to add a Grade for the specific Class.", tutorialInstructions4: "Click on a Class to see detailed information and statistics on your Grades for your Class.", tutorialInstructions5: "", tutorialposition: []).tag(10)
+                        TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics.", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(11)
                     }
                 }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always))
             } else {
@@ -203,6 +229,113 @@ struct TutorialView: View {
         }
     }
 }
+
+struct FreeTimeIndividualTest: View {
+//    @State var freetime: Freetime
+    @State var height: CGFloat = 60.35
+    @State var yoffset: CGFloat
+    @State var inmotion: Bool = false
+    
+    var body: some View {
+        ZStack {
+            VStack(spacing: 0) {
+                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                    if self.yoffset >= 0 && self.height >= 40 {
+                        if !(self.yoffset == 0 && value.translation.height < 0) {
+                            self.height = self.height - value.translation.height
+                            self.yoffset = self.yoffset + value.translation.height
+                        }
+                    }
+                    
+                    if self.yoffset < 0 {
+                        self.yoffset = 0
+                    }
+                    
+                    if self.height < 40 {
+                        self.height = 40
+                    }
+                })
+
+                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: self.height - 20).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                    if self.yoffset >= 0 {
+                        self.yoffset = self.yoffset + value.translation.height
+                    }
+                    
+                    if self.yoffset < 0 {
+                        self.yoffset = 0
+                    }
+                    
+                    withAnimation(.easeInOut(duration: 0.1), {
+                        self.inmotion = true
+                    })
+                }.onEnded { _ in
+                    withAnimation(.easeInOut(duration: 0.1), {
+                        self.inmotion = false
+                    })
+                })
+                
+                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                    if self.height >= 40 {
+                        self.height = self.height + value.translation.height
+                    }
+                    
+                    if self.height < 40 {
+                        self.height = 40
+                    }
+                })
+            }.cornerRadius(8).offset(x: self.inmotion ? -10 : -10, y: self.yoffset)
+            
+            Text("BLA:" + String(format: "%f", self.yoffset/60)[0..<2] + " - " + String(format: "%f", (self.yoffset + self.height)/60)[0..<2]).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 80, y: self.yoffset - (self.height/2) + 20)
+        }
+    }
+}
+
+struct FreeTimeTest: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
+        
+    var body: some View {
+        VStack {
+            ScrollView {
+                ZStack {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading) {
+                            ForEach((0...24), id: \.self) { hour in
+                                HStack {
+                                    Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
+                                    Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                }
+                            }.frame(height: 50).animation(.spring())
+                        }
+                    }
+
+                    HStack(alignment: .top) {
+                        Spacer()
+                        VStack {
+                            Spacer().frame(height: 25)
+                            
+//                            ZStack(alignment: .topTrailing) {
+//                                ForEach(freetimelist, id: \.self) { freetime in
+//                                    FreeTimeIndividualTest(freetime: freetime)
+//                                }.animation(.spring())
+//                            }
+                            ZStack(alignment: .topTrailing) {
+                                ForEach((0...3), id: \.self) { num in
+                                    FreeTimeIndividualTest(yoffset: CGFloat(120.7*Double(num)))
+                                }//.animation(.spring())
+                            }
+                            Spacer()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 struct SettingsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
 
@@ -228,6 +361,10 @@ struct SettingsView: View {
     @State var tutorialPageNum = 0
     
     @EnvironmentObject var masterRunning: MasterRunning
+    
+    @State var easteregg1: Bool = false
+    @State var easteregg2: Bool = false
+    @State var easteregg3: Bool = false
     
     var body: some View {
         Form {
@@ -362,12 +499,35 @@ struct SettingsView: View {
 //
 //                    }
                 }
+                
+                Section {
+                    NavigationLink(destination:
+                        FreeTimeTest()
+                    ) {
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
+                                Image(systemName: "calendar").resizable().frame(width:25, height:25)
+                            }
+                            Spacer().frame(width:20)
+                            Text("Free Time Test").font(.system(size:20))
+                        }.frame(height:40)
+                    }
+                }
                     
                 Section {
                     HStack {
                         Text("Version:")
                         Spacer()
                         Text("Developer's Beta 0.9").foregroundColor(.gray)
+                    }.contentShape(Rectangle()).onTapGesture(count: 5, perform: {
+                        self.easteregg1 = true
+                    })
+                    
+                    if self.easteregg1 {
+                        VStack {
+                            Text("Hello.").fontWeight(.regular)
+                        }
                     }
 //                    NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
 //                        Text("This version is running with the following bugs:").font(.title2)
@@ -491,7 +651,7 @@ struct HelpCenterView: View {
                     self.selection.removeAll()
                 }
                 
-            }, label: {selection.count == 5 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("View Free Times", displayMode: .inline)
+            }, label: {selection.count == 5 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("FAQ", displayMode: .inline)
         
     }
 }
@@ -972,7 +1132,7 @@ struct NotificationsView: View {
             defaults.set(array2, forKey: "savedbreaknotifications")
             
             masterRunning.masterRunningNow = true
-           // masterRunning.onlyNotifications = true
+//            masterRunning.onlyNotifications = true
             print("Signal Sent.")
             print(masterRunning.onlyNotifications)
         }

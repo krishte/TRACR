@@ -1102,7 +1102,7 @@ struct MasterClass: View {
 
         let actualfreetimeslist = [sunfreetimelist, monfreetimelist, tuefreetimelist, wedfreetimelist, thufreetimelist, frifreetimelist, satfreetimelist, sunfreetimelist]
      //   print(generalfreetimelist)
-        for (index, element) in generalfreetimelist.enumerated() {
+        for (index, _) in generalfreetimelist.enumerated() {
                 generalfreetimelist[index] = Int(Double(generalfreetimelist[index])/Double(5) * 5)
                 
         //    print(generalfreetimelist[index])
@@ -1132,9 +1132,13 @@ struct MasterClass: View {
             if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday) {
                 //print("sdfdsfdsf")
                 //print(startoffreetimeDict)
-                dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                //print(dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!)
-                specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!.append((freetime.startdatetime, freetime.enddatetime))
+                //error is here
+                if (freetime.enddatetime > Date())
+                {
+                    dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                    //print(dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!)
+                    specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!.append((freetime.startdatetime, freetime.enddatetime))
+                }
 //                for (x,y) in specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! {
 //                    print(x.description, y.description)
 //                }
@@ -1303,7 +1307,7 @@ struct MasterClass: View {
     }
     
     var body: some View {
-        Text("sfdsf").offset(y: UIScreen.main.bounds.size.width).onAppear(perform: theBigMaster)
+        Text("").offset(y: UIScreen.main.bounds.size.height).onAppear(perform: theBigMaster)
     }
 }
 

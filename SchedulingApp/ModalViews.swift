@@ -44,6 +44,9 @@ struct NewAssignmentModalView: View {
     @State private var showingAlert = false
     @State private var expandedduedate = false
     @State private var startDate = Date()
+    @State private var completedassignment = false
+    @State private var assignmentgrade: Double = 0
+    var otherclassgrades: [String] = ["E", "D", "C", "B", "A"]
     
     var formatter: DateFormatter
     
@@ -94,7 +97,71 @@ struct NewAssignmentModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.default)
+                    TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.webSearch)
+                }
+                
+                Section {
+                    Toggle(isOn: self.$completedassignment) {
+                        Text("Completed Assignment")
+                    }.onTapGesture {
+                        if (!self.completedassignment)
+                         {
+                            self.assignmentgrade = 0
+                            
+                          //  print(!self.iscompleted)
+                        }
+                        else
+                        {
+                            
+                            self.selectedDate = Date()
+                        }
+                       
+                        
+                        
+                    }
+                }
+                
+                if (self.completedassignment)
+                {
+                    Section
+                    {
+                        VStack {
+                    
+                      
+                            if (classlist[self.selectedclass].originalname == "Theory of Knowledge" || classlist[self.selectedclass].originalname  == "Extended Essay")
+                            {
+                              
+                                HStack {
+                                    if (assignmentgrade == 0 || assignmentgrade == 1)
+                                    {
+                                        Text("Grade: NA")
+                                    }
+                                    else
+                                    {
+                                        Text("Grade: " + otherclassgrades[Int(assignmentgrade)-2])
+                                    }
+                                    Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $assignmentgrade, in: 2...6)
+                            }
+                            else
+                            {
+                               
+                                HStack {
+                                    if (assignmentgrade == 0)
+                                    {
+                                        Text("Grade: NA")
+                                    }
+                                    else
+                                    {
+                                        Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                    }
+                                    Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $assignmentgrade, in: 1...7)
+                            }
+                        }
+                    }
                 }
                 Section {
                     Picker(selection: $selectedclass, label: Text("Class")) {
@@ -172,7 +239,7 @@ struct NewAssignmentModalView: View {
                         if (expandedduedate)
                         {
                             VStack {
-                                DatePicker("", selection: $selectedDate, in: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                DatePicker("", selection: $selectedDate, in: self.completedassignment ? Date(timeIntervalSince1970: 0)... : Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
                             }.animation(.spring())
                         }
 
@@ -216,31 +283,62 @@ struct NewAssignmentModalView: View {
                         }
 
                         if self.createassignmentallowed {
-                            let newAssignment = Assignment(context: self.managedObjectContext)
-                            newAssignment.completed = false
-                            newAssignment.grade = 0
-                            newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
-                            newAssignment.name = self.textfieldmanager.userInput
-                            newAssignment.type = self.assignmenttypes[self.assignmenttype]
-                            newAssignment.progress = 0
-                            newAssignment.duedate = self.selectedDate
-                            
-                            if (self.hours == 0)
+                            if (!self.completedassignment)
                             {
-                                newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                                let newAssignment = Assignment(context: self.managedObjectContext)
+                                newAssignment.completed = false
+                                newAssignment.grade = 0
+                                newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                                newAssignment.name = self.textfieldmanager.userInput
+                                newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                                newAssignment.progress = 0
+                                newAssignment.duedate = self.selectedDate
+                                
+                                if (self.hours == 0)
+                                {
+                                    newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                                }
+                                else
+                                {
+                                    newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                                }
+                                newAssignment.timeleft = newAssignment.totaltime
+                            
+                                for classity in self.classlist {
+                                    if (classity.originalname == newAssignment.subject) {
+                                        newAssignment.color = classity.color
+                                        classity.assignmentnumber += 1
+                                    }
+                                }
                             }
                             else
                             {
-                                newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
-                            }
-                            newAssignment.timeleft = newAssignment.totaltime
-                            for classity in self.classlist {
-                                if (classity.originalname == newAssignment.subject) {
-                                    newAssignment.color = classity.color
-                                    classity.assignmentnumber += 1
+                                let newAssignment = Assignment(context: self.managedObjectContext)
+                                newAssignment.completed = true
+                                newAssignment.grade = Int64(self.assignmentgrade)
+                                newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                                newAssignment.name = self.textfieldmanager.userInput
+                                newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                                newAssignment.progress = 100
+                                newAssignment.duedate = self.selectedDate
+                                
+                                if (self.hours == 0)
+                                {
+                                    newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                                }
+                                else
+                                {
+                                    newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                                }
+                                newAssignment.timeleft = 0
+                            
+                                for classity in self.classlist {
+                                    if (classity.originalname == newAssignment.subject) {
+                                        newAssignment.color = classity.color
+                                        classity.assignmentnumber += 1
+                                    }
                                 }
                             }
-                            
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
                             print("Signal Sent. asfoij")
@@ -1000,7 +1098,7 @@ struct NewFreetimeModalView: View {
                     Section {
                         if (selection.contains("None"))
                         {
-                            DatePicker("Select date", selection: $selectedDate, in: Date()..., displayedComponents: .date)
+                            DatePicker("Select date", selection: $selectedDate, in: Date(timeIntervalSince1970: 0)..., displayedComponents: .date)
                         }
                     }
                     Section {
@@ -1336,6 +1434,10 @@ struct FreetimeDetailView: View {
     
     var body: some View {
         List {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("View and Delete Free Times").font(.title2)
+                Text("Click on a Day to view all free times on that day. Swipe left on a freetime to delete it.").fontWeight(.light)
+            }.frame(width: UIScreen.main.bounds.size.width - 20).offset(x: -10).padding(.vertical, 8)
             Group {
                 Button(action: {self.selectDeselect("Monday")}) {
                     HStack {
@@ -1876,7 +1978,7 @@ struct EditAssignmentModalView: View {
                         HStack {
                             VStack {
                                 Picker(selection: $hours, label: Text("Hour")) {
-                                    ForEach(0 ..< hourlist.count) {
+                                    ForEach(0..<hourlist.count) {
                                         
                                         Text(String(self.hourlist[$0]) + (self.hourlist[$0] == 1 ? " hour" : " hours"))
                                         
@@ -1886,7 +1988,7 @@ struct EditAssignmentModalView: View {
                             .clipped()
                             
 
-                            
+
                             VStack {
 
                                     Picker(selection: $minutes, label: Text("Minutes")) {
@@ -1897,9 +1999,9 @@ struct EditAssignmentModalView: View {
                                             }
                                         }
                                     }.pickerStyle(WheelPickerStyle())
-                                
-                               
-                                
+
+
+
                             }.frame(minWidth: 100, maxWidth: .infinity)
                             .clipped()
                         }
@@ -2077,6 +2179,7 @@ struct EditAssignmentModalView: View {
                                             print(error.localizedDescription)
                                         }
                                     }
+            
                                 }
                                 
                          
@@ -2088,6 +2191,7 @@ struct EditAssignmentModalView: View {
                              }
                                 
                             }
+                            masterRunning.masterRunningNow = true
                             
                             self.deleteassignmentallowed = false
                         }

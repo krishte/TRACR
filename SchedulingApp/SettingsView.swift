@@ -972,7 +972,7 @@ struct NotificationsView: View {
             defaults.set(array2, forKey: "savedbreaknotifications")
             
             masterRunning.masterRunningNow = true
-            masterRunning.onlyNotifications = true
+           // masterRunning.onlyNotifications = true
             print("Signal Sent.")
             print(masterRunning.onlyNotifications)
         }

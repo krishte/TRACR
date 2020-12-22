@@ -1285,7 +1285,7 @@ struct NewFreetimeModalView: View {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("graphbackgroundtop")).frame(width: UIScreen.main.bounds.size.width-40, height: 40)
                                 HStack {
-                                    Text("View Free Times")
+                                    Text("View & Delete Free Times")
                                     Spacer()
                                     Image(systemName: "chevron.right").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                 }.padding(.horizontal, 20)
@@ -1336,6 +1336,10 @@ struct FreetimeDetailView: View {
     
     var body: some View {
         List {
+            VStack(alignment: .leading, spacing: 3) {
+                Text("View and Delete Free Times").font(.title2)
+                Text("Click on a Day to view all free times on that day. Swipe left on a freetime to delete it.").fontWeight(.light)
+            }.frame(width: UIScreen.main.bounds.size.width - 20).offset(x: -10).padding(.vertical, 8)
             Group {
                 Button(action: {self.selectDeselect("Monday")}) {
                     HStack {
@@ -1605,7 +1609,7 @@ struct FreetimeDetailView: View {
             else {
                 self.selection.removeAll()
             }
-        }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("View Free Times", displayMode: .inline)
+        }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("View & Delete Free Times", displayMode: .inline)
     }
 }
 

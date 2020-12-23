@@ -192,7 +192,7 @@ struct TutorialFirstPageView: View {
                     Text("\(tag). \(self.TutorialTitles[tag - 1])").font(.system(size: 20)).padding(.all, 7)
                 }
             }
-        }.frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)//.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5)
+        }//.frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)//.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5)
     }
 }
 
@@ -232,8 +232,10 @@ struct TutorialView: View {
 
 struct FreeTimeIndividualTest: View {
 //    @State var freetime: Freetime
-    @State var height: CGFloat = 60.35
     @State var yoffset: CGFloat
+    @State var height: CGFloat
+
+    @State var xoffset: CGFloat = 0
     @State var inmotion: Bool = false
     
     var body: some View {
@@ -261,9 +263,17 @@ struct FreeTimeIndividualTest: View {
                         self.yoffset = self.yoffset + value.translation.height
                     }
                     
+                    self.xoffset += value.translation.width
+                    
                     if self.yoffset < 0 {
                         self.yoffset = 0
                     }
+                    
+                    if ((self.yoffset+self.height)/60.35 >= 24)
+                    {
+                        self.yoffset = 24*60.35-self.height
+                    }
+
                     
                     withAnimation(.easeInOut(duration: 0.1), {
                         self.inmotion = true
@@ -272,6 +282,8 @@ struct FreeTimeIndividualTest: View {
                     withAnimation(.easeInOut(duration: 0.1), {
                         self.inmotion = false
                     })
+                    
+                    self.xoffset = 0
                 })
                 
                 RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
@@ -282,10 +294,24 @@ struct FreeTimeIndividualTest: View {
                     if self.height < 40 {
                         self.height = 40
                     }
+                    
+                    if ((self.yoffset+self.height)/60.35 >= 24)
+                    {
+                        self.height = 24*60.35-self.yoffset
+                    }
                 })
-            }.cornerRadius(8).offset(x: self.inmotion ? -10 : -10, y: self.yoffset)
+            }.cornerRadius(8).offset(x: -10, y: self.yoffset)
+             //   Text("\(Int(self.yoffset.truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 110, y: self.yoffset - (self.height/2) + 20)
+               // Text("\(Int((self.yoffset+self.height).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 160, y: self.yoffset - (self.height/2) + 20)
+            HStack
+            {
+                Text(String(format: "%f", self.yoffset/60.35)[0..<2] + ":" + "\(Int((self.yoffset).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.yoffset - (self.height/2) + 20).frame(width: 50, alignment: .topLeading)
+                Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.yoffset - (self.height/2) + 20)//.frame(width: 10)
+                Text( String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2] + ":" + "\(Int((self.yoffset+self.height).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.yoffset - (self.height/2) + 20).frame(width: 50)
+                
+            }
+                
             
-            Text("BLA:" + String(format: "%f", self.yoffset/60)[0..<2] + " - " + String(format: "%f", (self.yoffset + self.height)/60)[0..<2]).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 80, y: self.yoffset - (self.height/2) + 20)
         }
     }
 }
@@ -295,9 +321,44 @@ struct FreeTimeTest: View {
 
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
+    var dayslist: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    @State private var selection: Set<String> = []
         
+    
+    private func selectDeselect(_ singularassignment: String) {
+        if selection.contains(singularassignment) {
+            selection.remove(singularassignment)
+        } else {
+            selection.insert(singularassignment)
+        }
+    }
+    
     var body: some View {
         VStack {
+
+            HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+                ForEach(dayslist,  id: \.self)
+                {
+                    days in
+                
+                    VStack {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.selection.contains(days) ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                            
+                            Text(String(Array(days)[0]))
+                            
+                            
+                        }.onTapGesture {
+                            withAnimation(.spring())
+                            {
+                                self.selectDeselect(days)
+                            }
+                        }
+                    }
+                }
+            }
+                            
+            
             ScrollView {
                 ZStack {
                     HStack(alignment: .top) {
@@ -322,9 +383,17 @@ struct FreeTimeTest: View {
 //                                }.animation(.spring())
 //                            }
                             ZStack(alignment: .topTrailing) {
-                                ForEach((0...3), id: \.self) { num in
-                                    FreeTimeIndividualTest(yoffset: CGFloat(120.7*Double(num)))
-                                }//.animation(.spring())
+//                                ForEach((0...3), id: \.self) { num in
+//                                    FreeTimeIndividualTest(yoffset: CGFloat(181.05*Double(num)))
+//                                }//.animation(.spring())
+                                ForEach(freetimelist)
+                                {
+                                    freetime in
+                                    if (self.selection.contains("Monday") == freetime.monday && self.selection.contains("Tuesday") == freetime.tuesday && self.selection.contains("Wednesday") == freetime.wednesday && self.selection.contains("Thursday") == freetime.thursday && self.selection.contains("Friday") == freetime.friday && self.selection.contains("Saturday") == freetime.saturday && self.selection.contains("Sunday") == freetime.sunday)
+                                    {
+                                        FreeTimeIndividualTest(yoffset: CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height: CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60 )
+                                    }
+                                }
                             }
                             Spacer()
                         }

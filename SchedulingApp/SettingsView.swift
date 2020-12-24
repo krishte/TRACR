@@ -230,86 +230,310 @@ struct TutorialView: View {
     }
 }
 
+class FreeTimeEditingView: ObservableObject {
+    @Published var editingmode: Bool = false
+}
+
 struct FreeTimeIndividualTest: View {
-//    @State var freetime: Freetime
+    @Environment(\.managedObjectContext) var managedObjectContext
+
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
     @State var yoffset: CGFloat
     @State var height: CGFloat
+    @State var dayvals: [Bool]
+    @State var starttime: Date
+    @State var endtime: Date
+    @Binding var editingmode: Bool
+    @State var draggingup: Bool = false
+    @State var draggingdown: Bool = false
 
     @State var xoffset: CGFloat = 0
     @State var inmotion: Bool = false
     
+    
+    func getmaxtop() -> CGFloat
+    {
+        var maxdate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))
+        for freetime in freetimelist
+        {
+            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
+            {
+                if (freetime.enddatetime > maxdate && freetime.enddatetime < starttime)
+                {
+                    maxdate = freetime.enddatetime
+                }
+            }
+        }
+//        print(maxdate.description, Calendar.current.startOfDay(for: maxdate).description)
+//        print("maxtop", CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60)
+        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60
+        
+    }
+    
+    func getmaxbottom() -> CGFloat
+    {
+        var mindate = Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+        for freetime in freetimelist
+        {
+            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
+            {
+                if (freetime.startdatetime < mindate && freetime.startdatetime > endtime)
+                {
+                    mindate = freetime.startdatetime
+                }
+            }
+        }
+//        print(mindate.description)
+//        print("maxbottom",  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
+//)
+        if (mindate == Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))))
+        {
+            return CGFloat(24*60.35)
+        }
+        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
+        
+    }
+    func getoffset() -> CGFloat
+    {
+        if (self.editingmode)
+        {
+            var counter = 0
+            for freetime in freetimelist
+            {
+                if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
+                {
+                    if (freetime.startdatetime == self.starttime)
+                    {
+                        return CGFloat(counter)*110
+                    }
+                    counter += 1
+                }
+                
+            }
+            return 0
+            
+        }
+        else
+        {
+            return self.yoffset
+        }
+    }
+    func getHeight() -> CGFloat
+    {
+        if (self.editingmode)
+        {
+            return 100
+        }
+        else
+        {
+            return self.height
+        }
+    }
+    func getstarttext() -> String
+    {
+        if (self.editingmode)
+        {
+            return "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!%60)"
+        }
+        else
+        {
+            let y = Int(round(100*(self.yoffset)))
+            var stringitya = String(format: "%f", (self.yoffset)/60.35)[0..<2]
+            var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
+            
+            if (stringitya.contains("."))
+            {
+                stringitya = "0" + String(stringitya[0..<1])
+            }
+            if (stringityb.count == 1)
+            {
+                stringityb += "0"
+            }
+            return stringitya + ":" + stringityb
+        }
+    }
+    func getendtext() -> String
+    {
+        if (self.editingmode)
+        {
+            return "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.endtime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.endtime) , to: self.endtime).minute!%60)"
+        }
+        else
+        {
+            let y = Int(round(100*(self.yoffset+self.height)))
+            var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
+            var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
+            
+            if (stringitya.contains("."))
+            {
+                stringitya = "0" + String(stringitya[0..<1])
+            }
+            if (stringityb.count == 1)
+            {
+                stringityb += "0"
+            }
+            return stringitya + ":" + stringityb
+        }
+    }
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
-                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
-                    if self.yoffset >= 0 && self.height >= 40 {
-                        if !(self.yoffset == 0 && value.translation.height < 0) {
-                            self.height = self.height - value.translation.height
+                ZStack
+                {
+                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingup ? Color.blue : Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                        if (!self.editingmode)
+                        {
+                            if self.yoffset >= 0 && self.height >= 30.175 {
+                                if !(self.yoffset == 0 && value.translation.height < 0) {
+                                    self.height = self.height - value.translation.height
+                                    self.yoffset = self.yoffset + value.translation.height
+                                }
+                            }
+                            withAnimation(.spring())
+                            {
+                                self.draggingup = true
+                            }
+                            if self.yoffset < 0 {
+                                self.yoffset = 0
+                            }
+                            
+                            if (self.yoffset < getmaxtop())
+                            {
+                                self.yoffset = getmaxtop()
+                            }
+                            if (self.yoffset+self.height > getmaxbottom())
+                            {
+                                self.yoffset = getmaxbottom()-self.height
+                            }
+                            if self.height < 30.175 {
+                                self.height = 30.175
+                            }
+                        }
+                    }.onEnded {
+                        _ in
+                        withAnimation(.spring())
+                        {
+                            self.draggingup = false
+                        }
+                        self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
+
+                    })
+                    Image(systemName: "chevron.compact.up").resizable().foregroundColor(Color.white).frame(width: 50, height: 7).opacity(self.draggingup ? 1:0)
+                            
+                }.frame(width: UIScreen.main.bounds.size.width - 80, height: 10)
+                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                    if (!self.editingmode)
+                    {
+                        if self.yoffset >= 0 {
                             self.yoffset = self.yoffset + value.translation.height
                         }
-                    }
-                    
-                    if self.yoffset < 0 {
-                        self.yoffset = 0
-                    }
-                    
-                    if self.height < 40 {
-                        self.height = 40
-                    }
-                })
+                        
+                      //  self.xoffset += value.translation.width
+                        
+                        if self.yoffset < 0 {
+                            self.yoffset = 0
+                        }
+                        
+                        if (self.yoffset < getmaxtop())
+                        {
+                            self.yoffset = getmaxtop()
+                        }
+                        
+                        if (self.yoffset+self.height > getmaxbottom())
+                        {
+                            self.yoffset = getmaxbottom()-self.height
+                        }
+                        if ((self.yoffset+self.height)/60.35 >= 24)
+                        {
+                            self.yoffset = 24*60.35-self.height
+                        }
+                        withAnimation(.spring())
+                        {
+                            self.draggingup = true
+                            self.draggingdown = true
+                        }
 
-                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: self.height - 20).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
-                    if self.yoffset >= 0 {
-                        self.yoffset = self.yoffset + value.translation.height
+                        
+                        withAnimation(.easeInOut(duration: 0.1), {
+                            self.inmotion = true
+                        })
                     }
-                    
-                    self.xoffset += value.translation.width
-                    
-                    if self.yoffset < 0 {
-                        self.yoffset = 0
-                    }
-                    
-                    if ((self.yoffset+self.height)/60.35 >= 24)
+                    else
                     {
-                        self.yoffset = 24*60.35-self.height
+                        self.xoffset += value.translation.width
                     }
-
-                    
-                    withAnimation(.easeInOut(duration: 0.1), {
-                        self.inmotion = true
-                    })
                 }.onEnded { _ in
                     withAnimation(.easeInOut(duration: 0.1), {
                         self.inmotion = false
                     })
-                    
-                    self.xoffset = 0
-                })
-                
-                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
-                    if self.height >= 40 {
-                        self.height = self.height + value.translation.height
-                    }
-                    
-                    if self.height < 40 {
-                        self.height = 40
-                    }
-                    
-                    if ((self.yoffset+self.height)/60.35 >= 24)
+                    withAnimation(.spring())
                     {
-                        self.height = 24*60.35-self.yoffset
+                        self.xoffset = 0
+                        self.draggingup = false
+                        self.draggingdown = false
                     }
+                    
+                    self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
                 })
-            }.cornerRadius(8).offset(x: -10, y: self.yoffset)
+                ZStack
+                {
+                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingdown ? Color.blue : Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                        if (!self.editingmode)
+                        {
+                            if self.height >= 30.175 {
+                                self.height = self.height + value.translation.height
+                            }
+                            
+                            if self.height < 30.175 {
+                                self.height = 30.175
+                            }
+                            if (self.yoffset+self.height > getmaxbottom())
+                            {
+                                self.height = getmaxbottom() - self.yoffset
+                            }
+                            if ((self.yoffset+self.height)/60.35 >= 24)
+                            {
+                                self.height = 24*60.35-self.yoffset
+                            }
+                            withAnimation(.spring())
+                            {
+                                self.draggingdown = true
+                            }
+                        }
+                    }.onEnded {
+                        _ in
+                        withAnimation(.spring())
+                        {
+                            self.draggingdown = false
+                        }
+                        self.height = CGFloat(Int(self.height/15.09))*15.09
+                        self.height = max(self.height, 30.175)
+
+                    })
+                    Image(systemName: "chevron.compact.down").resizable().foregroundColor(Color.white).frame(width: 50, height: 7).opacity(self.draggingdown ? 1:0)
+                }
+                
+            }.cornerRadius(8).offset(x: (self.editingmode ? -30: -10) + self.xoffset, y: self.getoffset())
              //   Text("\(Int(self.yoffset.truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 110, y: self.yoffset - (self.height/2) + 20)
                // Text("\(Int((self.yoffset+self.height).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 160, y: self.yoffset - (self.height/2) + 20)
             HStack
             {
-                Text(String(format: "%f", self.yoffset/60.35)[0..<2] + ":" + "\(Int((self.yoffset).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.yoffset - (self.height/2) + 20).frame(width: 50, alignment: .topLeading)
-                Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.yoffset - (self.height/2) + 20)//.frame(width: 10)
-                Text( String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2] + ":" + "\(Int((self.yoffset+self.height).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.yoffset - (self.height/2) + 20).frame(width: 50)
+    //            if (!self.editingmode)
+    //            {
+                    Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
+                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
+                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
+          //      }
+//                else
+//                {
+//                    Text("\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!%60)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
+//                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)
+//                    Text("\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.endtime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.endtime) , to: self.endtime).minute!%60)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
+//
+//                }
                 
-            }
+            }.offset(x: self.xoffset)
                 
             
         }
@@ -323,8 +547,8 @@ struct FreeTimeTest: View {
     var freetimelist: FetchedResults<Freetime>
     var dayslist: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     @State private var selection: Set<String> = []
-        
-    
+    @ObservedObject var freetimeediting: FreeTimeEditingView = FreeTimeEditingView()
+
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {
             selection.remove(singularassignment)
@@ -333,9 +557,27 @@ struct FreeTimeTest: View {
         }
     }
     
+    func getelementnumber(freetimeval: Freetime, dayvals: [Bool]) -> Int
+    {
+        var counter = 0
+        for freetime in freetimelist
+        {
+            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
+            {
+                if (freetime == freetimeval)
+                {
+                    return counter
+                }
+                counter += 1
+            }
+            
+        }
+        return 0
+    }
+    
     var body: some View {
         VStack {
-
+            Spacer().frame(height: 20)
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
                 ForEach(dayslist,  id: \.self)
                 {
@@ -361,14 +603,17 @@ struct FreeTimeTest: View {
             
             ScrollView {
                 ZStack {
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading) {
-                            ForEach((0...24), id: \.self) { hour in
-                                HStack {
-                                    Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
-                                    Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
-                                }
-                            }.frame(height: 50).animation(.spring())
+                    if (!self.freetimeediting.editingmode)
+                    {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading) {
+                                ForEach((0...24), id: \.self) { hour in
+                                    HStack {
+                                        Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
+                                        Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                    }
+                                }.frame(height: 50).animation(.spring())
+                            }
                         }
                     }
 
@@ -391,13 +636,31 @@ struct FreeTimeTest: View {
                                     freetime in
                                     if (self.selection.contains("Monday") == freetime.monday && self.selection.contains("Tuesday") == freetime.tuesday && self.selection.contains("Wednesday") == freetime.wednesday && self.selection.contains("Thursday") == freetime.thursday && self.selection.contains("Friday") == freetime.friday && self.selection.contains("Saturday") == freetime.saturday && self.selection.contains("Sunday") == freetime.sunday)
                                     {
-                                        FreeTimeIndividualTest(yoffset: CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height: CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60 )
+   
+                                        FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode )
+                                        
+
                                     }
                                 }
                             }
                             Spacer()
                         }
                     }
+                }
+            }
+        }.navigationBarTitle("Free Time Editing", displayMode: .inline)
+        .toolbar
+        {
+            ToolbarItem(placement: .navigationBarTrailing )
+            {
+                Button(action: {
+                    withAnimation(.spring())
+                    {
+                        self.freetimeediting.editingmode.toggle()
+                    }
+                })
+                {
+                    Image(systemName: self.freetimeediting.editingmode ? "pencil.circle.fill" : "pencil.circle").resizable().scaledToFit()
                 }
             }
         }

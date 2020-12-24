@@ -192,7 +192,7 @@ struct TutorialFirstPageView: View {
                     Text("\(tag). \(self.TutorialTitles[tag - 1])").font(.system(size: 20)).padding(.all, 7)
                 }
             }
-        }.frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)//.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5)
+        }//.frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)//.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5)
     }
 }
 
@@ -234,7 +234,6 @@ struct FreeTimeIndividualTest: View {
 //    @State var freetime: Freetime
     @State var height: CGFloat = 60.35
     @State var yoffset: CGFloat
-    @State var inmotion: Bool = false
     
     var body: some View {
         ZStack {
@@ -264,15 +263,10 @@ struct FreeTimeIndividualTest: View {
                     if self.yoffset < 0 {
                         self.yoffset = 0
                     }
-                    
-                    withAnimation(.easeInOut(duration: 0.1), {
-                        self.inmotion = true
-                    })
-                }.onEnded { _ in
-                    withAnimation(.easeInOut(duration: 0.1), {
-                        self.inmotion = false
-                    })
                 })
+                
+                
+
                 
                 RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
                     if self.height >= 40 {
@@ -283,9 +277,17 @@ struct FreeTimeIndividualTest: View {
                         self.height = 40
                     }
                 })
-            }.cornerRadius(8).offset(x: self.inmotion ? -10 : -10, y: self.yoffset)
+            }.cornerRadius(8).offset(x: -10, y: self.yoffset)
             
-            Text("BLA:" + String(format: "%f", self.yoffset/60)[0..<2] + " - " + String(format: "%f", (self.yoffset + self.height)/60)[0..<2]).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 80, y: self.yoffset - (self.height/2) + 20)
+            let thewholething = self.yoffset/60.35
+            let floatpart = thewholething.truncatingRemainder(dividingBy: 1)
+            let floatpartinminutes = floatpart * 60.0
+            let floatpartroundedtofifteen = floor(floatpartinminutes / 15.0) * 15.0
+            let stringbuildinghours = String(format: "%f", Float(Int(thewholething)))[0..<1]
+            let stringbuildingminutes = String(format: "%f", floatpartroundedtofifteen)[0..<2]
+            let stringwholeparta = stringbuildinghours + ":" + stringbuildingminutes
+            
+            Text(stringwholeparta + " - " + String(format: "%f", (self.yoffset + self.height)/60.35)[0..<5]).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 150, y: self.yoffset - (self.height/2) + 20)
         }
     }
 }

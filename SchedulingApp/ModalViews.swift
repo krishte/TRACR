@@ -407,11 +407,12 @@ struct NewClassModalView: View {
     var classlist: FetchedResults<Classcool>
 
     @Binding var NewClassPresenting: Bool
-    
+    @State var classnamenonib: String = ""
     @State private var classgroupnameindex = 0
     @State private var classnameindex = 0
     @State private var classlevelindex = 0
     @State private var classtolerancedouble: Double = 3
+    @State var isIB: Bool = false
 
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
     
@@ -438,65 +439,72 @@ struct NewClassModalView: View {
         NavigationView {
             Form {
                 Section {
-                    Picker(selection: $classgroupnameindex, label: Text("Subject Group: ")) {
-                        ForEach(0 ..< subjectgroups.count, id: \.self) { indexg in
-                            Text(self.subjectgroups[indexg]).tag(indexg)
+                    if (self.isIB)
+                    {
+                        Picker(selection: $classgroupnameindex, label: Text("Subject Group: ")) {
+                            ForEach(0 ..< subjectgroups.count, id: \.self) { indexg in
+                                Text(self.subjectgroups[indexg]).tag(indexg)
+                            }
+                        }
+                        
+                            if classgroupnameindex == 0 {
+                                Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                    ForEach(0 ..< groups[0].count, id: \.self) { index in
+                                        Text(self.groups[0][index]).tag(index)
+                                    }
+                                }
+                            }
+
+                            else if classgroupnameindex == 1 {
+                                Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                    ForEach(0 ..< groups[1].count, id: \.self) { index in
+                                        Text(self.groups[1][index]).tag(index)
+                                    }
+                                }
+                            }
+                                    
+                            else if classgroupnameindex == 2 {
+                                Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                    ForEach(0 ..< groups[2].count, id: \.self) { index in
+                                        Text(self.groups[2][index]).tag(index)
+                                    }
+                                }
+                            }
+                                    
+                            else if classgroupnameindex == 3 {
+                                Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                    ForEach(0 ..< groups[3].count, id: \.self) { index in
+                                        Text(self.groups[3][index]).tag(index)
+                                    }
+                                }
+                            }
+                                    
+                            else if classgroupnameindex == 4 {
+                                Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                    ForEach(0 ..< groups[4].count, id: \.self) { index in
+                                        Text(self.groups[4][index]).tag(index)
+                                    }
+                                }
+                            }
+                                    
+                            else if classgroupnameindex == 5 {
+                                Picker(selection: $classnameindex, label: Text("Subject: ")) {
+                                    ForEach(0 ..< groups[5].count, id: \.self) { index in
+                                        Text(self.groups[5][index]).tag(index)
+                                    }
+                                }
+                            }
+                        
+                        if !(classgroupnameindex == 6 || classgroupnameindex == 7 || (classgroupnameindex == 3 && classnameindex == 6) || (classgroupnameindex == 2 && classnameindex == 5) || (classgroupnameindex == 1 && classnameindex > 8)) {
+                            Picker(selection: $classlevelindex, label: Text("Level")) {
+                                Text("SL").tag(0)
+                                Text("HL").tag(1)
+                            }.pickerStyle(SegmentedPickerStyle())
                         }
                     }
-                    
-                        if classgroupnameindex == 0 {
-                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[0].count, id: \.self) { index in
-                                    Text(self.groups[0][index]).tag(index)
-                                }
-                            }
-                        }
-
-                        else if classgroupnameindex == 1 {
-                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[1].count, id: \.self) { index in
-                                    Text(self.groups[1][index]).tag(index)
-                                }
-                            }
-                        }
-                                
-                        else if classgroupnameindex == 2 {
-                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[2].count, id: \.self) { index in
-                                    Text(self.groups[2][index]).tag(index)
-                                }
-                            }
-                        }
-                                
-                        else if classgroupnameindex == 3 {
-                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[3].count, id: \.self) { index in
-                                    Text(self.groups[3][index]).tag(index)
-                                }
-                            }
-                        }
-                                
-                        else if classgroupnameindex == 4 {
-                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[4].count, id: \.self) { index in
-                                    Text(self.groups[4][index]).tag(index)
-                                }
-                            }
-                        }
-                                
-                        else if classgroupnameindex == 5 {
-                            Picker(selection: $classnameindex, label: Text("Subject: ")) {
-                                ForEach(0 ..< groups[5].count, id: \.self) { index in
-                                    Text(self.groups[5][index]).tag(index)
-                                }
-                            }
-                        }
-                    
-                    if !(classgroupnameindex == 6 || classgroupnameindex == 7 || (classgroupnameindex == 3 && classnameindex == 6) || (classgroupnameindex == 2 && classnameindex == 5) || (classgroupnameindex == 1 && classnameindex > 8)) {
-                        Picker(selection: $classlevelindex, label: Text("Level")) {
-                            Text("SL").tag(0)
-                            Text("HL").tag(1)
-                        }.pickerStyle(SegmentedPickerStyle())
+                    else
+                    {
+                        TextField("Class Name", text: self.$classnamenonib).keyboardType(.default)
                     }
                 }
                 
@@ -649,7 +657,14 @@ struct NewClassModalView: View {
 
                             VStack {
                                 HStack {
-                                    Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                                    if (self.isIB)
+                                    {
+                                        Text(!(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.groups[self.classgroupnameindex].count > self.classnameindex ? self.classnameindex : 0])").font(.system(size: 22)).fontWeight(.bold)
+                                    }
+                                    else
+                                    {
+                                        Text(self.classnamenonib).font(.system(size: 22)).fontWeight(.bold)
+                                    }
                                     
                                     Spacer()
                                     
@@ -662,9 +677,15 @@ struct NewClassModalView: View {
                 
                 Section {
                     Button(action: {
-                        let testname = !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])"
+                        var testname = !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])"
                         
-                        let shortenedtestname =  !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex])"
+                        var shortenedtestname =  !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex])"
+                        
+                        if (!self.isIB)
+                        {
+                            testname = self.classnamenonib
+                            shortenedtestname = self.classnamenonib
+                        }
                         self.createclassallowed = true
                         
                         for classity in self.classlist {
@@ -758,6 +779,11 @@ struct NewClassModalView: View {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
                 }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
+        }.onAppear()
+        {
+            let defaults = UserDefaults.standard
+            let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
+            self.isIB = ibval
         }
     }
     func getNextColor(currentColor: String) -> Color {

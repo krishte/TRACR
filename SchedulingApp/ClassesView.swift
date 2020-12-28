@@ -905,7 +905,10 @@ struct MasterClass: View {
                     }
                     counter += 1
                 }
-                tempsubassignmentlist[tempsubassignmentlist.count-1].1 -= (sumsy-totaltime)
+                if (tempsubassignmentlist.count > 0)
+                {
+                    tempsubassignmentlist[tempsubassignmentlist.count-1].1 -= (sumsy-totaltime)
+                }
             }
         }
         else {

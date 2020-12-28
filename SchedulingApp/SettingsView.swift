@@ -577,7 +577,7 @@ struct FreeTimeIndividualTest: View {
             HStack {
     //            if (!self.editingmode)
     //            {
-                Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 85, y: self.getoffset() - (self.getHeight()/2) + 15).frame(width: 200)
+                Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 114, y: self.getoffset() - (self.getHeight()/2) + 15).frame(width: 200)
 //                    Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
 //                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
 //                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)

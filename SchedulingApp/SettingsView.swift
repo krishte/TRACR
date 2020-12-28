@@ -231,7 +231,8 @@ struct TutorialView: View {
 }
 
 class FreeTimeEditingView: ObservableObject {
-    @Published var editingmode: Bool = false
+    @Published var editingmode: Bool = true
+    @Published var showsavebuttons: Bool = false
 }
 
 struct FreeTimeIndividualTest: View {
@@ -245,8 +246,10 @@ struct FreeTimeIndividualTest: View {
     @State var starttime: Date
     @State var endtime: Date
     @Binding var editingmode: Bool
+    @Binding var showsavebuttons: Bool
     @State var draggingup: Bool = false
     @State var draggingdown: Bool = false
+
 
     @State var xoffset: CGFloat = 0
     @State var inmotion: Bool = false
@@ -296,48 +299,43 @@ struct FreeTimeIndividualTest: View {
     }
     func getoffset() -> CGFloat
     {
-        if (self.editingmode)
-        {
-            var counter = 0
-            for freetime in freetimelist
-            {
-                if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
-                {
-                    if (freetime.startdatetime == self.starttime)
-                    {
-                        return CGFloat(counter)*110
-                    }
-                    counter += 1
-                }
-                
-            }
-            return 0
-            
-        }
-        else
-        {
+//        if (self.editingmode)
+//        {
+//            var counter = 0
+//            for freetime in freetimelist
+//            {
+//                if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
+//                {
+//                    if (freetime.startdatetime == self.starttime)
+//                    {
+//                        return CGFloat(counter)*110
+//                    }
+//                    counter += 1
+//                }
+//
+//            }
+//            return 0
+//
+//        }
+//        else
+//        {
             return self.yoffset
-        }
+       // }
     }
     func getHeight() -> CGFloat
     {
-        if (self.editingmode)
-        {
-            return 100
-        }
-        else
-        {
+//        if (self.editingmode)
+//        {
+//            return 100
+//        }
+//        else
+//        {
             return self.height
-        }
+   //     }
     }
     func getstarttext() -> String
     {
-        if (self.editingmode)
-        {
-            return "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!%60)"
-        }
-        else
-        {
+
             let y = Int(round(100*(self.yoffset)))
             var stringitya = String(format: "%f", (self.yoffset)/60.35)[0..<2]
             var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
@@ -351,16 +349,12 @@ struct FreeTimeIndividualTest: View {
                 stringityb += "0"
             }
             return stringitya + ":" + stringityb
-        }
+        
     }
     func getendtext() -> String
     {
-        if (self.editingmode)
-        {
-            return "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.endtime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.endtime) , to: self.endtime).minute!%60)"
-        }
-        else
-        {
+
+
             let y = Int(round(100*(self.yoffset+self.height)))
             var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
             var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
@@ -374,16 +368,21 @@ struct FreeTimeIndividualTest: View {
                 stringityb += "0"
             }
             return stringitya + ":" + stringityb
-        }
+        
     }
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
+               
                 ZStack
                 {
                     RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingup ? Color.blue : Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
                         if (!self.editingmode)
                         {
+                            withAnimation(.spring())
+                            {
+                                self.showsavebuttons = false
+                            }
                             if self.yoffset >= 0 && self.height >= 30.175 {
                                 if !(self.yoffset == 0 && value.translation.height < 0) {
                                     self.height = self.height - value.translation.height
@@ -412,19 +411,30 @@ struct FreeTimeIndividualTest: View {
                         }
                     }.onEnded {
                         _ in
-                        withAnimation(.spring())
+                        if (!self.editingmode)
                         {
-                            self.draggingup = false
+                            withAnimation(.spring())
+                            {
+                                self.showsavebuttons = true
+                            }
+                            withAnimation(.spring())
+                            {
+                                self.draggingup = false
+                            }
+                            self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
                         }
-                        self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
 
                     })
                     Image(systemName: "chevron.compact.up").resizable().foregroundColor(Color.white).frame(width: 50, height: 7).opacity(self.draggingup ? 1:0)
                             
                 }.frame(width: UIScreen.main.bounds.size.width - 80, height: 10)
-                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                RoundedRectangle(cornerRadius:  0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: self.editingmode ? 10 : 0, coordinateSpace: .local).onChanged { value in
                     if (!self.editingmode)
                     {
+                        withAnimation(.spring())
+                        {
+                            self.showsavebuttons = false
+                        }
                         if self.yoffset >= 0 {
                             self.yoffset = self.yoffset + value.translation.height
                         }
@@ -464,23 +474,69 @@ struct FreeTimeIndividualTest: View {
                         self.xoffset += value.translation.width
                     }
                 }.onEnded { _ in
-                    withAnimation(.easeInOut(duration: 0.1), {
-                        self.inmotion = false
-                    })
-                    withAnimation(.spring())
+                    if (!self.editingmode)
                     {
-                        self.xoffset = 0
-                        self.draggingup = false
-                        self.draggingdown = false
+                        withAnimation(.spring())
+                        {
+                            self.showsavebuttons = true
+                        }
+                        withAnimation(.easeInOut(duration: 0.1), {
+                            self.inmotion = false
+                        })
+                        withAnimation(.spring())
+                        {
+                            self.xoffset = 0
+                            self.draggingup = false
+                            self.draggingdown = false
+                        }
+                        
+                        self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
                     }
-                    
-                    self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
+                    else
+                    {
+                        if (self.xoffset < -1/2 * UIScreen.main.bounds.size.width)
+                        {
+                            withAnimation(.spring())
+                            {
+                                self.xoffset = -UIScreen.main.bounds.size.width
+
+                            }
+                            for (index, freetime) in freetimelist.enumerated()
+                            {
+                                if (freetime.startdatetime == self.starttime && freetime.enddatetime == self.endtime)
+                                {
+                                    if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
+                                    {
+
+                                        self.managedObjectContext.delete(self.freetimelist[index])
+
+                                        do {
+                                            try self.managedObjectContext.save()
+                                            //print("AssignmentTypes rangemin/rangemax changed")
+                                        } catch {
+                                            print(error.localizedDescription)
+                                        }
+                                        
+                                    }
+                                }
+                            }
+                            
+                        }
+                        withAnimation(.spring())
+                        {
+                            self.xoffset = 0
+                        }
+                    }
                 })
                 ZStack
                 {
                     RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingdown ? Color.blue : Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
                         if (!self.editingmode)
                         {
+                            withAnimation(.spring())
+                            {
+                                self.showsavebuttons = false
+                            }
                             if self.height >= 30.175 {
                                 self.height = self.height + value.translation.height
                             }
@@ -503,27 +559,34 @@ struct FreeTimeIndividualTest: View {
                         }
                     }.onEnded {
                         _ in
-                        withAnimation(.spring())
+                        if (!self.editingmode)
                         {
-                            self.draggingdown = false
+                            withAnimation(.spring())
+                            {
+                                self.showsavebuttons = true
+                            }
+                            withAnimation(.spring())
+                            {
+                                self.draggingdown = false
+                            }
+                            self.height = CGFloat(Int(self.height/15.09))*15.09
+                            self.height = max(self.height, 30.175)
                         }
-                        self.height = CGFloat(Int(self.height/15.09))*15.09
-                        self.height = max(self.height, 30.175)
 
                     })
                     Image(systemName: "chevron.compact.down").resizable().foregroundColor(Color.white).frame(width: 50, height: 7).opacity(self.draggingdown ? 1:0)
                 }
                 
-            }.cornerRadius(8).offset(x: (self.editingmode ? -30: -10) + self.xoffset, y: self.getoffset())
+            }.cornerRadius(8).offset(x: 20 + self.xoffset, y: self.getoffset())
              //   Text("\(Int(self.yoffset.truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 110, y: self.yoffset - (self.height/2) + 20)
                // Text("\(Int((self.yoffset+self.height).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 160, y: self.yoffset - (self.height/2) + 20)
             HStack
             {
     //            if (!self.editingmode)
     //            {
-                    Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
-                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
-                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
+                Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
+                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 150, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
+                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) +  160, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
           //      }
 //                else
 //                {
@@ -534,9 +597,31 @@ struct FreeTimeIndividualTest: View {
 //                }
                 
             }.offset(x: self.xoffset)
-                
+            
+            ZStack
+            {
+                RoundedRectangle(cornerRadius: 0, style: .continuous).fill(Color.red).frame(width: UIScreen.main.bounds.size.width, height: self.getHeight()).offset(x: UIScreen.main.bounds.size.width + self.xoffset, y: self.getoffset())
+                Text("Delete").foregroundColor(Color.white).offset(x: self.xoffset > -80 ? UIScreen.main.bounds.size.width/2+40+self.xoffset : UIScreen.main.bounds.size.width/2-40, y: self.getoffset() )
+            }
+            
+//            if (self.editingmode)
+//            {
+//                Button(action:
+//                {
+//                    print("deleting")
+//                })
+//                {
+//                    ZStack
+//                    {
+//                        RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.red).frame(width: 50, height: 100)
+//                        Image(systemName: "trash").resizable().foregroundColor(Color.black).frame(width: 15, height: 20)
+//
+//                    }
+//                }.frame(width: 50).offset(x: (UIScreen.main.bounds.size.width/2 - 45))
+//            }
             
         }
+       
     }
 }
 
@@ -546,38 +631,93 @@ struct FreeTimeTest: View {
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
     var dayslist: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    @State private var selection: Set<String> = []
+    @State private var selection: Set<String> = ["Sunday"]
     @ObservedObject var freetimeediting: FreeTimeEditingView = FreeTimeEditingView()
 
     private func selectDeselect(_ singularassignment: String) {
-        if selection.contains(singularassignment) {
-            selection.remove(singularassignment)
-        } else {
-            selection.insert(singularassignment)
-        }
+        selection.removeAll()
+        selection.insert(singularassignment)
     }
     
-    func getelementnumber(freetimeval: Freetime, dayvals: [Bool]) -> Int
+
+    func getdisplayval(freetimeval: Freetime) -> Bool
     {
-        var counter = 0
-        for freetime in freetimelist
+        if (selection.contains("Monday"))
         {
-            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
+            if (freetimeval.monday)
             {
-                if (freetime == freetimeval)
-                {
-                    return counter
-                }
-                counter += 1
+                return true;
             }
+            return false
+        }
+        else if (selection.contains("Tuesday"))
+        {
+            if (freetimeval.tuesday)
+            {
+                return true;
+            }
+            return false
             
         }
-        return 0
+        else if (selection.contains("Wednesday"))
+        {
+            if (freetimeval.wednesday)
+            {
+                return true;
+            }
+            return false
+            
+        }
+        else if (selection.contains("Thursday"))
+        {
+            if (freetimeval.thursday)
+            {
+                return true;
+            }
+            return false
+            
+        }
+        else if (selection.contains("Friday"))
+        {
+            if (freetimeval.friday)
+            {
+                return true;
+            }
+            return false
+            
+        }
+        else if (selection.contains("Saturday"))
+        {
+            if (freetimeval.saturday)
+            {
+                return true;
+            }
+            return false
+            
+        }
+        else
+        {
+            if (freetimeval.sunday)
+            {
+                return true;
+            }
+            return false
+            
+        }
+    }
+    func savefreetimes() -> Void
+    {
+        
+    }
+    func cancelfreetimes() -> Void
+    {
+        
     }
     
     var body: some View {
         VStack {
             Spacer().frame(height: 20)
+
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
                 ForEach(dayslist,  id: \.self)
                 {
@@ -585,7 +725,7 @@ struct FreeTimeTest: View {
                 
                     VStack {
                         ZStack {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.selection.contains(days) ? Color("datenumberred") : Color.white).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.selection.contains(days) ? Color("datenumberred") : Color.clear).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
                             
                             Text(String(Array(days)[0]))
                             
@@ -599,12 +739,16 @@ struct FreeTimeTest: View {
                     }
                 }
             }
-                            
+                
+
             
-            ScrollView {
-                ZStack {
-                    if (!self.freetimeediting.editingmode)
-                    {
+            
+                            
+            ZStack
+            {
+                ScrollView {
+                    ZStack {
+
                         HStack(alignment: .top) {
                             VStack(alignment: .leading) {
                                 ForEach((0...24), id: \.self) { hour in
@@ -615,58 +759,253 @@ struct FreeTimeTest: View {
                                 }.frame(height: 50).animation(.spring())
                             }
                         }
-                    }
+                        
 
-                    HStack(alignment: .top) {
-                        Spacer()
-                        VStack {
-                            Spacer().frame(height: 25)
-                            
-//                            ZStack(alignment: .topTrailing) {
-//                                ForEach(freetimelist, id: \.self) { freetime in
-//                                    FreeTimeIndividualTest(freetime: freetime)
-//                                }.animation(.spring())
-//                            }
-                            ZStack(alignment: .topTrailing) {
-//                                ForEach((0...3), id: \.self) { num in
-//                                    FreeTimeIndividualTest(yoffset: CGFloat(181.05*Double(num)))
-//                                }//.animation(.spring())
-                                ForEach(freetimelist)
-                                {
-                                    freetime in
-                                    if (self.selection.contains("Monday") == freetime.monday && self.selection.contains("Tuesday") == freetime.tuesday && self.selection.contains("Wednesday") == freetime.wednesday && self.selection.contains("Thursday") == freetime.thursday && self.selection.contains("Friday") == freetime.friday && self.selection.contains("Saturday") == freetime.saturday && self.selection.contains("Sunday") == freetime.sunday)
-                                    {
-   
-                                        FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode )
-                                        
-
-                                    }
-                                }
-                            }
+                        HStack(alignment: .top) {
                             Spacer()
+                            VStack {
+                                Spacer().frame(height: 25)
+                                
+    //                            ZStack(alignment: .topTrailing) {
+    //                                ForEach(freetimelist, id: \.self) { freetime in
+    //                                    FreeTimeIndividualTest(freetime: freetime)
+    //                                }.animation(.spring())
+    //                            }
+                                ZStack(alignment: .topTrailing) {
+    //                                ForEach((0...3), id: \.self) { num in
+    //                                    FreeTimeIndividualTest(yoffset: CGFloat(181.05*Double(num)))
+    //                                }//.animation(.spring())
+                           //         if (!self.freetimeediting.editingmode)
+                                 //   {
+                                        ForEach(freetimelist)
+                                        {
+                                            freetime in
+                                        
+                                            if (getdisplayval(freetimeval: freetime))
+                                            {
+           
+                                                FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons )
+                                                
+
+                                            }
+                                                
+                                            
+                                        }
+
+                                }
+                                Spacer()
+                            }
                         }
                     }
                 }
+            
+                HStack
+                {
+                    if (self.freetimeediting.showsavebuttons)
+                    {
+                        Button(action:{
+                            self.savefreetimes()
+                            self.freetimeediting.editingmode.toggle()
+                            self.freetimeediting.showsavebuttons.toggle()
+                        })
+                        {
+                            ZStack
+                            {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.gray).frame(width: 150, height: 50)
+                                Text("Save").foregroundColor(Color.blue)
+                                
+                            }
+                        }
+                        Spacer().frame(width:20)
+                        Button(action:{
+                                self.cancelfreetimes()
+                                self.freetimeediting.editingmode.toggle()
+                                self.freetimeediting.showsavebuttons.toggle()
+                            
+                        })
+                        {
+                            ZStack
+                            {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.gray).frame(width: 150, height: 50)
+                                Text("Cancel").foregroundColor(Color.red)
+                                
+                            }
+                        }
+                        
+                    }
+                }.offset(x:20, y: UIScreen.main.bounds.size.height/2-160)
+            
             }
         }.navigationBarTitle("Free Time Editing", displayMode: .inline)
         .toolbar
         {
+            
             ToolbarItem(placement: .navigationBarTrailing )
             {
-                Button(action: {
-                    withAnimation(.spring())
+
+                    Button(action: {
+                        withAnimation(.spring())
+                        {
+                            self.freetimeediting.editingmode.toggle()
+                            self.freetimeediting.showsavebuttons.toggle()
+                        }
+                    })
                     {
-                        self.freetimeediting.editingmode.toggle()
+                        Image(systemName: self.freetimeediting.editingmode ? "pencil.circle" : "pencil.circle.fill").resizable().scaledToFit()
+                        
+                        
                     }
-                })
-                {
-                    Image(systemName: self.freetimeediting.editingmode ? "pencil.circle.fill" : "pencil.circle").resizable().scaledToFit()
-                }
+                
             }
         }
     }
 }
 
+struct SyllabusView: View {
+    @State var selectedsyllabus: Int = 0
+    @State var isIB: Bool = false
+    var syllabuslist: [String] = ["Percentage-based", "Letter-based", "Number-based"]
+    var badlettergrades: [String] = ["E", "F"]
+    @State var selectedbadlettergrade: Int = 0
+    var goodnumbergrades: [Int] = [4, 5, 6, 7, 8, 9, 10]
+    @State var selectedgoodnumbergrade: Int = 0
+    
+ 
+    var body: some View
+    {
+        
+        VStack
+        {
+            Form
+            {
+                Section {
+                    Toggle(isOn: $isIB)
+                    {
+                        Text("IB or not IB")
+                    }
+
+                }
+                    
+                Section
+                {
+                    Picker(selection: $selectedsyllabus, label: Text("Grading Scheme")) {
+                        ForEach(0..<syllabuslist.count) {
+                            val in
+                            Text(syllabuslist[val])
+
+
+                        }
+                    }.pickerStyle(WheelPickerStyle())
+                }
+                
+                Section
+                {
+
+                    if (selectedsyllabus == 1)
+                    {
+                        HStack
+                        {
+                            Text("Best Grade")
+                            Spacer()
+                            Text("A").foregroundColor(Color.gray)
+                        }
+                        VStack
+                        {
+                            HStack
+                            {
+                                Text("Worst Grade:")
+                                Spacer()
+                            }
+                            Picker(selection: $selectedbadlettergrade, label: Text("Worst Grade"))
+                            {
+                                ForEach(0..<badlettergrades.count)
+                                {
+                                    val in
+                                    Text(badlettergrades[val])
+                                }
+                            }.pickerStyle(SegmentedPickerStyle())
+                        }
+                    }
+                    if (selectedsyllabus == 2)
+                    {
+                        HStack
+                        {
+                            Text("Worst Grade")
+                            Spacer()
+                            Text("1").foregroundColor(Color.gray)
+                        }
+                        VStack
+                        {
+                            HStack
+                            {
+                                Text("Best Grade:")
+                                Spacer()
+                            }
+                            Picker(selection: $selectedgoodnumbergrade, label: Text("Best Grade"))
+                            {
+                                ForEach(0..<goodnumbergrades.count)
+                                {
+                                    val in
+                                    Text(String(goodnumbergrades[val]))
+                                }
+                            }.pickerStyle(WheelPickerStyle())
+                        }
+                    }
+                }
+            }
+
+        }.onAppear()
+        {
+            let defaults = UserDefaults.standard
+            let gradingscheme = defaults.object(forKey: "savedgradingscheme") as? String ?? ""
+        //    print(gradingscheme)
+            let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
+            isIB = ibval
+         //   print(ibval)
+            print(gradingscheme, ibval)
+          //  selectedsyllabus = 1
+            if (gradingscheme.count > 0)
+            {
+                if (gradingscheme[0..<1] == "P")
+                {
+                    selectedsyllabus = 0
+                }
+                else if (gradingscheme[0..<1] == "L")
+                {
+                    selectedsyllabus = 1
+                    selectedbadlettergrade = badlettergrades.firstIndex(of: gradingscheme[3..<4]) ?? 0
+                }
+                else
+                {
+                    selectedsyllabus = 2
+                    selectedgoodnumbergrade = goodnumbergrades.firstIndex(of: Int(gradingscheme[3..<gradingscheme.count]) ?? 4) ?? 0
+                }
+            }
+            print(selectedsyllabus)
+        }.onDisappear()
+        {
+            let defaults = UserDefaults.standard
+            defaults.set(isIB, forKey: "isIB")
+            if (selectedsyllabus == 0)
+            {
+                defaults.set("P", forKey: "savedgradingscheme")
+                //print("P")
+            }
+            else if (selectedsyllabus == 1)
+            {
+                defaults.set("LA-" + badlettergrades[selectedbadlettergrade], forKey: "savedgradingscheme")
+              //  print("LA-" + badlettergrades[selectedbadlettergrade])
+            }
+            else
+            {
+                defaults.set("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]), forKey: "savedgradingscheme")
+                //print("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
+            }
+//            //defaults.set("hello", forKey: "savedbreakvalue")
+        }
+        
+    }
+}
 
 struct SettingsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -847,6 +1186,20 @@ struct SettingsView: View {
                     }
                 }
                     
+                Section {
+                    NavigationLink(destination:
+                        SyllabusView()
+                    ) {
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.purple).frame(width:40, height:40)
+                                Image(systemName: "doc.plaintext").resizable().frame(width:25, height:25)
+                            }
+                            Spacer().frame(width:20)
+                            Text("Syllabus").font(.system(size:20))
+                        }.frame(height:40)
+                    }
+                }
                 Section {
                     HStack {
                         Text("Version:")

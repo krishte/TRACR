@@ -179,7 +179,11 @@ struct TutorialFirstPageView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            Text("Tutorial Contents").font(.largeTitle)
+            HStack(spacing: 23) {
+                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 80, height: 80).cornerRadius(10)
+                
+                Text("Tutorial").font(.largeTitle).fontWeight(.light)
+            }
             
             Spacer().frame(height: 20)
             
@@ -189,10 +193,13 @@ struct TutorialFirstPageView: View {
                         self.tutorialPageSelected = tag
                     }
                 }) {
-                    Text("\(tag). \(self.TutorialTitles[tag - 1])").font(.system(size: 20)).padding(.all, 7)
+                    HStack {
+                        Text("\(tag).").font(.system(size: 25)).fontWeight(.bold).frame(width: 45)
+                        Text("\(self.TutorialTitles[tag - 1])").font(.system(size: 23)).fontWeight(.light)
+                    }.padding(.all, 7)
                 }
             }
-        }//.frame(width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height)//.padding(.leading, 35).padding(.trailing, 20).padding(.bottom, 5)
+        }
     }
 }
 
@@ -201,7 +208,6 @@ struct TutorialView: View {
     
     var body: some View {
         VStack {
-           // Text("hello")
             if #available(iOS 14.0, *) {
                 TabView(selection: $tutorialPageSelected) {
                     Group {
@@ -254,16 +260,11 @@ struct FreeTimeIndividualTest: View {
     @State var xoffset: CGFloat = 0
     @State var inmotion: Bool = false
     
-    
-    func getmaxtop() -> CGFloat
-    {
+    func getmaxtop() -> CGFloat {
         var maxdate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))
-        for freetime in freetimelist
-        {
-            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
-            {
-                if (freetime.enddatetime > maxdate && freetime.enddatetime < starttime)
-                {
+        for freetime in freetimelist {
+            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6]) {
+                if (freetime.enddatetime > maxdate && freetime.enddatetime < starttime) {
                     maxdate = freetime.enddatetime
                 }
             }
@@ -271,18 +272,14 @@ struct FreeTimeIndividualTest: View {
 //        print(maxdate.description, Calendar.current.startOfDay(for: maxdate).description)
 //        print("maxtop", CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60)
         return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60
-        
     }
     
-    func getmaxbottom() -> CGFloat
-    {
+    func getmaxbottom() -> CGFloat {
         var mindate = Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-        for freetime in freetimelist
-        {
-            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
-            {
-                if (freetime.startdatetime < mindate && freetime.startdatetime > endtime)
-                {
+        
+        for freetime in freetimelist {
+            if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6]) {
+                if (freetime.startdatetime < mindate && freetime.startdatetime > endtime) {
                     mindate = freetime.startdatetime
                 }
             }
@@ -290,12 +287,11 @@ struct FreeTimeIndividualTest: View {
 //        print(mindate.description)
 //        print("maxbottom",  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
 //)
-        if (mindate == Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))))
-        {
+        if (mindate == Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))) {
             return CGFloat(24*60.35)
         }
-        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
         
+        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
     }
     func getoffset() -> CGFloat
     {
@@ -340,14 +336,14 @@ struct FreeTimeIndividualTest: View {
             var stringitya = String(format: "%f", (self.yoffset)/60.35)[0..<2]
             var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
             
-            if (stringitya.contains("."))
-            {
+            if (stringitya.contains(".")) {
                 stringitya = "0" + String(stringitya[0..<1])
             }
-            if (stringityb.count == 1)
-            {
+            
+            if (stringityb.count == 1) {
                 stringityb += "0"
             }
+            
             return stringitya + ":" + stringityb
         
     }
@@ -359,17 +355,18 @@ struct FreeTimeIndividualTest: View {
             var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
             var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
             
-            if (stringitya.contains("."))
-            {
+            if (stringitya.contains(".")) {
                 stringitya = "0" + String(stringitya[0..<1])
             }
-            if (stringityb.count == 1)
-            {
+            
+            if (stringityb.count == 1) {
                 stringityb += "0"
             }
+            
             return stringitya + ":" + stringityb
         
     }
+    
     var body: some View {
         ZStack {
             VStack(spacing: 0) {
@@ -389,22 +386,23 @@ struct FreeTimeIndividualTest: View {
                                     self.yoffset = self.yoffset + value.translation.height
                                 }
                             }
-                            withAnimation(.spring())
-                            {
+                            
+                            withAnimation(.spring()) {
                                 self.draggingup = true
                             }
+                            
                             if self.yoffset < 0 {
                                 self.yoffset = 0
                             }
                             
-                            if (self.yoffset < getmaxtop())
-                            {
+                            if (self.yoffset < getmaxtop()) {
                                 self.yoffset = getmaxtop()
                             }
-                            if (self.yoffset+self.height > getmaxbottom())
-                            {
+                            
+                            if (self.yoffset+self.height > getmaxbottom()) {
                                 self.yoffset = getmaxbottom()-self.height
                             }
+                            
                             if self.height < 30.175 {
                                 self.height = 30.175
                             }
@@ -425,8 +423,8 @@ struct FreeTimeIndividualTest: View {
                         }
 
                     })
-                    Image(systemName: "chevron.compact.up").resizable().foregroundColor(Color.white).frame(width: 50, height: 7).opacity(self.draggingup ? 1:0)
-                            
+                    
+                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingup ? 1 : 0)
                 }.frame(width: UIScreen.main.bounds.size.width - 80, height: 10)
                 RoundedRectangle(cornerRadius:  0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: self.editingmode ? 10 : 0, coordinateSpace: .local).onChanged { value in
                     if (!self.editingmode)
@@ -438,39 +436,34 @@ struct FreeTimeIndividualTest: View {
                         if self.yoffset >= 0 {
                             self.yoffset = self.yoffset + value.translation.height
                         }
-                        
                       //  self.xoffset += value.translation.width
-                        
                         if self.yoffset < 0 {
                             self.yoffset = 0
                         }
                         
-                        if (self.yoffset < getmaxtop())
-                        {
+                        if (self.yoffset < getmaxtop()) {
                             self.yoffset = getmaxtop()
                         }
                         
-                        if (self.yoffset+self.height > getmaxbottom())
-                        {
+                        if (self.yoffset+self.height > getmaxbottom()) {
                             self.yoffset = getmaxbottom()-self.height
                         }
-                        if ((self.yoffset+self.height)/60.35 >= 24)
-                        {
+                        
+                        if ((self.yoffset+self.height)/60.35 >= 24) {
                             self.yoffset = 24*60.35-self.height
                         }
-                        withAnimation(.spring())
-                        {
+                        
+                        withAnimation(.spring()) {
                             self.draggingup = true
                             self.draggingdown = true
                         }
 
-                        
                         withAnimation(.easeInOut(duration: 0.1), {
                             self.inmotion = true
                         })
                     }
-                    else
-                    {
+                    
+                    else {
                         self.xoffset += value.translation.width
                     }
                 }.onEnded { _ in
@@ -544,16 +537,16 @@ struct FreeTimeIndividualTest: View {
                             if self.height < 30.175 {
                                 self.height = 30.175
                             }
-                            if (self.yoffset+self.height > getmaxbottom())
-                            {
+                            
+                            if (self.yoffset+self.height > getmaxbottom()) {
                                 self.height = getmaxbottom() - self.yoffset
                             }
-                            if ((self.yoffset+self.height)/60.35 >= 24)
-                            {
+                            
+                            if ((self.yoffset+self.height)/60.35 >= 24) {
                                 self.height = 24*60.35-self.yoffset
                             }
-                            withAnimation(.spring())
-                            {
+                            
+                            withAnimation(.spring()) {
                                 self.draggingdown = true
                             }
                         }
@@ -574,19 +567,20 @@ struct FreeTimeIndividualTest: View {
                         }
 
                     })
-                    Image(systemName: "chevron.compact.down").resizable().foregroundColor(Color.white).frame(width: 50, height: 7).opacity(self.draggingdown ? 1:0)
+                    
+                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingdown ? 1 : 0)
                 }
                 
             }.cornerRadius(8).offset(x: 20 + self.xoffset, y: self.getoffset())
              //   Text("\(Int(self.yoffset.truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 110, y: self.yoffset - (self.height/2) + 20)
                // Text("\(Int((self.yoffset+self.height).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 160, y: self.yoffset - (self.height/2) + 20)
-            HStack
-            {
+            HStack {
     //            if (!self.editingmode)
     //            {
-                Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
-                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 150, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
-                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) +  160, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
+                Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 85, y: self.getoffset() - (self.getHeight()/2) + 15).frame(width: 200)
+//                    Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
+//                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
+//                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
           //      }
 //                else
 //                {
@@ -595,7 +589,6 @@ struct FreeTimeIndividualTest: View {
 //                    Text("\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.endtime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.endtime) , to: self.endtime).minute!%60)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
 //
 //                }
-                
             }.offset(x: self.xoffset)
             
             ZStack
@@ -714,26 +707,36 @@ struct FreeTimeTest: View {
         
     }
     
+    @State var shouldrotate = false
+    @State var rotationdegree = 15.0
+    
+    @State var wiggleanimation: Animation = Animation.linear(duration: 0)
+    
     var body: some View {
         VStack {
             Spacer().frame(height: 20)
 
             HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
-                ForEach(dayslist,  id: \.self)
-                {
-                    days in
-                
+                ForEach(dayslist,  id: \.self) { days in
                     VStack {
                         ZStack {
                             RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.selection.contains(days) ? Color("datenumberred") : Color.clear).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
                             
                             Text(String(Array(days)[0]))
-                            
-                            
-                        }.onTapGesture {
-                            withAnimation(.spring())
-                            {
+                        }.rotationEffect(self.shouldrotate ? Angle.degrees(self.rotationdegree) : Angle.degrees(-15.0)).onTapGesture {
+                            withAnimation(.spring()) {
                                 self.selectDeselect(days)
+                            }
+                            
+                            withAnimation(self.wiggleanimation) {
+                                self.shouldrotate.toggle()
+                                
+                                if self.shouldrotate {
+                                    self.wiggleanimation = Animation.easeInOut(duration: 0.16).repeatForever(autoreverses: true)
+                                }
+                                else {
+                                    self.wiggleanimation = Animation.linear(duration: 0)
+                                }
                             }
                         }
                     }

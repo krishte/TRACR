@@ -857,7 +857,7 @@ struct FreeTimeTest: View {
                                                 if (getdisplayval(freetimeval: freetime))
                                                 {
                
-                                                    FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons )
+                                                    FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime)
                                                     
 
                                                 }
@@ -930,11 +930,6 @@ struct FreeTimeTest: View {
                             Text("Free Time")
                             Image(systemName: "clock")
                         }
-                    })
-                    {
-                        Text("Edit").fontWeight(.bold).foregroundColor(Color.blue)
-                        
-                        
                     }
                 }
             }
@@ -947,7 +942,7 @@ struct FreeTimeTest: View {
                         self.freetimeediting.showsavebuttons.toggle()
                     }
                 }) {
-                    Image(systemName: self.freetimeediting.editingmode ? "pencil.circle" : "pencil.circle.fill").resizable().scaledToFit()
+                    Text("Edit").fontWeight(.bold).foregroundColor(Color.blue)
                 }
             }
         }

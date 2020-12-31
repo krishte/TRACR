@@ -349,8 +349,6 @@ struct FreeTimeIndividualTest: View {
     }
     func getendtext() -> String
     {
-
-
             let y = Int(round(100*(self.yoffset+self.height)))
             var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
             var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
@@ -364,7 +362,6 @@ struct FreeTimeIndividualTest: View {
             }
             
             return stringitya + ":" + stringityb
-        
     }
     
     var body: some View {
@@ -373,7 +370,7 @@ struct FreeTimeIndividualTest: View {
                
                 ZStack
                 {
-                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingup ? Color.blue : Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingup ? Color("three") : Color("three")).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
                         if (!self.editingmode)
                         {
                             withAnimation(.spring())
@@ -426,7 +423,7 @@ struct FreeTimeIndividualTest: View {
                     
                     Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingup ? 1 : 0)
                 }.frame(width: UIScreen.main.bounds.size.width - 80, height: 10)
-                RoundedRectangle(cornerRadius:  0, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: self.editingmode ? 10 : 0, coordinateSpace: .local).onChanged { value in
+                RoundedRectangle(cornerRadius:  0, style: .continuous).fill(Color("three")).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: self.editingmode ? 10 : 0, coordinateSpace: .local).onChanged { value in
                     if (!self.editingmode)
                     {
                         withAnimation(.spring())
@@ -464,7 +461,9 @@ struct FreeTimeIndividualTest: View {
                     }
                     
                     else {
-                        self.xoffset += value.translation.width
+//                        if self.xoffset < 40 {
+                            self.xoffset += value.translation.width
+//                        }
                     }
                 }.onEnded { _ in
                     if (!self.editingmode)
@@ -523,7 +522,7 @@ struct FreeTimeIndividualTest: View {
                 })
                 ZStack
                 {
-                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingdown ? Color.blue : Color.blue).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
+                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(self.draggingdown ? Color("three") : Color("three")).frame(width: UIScreen.main.bounds.size.width - 80, height: 10).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
                         if (!self.editingmode)
                         {
                             withAnimation(.spring())
@@ -577,7 +576,8 @@ struct FreeTimeIndividualTest: View {
             HStack {
     //            if (!self.editingmode)
     //            {
-                Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 114, y: self.getoffset() - (self.getHeight()/2) + 15).frame(width: 200)
+                Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(y: self.getoffset() - (self.getHeight()/2) + 15).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 65)
+                Spacer()
 //                    Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
 //                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
 //                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
@@ -623,8 +623,8 @@ struct FreeTimeTest: View {
 
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
-    var dayslist: [String] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-    @State private var selection: Set<String> = ["Sunday"]
+    var dayslist: [String] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    @State private var selection: Set<String> = ["Monday"]
     @ObservedObject var freetimeediting: FreeTimeEditingView = FreeTimeEditingView()
 
     private func selectDeselect(_ singularassignment: String) {
@@ -707,162 +707,183 @@ struct FreeTimeTest: View {
         
     }
     
-    @State var shouldrotate = false
-    @State var rotationdegree = 15.0
-    
-    @State var wiggleanimation: Animation = Animation.linear(duration: 0)
+    @State var rotationdegree = 20.0
     
     var body: some View {
-        VStack {
-            Spacer().frame(height: 20)
+        ZStack {
+            VStack {
+                Spacer().frame(height: 20)
 
-            HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
-                ForEach(dayslist,  id: \.self) { days in
-                    VStack {
+                HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+                    ForEach(dayslist,  id: \.self) { day in
                         ZStack {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.selection.contains(days) ? Color("datenumberred") : Color.clear).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.selection.contains(day) ? Color("datenumberred") : Color.clear).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).animation(.easeInOut(duration: 0.14))
                             
-                            Text(String(Array(days)[0]))
-                        }.rotationEffect(self.shouldrotate ? Angle.degrees(self.rotationdegree) : Angle.degrees(-15.0)).onTapGesture {
-                            withAnimation(.spring()) {
-                                self.selectDeselect(days)
+                            Text(String(Array(day)[0..<3]))
+                        }.rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(self.rotationdegree) : Angle.degrees(0.0))
+                        .animation((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Animation.easeInOut(duration: 0.1).repeatForever(autoreverses: true) : Animation.linear(duration: 0))
+                        .rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(-10.0) : Angle.degrees(0.0))
+                        .animation(.easeInOut(duration: 0.14))
+                        .onTapGesture {
+                            if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
+                                self.freetimeediting.editingmode = true
+                                self.freetimeediting.showsavebuttons = false
+                            }
+
+                            else {
+                                self.selectDeselect(day)
+                            }
+                        }.onLongPressGesture(minimumDuration: 0.45) {
+                            if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
+                                self.freetimeediting.editingmode = true
+                                self.freetimeediting.showsavebuttons = false
                             }
                             
-                            withAnimation(self.wiggleanimation) {
-                                self.shouldrotate.toggle()
-                                
-                                if self.shouldrotate {
-                                    self.wiggleanimation = Animation.easeInOut(duration: 0.16).repeatForever(autoreverses: true)
-                                }
-                                else {
-                                    self.wiggleanimation = Animation.linear(duration: 0)
-                                }
+                            else {
+                                self.selectDeselect(day)
+                                self.freetimeediting.editingmode = false
+                                self.freetimeediting.showsavebuttons = true
                             }
                         }
                     }
                 }
-            }
+                    
+
                 
-
-            
-            
-                            
-            ZStack
-            {
-                ScrollView {
-                    ZStack {
-
-                        HStack(alignment: .top) {
-                            VStack(alignment: .leading) {
-                                ForEach((0...24), id: \.self) { hour in
-                                    HStack {
-                                        Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
-                                        Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
-                                    }
-                                }.frame(height: 50).animation(.spring())
-                            }
-                        }
-                        
-
-                        HStack(alignment: .top) {
-                            Spacer()
-                            VStack {
-                                Spacer().frame(height: 25)
+                
                                 
-    //                            ZStack(alignment: .topTrailing) {
-    //                                ForEach(freetimelist, id: \.self) { freetime in
-    //                                    FreeTimeIndividualTest(freetime: freetime)
-    //                                }.animation(.spring())
-    //                            }
-                                ZStack(alignment: .topTrailing) {
-    //                                ForEach((0...3), id: \.self) { num in
-    //                                    FreeTimeIndividualTest(yoffset: CGFloat(181.05*Double(num)))
-    //                                }//.animation(.spring())
-                           //         if (!self.freetimeediting.editingmode)
-                                 //   {
-                                        ForEach(freetimelist)
-                                        {
-                                            freetime in
-                                        
-                                            if (getdisplayval(freetimeval: freetime))
-                                            {
-           
-                                                FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons )
-                                                
+                ZStack
+                {
+                    ScrollView {
+                        ZStack {
 
-                                            }
-                                                
-                                            
+                            HStack(alignment: .top) {
+                                VStack(alignment: .leading) {
+                                    ForEach((0...24), id: \.self) { hour in
+                                        HStack {
+                                            Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
+                                            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
                                         }
-
+                                    }.frame(height: 50).animation(.spring())
                                 }
+                            }
+                            
+
+                            HStack(alignment: .top) {
                                 Spacer()
+                                VStack {
+                                    Spacer().frame(height: 25)
+                                    
+        //                            ZStack(alignment: .topTrailing) {
+        //                                ForEach(freetimelist, id: \.self) { freetime in
+        //                                    FreeTimeIndividualTest(freetime: freetime)
+        //                                }.animation(.spring())
+        //                            }
+                                    ZStack(alignment: .topTrailing) {
+        //                                ForEach((0...3), id: \.self) { num in
+        //                                    FreeTimeIndividualTest(yoffset: CGFloat(181.05*Double(num)))
+        //                                }//.animation(.spring())
+                               //         if (!self.freetimeediting.editingmode)
+                                     //   {
+                                            ForEach(freetimelist)
+                                            {
+                                                freetime in
+                                            
+                                                if (getdisplayval(freetimeval: freetime))
+                                                {
+               
+                                                    FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons )
+                                                    
+
+                                                }
+                                                    
+                                                
+                                            }
+
+                                    }
+                                    Spacer()
+                                }
                             }
                         }
                     }
-                }
-            
-                HStack
-                {
-                    if (self.freetimeediting.showsavebuttons)
+                
+                    HStack
                     {
-                        Button(action:{
-                            self.savefreetimes()
-                            self.freetimeediting.editingmode.toggle()
-                            self.freetimeediting.showsavebuttons.toggle()
-                        })
+                        if (self.freetimeediting.showsavebuttons)
                         {
-                            ZStack
-                            {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.gray).frame(width: 150, height: 50)
-                                Text("Save").foregroundColor(Color.blue)
-                                
-                            }
-                        }
-                        Spacer().frame(width:20)
-                        Button(action:{
-                                self.cancelfreetimes()
+                            Button(action:{
+                                self.savefreetimes()
                                 self.freetimeediting.editingmode.toggle()
                                 self.freetimeediting.showsavebuttons.toggle()
-                            
-                        })
-                        {
-                            ZStack
+                            })
                             {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.gray).frame(width: 150, height: 50)
-                                Text("Cancel").foregroundColor(Color.red)
-                                
+                                ZStack
+                                {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.gray).frame(width: 150, height: 50)
+                                    Text("Save").foregroundColor(Color.blue)
+                                    
+                                }
                             }
+                            Spacer().frame(width:20)
+                            Button(action:{
+                                    self.cancelfreetimes()
+                                    self.freetimeediting.editingmode.toggle()
+                                    self.freetimeediting.showsavebuttons.toggle()
+                                
+                            })
+                            {
+                                ZStack
+                                {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.gray).frame(width: 150, height: 50)
+                                    Text("Cancel").foregroundColor(Color.red)
+                                    
+                                }
+                            }
+                            
                         }
-                        
-                    }
-                }.offset(x:20, y: UIScreen.main.bounds.size.height/2-160)
-            
+                    }.offset(x: 20, y: UIScreen.main.bounds.size.height/2-160)
+                }
             }
-        }.navigationBarTitle("Free Time Editing", displayMode: .inline)
-        .toolbar
-        {
-            
-            ToolbarItem(placement: .navigationBarTrailing )
-            {
-
+//End of main VStack, Start of Add Button
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    
                     Button(action: {
-                        withAnimation(.spring())
-                        {
-                            self.freetimeediting.editingmode.toggle()
-                            self.freetimeediting.showsavebuttons.toggle()
+                        print("add button clicked")
+                    }) {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
+                            ZStack {
+                                Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                            }
+                        )
+                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                        Button(action: {
+                            print("add button clicked")
+                        }) {
+                            Text("Free Time")
+                            Image(systemName: "clock")
                         }
-                    })
-                    {
-                        Image(systemName: self.freetimeediting.editingmode ? "pencil.circle" : "pencil.circle.fill").resizable().scaledToFit()
-                        
-                        
                     }
-                
+                }
+            }
+        }.navigationBarTitle("Free Time Editing", displayMode: .large)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    withAnimation(.spring()) {
+                        self.freetimeediting.editingmode = true
+                        self.freetimeediting.showsavebuttons.toggle()
+                    }
+                }) {
+                    Image(systemName: self.freetimeediting.editingmode ? "pencil.circle" : "pencil.circle.fill").resizable().scaledToFit()
+                }
             }
         }
     }
 }
+
 
 struct SyllabusView: View {
     @State var selectedsyllabus: Int = 0

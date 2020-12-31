@@ -32,8 +32,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "332"
             endingLineNumber = "332"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -62,8 +62,8 @@
             filePath = "SchedulingApp/SettingsView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1370"
-            endingLineNumber = "1370"
+            startingLineNumber = "1425"
+            endingLineNumber = "1425"
             landmarkName = "body"
             landmarkType = "24">
             <Locations>
@@ -110,10 +110,10 @@
             filePath = "SchedulingApp/ModalViews.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "896"
-            endingLineNumber = "896"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "906"
+            endingLineNumber = "906"
+            landmarkName = "repetitionTextCreator(_:)"
+            landmarkType = "7">
             <Locations>
                <Location
                   uuid = "84018ED3-0F64-41D5-8E04-21351D03EB47 - a33b48e0a919012c"
@@ -256,8 +256,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "344"
             endingLineNumber = "344"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

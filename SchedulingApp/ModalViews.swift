@@ -430,6 +430,7 @@ struct NewClassModalView: View {
     
     @State private var createclassallowed = true
     @State private var showingAlert = false
+    @State var gradingscheme = ""
     
     @State var customcolor1: Color = Color("one")
     @State var customcolor2: Color = Color("one-b")
@@ -530,6 +531,11 @@ struct NewClassModalView: View {
                             }
                         }
                     }.padding(.bottom, 8)
+                }
+                
+                Section
+                {
+                    Text("Grading Scheme: " + self.gradingscheme)
                 }
                 
                 Section {
@@ -705,6 +711,7 @@ struct NewClassModalView: View {
                             newClass.assignmentnumber = 0
                             newClass.originalname = testname
                             newClass.isTrash = false
+                            newClass.gradingscheme = self.gradingscheme
                          //   newClass.isarchived = false
                             
                             if self.customcolorchosen {
@@ -784,6 +791,9 @@ struct NewClassModalView: View {
             let defaults = UserDefaults.standard
             let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
             self.isIB = ibval
+            let gradingscheme2 = defaults.object(forKey: "savedgradingscheme") as? String ?? ""
+            self.gradingscheme = gradingscheme2
+            
         }
     }
     func getNextColor(currentColor: String) -> Color {
@@ -1297,7 +1307,7 @@ struct NewFreetimeModalView: View {
                                     newComponents.second = timeComponents.second
                                      
                                     newFreetime.startdatetime = calendar.date(from: newComponents)!
-                                    
+                                    newFreetime.tempstartdatetime = calendar.date(from: newComponents)!
                                     let timeComponents2 = calendar.dateComponents([.hour, .minute, .second], from: self.selectedenddatetime)
                                     
                                     var newComponents2 = DateComponents()
@@ -1309,6 +1319,7 @@ struct NewFreetimeModalView: View {
                                     newComponents2.second = timeComponents2.second
                                     
                                     newFreetime.enddatetime = calendar.date(from: newComponents2)!
+                                    newFreetime.tempenddatetime =  calendar.date(from: newComponents2)!
                                 }
      
                                 else {
@@ -1333,8 +1344,10 @@ struct NewFreetimeModalView: View {
                                     newComponents2.second = timeComponents2.second
                                     
                                     newFreetime.startdatetime = Calendar.current.date(from: newComponents)!
+                                    newFreetime.tempstartdatetime = Calendar.current.date(from: newComponents)!
                                     
                                     newFreetime.enddatetime = Calendar.current.date(from: newComponents2)!
+                                    newFreetime.tempenddatetime = Calendar.current.date(from: newComponents2)!
                                 }
                                 
                                 newFreetime.monday = false

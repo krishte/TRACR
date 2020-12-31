@@ -253,8 +253,10 @@ struct FreeTimeIndividualTest: View {
     @State var endtime: Date
     @Binding var editingmode: Bool
     @Binding var showsavebuttons: Bool
+    @State var freetimeobject: Freetime
     @State var draggingup: Bool = false
     @State var draggingdown: Bool = false
+    @State var changingheightallowed = true
 
 
     @State var xoffset: CGFloat = 0
@@ -264,8 +266,8 @@ struct FreeTimeIndividualTest: View {
         var maxdate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))
         for freetime in freetimelist {
             if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6]) {
-                if (freetime.enddatetime > maxdate && freetime.enddatetime < starttime) {
-                    maxdate = freetime.enddatetime
+                if (freetime.tempenddatetime > maxdate && freetime.tempenddatetime <= freetimeobject.tempstartdatetime) {
+                    maxdate = freetime.tempenddatetime
                 }
             }
         }
@@ -279,8 +281,8 @@ struct FreeTimeIndividualTest: View {
         
         for freetime in freetimelist {
             if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6]) {
-                if (freetime.startdatetime < mindate && freetime.startdatetime > endtime) {
-                    mindate = freetime.startdatetime
+                if (freetime.tempstartdatetime < mindate && freetime.tempstartdatetime >= freetimeobject.tempenddatetime) {
+                    mindate = freetime.tempstartdatetime
                 }
             }
         }
@@ -331,10 +333,12 @@ struct FreeTimeIndividualTest: View {
     }
     func getstarttext() -> String
     {
-
+        
             let y = Int(round(100*(self.yoffset)))
+        
+       // print("Starttime: " + "\(Double(y%6035)/Double(6035)*4)")
             var stringitya = String(format: "%f", (self.yoffset)/60.35)[0..<2]
-            var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
+        var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4+0.01)*15)"
             
             if (stringitya.contains(".")) {
                 stringitya = "0" + String(stringitya[0..<1])
@@ -353,7 +357,7 @@ struct FreeTimeIndividualTest: View {
 
             let y = Int(round(100*(self.yoffset+self.height)))
             var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
-            var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4)*15)"
+        var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4 + 0.01)*15)"
             
             if (stringitya.contains(".")) {
                 stringitya = "0" + String(stringitya[0..<1])
@@ -380,13 +384,19 @@ struct FreeTimeIndividualTest: View {
                             {
                                 self.showsavebuttons = false
                             }
+
                             if self.yoffset >= 0 && self.height >= 30.175 {
                                 if !(self.yoffset == 0 && value.translation.height < 0) {
-                                    self.height = self.height - value.translation.height
+                                    if (self.changingheightallowed)
+                                    {
+                                        self.height = self.height - value.translation.height
+                                    }
                                     self.yoffset = self.yoffset + value.translation.height
                                 }
                             }
-                            
+                            if self.height < 30.175 {
+                                self.height = 30.175
+                            }
                             withAnimation(.spring()) {
                                 self.draggingup = true
                             }
@@ -397,15 +407,18 @@ struct FreeTimeIndividualTest: View {
                             
                             if (self.yoffset < getmaxtop()) {
                                 self.yoffset = getmaxtop()
+                                self.changingheightallowed = false
+                            }
+                            else
+                            {
+                                self.changingheightallowed = true
                             }
                             
                             if (self.yoffset+self.height > getmaxbottom()) {
                                 self.yoffset = getmaxbottom()-self.height
                             }
                             
-                            if self.height < 30.175 {
-                                self.height = 30.175
-                            }
+
                         }
                     }.onEnded {
                         _ in
@@ -419,7 +432,21 @@ struct FreeTimeIndividualTest: View {
                             {
                                 self.draggingup = false
                             }
-                            self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
+                            self.yoffset = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09)
+                            let y = Int(round(100*(self.yoffset)))
+                            let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
+                            freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                            
+                            let x = Int(round(100*((self.yoffset+self.height))))
+                            let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
+                            freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                            do {
+                                try self.managedObjectContext.save()
+                                //print("AssignmentTypes rangemin/rangemax changed")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
                         }
 
                     })
@@ -483,7 +510,21 @@ struct FreeTimeIndividualTest: View {
                             self.draggingdown = false
                         }
                         
-                        self.yoffset = CGFloat(Int(self.yoffset/15.09))*15.09
+                        self.yoffset = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09)
+                        let y = Int(round(100*(self.yoffset)))
+                        let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
+                        freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                        
+                        let x = Int(round(100*((self.yoffset+self.height))))
+                        let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
+                        freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                        do {
+                            try self.managedObjectContext.save()
+                            //print("AssignmentTypes rangemin/rangemax changed")
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                        
                     }
                     else
                     {
@@ -562,8 +603,24 @@ struct FreeTimeIndividualTest: View {
                             {
                                 self.draggingdown = false
                             }
-                            self.height = CGFloat(Int(self.height/15.09))*15.09
+                            self.height = CGFloat(Double(Int(self.height/(15.09) + 0.5))*15.09)
                             self.height = max(self.height, 30.175)
+                            
+                            let y = Int(round(100*(self.yoffset)))
+                            let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
+                            freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                            
+                            let x = Int(round(100*((self.yoffset+self.height))))
+                            let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
+                            freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                            
+                            do {
+                                try self.managedObjectContext.save()
+                                //print("AssignmentTypes rangemin/rangemax changed")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
                         }
 
                     })
@@ -572,23 +629,11 @@ struct FreeTimeIndividualTest: View {
                 }
                 
             }.cornerRadius(8).offset(x: 20 + self.xoffset, y: self.getoffset())
-             //   Text("\(Int(self.yoffset.truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 110, y: self.yoffset - (self.height/2) + 20)
-               // Text("\(Int((self.yoffset+self.height).truncatingRemainder(dividingBy: 60.35)/60.35*4)*15)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 160, y: self.yoffset - (self.height/2) + 20)
+
             HStack {
-    //            if (!self.editingmode)
-    //            {
+
                 Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 114, y: self.getoffset() - (self.getHeight()/2) + 15).frame(width: 200)
-//                    Text(self.getstarttext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
-//                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)//.frame(width: 10)
-//                    Text( self.getendtext()).foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
-          //      }
-//                else
-//                {
-//                    Text("\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.starttime).minute!%60)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 100, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50, alignment: .topLeading)
-//                    Text(" - ").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 120, y: self.getoffset() - (self.getHeight()/2) + 20)
-//                    Text("\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.starttime) , to: self.endtime).minute!/60)" + ":" + "\(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: self.endtime) , to: self.endtime).minute!%60)").foregroundColor(.white).offset(x: -(UIScreen.main.bounds.size.width / 2) + 130, y: self.getoffset() - (self.getHeight()/2) + 20).frame(width: 50)
-//
-//                }
+
             }.offset(x: self.xoffset)
             
             ZStack
@@ -597,21 +642,7 @@ struct FreeTimeIndividualTest: View {
                 Text("Delete").foregroundColor(Color.white).offset(x: self.xoffset > -80 ? UIScreen.main.bounds.size.width/2+40+self.xoffset : UIScreen.main.bounds.size.width/2-40, y: self.getoffset() )
             }
             
-//            if (self.editingmode)
-//            {
-//                Button(action:
-//                {
-//                    print("deleting")
-//                })
-//                {
-//                    ZStack
-//                    {
-//                        RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.red).frame(width: 50, height: 100)
-//                        Image(systemName: "trash").resizable().foregroundColor(Color.black).frame(width: 15, height: 20)
-//
-//                    }
-//                }.frame(width: 50).offset(x: (UIScreen.main.bounds.size.width/2 - 45))
-//            }
+
             
         }
        
@@ -700,10 +731,33 @@ struct FreeTimeTest: View {
     }
     func savefreetimes() -> Void
     {
-        
+        for freetime in freetimelist
+        {
+            freetime.startdatetime = freetime.tempstartdatetime
+            freetime.enddatetime = freetime.tempenddatetime
+            do {
+                try self.managedObjectContext.save()
+                //print("AssignmentTypes rangemin/rangemax changed")
+            } catch {
+                print(error.localizedDescription)
+            }
+            
+        }
     }
     func cancelfreetimes() -> Void
     {
+        for freetime in freetimelist
+        {
+            freetime.tempstartdatetime = freetime.startdatetime
+            freetime.tempenddatetime = freetime.enddatetime
+            do {
+                try self.managedObjectContext.save()
+                //print("AssignmentTypes rangemin/rangemax changed")
+            } catch {
+                print(error.localizedDescription)
+            }
+            
+        }
         
     }
     
@@ -725,19 +779,20 @@ struct FreeTimeTest: View {
                             Text(String(Array(days)[0]))
                         }.rotationEffect(self.shouldrotate ? Angle.degrees(self.rotationdegree) : Angle.degrees(-15.0)).onTapGesture {
                             withAnimation(.spring()) {
+                                
                                 self.selectDeselect(days)
                             }
                             
-                            withAnimation(self.wiggleanimation) {
-                                self.shouldrotate.toggle()
-                                
-                                if self.shouldrotate {
-                                    self.wiggleanimation = Animation.easeInOut(duration: 0.16).repeatForever(autoreverses: true)
-                                }
-                                else {
-                                    self.wiggleanimation = Animation.linear(duration: 0)
-                                }
-                            }
+//                            withAnimation(self.wiggleanimation) {
+//                                self.shouldrotate.toggle()
+//
+//                                if self.shouldrotate {
+//                                    self.wiggleanimation = Animation.easeInOut(duration: 0.16).repeatForever(autoreverses: true)
+//                                }
+//                                else {
+//                                    self.wiggleanimation = Animation.linear(duration: 0)
+//                                }
+//                            }
                         }
                     }
                 }
@@ -787,7 +842,7 @@ struct FreeTimeTest: View {
                                             if (getdisplayval(freetimeval: freetime))
                                             {
            
-                                                FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons )
+                                                FreeTimeIndividualTest(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime )
                                                 
 
                                             }
@@ -854,7 +909,7 @@ struct FreeTimeTest: View {
                         }
                     })
                     {
-                        Image(systemName: self.freetimeediting.editingmode ? "pencil.circle" : "pencil.circle.fill").resizable().scaledToFit()
+                        Text("Edit").fontWeight(.bold).foregroundColor(Color.blue)
                         
                         
                     }

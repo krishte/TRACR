@@ -19,6 +19,8 @@ extension Freetime {
 
     @NSManaged public var startdatetime: Date
     @NSManaged public var enddatetime: Date
+    @NSManaged public var tempstartdatetime: Date
+    @NSManaged public var tempenddatetime: Date
     @NSManaged public var monday: Bool
     @NSManaged public var tuesday: Bool
     @NSManaged public var wednesday: Bool

@@ -62,10 +62,10 @@
             filePath = "SchedulingApp/SettingsView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1425"
-            endingLineNumber = "1425"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "1482"
+            endingLineNumber = "1482"
+            landmarkName = "unknown"
+            landmarkType = "0">
             <Locations>
                <Location
                   uuid = "4608C629-E01B-423E-8743-1E06120FA5CB - af06cc58a289b3a6"
@@ -110,8 +110,8 @@
             filePath = "SchedulingApp/ModalViews.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "906"
-            endingLineNumber = "906"
+            startingLineNumber = "935"
+            endingLineNumber = "935"
             landmarkName = "repetitionTextCreator(_:)"
             landmarkType = "7">
             <Locations>

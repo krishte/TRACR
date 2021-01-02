@@ -156,7 +156,7 @@ struct ContentView: View {
                 }
                 
 
-            }.onAppear(perform: initialize)
+            }.onAppear(perform: initialize).accentColor(Color.orange)
             
             VStack {
                 MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())

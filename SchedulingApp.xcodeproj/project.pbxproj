@@ -34,6 +34,7 @@
 		CFADF84624D1D45E001A92D5 /* AssignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFADF84524D1D45E001A92D5 /* AssignmentView.swift */; };
 		CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CFDB39E224B8845A0055C48A /* Colors.xcassets */; };
 		CFDB3AA524BF4BE00055C48A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFDB3AA424BF4BE00055C48A /* LaunchScreen.storyboard */; };
+		CFF1E4A025A0FEFE004190EC /* FreeTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF1E49F25A0FEFE004190EC /* FreeTimeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +88,7 @@
 		CFADF84524D1D45E001A92D5 /* AssignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentView.swift; sourceTree = "<group>"; };
 		CFDB39E224B8845A0055C48A /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		CFDB3AA424BF4BE00055C48A /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		CFF1E49F25A0FEFE004190EC /* FreeTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeTimeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -162,6 +164,7 @@
 				CFADF84524D1D45E001A92D5 /* AssignmentView.swift */,
 				561880DF24AB75B100558F29 /* ProgressView.swift */,
 				CF84EBC624DC65FD00C5DDEF /* SettingsView.swift */,
+				CFF1E49F25A0FEFE004190EC /* FreeTimeView.swift */,
 				56A66EBC24B77D5000CCD161 /* ClassModel.xcdatamodeld */,
 			);
 			path = SchedulingApp;
@@ -347,6 +350,7 @@
 				CFADF84624D1D45E001A92D5 /* AssignmentView.swift in Sources */,
 				56FD9B0624BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift in Sources */,
 				56A66ECD24B7D47A00CCD161 /* Assignment+CoreDataClass.swift in Sources */,
+				CFF1E4A025A0FEFE004190EC /* FreeTimeView.swift in Sources */,
 				56FD9B0524BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift in Sources */,
 				56A66ED124B7D4CE00CCD161 /* Classcool+CoreDataClass.swift in Sources */,
 			);

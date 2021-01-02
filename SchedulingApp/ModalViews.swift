@@ -1333,7 +1333,7 @@ struct NewFreetimeModalView: View {
                                     newComponents.year = dateComponents.year
                                     newComponents.hour = timeComponents.hour
                                     newComponents.minute = timeComponents.minute
-                                    newComponents.second = timeComponents.second
+                                    newComponents.second = 0
                                      
                                     newFreetime.startdatetime = calendar.date(from: newComponents)!
                                     newFreetime.tempstartdatetime = calendar.date(from: newComponents)!
@@ -1345,7 +1345,7 @@ struct NewFreetimeModalView: View {
                                     newComponents2.year = dateComponents.year
                                     newComponents2.hour = timeComponents2.hour
                                     newComponents2.minute = timeComponents2.minute
-                                    newComponents2.second = timeComponents2.second
+                                    newComponents2.second = 0
                                     
                                     newFreetime.enddatetime = calendar.date(from: newComponents2)!
                                     newFreetime.tempenddatetime =  calendar.date(from: newComponents2)!
@@ -1362,7 +1362,7 @@ struct NewFreetimeModalView: View {
                                     newComponents.year = dateComponents.year
                                     newComponents.hour = timeComponents.hour
                                     newComponents.minute = timeComponents.minute
-                                    newComponents.second = timeComponents.second
+                                    newComponents.second = 0
                                     
                                     var newComponents2 = DateComponents()
                                     newComponents2.day = dateComponents.day
@@ -1370,7 +1370,7 @@ struct NewFreetimeModalView: View {
                                     newComponents2.year = dateComponents.year
                                     newComponents2.hour = timeComponents2.hour
                                     newComponents2.minute = timeComponents2.minute
-                                    newComponents2.second = timeComponents2.second
+                                    newComponents2.second = 0
                                     
                                     newFreetime.startdatetime = Calendar.current.date(from: newComponents)!
                                     newFreetime.tempstartdatetime = Calendar.current.date(from: newComponents)!

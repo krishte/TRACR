@@ -412,6 +412,7 @@ struct NewClassModalView: View {
     @State private var classnameindex = 0
     @State private var classlevelindex = 0
     @State private var classtolerancedouble: Double = 3
+    
     @State var isIB: Bool = false
 
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
@@ -430,7 +431,8 @@ struct NewClassModalView: View {
     
     @State private var createclassallowed = true
     @State private var showingAlert = false
-    @State var gradingscheme = ""
+    @State var gradingscheme: Int = 0
+    @State var gradingschemelist: [String] = []
     
     @State var customcolor1: Color = Color("one")
     @State var customcolor2: Color = Color("one-b")
@@ -535,7 +537,27 @@ struct NewClassModalView: View {
                 
                 Section
                 {
-                    Text("Grading Scheme: " + self.gradingscheme)
+                    if (gradingschemelist.count > 0)
+                    {
+                        Picker(selection: $gradingscheme, label: Text("Grading Scheme")) {
+                            ForEach(0 ..< gradingschemelist.count) {
+                                if (gradingschemelist[$0][0..<1] == "P")
+                                {
+                                    Text("Percentage-based")
+                                }
+                                else if (gradingschemelist[$0][0..<1] == "L")
+                                {
+                                    Text("Letter-based: " + String(gradingschemelist[$0][1..<gradingschemelist[$0].count]))
+                                }
+                                else
+                                {
+                                    Text("Number-based: " + String(gradingschemelist[$0][1..<gradingschemelist[$0].count]))
+                                }                                //Text(gradingschemelist[$0])
+                                
+                            }
+                        }
+                    }
+                   // Text("Grading Scheme: " + self.gradingscheme)
                 }
                 
                 Section {
@@ -711,7 +733,14 @@ struct NewClassModalView: View {
                             newClass.assignmentnumber = 0
                             newClass.originalname = testname
                             newClass.isTrash = false
-                            newClass.gradingscheme = self.gradingscheme
+                            if (gradingschemelist.count > 0)
+                            {
+                                newClass.gradingscheme = self.gradingschemelist[self.gradingscheme]
+                            }
+                            else
+                            {
+                                newClass.gradingscheme = ""
+                            }
                          //   newClass.isarchived = false
                             
                             if self.customcolorchosen {
@@ -791,8 +820,8 @@ struct NewClassModalView: View {
             let defaults = UserDefaults.standard
             let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
             self.isIB = ibval
-            let gradingscheme2 = defaults.object(forKey: "savedgradingscheme") as? String ?? ""
-            self.gradingscheme = gradingscheme2
+            let gradingscheme2 = defaults.object(forKey: "savedgradingschemes") as? [String] ?? []
+            self.gradingschemelist = gradingscheme2
             
         }
     }
@@ -1757,10 +1786,11 @@ struct NewGradeModalView: View {
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     var classeslist: FetchedResults<Classcool>
     @State private var selectedassignment = 0
-    @State private var assignmentgrade: Double = 4
+    @State private var assignmentgrade: Double = 1
     @State private var classfilter: Int
     @Binding var NewGradePresenting: Bool
-    var otherclassgrades: [String] = ["E", "D", "C", "B", "A"]
+    var otherclassgradesae: [String] = ["E", "D", "C", "B", "A"]
+    var otherclassgradesaf: [String] = ["F", "E", "D", "C", "B", "A"]
 
     
     init(NewGradePresenting: Binding<Bool>, classfilter: Int)
@@ -1795,6 +1825,54 @@ struct NewGradeModalView: View {
         }
         return gradableAssignments
     }
+    func getgradingscheme(assignment: Assignment) -> String
+    {
+        for classity in classeslist
+        {
+            if (assignment.subject == classity.originalname)
+            {
+                return classity.gradingscheme
+            }
+        }
+        return "P"
+    }
+    func getgrademin(assignment: Assignment) -> Double
+    {
+        let gradeschemeval = self.getgradingscheme(assignment: assignment)
+        if (gradeschemeval[0..<1] == "L")
+        {
+            return 1
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return 1
+        }
+        else
+        {
+            return 1
+        }
+    }
+    func getgrademax(assignment: Assignment) -> Double
+    {
+        let gradeschemeval = self.getgradingscheme(assignment: assignment)
+        if (gradeschemeval[0..<1] == "L")
+        {
+            if (gradeschemeval[3..<4] == "F")
+            {
+                return 6
+            }
+            return 5
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return Double(gradeschemeval[3..<gradeschemeval.count]) ?? 7
+        }
+        else
+        {
+            return 100
+        }
+        
+    }
     func getclassname() -> String{
         if (self.selectedassignment < self.getgradableassignments().count)
         {
@@ -1824,13 +1902,28 @@ struct NewGradeModalView: View {
                 }
                 Section {
                     VStack {
-                        if (self.getclassname() == "Theory of Knowledge" || self.getclassname() == "Extended Essay")
+                        //Text("Hello")
+                        if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N" || self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "L")
                         {
                             HStack {
-                                Text("Grade: " + otherclassgrades[Int(assignmentgrade)-2])
-                                Spacer()
+                                if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N")
+                                {
+                                    Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                }
+                                else
+                                {
+                                    if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[3..<4] == "F")
+                                    {
+                                        Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
+                                    }
+                                    else
+                                    {
+                                        Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
+                                    }
+                                }
+                               Spacer()
                             }.frame(height: 30)
-                            Slider(value: $assignmentgrade, in: 2...6)
+                            Slider(value: $assignmentgrade, in: self.getgrademin(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])...self.getgrademax(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]]))
                         }
                         else
                         {
@@ -1838,8 +1931,10 @@ struct NewGradeModalView: View {
                                 Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
                                 Spacer()
                             }.frame(height: 30)
-                            Slider(value: $assignmentgrade, in: 1...7)
+                            Slider(value: $assignmentgrade, in: 1...100)
+
                         }
+
                     }
 
                 }

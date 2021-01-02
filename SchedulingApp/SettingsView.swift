@@ -786,7 +786,7 @@ struct FreeTimeTest: View {
                             
                             Text(String(Array(day)[0..<3]))
                         }.rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(self.rotationdegree) : Angle.degrees(0.0))
-                        .animation((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Animation.easeInOut(duration: 0.1).repeatForever(autoreverses: true) : Animation.linear(duration: 0))
+                        .animation((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Animation.easeInOut(duration: 0.19).repeatForever(autoreverses: true) : Animation.linear(duration: 0))
                         .rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(-10.0) : Angle.degrees(0.0))
                         .animation(.easeInOut(duration: 0.14))
                         .onTapGesture {
@@ -906,29 +906,32 @@ struct FreeTimeTest: View {
                             }
                             
                         }
-                    }.offset(x: 20, y: UIScreen.main.bounds.size.height/2-160)
+                    }.offset(x: 20, y: UIScreen.main.bounds.size.height/2-180)
                 }
             }
 //End of main VStack, Start of Add Button
             VStack {
                 Spacer()
-                HStack {
-                    Spacer()
-                    
-                    Button(action: {
-                        print("add button clicked")
-                    }) {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
-                            ZStack {
-                                Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
-                            }
-                        )
-                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                if (self.freetimeediting.editingmode)
+                {
+                    HStack {
+                        Spacer()
+                        
                         Button(action: {
                             print("add button clicked")
                         }) {
-                            Text("Free Time")
-                            Image(systemName: "clock")
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
+                                ZStack {
+                                    Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                }
+                            )
+                        }.buttonStyle(PlainButtonStyle()).contextMenu {
+                            Button(action: {
+                                print("add button clicked")
+                            }) {
+                                Text("Free Time")
+                                Image(systemName: "clock")
+                            }
                         }
                     }
                 }
@@ -938,7 +941,7 @@ struct FreeTimeTest: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     withAnimation(.spring()) {
-                        self.freetimeediting.editingmode = true
+                        self.freetimeediting.editingmode.toggle()
                         self.freetimeediting.showsavebuttons.toggle()
                     }
                 }) {
@@ -951,11 +954,14 @@ struct FreeTimeTest: View {
 
 
 struct SyllabusView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+
     @State var selectedsyllabus: Int = 0
     @State var isIB: Bool = false
     var syllabuslist: [String] = ["Percentage-based", "Letter-based", "Number-based"]
     var badlettergrades: [String] = ["E", "F"]
     @State var selectedbadlettergrade: Int = 0
+    @State private var gradingschemes: [String] = []
     var goodnumbergrades: [Int] = [4, 5, 6, 7, 8, 9, 10]
     @State var selectedgoodnumbergrade: Int = 0
     
@@ -1041,55 +1047,106 @@ struct SyllabusView: View {
                         }
                     }
                 }
+                Section
+                {
+                    Button(action:
+                    {
+                        if (selectedsyllabus == 0)
+                        {
+                            gradingschemes.append("P")
+                            //print("P")
+                        }
+                        else if (selectedsyllabus == 1)
+                        {
+                            gradingschemes.append("LA-" + badlettergrades[selectedbadlettergrade])
+                          //  print("LA-" + badlettergrades[selectedbadlettergrade])
+                        }
+                        else
+                        {
+                            gradingschemes.append("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
+                            //print("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
+                        }
+                        
+                    })
+                    {
+                        Text("Save Grading Scheme")
+                    }
+                }
+                Section
+                {
+                    Text("My Grading Schemes:").font(.title2)
+                    List
+                    {
+                        ForEach(gradingschemes, id: \.self)
+                        {
+                            gradingscheme in
+                            HStack
+                            {
+                                if (gradingscheme[0..<1] == "P")
+                                {
+                                    Text("Percentage-based")
+                                }
+                                else if (gradingscheme[0..<1] == "L")
+                                {
+                                    Text("Letter-based: " + String(gradingscheme[1..<gradingscheme.count]))
+                                }
+                                else
+                                {
+                                    Text("Number-based: " + String(gradingscheme[1..<gradingscheme.count]))
+                                }
+
+                           //     Text(gradingscheme)
+                                Spacer()
+                                Image(systemName: "chevron.left").foregroundColor(Color.gray)
+                            }
+                        }.onDelete { indexSet in
+                            for index in indexSet {
+                                gradingschemes.remove(at: index)
+                            }
+                          print("Freetime deleted")
+                       }
+                    }
+                }
             }
 
         }.onAppear()
         {
             let defaults = UserDefaults.standard
-            let gradingscheme = defaults.object(forKey: "savedgradingscheme") as? String ?? ""
+            
+            let value = defaults.object(forKey: "savedgradingschemes") as? [String] ?? []
+            gradingschemes = value
+            print("Value from store")
+            print(defaults.object(forKey: "savedgradingschemes") as? [String] ?? [])
+         //   print(gradingschemes)
         //    print(gradingscheme)
             let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
             isIB = ibval
          //   print(ibval)
-            print(gradingscheme, ibval)
+           // print(gradingscheme, ibval)
           //  selectedsyllabus = 1
-            if (gradingscheme.count > 0)
-            {
-                if (gradingscheme[0..<1] == "P")
-                {
-                    selectedsyllabus = 0
-                }
-                else if (gradingscheme[0..<1] == "L")
-                {
-                    selectedsyllabus = 1
-                    selectedbadlettergrade = badlettergrades.firstIndex(of: gradingscheme[3..<4]) ?? 0
-                }
-                else
-                {
-                    selectedsyllabus = 2
-                    selectedgoodnumbergrade = goodnumbergrades.firstIndex(of: Int(gradingscheme[3..<gradingscheme.count]) ?? 4) ?? 0
-                }
-            }
-            print(selectedsyllabus)
+
         }.onDisappear()
         {
             let defaults = UserDefaults.standard
             defaults.set(isIB, forKey: "isIB")
-            if (selectedsyllabus == 0)
-            {
-                defaults.set("P", forKey: "savedgradingscheme")
-                //print("P")
-            }
-            else if (selectedsyllabus == 1)
-            {
-                defaults.set("LA-" + badlettergrades[selectedbadlettergrade], forKey: "savedgradingscheme")
-              //  print("LA-" + badlettergrades[selectedbadlettergrade])
-            }
-            else
-            {
-                defaults.set("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]), forKey: "savedgradingscheme")
-                //print("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
-            }
+            defaults.set(gradingschemes, forKey: "savedgradingschemes")
+            print("Value stored")
+            print(defaults.object(forKey: "savedgradingschemes") as? [String] ?? [])
+//            if (selectedsyllabus == 0)
+//            {
+//                defaults.set("P", forKey: "savedgradingschemes")
+//                //print("P")
+//            }
+//            else if (selectedsyllabus == 1)
+//            {
+//                defaults.set("LA-" + badlettergrades[selectedbadlettergrade], forKey: "savedgradingscheme")
+//              //  print("LA-" + badlettergrades[selectedbadlettergrade])
+//            }
+//            else
+//            {
+//                defaults.set("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]), forKey: "savedgradingscheme")
+//                //print("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
+//            }
 //            //defaults.set("hello", forKey: "savedbreakvalue")
         }
         

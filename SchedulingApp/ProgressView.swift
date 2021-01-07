@@ -144,6 +144,56 @@ struct DetailProgressView: View {
     @State var storedindex = -1
     @State var noAssignmentsAlert = false
     @State private var selection: Set<Assignment> = []
+    func getgradingscheme() -> String
+    {
+        return classcool.gradingscheme
+    }
+    func getnumberoflines() -> Int
+    {
+        if (getgradingscheme()[0..<1] == "P")
+        {
+            return 10
+        }
+        else if (getgradingscheme()[0..<1] == "N")
+        {
+            return Int(getgradingscheme()[3..<getgradingscheme().count]) ?? 10
+        }
+        else
+        {
+            if (getgradingscheme()[3..<4] == "F")
+            {
+                return 6
+            }
+            return 5
+        }
+    //    return 10
+    }
+    func getlinepadding(value: Int) -> CGFloat
+    {
+        return 270/CGFloat(getnumberoflines())*CGFloat(value+1)
+       // return 0
+    }
+    func gettextvalue(value: Int) -> String
+    {
+        let aflist = ["F", "E" , "D", "C", "B", "A"]
+        let aelist = ["E" , "D", "C", "B", "A"]
+        if (getgradingscheme()[0..<1] == "N")
+        {
+            return String(value+1)
+        }
+        else if (getgradingscheme()[0..<1] == "P")
+        {
+            return String((value+1)*10)
+        }
+        else
+        {
+            if (getgradingscheme()[3..<4] == "F")
+            {
+                return aflist[value]
+            }
+            return aelist[value]
+        }
+    }
 
     @EnvironmentObject var masterRunning: MasterRunning
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
@@ -173,31 +223,56 @@ struct DetailProgressView: View {
                                 VStack {
                                     Rectangle().fill(Color("graphbackground")).frame(width:UIScreen.main.bounds.size.width, height: 300)
                                 }.offset(y: 20)
-                                
-                                VStack(alignment: .leading,spacing: 0) {
-                                    
+                                HStack
+                                {
                                     Spacer()
-                                    if (classcool.originalname == "Theory of Knowledge" || classcool.originalname == "Extended Essay")
-                                    {
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 67.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 67.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 67.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 67.5)
-                                    }
-                                    else
-                                    {
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
-                                        Rectangle().fill(Color.black).frame(width: screensize, height: 0.5).padding(.bottom, 37.5)
-                                    }
-                                    Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
-                                }.offset(x: -10, y: -15)
+                                    VStack(alignment: .leading,spacing: 0) {
+                                        
+                                        Spacer()
+                                        ZStack(alignment: .bottom)
+                                        {
+                                            ForEach(0..<getnumberoflines())
+                                            {
+                                                value in
+                                                HStack
+                                                {
+                                                    Spacer()
+                                                    Rectangle().fill(Color.black).frame(width: screensize, height: 0.5)
+                                                    Text(gettextvalue(value: value)).frame(width: 20).font(.system(size: 10))
+                                                    Spacer().frame(width: 20)
+                                                }.frame(height: 5).padding(.bottom, getlinepadding(value: value)-3)
+                                            }
+                                            HStack
+                                            {
+                                                Spacer()
+                                                VStack
+                                                {
+                                                    Spacer()
+                                                
+                                                    Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
+                                                }
+                                                Text("0").frame(width: 20).font(.system(size: 10))
+                                                Spacer().frame(width: 20)
+                                            }.frame(height: 5).padding(.bottom, 0)
+                                            
+                                            HStack
+                                            {
+                                                Spacer()
+                                                Rectangle().fill(Color.black).frame(width: 1.5, height: 271)
+                                                Text("").frame(width: 20).font(.system(size: 10))
+                                                Spacer().frame(width: 20)
+                                            }.padding(.bottom, 0)
+                                        }
+                                        
+                                        
+                                        
+                                    }//.offset(x: -10, y: -15)
+                                 //   Spacer()
+                                    
+                                
+                                }
                                 HStack {
-                                    //Spacer()
+                                    Spacer()
                                     ScrollView(.horizontal, showsIndicators: false)
                                     {
                                         HStack {
@@ -210,85 +285,30 @@ struct DetailProgressView: View {
  
                                                     VStack {
                                                         Spacer()
-    //                                                    if (self.classcool.name == "Extended Essay" || self.classcool.name == "Theory of Knowledge")
-    //                                                    {
-    //                                                        Rectangle()
-    //                                                        .fill(Color.blue)
-    //                                                        .frame(width: self.getCompletedNumber(), height: CGFloat(assignment.grade-2) * 60)
-    //
-    //                                                    }
-    //                                                    else
-    //                                                    {
+
                                                             Rectangle()
                                                             .fill(Color.blue)
-                                                                .frame(width: self.getCompletedNumber(), height: (self.classcool.originalname == "Extended Essay" || self.classcool.originalname == "Theory of Knowledge") ? CGFloat(assignment.grade-2) * 68 : CGFloat(assignment.grade) * 38)
-    //                                                    }
-                                                        //Text( self.formatter.string(from: assignment.duedate))
-                                                          //  .font(.footnote)
-                                                           // .frame(width: self.getCompletedNumber(),height: 20)
+                                                                .frame(width: self.getCompletedNumber(), height: getgradingscheme()[0..<1] == "P" ? CGFloat(assignment.grade)*270/100 : CGFloat(assignment.grade)*getlinepadding(value: 0))
+
                                                     }
  
                                                 }
                                             }
                                         }
                                         
-                                    }
-                                    ZStack {
-                                        if (classcool.originalname == "Theory of Knowledge" || classcool.originalname == "Extended Essay")
-                                        {
-                                            Rectangle().fill(Color.black).frame(width: 1.5, height: 278).offset(x: -10,y:30).padding(0)
-                                        }
-                                        else
-                                        {
-                                            Rectangle().fill(Color.black).frame(width: 1.5, height: 270).offset(x: -10,y:41).padding(0)
-                                        }
-                                        VStack {
-                                           // Spacer()
-                                            if (classcool.originalname == "Theory of Knowledge" || classcool.originalname == "Extended Essay")
-                                            {
-                                                Text("A").frame(width: 20).padding(.top, 40)
-                                                Text("B").frame(width: 20).padding(.top, 40)
-                                                Text("C").frame(width: 20).padding(.top, 40)
-                                                Text("D").frame(width: 20).padding(.top, 40)
-                                                Text("E").frame(width: 20).padding(.top, 40)
-                                            }
-                                            else
-                                            {
-                                                Text("7").frame(width: 20).padding(.top, 68).font(.system(size: 10))
-                                                Text("6").frame(width: 20).padding(.top, 18).font(.system(size: 10))
-                                                Text("5").frame(width: 20).padding(.top, 18).font(.system(size: 10))
-                                                Text("4").frame(width: 20).padding(.top, 18).font(.system(size: 10))
-                                                Text("3").frame(width: 20).padding(.top, 18).font(.system(size: 10))
-                                                Text("2").frame(width: 20).padding(.top, 18).font(.system(size: 10))
-                                                Text("1").frame(width: 20).padding(.top, 18).font(.system(size: 10))
-                                                Text("0").frame(width: 20).padding(.top, 18).padding(.bottom, 4).font(.system(size: 10))
-                                            }
-                                        }.offset(y: 10)
-                                    }
-                                }.offset(y: -16)
-                                
- 
-    //                                Path { path in
-    //                                    createDict().forEach { (assignment, number) in
-    //                                        if (number == 1)
-    //                                        {
-    //                                            path.move(to: CGPoint(x: 10, y: 285-30*Int(assignment.grade)))
-    //                                        }
-    //                                        else
-    //                                        {
-    //                                            path.addLine(to: CGPoint(x: 10 + Int(getCompletedNumber()) * (number-1), y: 285-30*Int(assignment.grade)))
-    //                                        }
-    //                                    }
-    //                                }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
-                                
-    //                            Path { path in
-    //                                path.move(to: CGPoint(x: 10, y: 285))
-    //                                path.addLine(to: CGPoint(x: 100, y: 400))
-    //                                path.addLine(to: CGPoint(x: 300, y: 400))
-    //                            }.stroke(Color.black, style: StrokeStyle(lineWidth: 1, lineCap: .round, lineJoin: .round))
+                                    }.frame(width: UIScreen.main.bounds.size.width-30)
+                                    Spacer().frame(width: 50)
+
+
+                                }
+
                             }
                             
-                            Spacer().frame(height: 20)
+                        }
+                        VStack
+                        {
+                            
+                            Spacer().frame(height: 40)
                             HStack {
                                 Text("Additional Insights").font(.headline)
                                 Spacer()
@@ -297,63 +317,65 @@ struct DetailProgressView: View {
  
                             if (getgradenum())
                             {
-                                if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
-                                {
-                                    HStack {
-                                        VStack {
-                                            Text("Average").font(.system(size: 18)).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                            Text("\(getAverageGrade(), specifier: "%.2f")").font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                            if (getChangeInAverageGrade() >= 0)
-                                            {
-                                                Text("+\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                            }
-                                            else
-                                            {
-                                                Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                            }
-                                        }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
-                                        Spacer().frame(width: 20)
-                                        VStack {
-                                            Text("Last Assignment vs. Average").font(.system(size: 18)).multilineTextAlignment(.center).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                            Text(String(getLastAssignmentGrade())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                            if (Double(getLastAssignmentGrade()) - getAverageGrade() >= 0.0)
-                                            {
-                                                Text("+\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                            }
-                                            else
-                                            {
-                                                Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                            }
-                                        }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
-                                    }
-                                }
-                                Spacer().frame(height: 20)
+
                                 HStack {
                                     VStack {
-                                        Text("Class Average").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                        Text(getGlobalAverageI() == 0 ? "No Data": String(getGlobalAverageI())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                        Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
- 
+                                        Text("Average").font(.system(size: 18)).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                        Text("\(getAverageGrade(), specifier: "%.2f")").font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        if (getChangeInAverageGrade() >= 0)
+                                        {
+                                            Text("+\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        }
+                                        else
+                                        {
+                                            Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        }
                                     }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                     Spacer().frame(width: 20)
                                     VStack {
-                                        Text("Percentile").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                        Text(getPercentile() == 0 ? "No Data": String(getPercentile()) + "%").font(.system(size:  25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-                                        Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        Text("Last Assignment vs. Average").font(.system(size: 18)).multilineTextAlignment(.center).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                        Text(String(getLastAssignmentGrade())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        if (Double(getLastAssignmentGrade()) - getAverageGrade() >= 0.0)
+                                        {
+                                            Text("+\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        }
+                                        else
+                                        {
+                                            Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        }
                                     }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
+                                }
+                                if (getgradingscheme() == "N1-7")
+                                {
+                                    
+                                    Spacer().frame(height: 20)
+                                    HStack {
+                                        VStack {
+                                            Text("Class Average").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                            Text(getGlobalAverageI() == 0 ? "No Data": String(getGlobalAverageI())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+     
+                                        }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
+                                        Spacer().frame(width: 20)
+                                        VStack {
+                                            Text("Percentile").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                            Text(getPercentile() == 0 ? "No Data": String(getPercentile()) + "%").font(.system(size:  25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
+                                    }
                                 }
  
                             }
                             
-                        }
+                        }.frame(width: UIScreen.main.bounds.size.width)
  
                     }
                     
                     Spacer().frame(height: 20)
-                    HStack {
+  //                  HStack {
                         Text("Completed Assignments").font(.headline)
-                        Spacer()
-                    }.padding(.leading, 15)
+//                        Spacer()
+//                    }.padding(.leading, 15)
                     Spacer().frame(height: 20)
                     
                     ForEach(assignmentlist)
@@ -636,9 +658,36 @@ struct Line: View {
         
     }
     var stepHeight: CGFloat {
-        
-        
-        return 27.5
+
+        if (classcool.gradingscheme[0..<1] == "N")
+        {
+            let value = classcool.gradingscheme[3..<classcool.gradingscheme.count]
+            let intvalue = Int(value) ?? 8
+            if (intvalue%2==0)
+            {
+                return 220/CGFloat(intvalue)
+            }
+            else
+            {
+                return 220/CGFloat(intvalue+1)
+            }
+        }
+        else if (classcool.gradingscheme[0..<1] == "L")
+        {
+            if (classcool.gradingscheme[3..<4] == "F")
+            {
+                return 220/CGFloat(6)
+            }
+            else
+            {
+                return 220/CGFloat(5)
+            }
+        }
+        else
+        {
+            return 220/CGFloat(100)
+        }
+                
     }
     var path: Path {
         let points = self.data
@@ -671,13 +720,13 @@ extension Path {
             return path
         }
         let p1 = CGPoint(x: 20, y: 235 - CGFloat(points[0]) * step.y)
-        print(points[0], step.y)
-        print( 235 - CGFloat(points[0]) * step.y)
+     //   print(points[0], step.y)
+     //   print( 235 - CGFloat(points[0]) * step.y)
         path.move(to: p1)
         for pointIndex in 1..<points.count {
             let p2 = CGPoint(x: 20 + step.x * CGFloat(pointIndex), y: 235 - step.y*CGFloat(points[pointIndex]))
-            print(points[pointIndex], step.y)
-            print(235 - step.y*CGFloat(points[pointIndex]))
+          //  print(points[pointIndex], step.y)
+         //   print(235 - step.y*CGFloat(points[pointIndex]))
             path.addLine(to: p2)
         }
         return path
@@ -722,11 +771,9 @@ struct ProgressView: View {
     
     
     private func selectDeselect(_ singularassignment: String) {
-        if selection.contains(singularassignment) {
-            selection.remove(singularassignment)
-        } else {
-            selection.insert(singularassignment)
-        }
+        selection.removeAll()
+        selection.insert(singularassignment)
+        
     }
     
     func getclassnumber(classcool: Classcool) -> Int
@@ -792,7 +839,7 @@ struct ProgressView: View {
             NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
         }
     }
-
+    
     func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
         if number == 1 {
             return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
@@ -803,6 +850,113 @@ struct ProgressView: View {
     
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
+    
+    func getloopnumber() -> Int
+    {
+        for classity in classlist
+        {
+            if (self.selection.contains(classity.name))
+            {
+                
+                if (classity.gradingscheme[0..<1] == "N")
+                {
+                    let value = classity.gradingscheme[3..<classity.gradingscheme.count]
+                    let intvalue = Int(value) ?? 8
+                    if (intvalue%2==0)
+                    {
+                        return intvalue/2
+                    }
+                    else
+                    {
+                        return (intvalue+1)/2
+                    }
+                }
+                else if (classity.gradingscheme[0..<1] == "L")
+                {
+                    if (classity.gradingscheme[3..<4] == "F")
+                    {
+                        return 6
+                    }
+                    else
+                    {
+                        return 5
+                    }
+                }
+                else
+                {
+                    return 5
+                }
+            }
+        }
+        return 0
+    }
+    func gettextval(value2: Int) -> String
+    {
+        let aflist = ["F", "E", "D", "C", "B", "A"]
+        let aelist = ["E", "D", "C", "B", "A"]
+        for classity in classlist
+        {
+            if (self.selection.contains(classity.name))
+            {
+                
+                if (classity.gradingscheme[0..<1] == "N")
+                {
+                    let value = classity.gradingscheme[3..<classity.gradingscheme.count]
+                    let intvalue = Int(value) ?? 8
+                    if (intvalue%2==0)
+                    {
+                        return String(2*(value2+1))
+                    }
+                    else
+                    {
+                        return String(2*(value2+1))
+                    }
+                }
+                else if (classity.gradingscheme[0..<1] == "L")
+                {
+                    if (classity.gradingscheme[3..<4] == "F")
+                    {
+                        return aflist[value2]
+                    }
+                    else
+                    {
+                        return aelist[value2]
+                    }
+                }
+                else
+                {
+                    return String(20*(value2+1))
+                }
+            }
+        }
+        return ""
+        
+    }
+    func getrightpadding() -> CGFloat
+    {
+        for classity in classlist
+        {
+            if (self.selection.contains(classity.name))
+            {
+                
+                if (classity.gradingscheme[0..<1] == "N")
+                {
+                    return CGFloat(20)
+                }
+                else if (classity.gradingscheme[0..<1] == "L")
+                {
+                    return CGFloat(20)
+                }
+                else
+                {
+                   return CGFloat(15)
+                }
+            }
+        }
+        return CGFloat(20)
+    }
+    
+    @State private var refreshID = UUID()
  
     
     var body: some View {
@@ -846,12 +1000,12 @@ struct ProgressView: View {
                                     Rectangle().frame(width: 1, height: 220).padding(.bottom, 15).padding(.trailing, 40)
                                 }
                             }
-                            ForEach(1..<5) {
+                            ForEach(0..<getloopnumber()) {
                                 value in
                                 VStack {
                                     Spacer()
                                     HStack {
-                                        Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + 55*CGFloat(value)).opacity(0.3)
+                                        Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + (220/CGFloat(getloopnumber()))*CGFloat(value+1)).opacity(0.3)
                                         Spacer()
                                     }
                                 }
@@ -859,24 +1013,11 @@ struct ProgressView: View {
                                     Spacer()
                                     HStack {
                                         Spacer()
-                                        Text(String(value*2)).font(.system(size: 17)).padding(.trailing, 25).padding(.bottom, 55*CGFloat(value) - 10)
+                                        Text(gettextval(value2: value)).font(.system(size: 12)).padding(.trailing, getrightpadding()).padding(.bottom, (220/CGFloat(getloopnumber()))*CGFloat(value+1) - 5)
                                     }
                                 }
-                            }
-//                            VStack {
-//                                Spacer()
-//                                HStack {
-//                                    Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + 165 + 27.5).opacity(0.3)
-//                                    Spacer()
-//                                }
-//                            }
-//                            VStack {
-//                                Spacer()
-//                                HStack {
-//                                    Spacer()
-//                                    Text(String(7)).font(.system(size: 17)).padding(.trailing, 25).padding(.bottom, 165 + 27.5 - 10)
-//                                }
-//                            }
+                            }.id(refreshID)
+
                             ForEach(classlist) {
                                 classcool in
                                 if (self.selection.contains(classcool.name))
@@ -919,25 +1060,27 @@ struct ProgressView: View {
                                                 classcool in
                                                 if (!classcool.isTrash)
                                                 {
-                                                    if (classcool.originalname != "Theory of Knowledge" && classcool.originalname != "Extended Essay")
-                                                    {
-                                                        HStack {
-                                                            
-                                                            Rectangle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
-                                                            Spacer()
-                                                            Button(action: {self.selectDeselect(classcool.name)})
-                                                            {
-                                                              
-                                                                Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
-                                                            }
-            //                                                Spacer()
-            //                                                if (self.selection.contains(classcool.name)) {
-            //
-            //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
-            //                                                }
-                                                            Spacer()
+
+                                                    HStack {
+                                                        
+                                                        Rectangle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                        Spacer()
+                                                        Button(action: {
+                                                            self.selectDeselect(classcool.name)
+                                                            self.refreshID = UUID()
+                                                        })
+                                                        {
+                                                          
+                                                            Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
                                                         }
+        //                                                Spacer()
+        //                                                if (self.selection.contains(classcool.name)) {
+        //
+        //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
+        //                                                }
+                                                        Spacer()
                                                     }
+                                                    
                                                 }
                                                 
                                             }

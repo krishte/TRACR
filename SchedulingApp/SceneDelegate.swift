@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftUI
+import GoogleSignIn
 
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -24,15 +25,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Get the managed object context from the shared persistent container.
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-
+        // Get the googleDelegate from AppDelegate
+        let googleDelegate = (UIApplication.shared.delegate as! AppDelegate).googleDelegate
         // Create the SwiftUI view and set the context as the value for the managedObjectContext environment keyPath.
         // Add `@Environment(\.managedObjectContext)` in the views that will need the context.
-        let contentView = ContentView().environment(\.managedObjectContext, context).environmentObject(self.addTimeSubassignment).environment(\.managedObjectContext, context).environmentObject(self.actionViewPresets).environment(\.managedObjectContext, context).environmentObject(self.addTimeSubassignmentBacklog).environment(\.managedObjectContext, context).environmentObject(self.masterRunning).environment(\.managedObjectContext, context)
+        let contentView = ContentView().environment(\.managedObjectContext, context).environmentObject(self.addTimeSubassignment).environment(\.managedObjectContext, context).environmentObject(self.actionViewPresets).environment(\.managedObjectContext, context).environmentObject(self.addTimeSubassignmentBacklog).environment(\.managedObjectContext, context).environmentObject(self.masterRunning).environment(\.managedObjectContext, context).environmentObject(googleDelegate)
 
         // Use a UIHostingController as window root view controller.
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             window.rootViewController = UIHostingController(rootView: contentView)
+            
+            GIDSignIn.sharedInstance()?.presentingViewController = window.rootViewController
             self.window = window
             window.makeKeyAndVisible()
         }

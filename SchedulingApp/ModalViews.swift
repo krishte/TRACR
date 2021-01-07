@@ -46,8 +46,8 @@ struct NewAssignmentModalView: View {
     @State private var startDate = Date()
     @State private var completedassignment = false
     @State private var assignmentgrade: Double = 0
-    var otherclassgrades: [String] = ["E", "D", "C", "B", "A"]
-    
+    var otherclassgradesae: [String] = ["E", "D", "C", "B", "A"]
+    var otherclassgradesaf: [String] = ["F", "E", "D", "C", "B", "A"]
     var formatter: DateFormatter
     
     @EnvironmentObject var masterRunning: MasterRunning
@@ -92,6 +92,51 @@ struct NewAssignmentModalView: View {
         }
         return classitylist
     }
+    func getgradingscheme() -> String
+    {
+        if (selectedclass < classlist.count)
+        {
+            return classlist[selectedclass].gradingscheme
+        }
+        return "P"
+    }
+    func getgrademin() -> Double
+    {
+        let gradeschemeval = self.getgradingscheme()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            return 1
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return 1
+        }
+        else
+        {
+            return 1
+        }
+    }
+    func getgrademax() -> Double
+    {
+        let gradeschemeval = self.getgradingscheme()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            if (gradeschemeval[3..<4] == "F")
+            {
+                return 6
+            }
+            return 5
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return Double(gradeschemeval[3..<gradeschemeval.count]) ?? 7
+        }
+        else
+        {
+            return 100
+        }
+        
+    }
     
     var body: some View {
         NavigationView {
@@ -123,44 +168,45 @@ struct NewAssignmentModalView: View {
                 
                 if (self.completedassignment)
                 {
-                    Section
-                    {
+                    Section {
                         VStack {
-                    
-                      
-                            if (classlist[self.selectedclass].originalname == "Theory of Knowledge" || classlist[self.selectedclass].originalname  == "Extended Essay")
+                            //Text("Hello")
+
+                            if (self.getgradingscheme()[0..<1] == "N" || self.getgradingscheme()[0..<1] == "L")
                             {
-                              
                                 HStack {
-                                    if (assignmentgrade == 0 || assignmentgrade == 1)
-                                    {
-                                        Text("Grade: NA")
-                                    }
-                                    else
-                                    {
-                                        Text("Grade: " + otherclassgrades[Int(assignmentgrade)-2])
-                                    }
-                                    Spacer()
-                                }.frame(height: 30)
-                                Slider(value: $assignmentgrade, in: 2...6)
-                            }
-                            else
-                            {
-                               
-                                HStack {
-                                    if (assignmentgrade == 0)
-                                    {
-                                        Text("Grade: NA")
-                                    }
-                                    else
+                                    if (self.getgradingscheme()[0..<1] == "N")
                                     {
                                         Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
                                     }
+                                    else
+                                    {
+                                        if (self.getgradingscheme()[3..<4] == "F")
+                                        {
+                                            Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
+                                        }
+                                        else
+                                        {
+                                            Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
+                                        }
+                                    }
+                                   Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $assignmentgrade, in: self.getgrademin()...self.getgrademax())
+                            }
+                            else
+                            {
+                                HStack {
+                                    Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
                                     Spacer()
                                 }.frame(height: 30)
-                                Slider(value: $assignmentgrade, in: 1...7)
+                                Slider(value: $assignmentgrade, in: 1...100)
+
                             }
+                            
+
                         }
+
                     }
                 }
                 Section {
@@ -1891,48 +1937,45 @@ struct NewGradeModalView: View {
                                 Text(self.assignmentlist[self.getgradableassignments()[$0]].name)
                             }
                         }
-//                        ForEach(0 ..< assignmentlist.count) {
-//                            if (self.assignmentlist[$0].completed == true && self.assignmentlist[$0].grade == 0)
-//                            {
-//                                Text(self.assignmentlist[$0].name)
-//                            }
-//
-//                        }
+
                     }
                 }
                 Section {
                     VStack {
                         //Text("Hello")
-                        if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N" || self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "L")
+                        if (self.getgradableassignments().count > 0)
                         {
-                            HStack {
-                                if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N")
-                                {
-                                    Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
-                                }
-                                else
-                                {
-                                    if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[3..<4] == "F")
+                            if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N" || self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "L")
+                            {
+                                HStack {
+                                    if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N")
                                     {
-                                        Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
+                                        Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
                                     }
                                     else
                                     {
-                                        Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
+                                        if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[3..<4] == "F")
+                                        {
+                                            Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
+                                        }
+                                        else
+                                        {
+                                            Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
+                                        }
                                     }
-                                }
-                               Spacer()
-                            }.frame(height: 30)
-                            Slider(value: $assignmentgrade, in: self.getgrademin(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])...self.getgrademax(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]]))
-                        }
-                        else
-                        {
-                            HStack {
-                                Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
-                                Spacer()
-                            }.frame(height: 30)
-                            Slider(value: $assignmentgrade, in: 1...100)
+                                   Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $assignmentgrade, in: self.getgrademin(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])...self.getgrademax(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]]))
+                            }
+                            else
+                            {
+                                HStack {
+                                    Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                    Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $assignmentgrade, in: 1...100)
 
+                            }
                         }
 
                     }
@@ -2010,7 +2053,8 @@ struct EditAssignmentModalView: View {
     @State var originalname: String
     var formatter: DateFormatter
     
-    let otherclassgrades = ["E", "D", "C", "B", "A"]
+    let otherclassgradesae = ["E", "D", "C", "B", "A"]
+    let otherclassgradesaf = ["F", "E", "D", "C", "B", "A"]
     init(NewAssignmentPresenting: Binding<Bool>, selectedassignment: Int, assignmentname: String, timeleft: Int, duedate: Date, iscompleted: Bool, gradeval: Int, assignmentsubject: String, assignmenttype: Int) {
        // print(selectedassignment)
         self._NewAssignmentPresenting = NewAssignmentPresenting
@@ -2032,6 +2076,55 @@ struct EditAssignmentModalView: View {
         self._originalname = State(initialValue: assignmentname)
         self._assignmenttypeval = State(initialValue: assignmenttype) // State(initialValue: assignmenttype)
         print(type(of: assignmenttypeval))
+        
+    }
+    
+    func getgradingscheme() -> String
+    {
+        for classity in classlist
+        {
+            if (assignmentsubject == classity.originalname)
+            {
+                return classity.gradingscheme
+            }
+        }
+        return "P"
+    }
+    func getgrademin() -> Double
+    {
+        let gradeschemeval = self.getgradingscheme()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            return 1
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return 1
+        }
+        else
+        {
+            return 1
+        }
+    }
+    func getgrademax() -> Double
+    {
+        let gradeschemeval = self.getgradingscheme()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            if (gradeschemeval[3..<4] == "F")
+            {
+                return 6
+            }
+            return 5
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return Double(gradeschemeval[3..<gradeschemeval.count]) ?? 7
+        }
+        else
+        {
+            return 100
+        }
         
     }
     
@@ -2058,36 +2151,41 @@ struct EditAssignmentModalView: View {
                 {
                     Section {
                         VStack {
-                            if (self.assignmentsubject == "Theory of Knowledge" || self.assignmentsubject == "Extended Essay")
+                            //Text("Hello")
+
+                            if (self.getgradingscheme()[0..<1] == "N" || self.getgradingscheme()[0..<1] == "L")
                             {
                                 HStack {
-                                    if (gradeval == 0 || gradeval == 1)
+                                    if (self.getgradingscheme()[0..<1] == "N")
                                     {
-                                        Text("Grade: NA")
+                                        Text("Grade: \(gradeval.rounded(.down), specifier: "%.0f")")
                                     }
                                     else
                                     {
-                                        Text("Grade: " + otherclassgrades[Int(gradeval)-2])
+                                        if (self.getgradingscheme()[3..<4] == "F")
+                                        {
+                                            Text("Grade: " + otherclassgradesaf[Int(gradeval.rounded(.down))-1])
+                                        }
+                                        else
+                                        {
+                                            Text("Grade: " + otherclassgradesae[Int(gradeval.rounded(.down))-1])
+                                        }
                                     }
-                                    Spacer()
+                                   Spacer()
                                 }.frame(height: 30)
-                                Slider(value: $gradeval, in: 2...6)
+                                Slider(value: $gradeval, in: self.getgrademin()...self.getgrademax())
                             }
                             else
                             {
                                 HStack {
-                                    if (gradeval == 0)
-                                    {
-                                        Text("Grade: NA")
-                                    }
-                                    else
-                                    {
-                                        Text("Grade: \(gradeval.rounded(.down), specifier: "%.0f")")
-                                    }
+                                    Text("Grade: \(gradeval.rounded(.down), specifier: "%.0f")")
                                     Spacer()
                                 }.frame(height: 30)
-                                Slider(value: $gradeval, in: 1...7)
+                                Slider(value: $gradeval, in: 1...100)
+
                             }
+                            
+
                         }
 
                     }
@@ -2301,7 +2399,7 @@ struct EditAssignmentModalView: View {
                                 if (assignmentval.name == self.originalname)
                                 {
                                     self.managedObjectContext.delete(self.assignmentslist[index])
-                                    for (index2, classcool) in classlist.enumerated()
+                                    for (_, classcool) in classlist.enumerated()
                                     {
                                         if (classcool.originalname == assignmentval.subject)
                                         {

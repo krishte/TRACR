@@ -790,7 +790,7 @@ struct ActionView: View {
         
         var longDueSubassignment = false
         
-        for (index, subassignment) in subassignmentlist.enumerated() {
+        for (_, subassignment) in subassignmentlist.enumerated() {
             if subassignment.enddatetime < Date() {
                 var tempAddTimeSubassignment: [String: String] = ["throwawaykey": "throwawayvalue"]
 
@@ -803,7 +803,7 @@ struct ActionView: View {
 
                 addTimeSubassignmentBacklog.backlogList.append(tempAddTimeSubassignment)
                 
-                var calendar = Calendar.current
+                let calendar = Calendar.current
                 
                 if calendar.date(byAdding: .day, value: 1, to: subassignment.enddatetime)! < Date() {
                     longDueSubassignment = true

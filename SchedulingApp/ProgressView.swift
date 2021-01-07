@@ -411,6 +411,14 @@ struct DetailProgressView: View {
                                 Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
                             }
                         ).shadow(radius: 50)
+                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                        Button(action: {
+                            self.storedindex = self.getactualclassnumber(classcool: self.classcool)
+                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+                        }) {
+                            Text("Grade")
+                            Image(systemName: "percent")
+                        }
                     }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
                         Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                     }
@@ -1205,6 +1213,8 @@ struct ProgressView: View {
 }
 
 struct WorkloadSliver: View {
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
     let classname: String
     let startingAngle: Angle
     let endingAngle: Angle
@@ -1228,7 +1238,7 @@ struct WorkloadSliver: View {
                         path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
                         path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
                         path.closeSubpath()
-                    }.stroke(Color.black, lineWidth: 1)
+                    }.stroke(self.colorScheme == .light ? Color.black : Color.white, lineWidth: self.colorScheme == .light ? 1 : 2)
                 }
                 
                 Path { path in
@@ -1253,7 +1263,7 @@ struct WorkloadSliver: View {
 
 struct WorkloadPie: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-
+    
     @FetchRequest(entity: Classcool.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     var classlist: FetchedResults<Classcool>

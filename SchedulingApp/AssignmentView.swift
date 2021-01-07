@@ -327,6 +327,34 @@ struct GradedAssignmentsView: View {
         
         return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
     }
+    func getdisplaygrade() -> String
+    {
+        let aflist = ["F", "E", "D", "C", "B", "A"]
+        let aelist = ["E", "D", "C", "B", "A"]
+        
+        for classity in classlist
+        {
+            if (assignment.subject == classity.originalname)
+            {
+                if (classity.gradingscheme[0..<1] != "L")
+                {
+                    return String(assignment.grade)
+                }
+                else
+                {
+                    if (classity.gradingscheme[3..<4] == "F")
+                    {
+                        return aflist[Int(assignment.grade)-1]
+                    }
+                    else
+                    {
+                        return aelist[Int(assignment.grade)-1]
+                    }
+                }
+            }
+        }
+        return "NA";
+    }
     
     var body: some View {
         ZStack {
@@ -377,37 +405,18 @@ struct GradedAssignmentsView: View {
                         Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-100, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
                     }
-                    if (assignment.subject == "Theory of Knowledge" || assignment.subject == "Extended Essay")
+       
+
+                    if (assignment.grade == 0)
                     {
-                        if (assignment.grade == 0)
-                        {
-                            Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                            
-                        }
-                        else
-                        {
-                            if (assignment.grade == 1 || assignment.grade == 7 )
-                            {
-                                Text("A Problem" + String(assignment.grade))
-                            }
-                            else
-                            {
-                                Text("Grade: " + String(lettergrades[Int(assignment.grade)-2])).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                            }
-                        }
+                        Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                        
                     }
                     else
                     {
-                        if (assignment.grade == 0)
-                        {
-                            Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                            
-                        }
-                        else
-                        {
-                            Text("Grade: " + String(Int(assignment.grade))).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                        }
+                        Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                     }
+                    
                 }
                     
                 else {
@@ -418,30 +427,17 @@ struct GradedAssignmentsView: View {
                                 Spacer()
 
                             }
-                            if (assignment.subject == "Theory of Knowledge" || assignment.subject == "Extended Essay")
+
+                            if (assignment.grade == 0)
                             {
-                                if (assignment.grade == 0)
-                                {
-                                    Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                                    
-                                }
-                                else
-                                {
-                                    Text("Grade: " + String(lettergrades[Int(assignment.grade)-2])).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                                }
+                                Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                                
                             }
                             else
                             {
-                                if (assignment.grade == 0)
-                                {
-                                    Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                                    
-                                }
-                                else
-                                {
-                                    Text("Grade: " + String(Int(assignment.grade))).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                                }
+                                Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                             }
+                            
                             
 
                             Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)

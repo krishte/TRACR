@@ -191,7 +191,9 @@ struct FreeTimeIndividual: View {
                                 self.draggingup = false
                             }
                             
-                            self.yoffset = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09)
+                            let roundedval = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09) - self.yoffset
+                            self.yoffset += roundedval
+                            self.height -= roundedval
                             let y = Int(round(100*(self.yoffset)))
                             let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
                             freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
@@ -539,20 +541,25 @@ struct FreeTimeToAdd: View {
     
     var body: some View {
         if self.addFreeTimeCGFloats.isEmpty || self.addFreeTimeCGFloats[0] < (self.pdb[0] - 5) || self.addFreeTimeCGFloats[1] > (self.pdb[1] + 5) {
-            ZStack {
-                Rectangle()
-                    .strokeBorder(Color.green, style: StrokeStyle(lineWidth: 3))
-                    .background(Rectangle().fill(Color.green).opacity(0.43))
-                    .frame(width: UIScreen.main.bounds.size.width - 80, height: self.pdb[1] - self.pdb[0])
-                VStack {
-                    Image(systemName: "plus").resizable().foregroundColor(Color.green).frame(width: 20, height: 20)
-                }
-            }.offset(x: -15, y: self.pdb[0]).onTapGesture {
+            Button(action:
+            {
                 print(addFreeTimeCGFloats, pdb)
                 self.addFreeTimeCGFloats = [self.pdb[0], CGFloat(self.pdb[0] + 60.35/2)]
                 self.yoffset = self.addFreeTimeCGFloats[0]
                 self.height = self.addFreeTimeCGFloats[1] - self.addFreeTimeCGFloats[0]
-            }
+                
+            })
+            {
+                ZStack {
+                    Rectangle()
+                        .strokeBorder(Color.green, style: StrokeStyle(lineWidth: 3))
+                        .background(Rectangle().fill(Color.green).opacity(0.43))
+                        .frame(width: UIScreen.main.bounds.size.width - 80, height: self.pdb[1] - self.pdb[0])
+                    VStack {
+                        Image(systemName: "plus").resizable().foregroundColor(Color.green).frame(width: 20, height: 20)
+                    }
+                }
+            }.offset(x: -15, y: self.pdb[0])
         }
 
         else {
@@ -606,7 +613,9 @@ struct FreeTimeToAdd: View {
                                 self.draggingup = false
                             }
                             
-                            self.yoffset = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09)
+                            let roundedval = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09) - self.yoffset
+                            self.yoffset += roundedval
+                            self.height -= roundedval
                             
                             self.addFreeTimeCGFloats[0] = self.yoffset
                             self.addFreeTimeCGFloats[1] = self.yoffset + self.height
@@ -840,8 +849,10 @@ struct WorkHours: View {
         }
         
         masterRunning.masterRunningNow = true
-        
-        self.refreshID = UUID()
+        withAnimation(.spring())
+        {
+            self.refreshID = UUID()
+        }
     }
     
     func cancelfreetimes() -> Void {
@@ -855,8 +866,10 @@ struct WorkHours: View {
                 print(error.localizedDescription)
             }
         }
-        
-        self.refreshID = UUID()
+        withAnimation(.spring())
+        {
+            self.refreshID = UUID()
+        }
     }
     
     func addfreetime() -> Void {
@@ -893,7 +906,10 @@ struct WorkHours: View {
         
         masterRunning.masterRunningNow = true
         
-        self.refreshID = UUID()
+        withAnimation(.spring())
+        {
+            self.refreshID = UUID()
+        }
     }
     
     var body: some View {

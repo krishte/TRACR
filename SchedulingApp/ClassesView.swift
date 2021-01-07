@@ -825,7 +825,7 @@ struct MasterClass: View {
         let newd = Int(ceil(Double(daystilldue)*Double(safetyfraction)))
         let defaults = UserDefaults.standard
         print(defaults.object(forKey: "savedbreakvalue") as? Int ?? 10)
-        let breakval = defaults.object(forKey: "savedbreakvalue") as? Int ?? 10
+        _ = defaults.object(forKey: "savedbreakvalue") as? Int ?? 10
         guard newd > 0 else {
             throw MasterErrors.ImpossibleDueDate
         }
@@ -1386,7 +1386,7 @@ struct ClassesView: View {
     }
     func getnumofclasses() -> Bool {
         var count = 0
-        for clasity in classlist {
+        for _ in classlist {
             count += 1
         }
         if (count > 0)

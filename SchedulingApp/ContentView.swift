@@ -155,6 +155,13 @@ struct ContentView: View {
                     Text("Progress")
                 }
                 
+                GoogleView().tabItem {
+                    Text("Hello")
+                }
+
+                
+                
+                
 
             }.onAppear(perform: initialize).accentColor(Color.orange)
             

@@ -739,6 +739,8 @@ struct WorkHours: View {
     
     @EnvironmentObject var masterRunning: MasterRunning
     
+    @State var refreshID = UUID()
+    
     private func selectDeselect(_ singularassignment: String) {
         selection.removeAll()
         selection.insert(singularassignment)
@@ -838,6 +840,8 @@ struct WorkHours: View {
         }
         
         masterRunning.masterRunningNow = true
+        
+        self.refreshID = UUID()
     }
     
     func cancelfreetimes() -> Void {
@@ -851,6 +855,8 @@ struct WorkHours: View {
                 print(error.localizedDescription)
             }
         }
+        
+        self.refreshID = UUID()
     }
     
     func addfreetime() -> Void {
@@ -886,6 +892,8 @@ struct WorkHours: View {
         }
         
         masterRunning.masterRunningNow = true
+        
+        self.refreshID = UUID()
     }
     
     var body: some View {
@@ -915,6 +923,12 @@ struct WorkHours: View {
                             }
                             
                             else {
+                                print("dsf")
+                                print(self.selection.contains(day))
+                                print(!self.freetimeediting.editingmode)
+                                print("fsd")
+                                
+                                
                                 if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
                                     self.savefreetimes()
                                     self.freetimeediting.editingmode = true
@@ -995,7 +1009,7 @@ struct WorkHours: View {
                                                     FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime)
                                                 }
                                             }
-                                        }
+                                        }.id(self.refreshID)
                                             
                                         if self.freetimeediting.addingmode {
                                             ForEach(self.PossibleDateBrackets, id: \.self) { PossibleDateBracket in

@@ -701,7 +701,7 @@ struct HelpCenterView: View {
     
     var body: some View {
             VStack {
-                ScrollView(/*@START_MENU_TOKEN@*/.vertical/*@END_MENU_TOKEN@*/, showsIndicators: false, content: {
+                ScrollView(.vertical, showsIndicators: false, content: {
                     Spacer().frame(height: 20)
                     ForEach(self.faqtitles,  id: \.self) {
                         title in

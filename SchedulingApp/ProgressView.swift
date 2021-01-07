@@ -433,6 +433,14 @@ struct DetailProgressView: View {
                                 Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
                             }
                         ).shadow(radius: 50)
+                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                        Button(action: {
+                            self.storedindex = self.getactualclassnumber(classcool: self.classcool)
+                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+                        }) {
+                            Text("Grade")
+                            Image(systemName: "percent")
+                        }
                     }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
                         Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
                     }
@@ -1090,9 +1098,11 @@ struct ProgressView: View {
                                 //Text("Key").font(.title)
                             }
                         }.padding(.horizontal, 10)
+                        
+                        WorkloadPie()
  
+//                        Spacer().frame(height: 8)
                        // Text("Classes").font(.system(size: 35)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, alignment: .leading)
-                        Spacer().frame(height: 10)
 
                             ForEach(0..<classlist.count, id: \.self) {
                                 value in
@@ -1344,6 +1354,207 @@ struct ProgressView: View {
         return false
     }
 }
+
+struct WorkloadSliver: View {
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
+    let classname: String
+    let startingAngle: Angle
+    let endingAngle: Angle
+    let color: Color
+    let largeRadiusPercentage: CGFloat
+    
+    @Binding var selectedSliver: [String]
+    let sliverinfo: [String]
+    
+    @State var thisSliverClicked: Bool = false
+    
+    var body: some View {
+        ZStack {
+            GeometryReader { geometry in
+                let centerPoint =  CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                let innerRadius = (geometry.size.width / 7)
+                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius)))
+            
+                if self.selectedSliver == self.sliverinfo && self.thisSliverClicked {
+                    Path { path in
+                        path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
+                        path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
+                        path.closeSubpath()
+                    }.stroke(self.colorScheme == .light ? Color.black : Color.white, lineWidth: self.colorScheme == .light ? 1 : 2)
+                }
+                
+                Path { path in
+                    path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
+                    path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
+                    path.closeSubpath()
+                }.foregroundColor(self.color)
+            }
+        }.zIndex((self.selectedSliver == self.sliverinfo && self.thisSliverClicked) ? 1 : 0).animation(.easeInOut(duration: 0.14)).onTapGesture {
+            if self.selectedSliver == self.sliverinfo {
+                self.selectedSliver = []
+                self.thisSliverClicked = false
+            }
+            
+            else {
+                self.selectedSliver = self.sliverinfo
+                self.thisSliverClicked = true
+            }
+        }
+    }
+}
+
+struct WorkloadPie: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    
+    @FetchRequest(entity: Classcool.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    var classlist: FetchedResults<Classcool>
+    
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
+    var assignmentlist: FetchedResults<Assignment>
+
+    @State var selectedSliver: [String] = []
+    
+    @State var slivers: [[String]] = []
+    // classname, startingAngle, endingAngle, colorstring, largeRadiusPercentage
+        
+    func DataPrep() -> Void {
+        var ClassToWorkDone: [String: Int64] = [:] // (sum of totaltime) - (sum of timeleft)
+        var ClassToWorkTotal: [String: Int64] = [:] // sum of totaltime
+        var ClassToProgress: [String: Double] = [:] // (WorkDone / WorkTotal)
+        var ClassToAngleDegrees: [String: Double] = [:] // (WorkDone / sum(WorkDone)) * 360
+        var ClassToFirstAngle: [String: Double] = [:]
+        var ClassToSecondAngle: [String: Double] = [:]
+        var ClassToColor: [String: String] = [:]
+        
+        self.slivers.removeAll()
+        self.selectedSliver.removeAll()
+        
+        var totalWorkDone: Int64 = 0
+        
+        // Creating the WorkDone and WorkTotal Dictionaries
+        for assignment in assignmentlist {
+            if let WorkDone = ClassToWorkDone[assignment.subject] {
+                ClassToWorkDone[assignment.subject] = WorkDone + (assignment.totaltime - assignment.timeleft)
+                if let WorkTotal = ClassToWorkTotal[assignment.subject] {
+                    ClassToWorkTotal[assignment.subject] = WorkTotal + assignment.totaltime
+                }
+            }
+            
+            else {
+                ClassToWorkDone[assignment.subject] = assignment.totaltime - assignment.timeleft
+                ClassToWorkTotal[assignment.subject] = assignment.totaltime
+            }
+            
+            totalWorkDone = totalWorkDone + (assignment.totaltime - assignment.timeleft)
+        }
+        
+        // Creating the Progress Dictionary
+        for (classname, workdone) in ClassToWorkDone {
+            if let worktotal = ClassToWorkTotal[classname] {
+                ClassToProgress[classname] = worktotal == 0 ? nil : Double(workdone) / Double(worktotal)
+            }
+        }
+        
+        // Creating the TotalAngleDegrees Dictionary
+        for (classname, _) in ClassToProgress {
+            if let WorkDoneforClass = ClassToWorkDone[classname] {
+                ClassToAngleDegrees[classname] = Double(WorkDoneforClass) / Double(totalWorkDone) * 360.0
+            }
+        }
+        
+        // Creating the FirstAndSecondAngle Dictionaries
+        var firstAngle = 0.0
+        var secondAngle = 0.0
+        
+        for (classname, totalangle) in ClassToAngleDegrees {
+            firstAngle = secondAngle
+            secondAngle = firstAngle + totalangle
+            print(firstAngle, secondAngle)
+            
+            ClassToFirstAngle[classname] = firstAngle
+            ClassToSecondAngle[classname] = secondAngle
+        }
+        
+        // Creating the ClassColors Dictionary
+        for classity in classlist {
+            ClassToColor[classity.name] = classity.color
+        }
+        
+        // Appending to Slivers
+        for (classname, progress) in ClassToProgress {
+            self.slivers.append([classname, String(ClassToFirstAngle[classname, default: 0.0]), String(ClassToSecondAngle[classname, default: 0.0]), ClassToColor[classname, default: "datenumberred"], String(progress), String(ClassToAngleDegrees[classname, default: 0.0] / 360.0)])
+        }
+        
+//        self.slivers.append(["Biology HL", "0.0", "90.0", "three", "0.8"])
+//        self.slivers.append(["Mathematics HL", "90.0", "110.0", "two", "0.3"])
+//        self.slivers.append(["Design SL", "110.0", "360.0", "one", "1.0"])
+    }
+    
+    func getColor(colorstring: String) -> Color {
+        if colorstring.contains("rgbcode") {
+            return Color(.sRGB, red: Double(colorstring[9..<14])!, green: Double(colorstring[15..<20])!, blue: Double(colorstring[21..<26])!, opacity: 1)
+        }
+    
+        else {
+            return Color(colorstring)
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            Spacer().frame(height: 10).onAppear(perform: self.DataPrep)
+            
+            if self.slivers.count > 1 {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("workloadpiechartbg1"), Color("workloadpiechartbg2")]), startPoint: .top, endPoint: .bottom)).frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.width + 20).shadow(radius: 1)
+                    
+                    VStack {
+                        HStack {
+                            Text("Workload Distribution").fontWeight(.semibold).multilineTextAlignment(.leading).frame(width: 100)
+                            Spacer()
+                            Text("Progress of Tasks").fontWeight(.light).multilineTextAlignment(.trailing).frame(width: 100)
+                        }.padding(.horizontal, 9).padding(.top, 9)
+
+                        ZStack {
+                            ForEach(self.slivers, id: \.self) { sliverinfo in
+                                WorkloadSliver(classname: sliverinfo[0], startingAngle: Angle(degrees: Double(sliverinfo[1])!), endingAngle: Angle(degrees: Double(sliverinfo[2])!), color: self.getColor(colorstring: sliverinfo[3]), largeRadiusPercentage: CGFloat(Double(sliverinfo[4])!), selectedSliver: self.$selectedSliver, sliverinfo: sliverinfo).shadow(radius: 2)
+                            }
+                        }
+                        
+                        if !self.selectedSliver.isEmpty {
+                            VStack(spacing: 4) {
+                                HStack(spacing: 0) {
+                                    Text(selectedSliver[0]).fontWeight(.semibold).animation(.spring())
+                                    Spacer()
+                                }
+                                
+                                HStack(spacing: 0) {
+                                    Text("% Workload: \(Int(round(100 * Double(selectedSliver[5])!)))%").fontWeight(.light).animation(.spring())
+                                    Spacer()
+                                    Text("% Completed: \(Int(round(100 * Double(selectedSliver[4])!)))%").fontWeight(.light).animation(.spring())
+                                }
+                            }.frame(height: 70).padding(.horizontal, 9).animation(.spring())
+                        }
+                        
+                        else {
+                            VStack(alignment: .leading) {
+                                Text("Key:").font(.system(size: 15)).fontWeight(.semibold)
+                                Text("Proportion of the Pie: Proportion of Workload of that Class").font(.system(size: 14)).fontWeight(.light)
+                                Text("Height of a Piece: Percentage of Work Completed").font(.system(size: 14)).fontWeight(.light)
+                                Spacer()
+                            }.frame(height: 70).padding(.horizontal, 9)
+                        }
+                    }.animation(.spring())
+                }.frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.width + 20)
+                
+                Spacer().frame(height: 9)
+            }
+        }
+    }
+}
+
  
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {

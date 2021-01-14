@@ -9,7 +9,6 @@ target 'SchedulingApp' do
 
   pod 'GoogleSignIn'
   pod 'GoogleAPIClientForREST/Classroom'
-  pod 'GoogleAPIClientForREST/Drive'
 
   target 'SchedulingAppTests' do
     inherit! :search_paths

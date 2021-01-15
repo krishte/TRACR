@@ -156,6 +156,7 @@ struct ContentView: View {
                 }
                 
                 GoogleView().tabItem {
+                    Image(systemName: "person.circle.fill").resizable().scaledToFit()
                     Text("Hello")
                 }
 

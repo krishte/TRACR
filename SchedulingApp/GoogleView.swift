@@ -1,4 +1,6 @@
 import GoogleSignIn
+import GoogleAPIClientForREST
+import GTMSessionFetcher
 import UIKit
 import SwiftUI
 import GoogleAPIClientForREST
@@ -26,11 +28,10 @@ class GoogleDelegate: NSObject, GIDSignInDelegate, ObservableObject
     @Published var signedIn: Bool = false
 }
 
-struct GoogleView: View
-{
+struct GoogleView: View {
     @EnvironmentObject var googleDelegate: GoogleDelegate
-    var body: some View
-    {
+    
+    var body: some View {
         Group {
             if googleDelegate.signedIn {
                 VStack {
@@ -42,19 +43,61 @@ struct GoogleView: View
                     }) {
                         Text("Sign Out")
                     }
-                    Button(action:{
+                    Button(action: {
+                        var ids: [String] = []
+                        var classnames: [String] = []
+                        
                         let service = GTLRClassroomService()
-                        let query = GTLRClassroomQuery_CoursesList.query()
-                            query.pageSize = 1000
-                        service.executeQuery(query)
-                        {stuff1,stuff2,stuff3 in
-                            print(stuff1, stuff2 ?? 0, stuff3 ?? 0)
+                        service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
+                        
+                        func getassignments(index: Int, id: String) -> Void {
+                            let idiii = id
+                            let assignmentsquery = GTLRClassroomQuery_CoursesCourseWorkList.query(withCourseId: idiii)
+
+                            assignmentsquery.pageSize = 1000
+
+                            service.executeQuery(assignmentsquery, completionHandler: {(ticket, stuff, error) in
+                                let assignmentsforid = stuff as! GTLRClassroom_ListCourseWorkResponse
+                                
+                                if assignmentsforid.courseWork != nil {
+                                    for assignment in assignmentsforid.courseWork! {
+                                        print(assignment.title!)
+                                    }
+                                }
+                            })
                         }
                         
+                        func getclasses() -> Void {
+                            let coursesquery = GTLRClassroomQuery_CoursesList.query()
+
+                            coursesquery.pageSize = 1000
+
+                            service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
+                                let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
+
+                                for course in stuff1.courses! {
+                                    if course.courseState == kGTLRClassroom_Course_CourseState_Active {
+                                        classnames.append(course.name!)
+                                        ids.append(course.identifier!)
+                                        print(course.name!)
+                                    }
+                                }
+                            })
+                        }
                         
-                    })
-                    {
-                        Text("Classroom stuff")
+                        getclasses()
+                        
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+                            print(ids.count)
+
+                            for (index, idiii) in ids.enumerated() {
+                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+                                    getassignments(index: index, id: idiii)
+                                }
+                            }
+                        }
+                    }) {
+                        Text("do stuff")
                     }
                 }
             } else {

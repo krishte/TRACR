@@ -1157,7 +1157,7 @@ struct HomeBodyView: View {
                                     print(hidingupcoming)
                                     if (self.hidingupcoming)
                                     {
-                                        upcomingoffset = Int(UIScreen.main.bounds.size.width)
+                                        upcomingoffset = Int(UIScreen.main.bounds.size.height)
                                     }
                                     else
                                     {
@@ -1282,7 +1282,7 @@ struct HomeBodyView: View {
                             print(hidingupcoming)
                             if (self.hidingupcoming)
                             {
-                                upcomingoffset = Int(UIScreen.main.bounds.size.width)
+                                upcomingoffset = Int(UIScreen.main.bounds.size.height)
                             }
                             else
                             {

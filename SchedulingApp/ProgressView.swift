@@ -653,7 +653,7 @@ struct Line: View {
                 listofassignments.append(Double(assignment.grade))
             }
         }
-        print(listofassignments)
+        //print(listofassignments)
         return listofassignments
         
     }
@@ -769,6 +769,7 @@ struct ProgressView: View {
     @ObservedObject var sheetnavigator: SheetNavigatorProgressView = SheetNavigatorProgressView()
     @State var showingSettingsView = false
     @State private var selectedClass: Int? = 0
+    @State var selectedGraphClass: Int = 0
     @State private var selection: Set<String> = []
     @State var modalView: ModalView = .none
     @State var alertView: AlertView = .noclass
@@ -859,113 +860,114 @@ struct ProgressView: View {
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
     
-    func getloopnumber() -> Int
+    func getloopnumber(classity: Classcool) -> Int
     {
-        for classity in classlist
+
+        print(classity.name, "loop number")
+        if (classity.gradingscheme[0..<1] == "N")
         {
-            if (self.selection.contains(classity.name))
+            let value = classity.gradingscheme[3..<classity.gradingscheme.count]
+            let intvalue = Int(value) ?? 8
+            if (intvalue%2==0)
             {
+                print(intvalue/2)
+                return intvalue/2
                 
-                if (classity.gradingscheme[0..<1] == "N")
-                {
-                    let value = classity.gradingscheme[3..<classity.gradingscheme.count]
-                    let intvalue = Int(value) ?? 8
-                    if (intvalue%2==0)
-                    {
-                        return intvalue/2
-                    }
-                    else
-                    {
-                        return (intvalue+1)/2
-                    }
-                }
-                else if (classity.gradingscheme[0..<1] == "L")
-                {
-                    if (classity.gradingscheme[3..<4] == "F")
-                    {
-                        return 6
-                    }
-                    else
-                    {
-                        return 5
-                    }
-                }
-                else
-                {
-                    return 5
-                }
+            }
+            else
+            {
+                print((intvalue+1)/2)
+                return (intvalue+1)/2
+            }
+        }
+        else if (classity.gradingscheme[0..<1] == "L")
+        {
+            if (classity.gradingscheme[3..<4] == "F")
+            {
+                print(6)
+                return 6
+            }
+            else
+            {
+                print(5)
+                return 5
+            }
+        }
+        else
+        {
+            print(5)
+            return 5
+        }
+    }
+    func gettextval(value2: Int, classity: Classcool) -> String
+    {
+        let aflist = ["F", "E", "D", "C", "B", "A"]
+        let aelist = ["E", "D", "C", "B", "A"]
+        
+        
+        if (classity.gradingscheme[0..<1] == "N")
+        {
+            let value = classity.gradingscheme[3..<classity.gradingscheme.count]
+            let intvalue = Int(value) ?? 8
+            if (intvalue%2==0)
+            {
+                return String(2*(value2+1))
+            }
+            else
+            {
+                return String(2*(value2+1))
+            }
+        }
+        else if (classity.gradingscheme[0..<1] == "L")
+        {
+            if (classity.gradingscheme[3..<4] == "F")
+            {
+                return aflist[value2]
+            }
+            else
+            {
+                return aelist[value2]
+            }
+        }
+        else
+        {
+            return String(20*(value2+1))
+        }
+
+        
+    }
+    func getrightpadding(classity: Classcool) -> CGFloat
+    {
+
+        
+        if (classity.gradingscheme[0..<1] == "N")
+        {
+            return CGFloat(20)
+        }
+        else if (classity.gradingscheme[0..<1] == "L")
+        {
+            return CGFloat(20)
+        }
+        else
+        {
+           return CGFloat(20)
+        }
+ 
+    }
+    
+    @State private var refreshID = UUID()
+    
+    func getclassindex(classity: Classcool) -> Int
+    {
+        for (index, classity2) in classlist.enumerated()
+        {
+            if (classity2 == classity)
+            {
+                return index
             }
         }
         return 0
     }
-    func gettextval(value2: Int) -> String
-    {
-        let aflist = ["F", "E", "D", "C", "B", "A"]
-        let aelist = ["E", "D", "C", "B", "A"]
-        for classity in classlist
-        {
-            if (self.selection.contains(classity.name))
-            {
-                
-                if (classity.gradingscheme[0..<1] == "N")
-                {
-                    let value = classity.gradingscheme[3..<classity.gradingscheme.count]
-                    let intvalue = Int(value) ?? 8
-                    if (intvalue%2==0)
-                    {
-                        return String(2*(value2+1))
-                    }
-                    else
-                    {
-                        return String(2*(value2+1))
-                    }
-                }
-                else if (classity.gradingscheme[0..<1] == "L")
-                {
-                    if (classity.gradingscheme[3..<4] == "F")
-                    {
-                        return aflist[value2]
-                    }
-                    else
-                    {
-                        return aelist[value2]
-                    }
-                }
-                else
-                {
-                    return String(20*(value2+1))
-                }
-            }
-        }
-        return ""
-        
-    }
-    func getrightpadding() -> CGFloat
-    {
-        for classity in classlist
-        {
-            if (self.selection.contains(classity.name))
-            {
-                
-                if (classity.gradingscheme[0..<1] == "N")
-                {
-                    return CGFloat(20)
-                }
-                else if (classity.gradingscheme[0..<1] == "L")
-                {
-                    return CGFloat(20)
-                }
-                else
-                {
-                   return CGFloat(15)
-                }
-            }
-        }
-        return CGFloat(20)
-    }
-    
-    @State private var refreshID = UUID()
- 
     
     var body: some View {
          NavigationView {
@@ -982,67 +984,66 @@ struct ProgressView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .center )
                     {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
-                                .frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
-                                //.padding(5)
-                            
-                            VStack {
-                                HStack {
-                                    Rectangle().frame(width:(UIScreen.main.bounds.size.width-40), height: 1).padding(.top, 15).padding(.leading, 20)
-                                    Spacer()
-                                }
-                                Spacer()
-                                HStack {
-                                    Rectangle().frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.bottom, 15).padding(.leading, 20)
-                                    Spacer()
-                                }
- 
-                            }
- 
-                            HStack {
-                                Spacer()
-                                VStack {
-                                    Spacer()
-                                    Rectangle().frame(width: 1, height: 220).padding(.bottom, 15).padding(.trailing, 40)
-                                }
-                            }
-                            ForEach(0..<getloopnumber()) {
-                                value in
-                                VStack {
-                                    Spacer()
-                                    HStack {
-                                        Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + (220/CGFloat(getloopnumber()))*CGFloat(value+1)).opacity(0.3)
-                                        Spacer()
-                                    }
-                                }
-                                VStack {
-                                    Spacer()
-                                    HStack {
-                                        Spacer()
-                                        Text(gettextval(value2: value)).font(.system(size: 12)).padding(.trailing, getrightpadding()).padding(.bottom, (220/CGFloat(getloopnumber()))*CGFloat(value+1) - 5)
-                                    }
-                                }
-                            }.id(refreshID)
-
-                            ForEach(classlist) {
-                                classcool in
-                                if (self.selection.contains(classcool.name))
+                        TabView(selection: $selectedGraphClass)
+                        {
+                            ForEach(classlist)
+                            {
+                                classity in
+                                if (!classity.isTrash)
                                 {
-                                    Line(classcool: classcool)
-                                }
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
+                                            .frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
+                                            //.padding(5)
                                         
-                                    
-                                
+                                        VStack {
+                                            HStack {
+                                                Rectangle().frame(width:(UIScreen.main.bounds.size.width-40), height: 1).padding(.top, 15).padding(.leading, 20)
+                                                Spacer()
+                                            }
+                                            Spacer()
+                                            HStack {
+                                                Rectangle().frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.bottom, 15).padding(.leading, 20)
+                                                Spacer()
+                                            }
+             
+                                        }.frame(height: 250)
+             
+                                        HStack {
+                                            Spacer()
+                                            VStack {
+                                                Spacer()
+                                                Rectangle().frame(width: 1, height: 220).padding(.bottom, 15).padding(.trailing, 40)
+                                            }
+                                        }.frame(height: 250)
+                                        
+                                        ForEach(0..<getloopnumber(classity: classity)) {
+                                            value in
+                                            VStack {
+                                                Spacer()
+                                                HStack {
+                                                    Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1)).opacity(0.3)
+                                                    Spacer()
+                                                }
+                                            }
+                                            VStack {
+                                                Spacer()
+                                                HStack {
+                                                    Spacer()
+                                                    Text(gettextval(value2: value, classity: classity)).font(.system(size: 12)).padding(.trailing, getrightpadding(classity: classity)).padding(.bottom, (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1) - 5)
+                                                }
+                                            }
+                                        }//.id(refreshID)
+
+           
+                                        Line(classcool: classity)
+                                            
+
+                                    }.tag(getclassindex(classity: classity)).id(refreshID)
+                                }
                             }
-//                            Path { path in
-//                                path.move(to: CGPoint(x: 20, y: 235))
-//                                path.addLine(to: CGPoint(x: 50, y: 15))
-//                                path.addLine(to: CGPoint(x: UIScreen.main.bounds.size.width-60, y: 235))
-//                            }.fill(Color.green)
- 
-                        }
+                        }.tabViewStyle(PageTabViewStyle()).frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -1074,12 +1075,15 @@ struct ProgressView: View {
                                                         Rectangle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
                                                         Spacer()
                                                         Button(action: {
-                                                            self.selectDeselect(classcool.name)
-                                                            self.refreshID = UUID()
+                                                            withAnimation(.spring())
+                                                            {
+                                                                self.selectedGraphClass = getclassindex(classity: classcool)
+                                                            }
+                                                            //self.refreshID = UUID()
                                                         })
                                                         {
                                                           
-                                                            Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                            Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selectedGraphClass == getclassindex(classity: classcool) ? 1.0 : 0.5)
                                                         }
         //                                                Spacer()
         //                                                if (self.selection.contains(classcool.name)) {
@@ -1313,24 +1317,11 @@ struct ProgressView: View {
             self.showingSettingsView = false
             self.selectedClass = 0
          }.onAppear {
-//            var found = true
-//            while (found == true)
-//            {
-//                found = false
-//                for (index, classity) in classlist.enumerated() {
-//                    if (classity.isTrash)
-//                    {
-//                        self.managedObjectContext.delete(self.classlist[index])
-//                        found = true
-//                           do {
-//                               try self.managedObjectContext.save()
-//                               print("AddTime logged")
-//                           } catch {
-//                               print(error.localizedDescription)
-//                           }
-//                    }
-//                }
-//            }
+            if (classlist.count > 0)
+            {
+                self.selectDeselect(classlist[0].name)
+            }
+            self.refreshID = UUID()
          }
     }
     
@@ -1398,7 +1389,10 @@ struct WorkloadSliver: View {
             
             else {
                 self.selectedSliver = self.sliverinfo
+                withAnimation(.spring())
+                {
                 self.thisSliverClicked = true
+                }
             }
         }
     }

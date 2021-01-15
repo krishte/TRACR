@@ -1,6 +1,7 @@
 import GoogleSignIn
 import UIKit
 import SwiftUI
+import GoogleAPIClientForREST
 
 
 
@@ -40,6 +41,20 @@ struct GoogleView: View
                         googleDelegate.signedIn = false
                     }) {
                         Text("Sign Out")
+                    }
+                    Button(action:{
+                        let service = GTLRClassroomService()
+                        let query = GTLRClassroomQuery_CoursesList.query()
+                            query.pageSize = 1000
+                        service.executeQuery(query)
+                        {stuff1,stuff2,stuff3 in
+                            print(stuff1, stuff2 ?? 0, stuff3 ?? 0)
+                        }
+                        
+                        
+                    })
+                    {
+                        Text("Classroom stuff")
                     }
                 }
             } else {

@@ -9,6 +9,7 @@
 import UIKit
 import CoreData
 import GoogleSignIn
+import GoogleAPIClientForREST
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -30,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         GIDSignIn.sharedInstance().clientID = "139889841603-jthdte6691rn37b45nb2ia659bj1oha6.apps.googleusercontent.com"
         GIDSignIn.sharedInstance().delegate = googleDelegate
+        GIDSignIn.sharedInstance().scopes = [ kGTLRAuthScopeClassroomCoursesReadonly, kGTLRAuthScopeClassroomCourseworkMeReadonly]
       //  GIDSignIn.sharedInstance().scopes = Constants.GS.scopes
         return true
     }

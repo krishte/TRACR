@@ -45,7 +45,7 @@ struct NewAssignmentModalView: View {
     @State private var expandedduedate = false
     @State private var startDate = Date()
     @State private var completedassignment = false
-    @State private var assignmentgrade: Double = 0
+    @State private var assignmentgrade: Double = 1
     var otherclassgradesae: [String] = ["E", "D", "C", "B", "A"]
     var otherclassgradesaf: [String] = ["F", "E", "D", "C", "B", "A"]
     var formatter: DateFormatter
@@ -151,7 +151,7 @@ struct NewAssignmentModalView: View {
                     }.onTapGesture {
                         if (!self.completedassignment)
                          {
-                            self.assignmentgrade = 0
+                            self.assignmentgrade = 1
                             
                           //  print(!self.iscompleted)
                         }

@@ -263,54 +263,43 @@ struct GoogleView: View {
                             EmptyView()
                         }
 
-                    }.id(refreshID)
+                    }//.id(refreshID)
 
-                    ForEach(0..<getiterationcounter())
-                    {
+                    ForEach(0..<getiterationcounter(), id: \.self) { classityval in
+                        HStack {
+                            Button(action:{
+                                print("hello")
+                                self.selectedClass = 2*classityval
+                                print(self.selectedClass!)
+                            }) {
+                                ZStack {
+                                   // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.checklinkedclass(classval: 2*classityval) ? Color.blue : Color.gray).frame(width: (UIScreen.main.bounds.size.width-30)/2, height: 100)
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval))
+                                    Text(classeslist[2*classityval]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
+                                }.shadow(radius: 10)
+                                
+                            }.buttonStyle(PlainButtonStyle())
+                            //need to add check if odd number of google classes without type-check error
+                            Spacer()
                     
-                        classityval in
-
-                   
-                            HStack
-                            {
                                 Button(action:{
                                     print("hello")
-                                    self.selectedClass = 2*classityval
+                                    self.selectedClass = 2*classityval+1
                                     print(self.selectedClass!)
+
                                 })
                                 {
                                     ZStack
                                     {
-                                       // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.checklinkedclass(classval: 2*classityval) ? Color.blue : Color.gray).frame(width: (UIScreen.main.bounds.size.width-30)/2, height: 100)
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval))
-                                        Text(classeslist[2*classityval]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
-                                    }.shadow(radius: 10)
-                                    
+                                        let n = 2*classityval+1
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval+1))
+                                        Text(classeslist[n < classeslist.count ? n : 0]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
+                                    }.shadow(radius: 10)//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
+
                                 }.buttonStyle(PlainButtonStyle())
-                                //need to add check if odd number of google classes without type-check error
-                                Spacer()
-                        
-                                    Button(action:{
-                                        print("hello")
-                                        self.selectedClass = 2*classityval+1
-                                        print(self.selectedClass!)
-
-                                    })
-                                    {
-                                        ZStack
-                                        {
-                                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval+1))
-                                            Text(classeslist[2*classityval+1 < classeslist.count ? 2*classityval+1: 0]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
-                                        }.shadow(radius: 10)//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
-
-                                    }.buttonStyle(PlainButtonStyle())
-
-                                
-                            }
-                        
-
-                    }.padding(.horizontal, 10).id(refreshID)
-                    
+                        }
+                }.padding(.horizontal, 10)//.id(refreshID)
+                
 //                    NavigationLink(destination: GoogleAssignmentsView())
 //                    {
 //                        Text("See Assignments???")

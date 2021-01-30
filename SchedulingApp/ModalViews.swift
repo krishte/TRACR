@@ -779,6 +779,7 @@ struct NewClassModalView: View {
                             newClass.assignmentnumber = 0
                             newClass.originalname = testname
                             newClass.isTrash = false
+                            newClass.googleclassroomid = ""
                             if (gradingschemelist.count > 0)
                             {
                                 newClass.gradingscheme = self.gradingschemelist[self.gradingscheme]

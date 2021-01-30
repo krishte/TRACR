@@ -8,6 +8,8 @@
 
 import SwiftUI
 import UserNotifications
+import GoogleSignIn
+import GoogleAPIClientForREST
 
 class DisplayedDate: ObservableObject {
     @Published var score: Int = 0
@@ -78,6 +80,8 @@ struct ContentView: View {
             // To remove only extra separators below the list:
             UITableView.appearance().tableFooterView = UIView()
         }
+        GIDSignIn.sharedInstance().restorePreviousSignIn()
+
        // UITableView.appearance().tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: Double.leastNonzeroMagnitude))
         // To remove all separators including the actual ones:
         UITableView.appearance().separatorStyle = .none
@@ -155,16 +159,28 @@ struct ContentView: View {
                     Text("Progress")
                 }
                 
-                GoogleView().tabItem {
-                    Image(systemName: "person.circle.fill").resizable().scaledToFit()
-                    Text("Hello")
-                }
+//                GoogleView().tabItem {
+//                    Image(systemName: "person.circle.fill").resizable().scaledToFit()
+//                    Text("Hello")
+//                }
 
                 
                 
                 
 
-            }.onAppear(perform: initialize).accentColor(Color.orange)
+            }.onAppear
+            {
+                initialize()
+                let defaults = UserDefaults.standard
+
+                defaults.set(false, forKey:"accessedclassroom")
+                
+            }.onDisappear
+            {
+                let defaults = UserDefaults.standard
+                defaults.set(Date(timeIntervalSinceNow: 0), forKey: "lastaccessdate")
+                
+            }//.accentColor(Color.orange)
             
             VStack {
                 MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())

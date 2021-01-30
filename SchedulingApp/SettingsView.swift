@@ -602,6 +602,22 @@ struct SettingsView: View {
                         }.frame(height:40)
                     }
                 }
+                Section
+                {
+                    NavigationLink(destination:
+                        GoogleView()
+                    ) {
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.yellow).frame(width:40, height:40)
+                                Image(systemName: "doc.plaintext").resizable().frame(width:25, height:25)
+                            }
+                            Spacer().frame(width:20)
+                            Text("Google Classroom").font(.system(size:20))
+                        }.frame(height:40)
+                    }
+                    
+                }
                 Section {
                     HStack {
                         Text("Version:")

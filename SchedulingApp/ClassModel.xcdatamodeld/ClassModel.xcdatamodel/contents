@@ -29,6 +29,7 @@
     <entity name="Classcool" representedClassName="Classcool" syncable="YES">
         <attribute name="assignmentnumber" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="color" optional="YES" attributeType="String"/>
+        <attribute name="googleclassroomid" optional="YES" attributeType="String"/>
         <attribute name="gradingscheme" optional="YES" attributeType="String"/>
         <attribute name="isTrash" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" optional="YES" attributeType="String"/>
@@ -59,7 +60,7 @@
         <element name="AddTimeLog" positionX="18" positionY="117" width="128" height="148"/>
         <element name="Assignment" positionX="27" positionY="18" width="128" height="193"/>
         <element name="AssignmentTypes" positionX="27" positionY="126" width="128" height="88"/>
-        <element name="Classcool" positionX="0" positionY="9" width="128" height="134"/>
+        <element name="Classcool" positionX="0" positionY="9" width="128" height="149"/>
         <element name="Freetime" positionX="18" positionY="90" width="128" height="194"/>
         <element name="Subassignmentnew" positionX="0" positionY="72" width="128" height="118"/>
     </elements>

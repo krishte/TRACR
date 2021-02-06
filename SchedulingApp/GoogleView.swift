@@ -70,6 +70,21 @@ struct DetailGoogleView: View
             if (getlinked())
             {
                 Text("Succesfully linked")
+                Button(action:
+                {
+                    for classity in classlist
+                    {
+                        if (classity.googleclassroomid == classid)
+                        {
+                            classity.googleclassroomid = ""
+                            break
+                        }
+                    }
+                    
+                })
+                {
+                    Text("Unlink")
+                }
             }
             else if (self.getunlinkedclasses().count > 0)
             {
@@ -333,7 +348,8 @@ struct GoogleView: View {
             if (!valstuffity)
             {
                 GIDSignIn.sharedInstance().restorePreviousSignIn()
-
+                if (googleDelegate.signedIn)
+                {
                 defaults.set(true, forKey: "accessedclassroom")
                 print("fetching stuff")
                 var partiallist: [(String, String)] = []
@@ -398,42 +414,8 @@ struct GoogleView: View {
                     
                 }
 
-//                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(3000)) {
-//
-//                    for (_, idiii) in partiallist.enumerated() {
-//                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
-//                            let assignmentsquery = GTLRClassroomQuery_CoursesCourseWorkList.query(withCourseId: idiii.0)
-//                            let workingdate = Date(timeIntervalSinceNow: -3600*24*7)
-//                            let dayformatter = DateFormatter()
-//                            let monthformatter = DateFormatter()
-//                            let yearformatter = DateFormatter()
-//                            yearformatter.dateFormat = "yyyy"
-//                            monthformatter.dateFormat = "MM"
-//                            dayformatter.dateFormat = "dd"
-//                            assignmentsquery.pageSize = 1000
-//                            var vallist: [String] = []
-//                            service.executeQuery(assignmentsquery, completionHandler: {(ticket, stuff, error) in
-//                                let assignmentsforid = stuff as! GTLRClassroom_ListCourseWorkResponse
-//
-//                                if assignmentsforid.courseWork != nil {
-//                                    for assignment in assignmentsforid.courseWork! {
-//                                        print(assignment.title!)
-//                                        if (assignment.dueDate != nil)
-//                                        {
-//                                        if (assignment.dueDate!.day! as! Int >= Int(dayformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.month as! Int >= Int(monthformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.year as! Int >= Int(yearformatter.string(from: workingdate)) ?? 0 )
-//                                        {
-//                                            vallist.append(assignment.title!)
-//                                        }
-//                                        }
-//                                    }
-//                                }
-//                                assignmentsforclass[idiii.1] = vallist
-//                                self.refreshID = UUID()
-//                            })
-//
-//                        }
-//                    }
-//                }
+
+                }
             }
             else
             {
@@ -534,12 +516,4 @@ struct GoogleAssignmentsView: View
         }
     }
 }
-//struct SignInButton: UIViewRepresentable {
-//    func makeUIView(context: Context) -> GIDSignInButton {
-//        let button = GIDSignInButton()
-//        // Customize button here
-//        button.colorScheme = .light
-//        return button
-//    }
-//    func updateUIView(_ uiView: UIViewType, context: Context) {}
-//}
+

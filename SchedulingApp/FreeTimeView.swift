@@ -45,8 +45,7 @@ struct FreeTimeIndividual: View {
                 }
             }
         }
-//        print(maxdate.description, Calendar.current.startOfDay(for: maxdate).description)
-//        print("maxtop", CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60)
+
         return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60
     }
     
@@ -60,9 +59,7 @@ struct FreeTimeIndividual: View {
                 }
             }
         }
-//        print(mindate.description)
-//        print("maxbottom",  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
-//)
+
         if (mindate == Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))) {
             return CGFloat(24*60.35)
         }
@@ -70,38 +67,12 @@ struct FreeTimeIndividual: View {
         return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
     }
     func getoffset() -> CGFloat {
-//        if (self.editingmode)
-//        {
-//            var counter = 0
-//            for freetime in freetimelist
-//            {
-//                if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6])
-//                {
-//                    if (freetime.startdatetime == self.starttime)
-//                    {
-//                        return CGFloat(counter)*110
-//                    }
-//                    counter += 1
-//                }
-//
-//            }
-//            return 0
-//
-//        }
-//        else
-//        {
+
             return self.yoffset
-       // }
     }
     func getHeight() -> CGFloat {
-//        if (self.editingmode)
-//        {
-//            return 100
-//        }
-//        else
-//        {
+
             return self.height
-   //     }
     }
     func getstarttext() -> String {
         let y = Int(round(100*(self.yoffset)))

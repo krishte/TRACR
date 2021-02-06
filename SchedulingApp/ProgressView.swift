@@ -35,24 +35,7 @@ struct ClassProgressView: View {
             VStack {
                // HStack {
                 Text(classcool.name).font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.center).frame(width: (UIScreen.main.bounds.size.width-60)/2)
-               //     Spacer()
-//                   if getAverageGrade() == 0 {
-//                    Text("No Grades").font(.system(size: 20)).fontWeight(.light)
-//                   }
-//                   else
-//                   {
-//                    Text("\(getAverageGrade(), specifier: "%.1f")").font(.system(size: 20)).fontWeight(.bold)
-//                   }
-                //}.padding(.horizontal, 20)
-                
-//                VStack {
-//                    ForEach(assignmentlist) {
-//                        assignment in
-//                            if (assignment.subject == self.classcool.name) {
-//                                AssignmentPeakView(assignment: assignment)
-//                            }
-//                    }
-//                }
+
             }.frame(height: 100).padding(.horizontal, 10).padding(.vertical, 5)
         }.frame(width: (UIScreen.main.bounds.size.width-20)/2).shadow(radius: 5)
     }
@@ -208,13 +191,7 @@ struct DetailProgressView: View {
                 ScrollView(showsIndicators: false) {
                     if (getAverageGrade() != 0) {
                         VStack {
-    //                        Picker(selection: $selectedtimeframe, label: Text(""))
-    //                        {
-    //                            Text("Month").tag(0)
-    //                            Text("Year").tag(1)
-    //                        }.pickerStyle(SegmentedPickerStyle()).padding(.horizontal, 24)
-                            //Divider()
-                            //Spacer()
+
                             if (getgradenum()) {
                                 
                                 Text(getFirstAssignmentDate() + " - " + getLastAssignmentDate()).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, height: 40, alignment: .topLeading).offset(y: 30)
@@ -249,7 +226,7 @@ struct DetailProgressView: View {
                                                 {
                                                     Spacer()
                                                 
-                                                    Rectangle().fill(Color.black).frame(width: screensize, height: 1.5)
+                                                    Rectangle().fill(Color.black).frame(width: screensize, height: 1.5).padding(.bottom, 2)
                                                 }
                                                 Text("0").frame(width: 20).font(.system(size: 10))
                                                 Spacer().frame(width: 20)
@@ -863,20 +840,20 @@ struct ProgressView: View {
     func getloopnumber(classity: Classcool) -> Int
     {
 
-        print(classity.name, "loop number")
+       // print(classity.name, "loop number")
         if (classity.gradingscheme[0..<1] == "N")
         {
             let value = classity.gradingscheme[3..<classity.gradingscheme.count]
             let intvalue = Int(value) ?? 8
             if (intvalue%2==0)
             {
-                print(intvalue/2)
+             //   print(intvalue/2)
                 return intvalue/2
                 
             }
             else
             {
-                print((intvalue+1)/2)
+               // print((intvalue+1)/2)
                 return (intvalue+1)/2
             }
         }
@@ -884,18 +861,18 @@ struct ProgressView: View {
         {
             if (classity.gradingscheme[3..<4] == "F")
             {
-                print(6)
+              //  print(6)
                 return 6
             }
             else
             {
-                print(5)
+             //   print(5)
                 return 5
             }
         }
         else
         {
-            print(5)
+        //    print(5)
             return 5
         }
     }
@@ -1169,21 +1146,7 @@ struct ProgressView: View {
                             }
                             
                         
-//                        ForEach(classlist) {
-//                            classcool in
-//                            NavigationLink(destination: DetailProgressView(classcool2: classcool), tag: self.getclassnumber(classcool: classcool), selection: self.$selectedClass) {
-//                                EmptyView()
-//                            }
-//                            Button(action: {
-//                                self.selectedClass = self.getclassnumber(classcool: classcool)
-//                            }) {
-//                                ClassProgressView(classcool: classcool)
-//
-//                            }
-//
-//
-//
-//                        }
+
                     }
                 }
                 VStack {
@@ -1193,13 +1156,7 @@ struct ProgressView: View {
                         ZStack {
                             // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             Button(action: {                                
-////                                if freetimelist.isEmpty {
-////                                    self.sheetNavigator.modalView = .freetime
-////                                    self.NewSheetPresenting = true
-////                                }
-////
-////                                else {
-//                                    if (classlist.count > 0) {
+
                                         if (self.getcompletedAssignments())
                                         {
                                             self.sheetNavigator.modalView = .grade
@@ -1249,10 +1206,7 @@ struct ProgressView: View {
                                     Text("Class")
                                     Image(systemName: "list.bullet")
                                 }
-                                //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                //                                Text("Occupied Time")
-                                //                                Image(systemName: "clock.fill")
-                                //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+
                                 Button(action: {
                                     self.sheetNavigator.modalView = .freetime
                                     print(self.modalView)
@@ -1306,12 +1260,7 @@ struct ProgressView: View {
                 
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                     Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
-//                    Button(action: {
-//                        self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
-//
-//                    }) {
-//                        Image(systemName: "plus.app.fill").renderingMode(.original).resizable().scaledToFit().font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-//                    }
+
                 }.padding(.top, 0))//.navigationBarTitle("Progress")
          }.onDisappear {
             self.showingSettingsView = false
@@ -1329,7 +1278,7 @@ struct ProgressView: View {
         for assignment in assignmentlist {
             if (assignment.completed == true && assignment.grade == 0)
             {
-                print(assignment.name)
+               // print(assignment.name)
                 return true;
             }
         }
@@ -1473,7 +1422,7 @@ struct WorkloadPie: View {
         
         // Creating the ClassColors Dictionary
         for classity in classlist {
-            ClassToColor[classity.name] = classity.color
+            ClassToColor[classity.originalname] = classity.color
         }
         
         // Appending to Slivers
@@ -1535,8 +1484,8 @@ struct WorkloadPie: View {
                         else {
                             VStack(alignment: .leading) {
                                 Text("Key:").font(.system(size: 15)).fontWeight(.semibold)
-                                Text("Proportion of the Pie: Proportion of Workload of that Class").font(.system(size: 14)).fontWeight(.light)
-                                Text("Height of a Piece: Percentage of Work Completed").font(.system(size: 14)).fontWeight(.light)
+                                Text("Proportion of the Pie: Proportion of Workload of that Class").font(.system(size: 12)).fontWeight(.light)//.frame(height: 50)
+                                Text("Height of a Piece: Percentage of Work Completed").font(.system(size: 12)).fontWeight(.light)
                                 Spacer()
                             }.frame(height: 70).padding(.horizontal, 9)
                         }

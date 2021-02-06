@@ -632,13 +632,7 @@ struct SettingsView: View {
                             Text("Hello.").fontWeight(.regular)
                         }
                     }
-//                    NavigationLink(destination: VStack(alignment: .leading, spacing: 10) {
-//                        Text("This version is running with the following bugs:").font(.title2)
-//                        Text("1. Creating an Assignment that is due on the current day will cause an internal error. As a result, the app will not be able to schedule any assignments. To continue using the app functionally, please complete this assignment and the app will function normally again.")
-//                        Spacer()
-//                    }.padding(.all, 22)) {
-//                        Text("Developer's Notes")
-//                    }
+
                     
                     Button(action: {
                         self.cleardataalert.toggle()
@@ -1178,48 +1172,7 @@ struct NotificationsView: View {
                                 }
                             }
                             
-//                            Picker(selection: $selectedbeforeassignment, label: Text("Before Assignment")) {
-//                                ForEach(0 ..< beforeassignmenttimes.count) {
-//
-//                                    if (self.beforeassignmenttimes[$0] == 0)
-//                                    {
-//                                        Text("None")
-//                                    }
-//                                    else
-//                                    {
-//                                        Text(String(self.beforeassignmenttimes[$0]) + " minutes")
-//                                    }
-//
-//
-//                                }
-//                            }
-//                            Picker(selection: $selectedbeforebreak, label: Text("Before Break")) {
-//                                ForEach(0 ..< beforebreaktimes.count) {
-//
-//                                    if (self.beforebreaktimes[$0] == 0)
-//                                    {
-//                                        Text("None")
-//                                    }
-//                                    else
-//                                    {
-//                                        Text(String(self.beforebreaktimes[$0]) + " minutes")
-//                                    }
-//
-//
-//                                }
-//                            }
-//                            Toggle(isOn: $atassignmentstart) {
-//                                Text("Assignment start")
-//                            }
-//                            Toggle(isOn: $atbreakstart) {
-//                                Text("Break start")
-//                            }
-//                            Toggle(isOn: $atassignmentend) {
-//                                Text("Assignment end")
-//                            }
-//                            Toggle(isOn: $atbreakend) {
-//                                Text("Break end")
-//                            }
+
                         }.navigationBarTitle("Notifications", displayMode: .inline)
         }.onAppear() {
             let defaults = UserDefaults.standard

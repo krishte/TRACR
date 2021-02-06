@@ -24,18 +24,7 @@ struct DropDown: View {
     @State var filterspresented: Bool = false
     var body: some View {
         VStack {
-          //  Form {
-          //      Section {
-//                    Picker(selection: $selectedFilter, label: Text("Sort by: ")) {
-//                        Section {
-//                            Text("Sort Assignments By:").font(.headline).fontWeight(.semibold).padding(.top, -40)
-//                        }
-//                        Section {
-//                            ForEach(0 ..< filters.count) {
-//                               Text(self.filters[$0])
-//                            }
-//                        }
-//                    }
+
             NavigationLink(destination:
             
 

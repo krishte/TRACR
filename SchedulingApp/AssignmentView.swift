@@ -74,27 +74,7 @@ struct IndividualAssignmentFilterView: View {
                         }
                     }
                 }
-//                if (isDraggedleft)
-//                {
-//                       ZStack {
-//                        HStack {
-//                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: -UIScreen.main.bounds.size.width+10+self.dragoffset.width)
-//                        }
-//                        HStack {
-//
-////                            if (self.dragoffset.width > 150) {
-////                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -110)
-////                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -150)
-////                            }
-////                            else {
-//                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width > 150 ? -110 : self.dragoffset.width-260)
-//                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width > 150 ? -150 : self.dragoffset.width-300)
-////                            }
-//
-//                        }
-//                    }
-//
-//                }
+
             }
             
             VStack {
@@ -175,21 +155,7 @@ struct IndividualAssignmentFilterView: View {
                             self.dragoffset = .zero
                         }
                     }
-//                    else
-//                    {
-//                        self.dragoffset=value.translation
-//                        if (self.dragoffset.width > 0) {
-//                            self.isDragged = false
-//                            self.isDraggedleft = true
-//                        }
-//                        else
-//                        {
-//                            self.dragoffset = CGSize.zero
-//                        }
-//                        if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
-//                            self.incompleted = true
-//                        }
-//                    }
+
 
 
                 }
@@ -376,27 +342,7 @@ struct GradedAssignmentsView: View {
                         }
                     }
                 }
-//                if (isDraggedleft)
-//                {
-//                       ZStack {
-//                        HStack {
-//                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20).offset(x: -UIScreen.main.bounds.size.width+10+self.dragoffset.width)
-//                        }
-//                        HStack {
-//
-////                            if (self.dragoffset.width > 150) {
-////                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: -110)
-////                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: -150)
-////                            }
-////                            else {
-//                                Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width > 150 ? -110 : self.dragoffset.width-260)
-//                                Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width > 150 ? -150 : self.dragoffset.width-300)
-////                            }
-//
-//                        }
-//                    }
-//
-//                }
+
             }
             
             VStack {
@@ -480,21 +426,7 @@ struct GradedAssignmentsView: View {
                             self.incompleted = true
                         }
                     }
-//                    else
-//                    {
-//                        self.dragoffset=value.translation
-//                        if (self.dragoffset.width > 0) {
-//                            self.isDragged = false
-//                            self.isDraggedleft = true
-//                        }
-//                        else
-//                        {
-//                            self.dragoffset = CGSize.zero
-//                        }
-//                        if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
-//                            self.incompleted = true
-//                        }
-//                    }
+
 
 
                 }

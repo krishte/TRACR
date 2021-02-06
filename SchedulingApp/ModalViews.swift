@@ -1,6 +1,8 @@
 import Foundation
 import UIKit
 import SwiftUI
+import GoogleSignIn
+import GoogleAPIClientForREST
 
 class TextFieldManager: ObservableObject {
     @Published var userInput = "" {
@@ -14,6 +16,487 @@ class TextFieldManager: ObservableObject {
     init(blah: String)
     {
         userInput = blah
+    }
+}
+struct NewGoogleAssignmentModalView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var googleDelegate: GoogleDelegate
+
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @EnvironmentObject var changingDate: DisplayedDate
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    @Binding var NewAssignmentPresenting: Bool
+    
+    @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
+    var assignmentslist: FetchedResults<Assignment>
+    
+    @State var nameofassignment: String = ""
+    @State private var selectedclass: Int
+    @State private var preselecteddate: Int
+    @State private var assignmenttype = 0
+    @State private var hours = 0
+    @State private var minutes = 0
+    @State var selectedDate: Date
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+    let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+    let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    
+    @State private var createassignmentallowed = true
+    @State private var showingAlert = false
+    @State private var expandedduedate = false
+    @State private var startDate = Date()
+    @State private var completedassignment = false
+    @State private var assignmentgrade: Double = 1
+    var otherclassgradesae: [String] = ["E", "D", "C", "B", "A"]
+    var otherclassgradesaf: [String] = ["F", "E", "D", "C", "B", "A"]
+    var formatter: DateFormatter
+    @State var refreshID = UUID()
+    @State var foundassignments = [(String, String)]()
+    @State var selectedgoogleassignment = 0
+    
+    @EnvironmentObject var masterRunning: MasterRunning
+    @ObservedObject var textfieldmanager: TextFieldManager = TextFieldManager(blah: "")
+    
+    init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
+        self._NewAssignmentPresenting = NewAssignmentPresenting
+        formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        _selectedclass = State(initialValue: selectedClass)
+        self._preselecteddate = State(initialValue: preselecteddate)
+                
+        let lastmondaydate = Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
+            
+        if (preselecteddate == -1)
+        {
+            self._selectedDate = State(initialValue: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!))//bugfixtemp
+        }
+        else
+        {
+            
+            if (Calendar.current.date(byAdding: .day, value: preselecteddate, to: lastmondaydate)! < Date())
+            {
+                self._selectedDate = State(initialValue: Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!))
+            }
+            else
+            {
+                self._selectedDate = State(initialValue: Calendar.current.date(byAdding: .day, value: preselecteddate, to: lastmondaydate)!)
+            }
+        }
+    }
+    func getnontrashclasslist() -> [Int]
+    {
+        var classitylist: [Int] = []
+        for (index, classity) in classlist.enumerated()
+        {
+            if (!classity.isTrash)
+            {
+                classitylist.append(index)
+            }
+        }
+        return classitylist
+    }
+    func getgradingscheme() -> String
+    {
+        if (selectedclass < classlist.count)
+        {
+            return classlist[selectedclass].gradingscheme
+        }
+        return "P"
+    }
+    func getgrademin() -> Double
+    {
+        let gradeschemeval = self.getgradingscheme()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            return 1
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return 1
+        }
+        else
+        {
+            return 1
+        }
+    }
+    func getgrademax() -> Double
+    {
+        let gradeschemeval = self.getgradingscheme()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            if (gradeschemeval[3..<4] == "F")
+            {
+                return 6
+            }
+            return 5
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return Double(gradeschemeval[3..<gradeschemeval.count]) ?? 7
+        }
+        else
+        {
+            return 100
+        }
+        
+    }
+    var body: some View
+    {
+        NavigationView {
+            Form {
+                Section {
+                    
+                    Picker(selection: $selectedgoogleassignment, label: Text("Google Assignment")) {
+                        ForEach(0 ..< foundassignments.count) {
+               
+                            val in
+                            Text(foundassignments[val].0)
+                        
+                            
+                        }
+                    }.id(refreshID) .onReceive([self.selectedgoogleassignment].publisher.first()) { (value) in
+                       // textfieldmanager.userInput = foundassignments[selectedgoogleassignment]
+                        for classity in getnontrashclasslist()
+                        {
+                            if (foundassignments.count > 0)
+                            {
+                                if (classlist[classity].googleclassroomid == foundassignments[selectedgoogleassignment].1)
+                                {
+                                    selectedclass = classity
+                                    break
+                                }
+                            }
+                        }
+//                        if (foundassignments.count > 0)
+//                        {
+//                            textfieldmanager.userInput = foundassignments[selectedgoogleassignment].0
+//                        }
+                }
+                    
+                    TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.webSearch)
+                }
+                
+                Section {
+                    Toggle(isOn: self.$completedassignment) {
+                        Text("Completed Assignment")
+                    }.onTapGesture {
+                        if (!self.completedassignment)
+                         {
+                            self.assignmentgrade = 1
+                            
+                          //  print(!self.iscompleted)
+                        }
+                        else
+                        {
+                            
+                            self.selectedDate = Date()
+                        }
+                       
+                        
+                        
+                    }
+                }
+                
+                if (self.completedassignment)
+                {
+                    Section {
+                        VStack {
+                            //Text("Hello")
+
+                            if (self.getgradingscheme()[0..<1] == "N" || self.getgradingscheme()[0..<1] == "L")
+                            {
+                                HStack {
+                                    if (self.getgradingscheme()[0..<1] == "N")
+                                    {
+                                        Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                    }
+                                    else
+                                    {
+                                        if (self.getgradingscheme()[3..<4] == "F")
+                                        {
+                                            Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
+                                        }
+                                        else
+                                        {
+                                            Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
+                                        }
+                                    }
+                                   Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $assignmentgrade, in: self.getgrademin()...self.getgrademax())
+                            }
+                            else
+                            {
+                                HStack {
+                                    Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                    Spacer()
+                                }.frame(height: 30)
+                                Slider(value: $assignmentgrade, in: 1...100)
+
+                            }
+                            
+
+                        }
+
+                    }
+                }
+                Section {
+                    Picker(selection: $selectedclass, label: Text("Class")) {
+                        ForEach(0 ..< getnontrashclasslist().count) {
+                            if ($0 < self.getnontrashclasslist().count)
+                            {
+                                Text(self.classlist[self.getnontrashclasslist()[$0]].name)
+                            }
+                            
+                        }
+                    }
+
+                }
+                Section {
+                    Picker(selection: $assignmenttype, label: Text("Type")) {
+                        ForEach(0 ..< assignmenttypes.count) {
+                            Text(self.assignmenttypes[$0])
+                        }
+                    }
+                }
+                
+                Section {
+                    Text("Assignment Length")
+                    HStack {
+                        VStack {
+                            Picker(selection: $hours, label: Text("Hour")) {
+                                ForEach(hourlist.indices) { hourindex in
+                                    Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
+                                 }
+                             }.pickerStyle(WheelPickerStyle())
+                        }.frame(minWidth: 100, maxWidth: .infinity)
+                        .clipped()
+                        
+                        VStack {
+                            if hours == 0 {
+                                Picker(selection: $minutes, label: Text("Minutes")) {
+                                    ForEach(minutelist[6...].indices) { minuteindex in
+                                        Text(String(self.minutelist[minuteindex]) + " mins")
+                                    }
+                                }.pickerStyle(WheelPickerStyle())
+                            }
+                            
+                            else {
+                                Picker(selection: $minutes, label: Text("Minutes")) {
+                                    ForEach(minutelist.indices) { minuteindex in
+                                        Text(String(self.minutelist[minuteindex]) + " mins")
+                                    }
+                                }.pickerStyle(WheelPickerStyle())
+                            }
+                        }.frame(minWidth: 100, maxWidth: .infinity)
+                        .clipped()
+                    }
+                }
+
+                Section {
+
+
+                    if #available(iOS 14.0, *) {
+                        Button(action: {
+                                self.expandedduedate.toggle()
+
+                        }) {
+                            HStack {
+                                Text("Select Due Date and Time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                Spacer()
+                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                            }
+
+                        }
+                        if (expandedduedate)
+                        {
+                            VStack {
+                                DatePicker("", selection: $selectedDate, in: self.completedassignment ? Date(timeIntervalSince1970: 0)... : Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                            }.animation(.spring())
+                        }
+
+                    }
+                    
+                    else {
+                        Button(action: {
+                                self.expandedduedate.toggle()
+
+                        }) {
+                            HStack {
+                                Text("Select Due Date and Time").foregroundColor(Color.black)
+                                Spacer()
+                                Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                            }
+
+                        }
+                        if (expandedduedate)
+                        {
+                            VStack { //change startDate thing to the time-adjusted one (look at iOS 14 implementation
+                                MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                            }.animation(nil)
+                        }
+                        
+                    }
+                }
+
+                Section {
+                    Button(action: {
+                        self.createassignmentallowed = true
+                        
+                        for assignment in self.assignmentslist {
+                            if assignment.name == self.textfieldmanager.userInput {
+                                self.createassignmentallowed = false
+                            }
+                        }
+                        
+                        if (self.textfieldmanager.userInput == "")
+                        {
+                            self.createassignmentallowed = false
+                        }
+
+                        if self.createassignmentallowed {
+                            if (!self.completedassignment)
+                            {
+                                let newAssignment = Assignment(context: self.managedObjectContext)
+                                newAssignment.completed = false
+                                newAssignment.grade = 0
+                                newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                                newAssignment.name = self.textfieldmanager.userInput
+                                newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                                newAssignment.progress = 0
+                                newAssignment.duedate = self.selectedDate
+                                
+                                if (self.hours == 0)
+                                {
+                                    newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                                }
+                                else
+                                {
+                                    newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                                }
+                                newAssignment.timeleft = newAssignment.totaltime
+                            
+                                for classity in self.classlist {
+                                    if (classity.originalname == newAssignment.subject) {
+                                        newAssignment.color = classity.color
+                                        classity.assignmentnumber += 1
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                let newAssignment = Assignment(context: self.managedObjectContext)
+                                newAssignment.completed = true
+                                newAssignment.grade = Int64(self.assignmentgrade)
+                                newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                                newAssignment.name = self.textfieldmanager.userInput
+                                newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                                newAssignment.progress = 100
+                                newAssignment.duedate = self.selectedDate
+                                
+                                if (self.hours == 0)
+                                {
+                                    newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                                }
+                                else
+                                {
+                                    newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                                }
+                                newAssignment.timeleft = 0
+                            
+                                for classity in self.classlist {
+                                    if (classity.originalname == newAssignment.subject) {
+                                        newAssignment.color = classity.color
+                                        classity.assignmentnumber += 1
+                                    }
+                                }
+                            }
+                            masterRunning.masterRunningNow = true
+                            masterRunning.displayText = true
+                            print("Signal Sent. asfoij")
+                            
+                            do {
+                                try self.managedObjectContext.save()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
+                            
+                            self.NewAssignmentPresenting = false
+                        }
+                     
+                        else {
+                            self.showingAlert = true
+                        }
+                    }) {
+                        Text("Add Assignment")
+                    }.alert(isPresented: $showingAlert) {
+                        Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+                    }
+                }
+                
+            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Assignment", displayMode: .inline)
+        }
+        .onAppear
+        {
+            GIDSignIn.sharedInstance().restorePreviousSignIn()
+           
+            if (googleDelegate.signedIn)
+            {
+                var idlist: [String] = []
+                for classity in classlist
+                {
+                    if (classity.googleclassroomid != "")
+                    {
+                        idlist.append(classity.googleclassroomid)
+                    }
+                }
+                let service = GTLRClassroomService()
+                service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
+
+                    for idiii in idlist {
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
+                            let assignmentsquery = GTLRClassroomQuery_CoursesCourseWorkList.query(withCourseId: idiii)
+                            //let workingdate = Date(timeIntervalSinceNow: -3600*24*7)
+                            let dayformatter = DateFormatter()
+                            let monthformatter = DateFormatter()
+                            let yearformatter = DateFormatter()
+                            yearformatter.dateFormat = "yyyy"
+                            monthformatter.dateFormat = "MM"
+                            dayformatter.dateFormat = "dd"
+                            assignmentsquery.pageSize = 1000
+                            service.executeQuery(assignmentsquery, completionHandler: {(ticket, stuff, error) in
+                                let assignmentsforid = stuff as! GTLRClassroom_ListCourseWorkResponse
+
+                                if assignmentsforid.courseWork != nil {
+                                    for assignment in assignmentsforid.courseWork! {
+                                      //  print(assignment.title!)
+                                        if (assignment.dueDate != nil)
+                                        {
+                                            print(assignment.title!)
+//                                        if (assignment.dueDate!.day! as! Int >= Int(dayformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.month as! Int >= Int(monthformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.year as! Int >= Int(yearformatter.string(from: workingdate)) ?? 0 )
+//                                        {
+                                            foundassignments.append((assignment.title!, idiii))
+                                         //   print(assignment.title!)
+                                      //  }
+                                        }
+                                    }
+                                }
+                                //assignmentsforclass[idiii.1] = vallist
+                                self.refreshID = UUID()
+                            })
+
+                        }
+                    }
+            }
+        }
+        
+        if masterRunning.masterRunningNow {
+            MasterClass()
+        }
     }
 }
 struct NewAssignmentModalView: View {

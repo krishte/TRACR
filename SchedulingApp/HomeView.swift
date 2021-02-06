@@ -1941,7 +1941,7 @@ struct HomeView: View {
 
                                     Button(action: {
                                         self.sheetNavigator.modalView = .freetime
-                                        print(self.modalView)
+                                        print(self.sheetNavigator.modalView)
                                         self.NewSheetPresenting = true
                                     }) {
                                         Text("Free Time")

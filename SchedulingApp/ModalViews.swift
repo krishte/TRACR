@@ -55,6 +55,7 @@ struct NewGoogleAssignmentModalView: View {
     var formatter: DateFormatter
     @State var refreshID = UUID()
     @State var foundassignments = [(String, String)]()
+    @State var foundassignmentdates = [Date]()
     @State var selectedgoogleassignment = 0
     
     @EnvironmentObject var masterRunning: MasterRunning
@@ -144,6 +145,7 @@ struct NewGoogleAssignmentModalView: View {
         }
         
     }
+    @State var refreshID2 = UUID()
     var body: some View
     {
         NavigationView {
@@ -151,15 +153,17 @@ struct NewGoogleAssignmentModalView: View {
                 Section {
                     
                     Picker(selection: $selectedgoogleassignment, label: Text("Google Assignment")) {
-                        ForEach(0 ..< foundassignments.count) {
+                        ForEach(0 ..< foundassignments.count, id: \.self) {
                
                             val in
                             Text(foundassignments[val].0)
                         
                             
                         }
-                    }.id(refreshID) .onReceive([self.selectedgoogleassignment].publisher.first()) { (value) in
+                    }.onChange(of: selectedgoogleassignment)
+                    {
                        // textfieldmanager.userInput = foundassignments[selectedgoogleassignment]
+                        _ in
                         for classity in getnontrashclasslist()
                         {
                             if (foundassignments.count > 0)
@@ -171,13 +175,24 @@ struct NewGoogleAssignmentModalView: View {
                                 }
                             }
                         }
-//                        if (foundassignments.count > 0)
-//                        {
-//                            textfieldmanager.userInput = foundassignments[selectedgoogleassignment].0
-//                        }
+                        if (foundassignments.count > 0)
+                        {
+                            self.nameofassignment = foundassignments[selectedgoogleassignment].0
+                            for (index, types) in assignmenttypes.enumerated()
+                            {
+                                if (foundassignments[selectedgoogleassignment].0.lowercased().contains(types.lowercased()) )
+                                {
+                                    assignmenttype = index
+                                }
+                            }
+                            self.selectedDate = foundassignmentdates[selectedgoogleassignment]
+                         //   refreshID2 = UUID()
+                            print("hello")//  print(foundassignmentdates[selectedgoogleassignment].description)
+                        }
+
                 }
                     
-                    TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.webSearch)
+                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch)
                 }
                 
                 Section {
@@ -303,6 +318,7 @@ struct NewGoogleAssignmentModalView: View {
                     if #available(iOS 14.0, *) {
                         Button(action: {
                                 self.expandedduedate.toggle()
+                            print(selectedDate.description)
 
                         }) {
                             HStack {
@@ -315,8 +331,8 @@ struct NewGoogleAssignmentModalView: View {
                         if (expandedduedate)
                         {
                             VStack {
-                                DatePicker("", selection: $selectedDate, in: self.completedassignment ? Date(timeIntervalSince1970: 0)... : Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
-                            }.animation(.spring())
+                                DatePicker("", selection: self.$selectedDate, in: self.completedassignment ? Date(timeIntervalSince1970: 0)... : Calendar.current.startOfDay(for: Calendar.current.date(byAdding: .day, value: 1, to: Date())!)..., displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())//.frame(width: UIScreen.main.bounds.size.width-60, height: 100)
+                            }.animation(.spring())//.id(refreshID2)
                         }
 
                     }
@@ -348,16 +364,16 @@ struct NewGoogleAssignmentModalView: View {
                         self.createassignmentallowed = true
                         
                         for assignment in self.assignmentslist {
-                            if assignment.name == self.textfieldmanager.userInput {
+                            if assignment.name == self.nameofassignment {
                                 self.createassignmentallowed = false
                             }
                         }
                         
-                        if (self.textfieldmanager.userInput == "")
+                        if (self.nameofassignment == "")
                         {
                             self.createassignmentallowed = false
                         }
-
+                        print(createassignmentallowed)
                         if self.createassignmentallowed {
                             if (!self.completedassignment)
                             {
@@ -365,7 +381,7 @@ struct NewGoogleAssignmentModalView: View {
                                 newAssignment.completed = false
                                 newAssignment.grade = 0
                                 newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
-                                newAssignment.name = self.textfieldmanager.userInput
+                                newAssignment.name = self.nameofassignment
                                 newAssignment.type = self.assignmenttypes[self.assignmenttype]
                                 newAssignment.progress = 0
                                 newAssignment.duedate = self.selectedDate
@@ -386,6 +402,11 @@ struct NewGoogleAssignmentModalView: View {
                                         classity.assignmentnumber += 1
                                     }
                                 }
+                                do {
+                                    try self.managedObjectContext.save()
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
                             }
                             else
                             {
@@ -393,7 +414,7 @@ struct NewGoogleAssignmentModalView: View {
                                 newAssignment.completed = true
                                 newAssignment.grade = Int64(self.assignmentgrade)
                                 newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
-                                newAssignment.name = self.textfieldmanager.userInput
+                                newAssignment.name = self.nameofassignment
                                 newAssignment.type = self.assignmenttypes[self.assignmenttype]
                                 newAssignment.progress = 100
                                 newAssignment.duedate = self.selectedDate
@@ -414,16 +435,17 @@ struct NewGoogleAssignmentModalView: View {
                                         classity.assignmentnumber += 1
                                     }
                                 }
+                                do {
+                                    try self.managedObjectContext.save()
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
                             }
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
                             print("Signal Sent. asfoij")
                             
-                            do {
-                                try self.managedObjectContext.save()
-                            } catch {
-                                print(error.localizedDescription)
-                            }
+
                             
                             self.NewAssignmentPresenting = false
                         }
@@ -476,12 +498,27 @@ struct NewGoogleAssignmentModalView: View {
                                       //  print(assignment.title!)
                                         if (assignment.dueDate != nil)
                                         {
-                                            print(assignment.title!)
+                                           // print(assignment.title!)
 //                                        if (assignment.dueDate!.day! as! Int >= Int(dayformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.month as! Int >= Int(monthformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.year as! Int >= Int(yearformatter.string(from: workingdate)) ?? 0 )
 //                                        {
                                             foundassignments.append((assignment.title!, idiii))
                                          //   print(assignment.title!)
                                       //  }
+                                            var newComponents = DateComponents()
+                                            newComponents.timeZone = .current
+                                            newComponents.day = Int(truncating: assignment.dueDate!.day!)
+                                            newComponents.month = Int(truncating: assignment.dueDate!.month!)
+                                            newComponents.year = Int(truncating: assignment.dueDate!.year!)
+                                            if (assignment.dueTime != nil)
+                                            {
+                                                newComponents.hour = assignment.dueTime!.hours as? Int
+                                                newComponents.minute = assignment.dueTime!.minutes as? Int
+                                                newComponents.second = 0
+                                             //   print(assignment.title!, newComponents.hour!, newComponents.minute!)
+     
+                                            }
+                                            let cooldate = Date(timeInterval: TimeInterval(TimeZone.current.secondsFromGMT()), since: Calendar.current.date(from: newComponents)!)
+                                            foundassignmentdates.append(cooldate)
                                         }
                                     }
                                 }

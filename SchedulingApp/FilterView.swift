@@ -210,6 +210,8 @@ struct AssignmentsView: View {
     }
 }
 
+
+
 struct FilterView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
@@ -235,9 +237,9 @@ struct FilterView: View {
     @State var NewSheetPresenting = false
     @State var NewAlertPresenting = false
     @ObservedObject var sheetNavigator = SheetNavigator()
-    
+    @State var showpopup = false
     @EnvironmentObject var masterRunning: MasterRunning
-    
+    @State var widthAndHeight: CGFloat = 50
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
     
@@ -281,98 +283,173 @@ struct FilterView: View {
                         Spacer()
                         ZStack {
                             // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
-                            Button(action: {
-//                                if freetimelist.isEmpty {
-//                                    self.sheetNavigator.modalView = .freetime
-//                                    self.NewSheetPresenting = true
-//                                }
-                                
-//                                else {
-//                                    if (classlist.count > 0) {
+                            if (showpopup)
+                            {
+                                ZStack() {
+                                    Button(action:
+                                    {
                                         if (classlist.count > 0)
                                         {
                                             self.sheetNavigator.modalView = .assignment
-                                            print(self.modalView)
                                             self.NewSheetPresenting = true
-                                           // self.NewGradePresenting = true
+                                            self.NewAssignmentPresenting = true
                                         }
                                         else
                                         {
                                             self.sheetNavigator.alertView = .noclass
                                             self.NewAlertPresenting = true
                                         }
-//                                    }
-//                                    else {
-//                                        self.sheetNavigator.modalView = .classity
-//                                        self.NewSheetPresenting = true
-//                                        self.NewClassPresenting = true
-//                                    }
-//                                }
+                                        
+                                    })
+                                    {
+                                          ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .foregroundColor(Color.blue)
+                                              .frame(width: widthAndHeight, height: widthAndHeight)
+                                            Image(systemName: "paperclip")
+                                              .resizable().scaledToFit()
+                                           //   .aspectRatio(contentMode: .fit)
+                                                //.padding(.bottom, 20).padding(.trailing, 100)
+                                             // .frame(width: widthAndHeight, height: widthAndHeight)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                          }.frame(width: widthAndHeight, height: widthAndHeight)
+                                    }.offset(x: -70, y: 10)
+                                    Button(action:
+                                    {
+                                        self.sheetNavigator.modalView = .classity
+                                        self.NewSheetPresenting = true
+                                        self.NewClassPresenting = true
+                                        
+                                    })
+                                    {
+                                          ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .foregroundColor(Color.blue)
+                                              .frame(width: widthAndHeight, height: widthAndHeight)
+                                            Image(systemName: "list.bullet")
+                                              .resizable().scaledToFit()
+                                           //   .aspectRatio(contentMode: .fit)
+                                                //.padding(.bottom, 20).padding(.trailing, 100)
+                                             // .frame(width: widthAndHeight, height: widthAndHeight)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                          }.frame(width: widthAndHeight, height: widthAndHeight)
+                                    }.offset(x: -130, y: 10)
+
+                                    Button(action:
+                                    {
+                                        if (self.getcompletedAssignments())
+                                        {
+                                            self.sheetNavigator.modalView = .grade
+                                            self.NewSheetPresenting = true
+                                        }
+                                        else
+                                        {
+                                            self.sheetNavigator.alertView = .noassignment
+                                            self.NewAlertPresenting = true
+                                        }
+                                        
+                                    })
+                                    {
+                                          ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .foregroundColor(Color.blue)
+                                              .frame(width: widthAndHeight, height: widthAndHeight)
+                                            Image(systemName: "percent")
+                                              .resizable().scaledToFit()
+                                           //   .aspectRatio(contentMode: .fit)
+                                                //.padding(.bottom, 20).padding(.trailing, 100)
+                                             // .frame(width: widthAndHeight, height: widthAndHeight)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                          }.frame(width: widthAndHeight, height: widthAndHeight)
+                                    }.offset(x: -190, y: 10)
+                                }.transition(.scale)
+                              }
+                            
+                            Button(action: {
+//
+//                                        if (classlist.count > 0)
+//                                        {
+//                                            self.sheetNavigator.modalView = .assignment
+//                                            print(self.modalView)
+//                                            self.NewSheetPresenting = true
+//                                           // self.NewGradePresenting = true
+//                                        }
+//                                        else
+//                                        {
+//                                            self.sheetNavigator.alertView = .noclass
+//                                            self.NewAlertPresenting = true
+//                                        }
+                                withAnimation(.spring())
+                                {
+                                    self.showpopup.toggle()
+                                }
+
                                 
                             }) {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {
                                         //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
-                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 360 : 0))
                                     }
                                 )
-                            }.buttonStyle(PlainButtonStyle()).contextMenu{
-                                Button(action: {
-                                    if (classlist.count > 0)
-                                    {
-                                        self.sheetNavigator.modalView = .assignment
-                                        self.NewSheetPresenting = true
-                                        self.NewAssignmentPresenting = true
-                                    }
-                                    else
-                                    {
-                                        self.sheetNavigator.alertView = .noclass
-                                        self.NewAlertPresenting = true
-                                    }
-                                }) {
-                                    Text("Assignment")
-                                    Image(systemName: "paperclip")
-                                }
-                                Button(action: {
-                                    self.sheetNavigator.modalView = .classity
-                                    self.NewSheetPresenting = true
-                                    self.NewClassPresenting = true
-                                }) {
-                                    Text("Class")
-                                    Image(systemName: "list.bullet")
-                                }
-                                //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-                                //                                Text("Occupied Time")
-                                //                                Image(systemName: "clock.fill")
-                                //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-                                Button(action: {
-                                    self.sheetNavigator.modalView = .freetime
-                                    print(self.modalView)
-                                    self.NewSheetPresenting = true
-                                }) {
-                                    Text("Free Time")
-                                    Image(systemName: "clock")
-                                }
-                                Button(action: {
-                                    
-                                    if (self.getcompletedAssignments())
-                                    {
-                                        self.sheetNavigator.modalView = .grade
-                                        self.NewSheetPresenting = true
-                                    }
-                                    else
-                                    {
-                                        self.sheetNavigator.alertView = .noassignment
-                                        self.NewAlertPresenting = true
-                                    }
-                                    //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
-                                    
-                                }) {
-                                    Text("Grade")
-                                    Image(systemName: "percent")
-                                }
-                                
-                            }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
+                            }.buttonStyle(PlainButtonStyle())
+//                            .contextMenu{
+//                                Button(action: {
+//                                    if (classlist.count > 0)
+//                                    {
+//                                        self.sheetNavigator.modalView = .assignment
+//                                        self.NewSheetPresenting = true
+//                                        self.NewAssignmentPresenting = true
+//                                    }
+//                                    else
+//                                    {
+//                                        self.sheetNavigator.alertView = .noclass
+//                                        self.NewAlertPresenting = true
+//                                    }
+//                                }) {
+//                                    Text("Assignment")
+//                                    Image(systemName: "paperclip")
+//                                }
+//                                Button(action: {
+//                                    self.sheetNavigator.modalView = .classity
+//                                    self.NewSheetPresenting = true
+//                                    self.NewClassPresenting = true
+//                                }) {
+//                                    Text("Class")
+//                                    Image(systemName: "list.bullet")
+//                                }
+//                                //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
+//                                //                                Text("Occupied Time")
+//                                //                                Image(systemName: "clock.fill")
+//                                //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
+//                                Button(action: {
+//                                    self.sheetNavigator.modalView = .freetime
+//                                    print(self.modalView)
+//                                    self.NewSheetPresenting = true
+//                                }) {
+//                                    Text("Free Time")
+//                                    Image(systemName: "clock")
+//                                }
+//                                Button(action: {
+//
+//                                    if (self.getcompletedAssignments())
+//                                    {
+//                                        self.sheetNavigator.modalView = .grade
+//                                        self.NewSheetPresenting = true
+//                                    }
+//                                    else
+//                                    {
+//                                        self.sheetNavigator.alertView = .noassignment
+//                                        self.NewAlertPresenting = true
+//                                    }
+//                                    //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
+//
+//                                }) {
+//                                    Text("Grade")
+//                                    Image(systemName: "percent")
+//                                }
+//
+//                            }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
                         }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                             Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                         }

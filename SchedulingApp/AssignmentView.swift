@@ -131,7 +131,7 @@ struct IndividualAssignmentFilterView: View {
                             }
                     }
                 }
-            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
+            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(14).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
                     if (!self.isCompleted) {
@@ -217,7 +217,7 @@ struct IndividualAssignmentFilterView: View {
                     }
  
                 }).animation(.spring())
-        }.frame(width: UIScreen.main.bounds.size.width-20).padding(10)
+        }.frame(width: UIScreen.main.bounds.size.width-20).padding(.horizontal, 10)
     }
     func gethourminutestext(minutenumber: Int) -> String {
         if (minutenumber < 60)
@@ -404,7 +404,7 @@ struct GradedAssignmentsView: View {
                         }
                     }
                 }
-            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(25).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
+            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(14).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 40, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
 
@@ -482,7 +482,7 @@ struct GradedAssignmentsView: View {
                     }
  
                 }).animation(.spring())
-        }.frame(width: UIScreen.main.bounds.size.width-20).padding(10)
+        }.frame(width: UIScreen.main.bounds.size.width-20).padding(.horizontal, 10)
     }
     func gethourminutestext(minutenumber: Int) -> String {
         if (minutenumber < 60)

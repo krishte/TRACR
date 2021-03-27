@@ -18,6 +18,45 @@ class TextFieldManager: ObservableObject {
         userInput = blah
     }
 }
+
+struct SelectGoogleAssignmentView: View
+{
+    @Binding var selectedgoogleassignment: Int
+    @Binding var foundassignments: [(String, String)]
+    @Binding var activeselection: Bool
+    
+    var body: some View
+    {
+        Form
+        {
+
+            ForEach(0 ..< foundassignments.count, id: \.self) {
+   
+                val in
+
+                Button(action:{
+                    selectedgoogleassignment = val
+                    activeselection = false
+                })
+                {
+                    HStack
+                    {
+                        Text(foundassignments[val].0)//.frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20)
+                        Spacer()
+                        if (selectedgoogleassignment == val)
+                        {
+                            Image(systemName: "checkmark").foregroundColor(.blue)
+                        }
+                    }
+                }.buttonStyle(PlainButtonStyle())//.shadow(radius: 10)//.frame(height: 30)
+                
+            
+                
+            }
+        }
+        
+    }
+}
 struct NewGoogleAssignmentModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var googleDelegate: GoogleDelegate
@@ -33,6 +72,7 @@ struct NewGoogleAssignmentModalView: View {
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
     var assignmentslist: FetchedResults<Assignment>
     
+    @State var activeselection: Bool = false
     @State var nameofassignment: String = ""
     @State private var selectedclass: Int
     @State private var preselecteddate: Int
@@ -152,47 +192,53 @@ struct NewGoogleAssignmentModalView: View {
             Form {
                 Section {
                     
-                    Picker(selection: $selectedgoogleassignment, label: Text("Google Assignment")) {
-                        ForEach(0 ..< foundassignments.count, id: \.self) {
-               
-                            val in
-                            Text(foundassignments[val].0)
-                        
-                            
-                        }
-                    }.onChange(of: selectedgoogleassignment)
-                    {
-                       // textfieldmanager.userInput = foundassignments[selectedgoogleassignment]
-                        _ in
-                        for classity in getnontrashclasslist()
-                        {
-                            if (foundassignments.count > 0)
-                            {
-                                if (classlist[classity].googleclassroomid == foundassignments[selectedgoogleassignment].1)
-                                {
-                                    selectedclass = classity
-                                    break
-                                }
-                            }
-                        }
-                        if (foundassignments.count > 0)
-                        {
-                            self.nameofassignment = foundassignments[selectedgoogleassignment].0
-                            for (index, types) in assignmenttypes.enumerated()
-                            {
-                                if (foundassignments[selectedgoogleassignment].0.lowercased().contains(types.lowercased()) )
-                                {
-                                    assignmenttype = index
-                                }
-                            }
-                            self.selectedDate = foundassignmentdates[selectedgoogleassignment]
-                         //   refreshID2 = UUID()
-                            print("hello")//  print(foundassignmentdates[selectedgoogleassignment].description)
-                        }
-
-                }
+//                    Picker(selection: $selectedgoogleassignment, label: Text("Google Assignment")) {
+//                        ForEach(0 ..< foundassignments.count, id: \.self) {
+//
+//                            val in
+//                            Text(foundassignments[val].0)
+//
+//
+//                        }
+//
+//                    }.onChange(of: selectedgoogleassignment)
+//                    {
+//                       // textfieldmanager.userInput = foundassignments[selectedgoogleassignment]
+//                        _ in
+//                        for classity in getnontrashclasslist()
+//                        {
+//                            if (foundassignments.count > 0)
+//                            {
+//                                if (classlist[classity].googleclassroomid == foundassignments[selectedgoogleassignment].1)
+//                                {
+//                                    selectedclass = classity
+//                                    break
+//                                }
+//                            }
+//                        }
+//                        if (foundassignments.count > 0)
+//                        {
+//                            self.nameofassignment = foundassignments[selectedgoogleassignment].0
+//                            for (index, types) in assignmenttypes.enumerated()
+//                            {
+//                                if (foundassignments[selectedgoogleassignment].0.lowercased().contains(types.lowercased()) )
+//                                {
+//                                    assignmenttype = index
+//                                }
+//                            }
+//                            self.selectedDate = foundassignmentdates[selectedgoogleassignment]
+//                         //   refreshID2 = UUID()
+//                            print("hello")//  print(foundassignmentdates[selectedgoogleassignment].description)
+//                        }
+//
+//                }
                     
                     TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch)
+                    
+                    NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection), isActive: $activeselection)
+                    {
+                        Text("Click Me")
+                    }
                 }
                 
                 Section {

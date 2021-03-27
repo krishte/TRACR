@@ -1837,6 +1837,8 @@ struct HomeView: View {
     @State var NewSheetPresenting = false
     @State var NewAlertPresenting = false
     @ObservedObject var sheetNavigator = SheetNavigator()
+    @State var showpopup: Bool = false
+    @State var widthAndHeight: CGFloat = 50
     
     init() {
         let defaults = UserDefaults.standard
@@ -1887,86 +1889,104 @@ struct HomeView: View {
                             Spacer()
                             ZStack {
 
-                                Button(action: {
-//                                    if freetimelist.isEmpty {
-//                                        self.sheetNavigator.modalView = .freetime
-//                                        self.NewSheetPresenting = true
-//                                    }
-                                    
-//                                    else {
-                                        if (classlist.count > 0) {
-                                            self.sheetNavigator.modalView = .assignment
+                                if (showpopup)
+                                {
+                                    ZStack() {
+                                        Button(action:
+                                        {
+                                            if (classlist.count > 0)
+                                            {
+                                                self.sheetNavigator.modalView = .assignment
+                                                self.NewSheetPresenting = true
+                                                self.NewAssignmentPresenting = true
+                                            }
+                                            else
+                                            {
+                                                self.sheetNavigator.alertView = .noclass
+                                                self.NewAlertPresenting = true
+                                            }
+                                            
+                                        })
+                                        {
+                                              ZStack {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    .foregroundColor(Color.blue)
+                                                  .frame(width: widthAndHeight, height: widthAndHeight)
+                                                Image(systemName: "paperclip")
+                                                  .resizable().scaledToFit()
+                                               //   .aspectRatio(contentMode: .fit)
+                                                    //.padding(.bottom, 20).padding(.trailing, 100)
+                                                 // .frame(width: widthAndHeight, height: widthAndHeight)
+                                                    .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                              }.frame(width: widthAndHeight, height: widthAndHeight)
+                                        }.offset(x: -70, y: 10).shadow(radius: 5)
+                                        Button(action:
+                                        {
+                                            self.sheetNavigator.modalView = .classity
                                             self.NewSheetPresenting = true
-                                            self.NewAssignmentPresenting = true
-                                        }
-                                        else {
-                                            self.sheetNavigator.alertView = .noclass
-                                            self.NewAlertPresenting = true
-//                                            self.sheetNavigator.modalView = .classity
-//                                            self.NewSheetPresenting = true
-//                                            self.NewClassPresenting = true
-                                        }
-//                                    }
+                                            self.NewClassPresenting = true
+                                            
+                                        })
+                                        {
+                                              ZStack {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    .foregroundColor(Color.blue)
+                                                  .frame(width: widthAndHeight, height: widthAndHeight)
+                                                Image(systemName: "list.bullet")
+                                                  .resizable().scaledToFit()
+                                               //   .aspectRatio(contentMode: .fit)
+                                                    //.padding(.bottom, 20).padding(.trailing, 100)
+                                                 // .frame(width: widthAndHeight, height: widthAndHeight)
+                                                    .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                              }.frame(width: widthAndHeight, height: widthAndHeight)
+                                        }.offset(x: -130, y: 10).shadow(radius: 5)
+
+                                        Button(action:
+                                        {
+                                            if (self.getcompletedAssignments())
+                                            {
+                                                self.sheetNavigator.modalView = .grade
+                                                self.NewSheetPresenting = true
+                                            }
+                                            else
+                                            {
+                                                self.sheetNavigator.alertView = .noassignment
+                                                self.NewAlertPresenting = true
+                                            }
+                                            
+                                        })
+                                        {
+                                              ZStack {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                    .foregroundColor(Color.blue)
+                                                  .frame(width: widthAndHeight, height: widthAndHeight)
+                                                Image(systemName: "percent")
+                                                  .resizable().scaledToFit()
+                                               //   .aspectRatio(contentMode: .fit)
+                                                    //.padding(.bottom, 20).padding(.trailing, 100)
+                                                 // .frame(width: widthAndHeight, height: widthAndHeight)
+                                                    .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                              }.frame(width: widthAndHeight, height: widthAndHeight)
+                                        }.offset(x: -190, y: 10).shadow(radius: 5)
+                                    }.transition(.scale)
+                                  }
+                                
+                                Button(action: {
+     
+                                    withAnimation(.spring())
+                                    {
+                                        self.showpopup.toggle()
+                                    }
+
                                     
                                 }) {
                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                         ZStack {
-                                            Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                            //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
+                                            Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
                                         }
                                     )
-                                }.buttonStyle(PlainButtonStyle()).contextMenu{
-                                    Button(action: {
-                                        if (classlist.count > 0)
-                                        {
-                                            self.sheetNavigator.modalView = .assignment
-                                            self.NewSheetPresenting = true
-                                            self.NewAssignmentPresenting = true
-                                        }
-                                        else
-                                        {
-                                            self.sheetNavigator.alertView = .noclass
-                                            self.NewAlertPresenting = true
-                                        }
-                                    }) {
-                                        Text("Assignment")
-                                        Image(systemName: "paperclip")
-                                    }
-                                    Button(action: {
-                                        self.sheetNavigator.modalView = .classity
-                                        self.NewSheetPresenting = true
-                                        self.NewClassPresenting = true
-                                    }) {
-                                        Text("Class")
-                                        Image(systemName: "list.bullet")
-                                    }
-
-                                    Button(action: {
-                                        self.sheetNavigator.modalView = .freetime
-                                        print(self.sheetNavigator.modalView)
-                                        self.NewSheetPresenting = true
-                                    }) {
-                                        Text("Free Time")
-                                        Image(systemName: "clock")
-                                    }
-                                    Button(action: {
-                                        
-                                        if (self.getcompletedAssignments())
-                                        {
-                                            self.sheetNavigator.modalView = .grade
-                                            self.NewSheetPresenting = true
-                                        }
-                                        else
-                                        {
-                                            self.sheetNavigator.alertView = .noassignment
-                                            self.NewAlertPresenting = true
-                                        }
-                                        
-                                    }) {
-                                        Text("Grade")
-                                        Image(systemName: "percent")
-                                    }
-                                    
-                                }
+                                }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)
                             }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                                 Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                             }
@@ -2013,6 +2033,7 @@ struct HomeView: View {
             let defaults = UserDefaults.standard
             self.showingSettingsView = false
             defaults.set(self.uniformlistshows, forKey: "savedtoggleview")
+            self.showpopup = false
         }
     }
     

@@ -239,7 +239,7 @@ struct GoogleView: View {
     {
         if (!checklinkedclass(classval: classval))
         {
-            return Color.gray
+            return Color("CharansOCD")
         }
         for classity in classlist
         {
@@ -249,7 +249,7 @@ struct GoogleView: View {
             }
         }
         
-        return (Color("one"))
+        return Color("CharansOCD")
     }
     var body: some View {
         VStack {
@@ -291,27 +291,30 @@ struct GoogleView: View {
                                    // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.checklinkedclass(classval: 2*classityval) ? Color.blue : Color.gray).frame(width: (UIScreen.main.bounds.size.width-30)/2, height: 100)
                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval))
                                     Text(classeslist[2*classityval]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
-                                }.shadow(radius: 10)
+                                }.shadow(radius: 3)
                                 
                             }.buttonStyle(PlainButtonStyle())
                             //need to add check if odd number of google classes without type-check error
                             Spacer()
                     
-                                Button(action:{
-                                    print("hello")
-                                    self.selectedClass = 2*classityval+1
-                                    print(self.selectedClass!)
+                            Button(action:{
+                                print("hello")
+                                self.selectedClass = 2*classityval+1
+                                print(self.selectedClass!)
 
-                                })
+                            })
+                            {
+                                ZStack
                                 {
-                                    ZStack
+                                    let n = 2*classityval+1
+                                    if (n < classesidlist.count)
                                     {
-                                        let n = 2*classityval+1
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval+1))
-                                        Text(classeslist[n < classeslist.count ? n : 0]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
-                                    }.shadow(radius: 10)//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval+1))
+                                    Text(classeslist[n < classeslist.count ? n : 0]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
+                                    }
+                                }.shadow(radius: 3)//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
 
-                                }.buttonStyle(PlainButtonStyle())
+                            }.buttonStyle(PlainButtonStyle())
                         }
                 }.padding(.horizontal, 10)//.id(refreshID)
                 

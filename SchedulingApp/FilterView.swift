@@ -152,7 +152,7 @@ struct AssignmentsView: View {
     
     var body: some View {
         VStack {
-            Text(self.showCompleted ? "Completed Assignments" : "Incomplete Assignments").animation(.none)
+            Text(self.showCompleted ? "Completed Assignments" : "Incomplete Assignments").animation(.none).padding(.all, 2)
             
             if !incompleteAssignmentsThereBool && !self.showCompleted {
                 Spacer().frame(height: 100)
@@ -167,13 +167,13 @@ struct AssignmentsView: View {
                             if (assignment.completed == true) {
                                 GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
-                                    }.animation(.spring()).shadow(radius: 10)
+                                }.animation(.spring()).shadow(radius: 5)
                             }
                             
                             else {
                                 IndividualAssignmentFilterView(isExpanded2: self.selection.contains(assignment), isCompleted2: self.showCompleted, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                         self.selectDeselect(assignment)
-                                }.animation(.spring()).shadow(radius: 10).onAppear(perform: incompleteAssignmentsThereFunc)
+                                }.animation(.spring()).shadow(radius: 5).onAppear(perform: incompleteAssignmentsThereFunc)
                             }
                         }
                     }
@@ -311,9 +311,9 @@ struct FilterView: View {
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
-                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -70, y: 10)
+                                    }.offset(x: -70)
                                     Button(action:
                                     {
                                         self.sheetNavigator.modalView = .classity
@@ -331,9 +331,9 @@ struct FilterView: View {
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
-                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -130, y: 10)
+                                    }.offset(x: -130)
 
                                     Button(action:
                                     {
@@ -359,10 +359,10 @@ struct FilterView: View {
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
-                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -190, y: 10)
-                                }.transition(.scale)
+                                    }.offset(x: -190)
+                                }.transition(.scale).offset(y: 10)
                               }
                             
                             Button(action: {
@@ -389,7 +389,7 @@ struct FilterView: View {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {
                                         //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
-                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 360 : 0))
+                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
                                     }
                                 )
                             }.buttonStyle(PlainButtonStyle())

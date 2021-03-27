@@ -62,6 +62,7 @@ struct NewGoogleAssignmentModalView: View {
     @ObservedObject var textfieldmanager: TextFieldManager = TextFieldManager(blah: "")
     
     init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
+        print("IMRUNNING")
         self._NewAssignmentPresenting = NewAssignmentPresenting
         formatter = DateFormatter()
         formatter.dateStyle = .short

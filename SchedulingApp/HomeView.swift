@@ -1897,7 +1897,7 @@ struct HomeView: View {
                                         if (classlist.count > 0) {
                                             self.sheetNavigator.modalView = .assignment
                                             self.NewSheetPresenting = true
-                                            self.NewAssignmentPresenting = true
+//                                            self.NewAssignmentPresenting = true
                                         }
                                         else {
                                             self.sheetNavigator.alertView = .noclass
@@ -1920,7 +1920,7 @@ struct HomeView: View {
                                         {
                                             self.sheetNavigator.modalView = .assignment
                                             self.NewSheetPresenting = true
-                                            self.NewAssignmentPresenting = true
+//                                            self.NewAssignmentPresenting = true
                                         }
                                         else
                                         {

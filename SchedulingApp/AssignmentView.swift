@@ -217,7 +217,7 @@ struct IndividualAssignmentFilterView: View {
                     }
  
                 }).animation(.spring())
-        }.frame(width: UIScreen.main.bounds.size.width-20).padding(10)
+        }.frame(width: UIScreen.main.bounds.size.width-20).padding(5)
     }
     func gethourminutestext(minutenumber: Int) -> String {
         if (minutenumber < 60)

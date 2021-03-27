@@ -776,27 +776,48 @@ struct PreferencesView: View {
             //Text(String(assignmenttypeslist.count))
           //  Form {
                 ScrollView(showsIndicators: false) {
-                        Button(action: {
+                    HStack
+                    {
+                        Text("Type Sliders").font(.largeTitle).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(10)
+                        Spacer()
+                        Button(action:{
                             self.selectDeselect("show")
-                        }) {
-                            HStack {
-                                Text("What is this?").foregroundColor(.black).fontWeight(.bold)
-                                Spacer()
-                                Image(systemName: self.selection.contains("show") ? "chevron.down" : "chevron.up").foregroundColor(Color.black)
-                            }.padding(10).background(Color("two")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10)
-                        }.animation(.spring())
-                    
-                        if (self.selection.contains("show")) {
-                            Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
-                            Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
+                        })
+                        {
+                            Image(systemName: "info.circle").resizable().scaledToFit().frame(height: 20)
                         }
+                        //Spacer().frame(width: 20)
+                    }//.padding(10)
+                   // Spacer().frame(height: 10)
+                    if (self.selection.contains("show"))
+                    {
+                        Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
+                        Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
+                        
+                    }
+
+                    
+//                        Button(action: {
+//                            self.selectDeselect("show")
+//                        }) {
+//                            HStack {
+//                                Text("What is this?").foregroundColor(.black).fontWeight(.bold)
+//                                Spacer()
+//                                Image(systemName: self.selection.contains("show") ? "chevron.down" : "chevron.up").foregroundColor(Color.black)
+//                            }.padding(10).background(Color("two")).frame(width: UIScreen.main.bounds.size.width-20).cornerRadius(10)
+//                        }.animation(.spring())
+//
+//                        if (self.selection.contains("show")) {
+//                            Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
+//                            Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
+//                        }
 //                    DetailBreakView()
                     ForEach(self.assignmenttypeslist) { assignmenttype in
                         DetailPreferencesView(assignmenttype: assignmenttype)
                     }//.animation(.spring())
                 }//.animation(.spring())
            // }.navigationBarTitle("Preferences")
-        }.navigationBarTitle("Type Sliders").onDisappear {
+        }.onDisappear {
             masterRunning.masterRunningNow = true
         }
     }

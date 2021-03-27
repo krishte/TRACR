@@ -161,6 +161,7 @@ struct AssignmentsView: View {
             }
             
             ScrollView {
+                Spacer().frame(height:10)
                 ForEach(assignmentlist) { assignment in
                   if (assignment.completed == self.showCompleted) {
                         VStack {
@@ -313,7 +314,7 @@ struct FilterView: View {
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
                                                 .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -70)
+                                    }.offset(x: -70, y: 10).shadow(radius: 5)
                                     Button(action:
                                     {
                                         self.sheetNavigator.modalView = .classity
@@ -333,7 +334,7 @@ struct FilterView: View {
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
                                                 .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -130)
+                                    }.offset(x: -130, y: 10).shadow(radius: 5)
 
                                     Button(action:
                                     {
@@ -361,24 +362,12 @@ struct FilterView: View {
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
                                                 .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -190)
-                                }.transition(.scale).offset(y: 10)
+                                    }.offset(x: -190, y: 10).shadow(radius: 5)
+                                }.transition(.scale)
                               }
                             
                             Button(action: {
-//
-//                                        if (classlist.count > 0)
-//                                        {
-//                                            self.sheetNavigator.modalView = .assignment
-//                                            print(self.modalView)
-//                                            self.NewSheetPresenting = true
-//                                           // self.NewGradePresenting = true
-//                                        }
-//                                        else
-//                                        {
-//                                            self.sheetNavigator.alertView = .noclass
-//                                            self.NewAlertPresenting = true
-//                                        }
+ 
                                 withAnimation(.spring())
                                 {
                                     self.showpopup.toggle()
@@ -392,64 +381,8 @@ struct FilterView: View {
                                         Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
                                     }
                                 )
-                            }.buttonStyle(PlainButtonStyle())
-//                            .contextMenu{
-//                                Button(action: {
-//                                    if (classlist.count > 0)
-//                                    {
-//                                        self.sheetNavigator.modalView = .assignment
-//                                        self.NewSheetPresenting = true
-//                                        self.NewAssignmentPresenting = true
-//                                    }
-//                                    else
-//                                    {
-//                                        self.sheetNavigator.alertView = .noclass
-//                                        self.NewAlertPresenting = true
-//                                    }
-//                                }) {
-//                                    Text("Assignment")
-//                                    Image(systemName: "paperclip")
-//                                }
-//                                Button(action: {
-//                                    self.sheetNavigator.modalView = .classity
-//                                    self.NewSheetPresenting = true
-//                                    self.NewClassPresenting = true
-//                                }) {
-//                                    Text("Class")
-//                                    Image(systemName: "list.bullet")
-//                                }
-//                                //                            Button(action: {self.NewOccupiedtimePresenting.toggle()}) {
-//                                //                                Text("Occupied Time")
-//                                //                                Image(systemName: "clock.fill")
-//                                //                            }.sheet(isPresented: $NewOccupiedtimePresenting, content: { NewOccupiedtimeModalView().environment(\.managedObjectContext, self.managedObjectContext)})
-//                                Button(action: {
-//                                    self.sheetNavigator.modalView = .freetime
-//                                    print(self.modalView)
-//                                    self.NewSheetPresenting = true
-//                                }) {
-//                                    Text("Free Time")
-//                                    Image(systemName: "clock")
-//                                }
-//                                Button(action: {
-//
-//                                    if (self.getcompletedAssignments())
-//                                    {
-//                                        self.sheetNavigator.modalView = .grade
-//                                        self.NewSheetPresenting = true
-//                                    }
-//                                    else
-//                                    {
-//                                        self.sheetNavigator.alertView = .noassignment
-//                                        self.NewAlertPresenting = true
-//                                    }
-//                                    //  self.getcompletedAssignments() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
-//
-//                                }) {
-//                                    Text("Grade")
-//                                    Image(systemName: "percent")
-//                                }
-//
-//                            }//.sheet(isPresented: $NewSheetPresenting, content: sheetContent)
+                            }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)
+
                         }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                             Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                         }
@@ -480,6 +413,7 @@ struct FilterView: View {
                 }.padding(.top, 0)).navigationBarTitle("Assignments")
         }.onDisappear() {
             self.showingSettingsView = false
+            self.showpopup = false
         }
     }
     func getcompletedAssignments() -> Bool {

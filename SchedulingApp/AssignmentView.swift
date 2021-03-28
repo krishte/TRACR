@@ -83,7 +83,7 @@ struct IndividualAssignmentFilterView: View {
                         Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-100, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
                     }
-                    Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+             //       Text(assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
                 }
                     
                 else {
@@ -94,14 +94,15 @@ struct IndividualAssignmentFilterView: View {
                                 Spacer()
 
                             }
-
-                            Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                            Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
+                            
+                            Text(assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.bottom, 3).padding(.top, 1)
+                           
                             HStack {
-                                Text("Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
+                              //  Text("Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
+                                Text(assignment.type).frame(height: 20, alignment: .topLeading)//.padding(5)
                                 Spacer()
-                                Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing).padding(5)
-                            }
+                                Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing)//.padding(5)
+                            }.padding(.horizontal, 5)
                         }
                         VStack {
                             HStack {
@@ -355,12 +356,12 @@ struct GradedAssignmentsView: View {
 
                     if (assignment.grade == 0)
                     {
-                        Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                        Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.vertical, 0)
                         
                     }
                     else
                     {
-                        Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                        Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.vertical, 0)
                     }
                     
                 }
@@ -374,21 +375,26 @@ struct GradedAssignmentsView: View {
 
                             }
 
+
                             if (assignment.grade == 0)
                             {
-                                Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                                Text("Grade: NA").frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.vertical, 0)
                                 
                             }
                             else
                             {
-                                Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                                Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.vertical, 0)
                             }
                             
                             
 
-                            Text("Due date: " + assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
-                            Text("Type: " + assignment.type).frame(width: UIScreen.main.bounds.size.width-50, height: 20, alignment: .topLeading).padding(5)
-                                Text("Assignment Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                            Text(assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.vertical, 3)
+                            HStack
+                            {
+                                Text(assignment.type).frame(height: 20, alignment: .topLeading)//.padding(.horizontal, 5).padding(.vertical, 0)
+                                Spacer()
+                                Text( String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).fontWeight(.bold).frame(height: 20, alignment: .topLeading)//.padding(.horizontal, 5).padding(.vertical, 0)
+                            }.padding(.horizontal, 5).padding(.vertical, 0)
                         }
                         VStack {
                             HStack {

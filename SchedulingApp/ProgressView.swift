@@ -362,7 +362,7 @@ struct DetailProgressView: View {
                         {
                             GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).environment(\.managedObjectContext, self.managedObjectContext).onTapGesture {
                                     self.selectDeselect(assignment)
-                                }.padding(-5).animation(.spring()).shadow(radius: 10)
+                                }.animation(.spring()).shadow(radius: 10)
                             
                         }
                     }.sheet(isPresented: $showassignmentedit, content: {
@@ -384,7 +384,7 @@ struct DetailProgressView: View {
                             if (assignment.subject == self.classcool.originalname && assignment.completed == true && assignment.grade == 0) {
                                 GradedAssignmentsView(isExpanded2: self.selection.contains(assignment), isCompleted2: true, assignment2: assignment, selectededit: self.$sheetnavigator.selectedassignmentedit, showedit: self.$showassignmentedit).shadow(radius: 10).onTapGesture {
                                     self.selectDeselect(assignment)
-                                }.padding(-5).animation(.spring())
+                                }.animation(.spring())
                             }
                         }.sheet(isPresented: $showassignmentedit, content: {
                             EditAssignmentModalView(NewAssignmentPresenting: self.$showassignmentedit, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
@@ -755,7 +755,8 @@ struct ProgressView: View {
     @ObservedObject var sheetNavigator = SheetNavigator()
     @State var showpopup: Bool = false
     @State var widthAndHeight: CGFloat = 50
-
+    @State var displayinggoalsetting: Bool = false
+    @State var weeklygoal: Int = 0
     
     
     
@@ -1027,12 +1028,29 @@ struct ProgressView: View {
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Color("thirteen"))
+                                    .fill(Color("freetimeblue"))
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
                                 VStack {
                                     TabView
                                     {
-                                        Text("Set Your Weekly Worload Goal!").font(.system(size: 30)).fontWeight(.bold).foregroundColor(Color.black)
+                                        VStack
+                                        {
+                                            Text("Set Your Weekly Worload Goal!").font(.system(size: 20)).fontWeight(.bold).foregroundColor(Color.black).padding(10)
+                                            Button(action:{
+                                                withAnimation(.spring())
+                                                {
+                                                    displayinggoalsetting.toggle()
+                                                }
+                                            })
+                                            {
+                                                Image(systemName: "chevron.compact.down").resizable().frame(width: 42, height: 10)
+                                            }
+                                            if (displayinggoalsetting)
+                                            {
+                                                Stepper(String(weeklygoal) + " hours", value: $weeklygoal, in: 0...168).padding(10)
+                                            }
+                                            
+                                        }
                                         Text("Coming Soon").fontWeight(.light).foregroundColor(Color.black)
                                     }.tabViewStyle(PageTabViewStyle())
                                 }

@@ -92,10 +92,10 @@
             filePath = "SchedulingApp/ModalViews.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1548"
-            endingLineNumber = "1548"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "1652"
+            endingLineNumber = "1652"
+            landmarkName = "repetitionTextCreator(_:)"
+            landmarkType = "7">
             <Locations>
                <Location
                   uuid = "84018ED3-0F64-41D5-8E04-21351D03EB47 - a33b48e0a919012c"
@@ -140,8 +140,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "996"
-            endingLineNumber = "996"
+            startingLineNumber = "997"
+            endingLineNumber = "997"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -156,8 +156,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1108"
-            endingLineNumber = "1108"
+            startingLineNumber = "1126"
+            endingLineNumber = "1126"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -172,8 +172,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1099"
-            endingLineNumber = "1099"
+            startingLineNumber = "1117"
+            endingLineNumber = "1117"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -188,8 +188,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1098"
-            endingLineNumber = "1098"
+            startingLineNumber = "1116"
+            endingLineNumber = "1116"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -204,10 +204,10 @@
             filePath = "SchedulingApp/ModalViews.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "956"
-            endingLineNumber = "956"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "1060"
+            endingLineNumber = "1060"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

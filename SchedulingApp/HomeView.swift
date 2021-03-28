@@ -1615,11 +1615,11 @@ struct IndividualSubassignmentView: View {
                     Spacer().frame(height: 10)
                     if (self.isrepeated)
                     {
-                        Text(String(self.getgrouplength()/60) + " hours " + String(self.getgrouplength() % 60) + " minutes").frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                        Text((self.getgrouplength()/60 == 0 ? "" : (self.getgrouplength()/60 == 1 ? "1 hour" : String(self.getgrouplength()/60) + " hours "))  + (self.getgrouplength() % 60 == 0 ? "" : String(self.getgrouplength() % 60) + " minutes")).frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                     }
                     else
                     {
-                        Text(String(self.subassignmentlength/60) + " hours " + String(self.subassignmentlength % 60) + " minutes").frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                        Text((self.subassignmentlength/60 == 0 ? "" : (self.subassignmentlength/60 == 1 ? "1 hour" : String(self.subassignmentlength/60) + " hours ")) + (self.subassignmentlength % 60 == 0 ? "" : String(self.subassignmentlength % 60) + " minutes")).frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                     }
                 }
                 else
@@ -1897,7 +1897,7 @@ struct HomeView: View {
                                             {
                                                 self.sheetNavigator.modalView = .assignment
                                                 self.NewSheetPresenting = true
-                                                self.NewAssignmentPresenting = true
+                                             //   self.NewAssignmentPresenting = true
                                             }
                                             else
                                             {

@@ -21,38 +21,129 @@ class TextFieldManager: ObservableObject {
 
 struct SelectGoogleAssignmentView: View
 {
+    @Environment(\.managedObjectContext) var managedObjectContext
+
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
     @Binding var selectedgoogleassignment: Int
     @Binding var foundassignments: [(String, String)]
     @Binding var activeselection: Bool
+    @Binding var selectedclass: Int
+    @Binding var assignmenttype: Int
+    @Binding var nameofassignment: String
+    @Binding var selectedDate: Date
+    @Binding var foundassignmentdates: [Date]
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+
+    
+    func getnontrashclasslist() -> [Int]
+    {
+        var classitylist: [Int] = []
+        for (index, classity) in classlist.enumerated()
+        {
+            if (!classity.isTrash)
+            {
+                classitylist.append(index)
+            }
+        }
+        return classitylist
+    }
+    func dostuff()
+    {
+
+        for classity in getnontrashclasslist()
+        {
+            if (foundassignments.count > 0)
+            {
+                if (classlist[classity].googleclassroomid == foundassignments[selectedgoogleassignment].1)
+                {
+                    selectedclass = classity
+                    break
+                }
+            }
+        }
+        if (foundassignments.count > 0)
+        {
+            self.nameofassignment = foundassignments[selectedgoogleassignment].0
+            for (index, types) in assignmenttypes.enumerated()
+            {
+                if (foundassignments[selectedgoogleassignment].0.lowercased().contains(types.lowercased()) )
+                {
+                    assignmenttype = index
+                }
+            }
+            self.selectedDate = foundassignmentdates[selectedgoogleassignment]
+         //   refreshID2 = UUID()
+            print("hello")//  print(foundassignmentdates[selectedgoogleassignment].description)
+        }
+        activeselection = false
+
+        print(activeselection)
+        
+    }
     
     var body: some View
     {
         Form
         {
-
-            ForEach(0 ..< foundassignments.count, id: \.self) {
-   
-                val in
-
-                Button(action:{
-                    selectedgoogleassignment = val
-                    activeselection = false
-                })
+            ForEach(classlist)
+            {
+                classity in
+                if (classity.googleclassroomid != "")
                 {
-                    HStack
+                    Section(header: Text(classity.name).fontWeight(.bold).padding(10 ).font(.system(size: 20)).foregroundColor(Color.black))
                     {
-                        Text(foundassignments[val].0)//.frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20)
-                        Spacer()
-                        if (selectedgoogleassignment == val)
+                        ForEach(0 ..< foundassignments.count, id: \.self)
                         {
-                            Image(systemName: "checkmark").foregroundColor(.blue)
+                            val in
+                            if (foundassignments[val].1 == classity.googleclassroomid)
+                            {
+                                Button(action:{
+                                    selectedgoogleassignment = val
+                                    dostuff()
+                                })
+                                {
+                                    HStack
+                                    {
+                                        Text(foundassignments[val].0)//.frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20)
+                                        Spacer()
+                                        if (selectedgoogleassignment == val)
+                                        {
+                                            Image(systemName: "checkmark").foregroundColor(.blue)
+                                        }
+                                    }
+                                }.buttonStyle(PlainButtonStyle())
+                                
+                            }
                         }
                     }
-                }.buttonStyle(PlainButtonStyle())//.shadow(radius: 10)//.frame(height: 30)
-                
-            
-                
+                }
             }
+
+//            ForEach(0 ..< foundassignments.count, id: \.self) {
+//
+//                val in
+//
+//                Button(action:{
+//                    selectedgoogleassignment = val
+//                    dostuff()
+//                })
+//                {
+//                    HStack
+//                    {
+//                        Text(foundassignments[val].0)//.frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20)
+//                        Spacer()
+//                        if (selectedgoogleassignment == val)
+//                        {
+//                            Image(systemName: "checkmark").foregroundColor(.blue)
+//                        }
+//                    }
+//                }.buttonStyle(PlainButtonStyle())//.shadow(radius: 10)//.frame(height: 30)
+//
+//
+//
+//            }
         }
         
     }
@@ -202,7 +293,23 @@ struct NewGoogleAssignmentModalView: View {
 //
 //                        }
 //
-//                    }.onChange(of: selectedgoogleassignment)
+//                    }
+                    
+                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch)
+                    
+                    NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection, selectedclass: $selectedclass, assignmenttype: $assignmenttype, nameofassignment: $nameofassignment, selectedDate: $selectedDate, foundassignmentdates: $foundassignmentdates), isActive: $activeselection)
+                    {
+                        HStack
+                        {
+                            Text("Click Me")
+                            Spacer()
+                            if (foundassignments.count > 0)
+                            {
+                                Text(foundassignments[selectedgoogleassignment].0).foregroundColor(Color.gray)
+                            }
+                        }
+                    }
+//                    .onChange(of: activeselection)
 //                    {
 //                       // textfieldmanager.userInput = foundassignments[selectedgoogleassignment]
 //                        _ in
@@ -232,14 +339,7 @@ struct NewGoogleAssignmentModalView: View {
 //                            print("hello")//  print(foundassignmentdates[selectedgoogleassignment].description)
 //                        }
 //
-//                }
-                    
-                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch)
-                    
-                    NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection), isActive: $activeselection)
-                    {
-                        Text("Click Me")
-                    }
+//                    }
                 }
                 
                 Section {
@@ -548,7 +648,6 @@ struct NewGoogleAssignmentModalView: View {
                                            // print(assignment.title!)
 //                                        if (assignment.dueDate!.day! as! Int >= Int(dayformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.month as! Int >= Int(monthformatter.string(from: workingdate)) ?? 0 && assignment.dueDate!.year as! Int >= Int(yearformatter.string(from: workingdate)) ?? 0 )
 //                                        {
-                                            foundassignments.append((assignment.title!, idiii))
                                          //   print(assignment.title!)
                                       //  }
                                             var newComponents = DateComponents()
@@ -565,7 +664,12 @@ struct NewGoogleAssignmentModalView: View {
      
                                             }
                                             let cooldate = Date(timeInterval: TimeInterval(TimeZone.current.secondsFromGMT()), since: Calendar.current.date(from: newComponents)!)
-                                            foundassignmentdates.append(cooldate)
+                                            if (Calendar.current.dateComponents([.day], from: cooldate, to: Date(timeIntervalSinceNow: 0)).day! < 30)
+                                            {
+                                                foundassignments.append((assignment.title!, idiii))
+                                                foundassignmentdates.append(cooldate)
+
+                                            }
                                         }
                                     }
                                 }

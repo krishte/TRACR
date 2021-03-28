@@ -252,193 +252,249 @@ struct GoogleView: View {
         return Color("CharansOCD")
     }
     var body: some View {
-        VStack {
-            if googleDelegate.signedIn {
-                ScrollView {
-   
-                    Text(GIDSignIn.sharedInstance().currentUser!.profile.name).font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
-                        Text(GIDSignIn.sharedInstance().currentUser!.profile.email).font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+
+            VStack {
+                if googleDelegate.signedIn {
+                    ScrollView {
        
-         
+                        Text(GIDSignIn.sharedInstance().currentUser!.profile.name).font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+                            Text(GIDSignIn.sharedInstance().currentUser!.profile.email).font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+           
+             
+                                
+                
+//                        Button(action: {
+//                            GIDSignIn.sharedInstance().signOut()
+//                            googleDelegate.signedIn = false
+//                        }) {
+//                            Text("Sign Out")
+//                        }
+
+                        Spacer()
+                        Divider()
+                        Spacer()
+                        ForEach(0..<classeslist.count, id: \.self)
+                        {
+                            classityval in
+                            NavigationLink(destination: DetailGoogleView(classid: classesidlist[classityval], googleclassname: classeslist[classityval]), tag: classityval, selection: self.$selectedClass) {
+                                EmptyView()
+                            }
+
+                        }//.id(refreshID)
+
+                        ForEach(0..<getiterationcounter(), id: \.self) { classityval in
+                            HStack {
+                                Button(action:{
+                                    print("hello")
+                                    self.selectedClass = 2*classityval
+                                    print(self.selectedClass!)
+                                }) {
+                                    ZStack {
+                                       // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.checklinkedclass(classval: 2*classityval) ? Color.blue : Color.gray).frame(width: (UIScreen.main.bounds.size.width-30)/2, height: 100)
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval))
+                                        Text(classeslist[2*classityval]).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
+                                    }.shadow(radius: 3)
+                                    
+                                }.buttonStyle(PlainButtonStyle())
+                                //need to add check if odd number of google classes without type-check error
+                                Spacer()
+                        
+                                Button(action:{
+                                    print("hello")
+                                    self.selectedClass = 2*classityval+1
+                                    print(self.selectedClass!)
+
+                                })
+                                {
+                                    ZStack
+                                    {
+                                        let n = 2*classityval+1
+                                        if (n < classesidlist.count)
+                                        {
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval+1))
+                                        Text(classeslist[n < classeslist.count ? n : 0]).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
+                                        }
+                                    }.shadow(radius: 3)//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
+
+                                }.buttonStyle(PlainButtonStyle())
+                            }
+                    }.padding(.horizontal, 10)//.id(refreshID)
+                    
+    //                    NavigationLink(destination: GoogleAssignmentsView())
+    //                    {
+    //                        Text("See Assignments???")
+    //                    }
+                    }.frame(width: UIScreen.main.bounds.size.width)
+                } else {
+                    VStack
+                    {
+                        Spacer()
+                        Button(action: {
+                            GIDSignIn.sharedInstance().signIn()
+                        }) {
                             
-            
-                    Button(action: {
+                            ZStack
+                            {
+                                RoundedRectangle(cornerRadius: 10, style: .circular).fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-100, height: 50)
+                                Text("Sign in to Google")
+                            }.shadow(radius: 20)
+                        }
+                        Spacer()
+                    }
+                }
+            }.frame(width: UIScreen.main.bounds.size.width).toolbar
+            {
+                ToolbarItem(placement: .navigationBarLeading)
+                {
+                    Text("")
+                }
+                ToolbarItem(placement: .navigation)
+                {
+                    Button(action:{
                         GIDSignIn.sharedInstance().signOut()
                         googleDelegate.signedIn = false
-                    }) {
+                    })
+                    {
                         Text("Sign Out")
-                    }
-
-                    Spacer()
-                    Divider()
-                    ForEach(0..<classeslist.count, id: \.self)
-                    {
-                        classityval in
-                        NavigationLink(destination: DetailGoogleView(classid: classesidlist[classityval], googleclassname: classeslist[classityval]), tag: classityval, selection: self.$selectedClass) {
-                            EmptyView()
-                        }
-
-                    }//.id(refreshID)
-
-                    ForEach(0..<getiterationcounter(), id: \.self) { classityval in
-                        HStack {
-                            Button(action:{
-                                print("hello")
-                                self.selectedClass = 2*classityval
-                                print(self.selectedClass!)
-                            }) {
-                                ZStack {
-                                   // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.checklinkedclass(classval: 2*classityval) ? Color.blue : Color.gray).frame(width: (UIScreen.main.bounds.size.width-30)/2, height: 100)
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval))
-                                    Text(classeslist[2*classityval]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
-                                }.shadow(radius: 3)
-                                
-                            }.buttonStyle(PlainButtonStyle())
-                            //need to add check if odd number of google classes without type-check error
-                            Spacer()
-                    
-                            Button(action:{
-                                print("hello")
-                                self.selectedClass = 2*classityval+1
-                                print(self.selectedClass!)
-
-                            })
-                            {
-                                ZStack
-                                {
-                                    let n = 2*classityval+1
-                                    if (n < classesidlist.count)
-                                    {
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.getclasscolor(classval: 2*classityval+1))
-                                    Text(classeslist[n < classeslist.count ? n : 0]).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80).padding(10)
-                                    }
-                                }.shadow(radius: 3)//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
-
-                            }.buttonStyle(PlainButtonStyle())
-                        }
-                }.padding(.horizontal, 10)//.id(refreshID)
-                
-//                    NavigationLink(destination: GoogleAssignmentsView())
-//                    {
-//                        Text("See Assignments???")
-//                    }
-                }.frame(width: UIScreen.main.bounds.size.width)
-            } else {
-                VStack
-                {
-                    Spacer()
-                    Button(action: {
-                        GIDSignIn.sharedInstance().signIn()
-                    }) {
-                        
-                        ZStack
-                        {
-                            RoundedRectangle(cornerRadius: 10, style: .circular).fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-100, height: 50)
-                            Text("Sign in to Google")
-                        }.shadow(radius: 20)
-                    }
-                    Spacer()
-                }
+                    }.padding(.top, -40)
+                }//.padding(.top, -40)
             }
-        }.frame(width: UIScreen.main.bounds.size.width)
-        .onAppear
-        {
-          //  print("success")
-            let defaults = UserDefaults.standard
-          //  print(defaults.object(forKey: "accessedclassroom") ?? false)
-            let valstuffity = defaults.object(forKey: "accessedclassroom") as! Bool
-            //let bobbity = defaults.object(forKey: "lastaccessdate")
-            if (!valstuffity)
+            .onAppear
             {
-                GIDSignIn.sharedInstance().restorePreviousSignIn()
-                if (googleDelegate.signedIn)
+              //  print("success")
+                let defaults = UserDefaults.standard
+              //  print(defaults.object(forKey: "accessedclassroom") ?? false)
+                let valstuffity = defaults.object(forKey: "accessedclassroom") as! Bool
+                //let bobbity = defaults.object(forKey: "lastaccessdate")
+                if (!valstuffity)
                 {
-                defaults.set(true, forKey: "accessedclassroom")
-                print("fetching stuff")
-                var partiallist: [(String, String)] = []
-                
-                let service = GTLRClassroomService()
-                service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
-                
-                let coursesquery = GTLRClassroomQuery_CoursesList.query()
-
-                coursesquery.pageSize = 1000
-                service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
-                    let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
-
-                    for course in stuff1.courses! {
-                        if course.courseState == kGTLRClassroom_Course_CourseState_Active {
-                            partiallist.append((course.identifier!, course.name!))
-                            print(course.name!)
-                        }
-                    }
-                    
-                })
-                
-//                partiallist = getclasses(service: service)
-                
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
-                    print("ASDFASDFASDJFPIASJFIASPDFJASPFJASDPFJADFAPJADSPFJDSA:FJADSFJDS:FAD")
-                    print(partiallist.count)
-                    for val in partiallist
+                    GIDSignIn.sharedInstance().restorePreviousSignIn()
+                    if (googleDelegate.signedIn)
                     {
-                        classeslist.append(val.1)
-                    }
+                    defaults.set(true, forKey: "accessedclassroom")
+                    print("fetching stuff")
+                    var partiallist: [(String, String)] = []
                     
-                    classeslist = Array(Set(classeslist))
-                    classeslist.sort()
-                    for val in classeslist
-                    {
-                        for pairity in partiallist
-                        {
-                            if (pairity.1 == val)
-                            {
-                                classesidlist.append(pairity.0)
+                    let service = GTLRClassroomService()
+                    service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
+                    
+                    let coursesquery = GTLRClassroomQuery_CoursesList.query()
+
+                    coursesquery.pageSize = 1000
+                    service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
+                        let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
+
+                        for course in stuff1.courses! {
+                            if course.courseState == kGTLRClassroom_Course_CourseState_Active {
+                                partiallist.append((course.identifier!, course.name!))
+                                print(course.name!)
                             }
                         }
+                        
+                    })
+                    
+    //                partiallist = getclasses(service: service)
+                    
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+                        print("ASDFASDFASDJFPIASJFIASPDFJASPFJASDPFJADFAPJADSPFJDSA:FJADSFJDS:FAD")
+                        print(partiallist.count)
+                        for val in partiallist
+                        {
+                            classeslist.append(val.1)
+                        }
+                        var islinked: [Bool] = []
+                        classeslist = Array(Set(classeslist))
+                        classeslist.sort()
+
+                        for val in classeslist
+                        {
+                            for pairity in partiallist
+                            {
+                                if (pairity.1 == val)
+                                {
+                                    classesidlist.append(pairity.0)
+                                }
+                            }
+                        }
+                        
+                        for val in classesidlist
+                        {
+                            var found = false
+                            for numpty in classlist
+                            {
+                                if (numpty.googleclassroomid == val)
+                                {
+                                    found = true
+                                    break
+                                }
+                            }
+                            islinked.append(found)
+                        }
+                        var newclasseslist: [String] = []
+                        var newclassesidlist: [String] = []
+                        
+                        for (index, val) in classeslist.enumerated()
+                        {
+                            if (islinked[index])
+                            {
+                                newclasseslist.append(val)
+                                newclassesidlist.append(classesidlist[index])
+                            }
+                        }
+                        for (index, val) in classeslist.enumerated()
+                        {
+                            if (!islinked[index])
+                            {
+                                newclasseslist.append(val)
+                                newclassesidlist.append(classesidlist[index])
+                            }
+                        }
+                        classeslist = newclasseslist
+                        classesidlist = newclassesidlist
+                        
+    //                    for _ in classeslist
+    //                    {
+    //                        classesselected.append(false)
+    //                    }
+                        
+    //                    let arraykewl = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
+    //                    for (index, classval) in classeslist.enumerated()
+    //                    {
+    //                        if (arraykewl.contains(classval))
+    //                        {
+    //                            classesselected[index] = true
+    //                        }
+    //                    }
+                        
+                        
+                        self.refreshID = UUID()
+                        
+                        
                     }
-//                    for _ in classeslist
-//                    {
-//                        classesselected.append(false)
-//                    }
-                    
-//                    let arraykewl = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
-//                    for (index, classval) in classeslist.enumerated()
-//                    {
-//                        if (arraykewl.contains(classval))
-//                        {
-//                            classesselected[index] = true
-//                        }
-//                    }
-                    
-                    
-                    self.refreshID = UUID()
-                    
-                    
-                }
 
 
+                    }
                 }
-            }
-            else
+                else
+                {
+                    let defaults = UserDefaults.standard
+                    print("yay")
+                    classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
+                    classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
+                    
+                   // self.refreshID = UUID()
+
+                }
+            
+            }.onDisappear
             {
                 let defaults = UserDefaults.standard
-                print("yay")
-                classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
-                classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
-                
-               // self.refreshID = UUID()
+
+                defaults.set(classeslist, forKey: "savedgoogleclasses")
+                defaults.set(classesidlist, forKey: "savedgoogleclassesids")
 
             }
-        
-        }.onDisappear
-        {
-            let defaults = UserDefaults.standard
-
-            defaults.set(classeslist, forKey: "savedgoogleclasses")
-            defaults.set(classesidlist, forKey: "savedgoogleclassesids")
-
-        }
+       
     }
 }
 struct GoogleAssignmentsView: View

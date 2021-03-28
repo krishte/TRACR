@@ -1093,6 +1093,10 @@ struct WorkHours: View {
             }
         }.navigationBarTitle("Work Hours", displayMode: .large)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading)
+            {
+                Text("")
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     withAnimation(.spring()) {

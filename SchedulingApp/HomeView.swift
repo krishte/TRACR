@@ -224,7 +224,8 @@ struct WeeklyBlockView: View {
                     }
                 }
                 
-            }.sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0, preselecteddate: dateselector.dateIndex).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {
+            }
+            .sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: 0, preselecteddate: dateselector.dateIndex).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {
                 Alert(title:  Text("No Classes Added"), message: Text("Add a Class First"))
             }.padding(.horizontal, (UIScreen.main.bounds.size.width / 29))
 
@@ -1897,7 +1898,7 @@ struct HomeView: View {
                                             {
                                                 self.sheetNavigator.modalView = .assignment
                                                 self.NewSheetPresenting = true
-                                                self.NewAssignmentPresenting = true
+//                                                self.NewAssignmentPresenting = true
                                             }
                                             else
                                             {

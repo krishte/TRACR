@@ -77,6 +77,11 @@ struct DetailGoogleView: View
                         if (classity.googleclassroomid == classid)
                         {
                             classity.googleclassroomid = ""
+                            do {
+                                try self.managedObjectContext.save()
+                            } catch {
+                                print(error.localizedDescription)
+                            }
                             break
                         }
                     }

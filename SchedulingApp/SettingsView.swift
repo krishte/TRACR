@@ -839,6 +839,21 @@ struct PreferencesView: View {
             }
         }.onDisappear {
             masterRunning.masterRunningNow = true
+        }.navigationBarTitle("Type Sliders")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading)
+            {
+                Text("")
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action:{
+                    self.selectDeselect("show")
+                })
+                {
+                    Image(systemName: self.selection.contains("show") ? "info.circle.fill" : "info.circle").resizable().scaledToFit().frame(height: 20)
+                }
+                
+            }
         }
     }
 }

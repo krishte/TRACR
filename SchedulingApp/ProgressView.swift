@@ -757,6 +757,7 @@ struct ProgressView: View {
     @State var widthAndHeight: CGFloat = 50
     @State var displayinggoalsetting: Bool = false
     @State var weeklygoal: Int = 0
+    @State var completedamountofweeklygoalminutes: Int = 90
     
     
     
@@ -1028,7 +1029,7 @@ struct ProgressView: View {
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Color("freetimeblue"))
+                                    .fill(Color("thirteen"))
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
                                 VStack {
                                     TabView
@@ -1044,14 +1045,51 @@ struct ProgressView: View {
                                             })
                                             {
                                                 Image(systemName: "chevron.compact.down").resizable().frame(width: 42, height: 10)
-                                            }
+                                            }.buttonStyle(PlainButtonStyle())
                                             if (displayinggoalsetting)
                                             {
-                                                Stepper(String(weeklygoal) + " hours", value: $weeklygoal, in: 0...168).padding(10)
+                                                Stepper(String(weeklygoal) + " hours", value: $weeklygoal, in: 0...168).padding(15)
                                             }
                                             
                                         }
-                                        Text("Coming Soon").fontWeight(.light).foregroundColor(Color.black)
+                                        VStack
+                                        {
+                                            ZStack
+                                            {
+                                                VStack
+                                                {
+                                                    Spacer().frame(height: 20)
+                                                    Text("\(String(format: "%.0f", Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal)*100))" + "%").fontWeight(.bold).font(.system(size: 25))
+                                                    Spacer()
+                                                }
+                                                VStack
+                                                {
+                                                    Spacer().frame(height: 70)
+                                                    HStack
+                                                    {
+                                                        Spacer()
+                                                        Rectangle().frame(width: 5, height: 80)
+                                                        Spacer().frame(width: 60)
+                                                        Rectangle().frame(width: 5, height: 80)
+                                                        Spacer()
+                                                    }
+                                                    Spacer()
+                                                }
+                                                VStack
+                                                {
+                                                    Spacer().frame(height: 150)
+                                                    Rectangle().frame(width: 70, height: 5)
+                                                    Spacer()
+                                                }
+                                                VStack
+                                                {
+                                                    Spacer().frame(height: 150 -  min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+                                                    Rectangle().fill(Color.blue).frame(width: 60, height: min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+                                                    Spacer()
+                                                }
+                                            }
+                                            //Text("Coming Soon").fontWeight(.light).foregroundColor(Color.black)
+                                        }
                                     }.tabViewStyle(PageTabViewStyle())
                                 }
  
@@ -1306,10 +1344,15 @@ struct ProgressView: View {
 
                 }.padding(.top, 0))//.navigationBarTitle("Progress")
          }.onDisappear {
+            let defaults = UserDefaults.standard
+            defaults.set(weeklygoal, forKey: "weeklygoal")
+            
             self.showingSettingsView = false
             self.selectedClass = 0
             self.showpopup = false
          }.onAppear {
+            let defaults = UserDefaults.standard
+            weeklygoal = defaults.object(forKey: "weeklygoal") as? Int ?? 0
             if (classlist.count > 0)
             {
                 self.selectDeselect(classlist[0].name)

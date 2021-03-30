@@ -186,7 +186,7 @@ struct WeeklyBlockView: View {
                                 dateselector.dateIndex = self.datenumberindices[index]
                             }) {
                                 Text("Add Assignment")
-                                Image(systemName: "paperclip")
+                                Image(systemName: "doc.plaintext")
                             }
                         }.onTapGesture {
                             withAnimation(.spring()) {
@@ -707,7 +707,7 @@ struct NoClassesOrFreetime: View {
             }.padding(.all, subpage == "None" ? 10 : 5).padding(.horizontal, subpage == "None" ? 10 : 30)
             
             HStack {
-                Image(systemName: "list.bullet").resizable().scaledToFit().frame(width: subpage == "None" ? 23 : 15)
+                Image(systemName: "folder").resizable().scaledToFit().frame(width: subpage == "None" ? 23 : 15)
                 Spacer().frame(width: subpage == "None" ? 30 : 15)
                 Text("Classes").font(.system(size: subpage == "None" ? 21 : 15)).fontWeight(.light)
                 Spacer()
@@ -1111,7 +1111,7 @@ struct HomeBodyView: View {
                             
                             
                             else {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("three"), Color("three-b")]), startPoint: .leading, endPoint: .trailing))
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("thirteen"), Color("thirteen-b")]), startPoint: .leading, endPoint: .trailing))
                             }
 
                             HStack {
@@ -1149,7 +1149,7 @@ struct HomeBodyView: View {
                             }.padding(10)
                             
 
-                        }.frame(width: UIScreen.main.bounds.size.width-30, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
+                        }.frame(width: UIScreen.main.bounds.size.width+20, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
                             HStack {
 
                                 Spacer()
@@ -1912,7 +1912,7 @@ struct HomeView: View {
                                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                     .foregroundColor(Color.blue)
                                                   .frame(width: widthAndHeight, height: widthAndHeight)
-                                                Image(systemName: "paperclip")
+                                                Image(systemName: "doc.plaintext")
                                                   .resizable().scaledToFit()
                                                //   .aspectRatio(contentMode: .fit)
                                                     //.padding(.bottom, 20).padding(.trailing, 100)
@@ -1932,7 +1932,7 @@ struct HomeView: View {
                                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                     .foregroundColor(Color.blue)
                                                   .frame(width: widthAndHeight, height: widthAndHeight)
-                                                Image(systemName: "list.bullet")
+                                                Image(systemName: "folder")
                                                   .resizable().scaledToFit()
                                                //   .aspectRatio(contentMode: .fit)
                                                     //.padding(.bottom, 20).padding(.trailing, 100)
@@ -1980,7 +1980,7 @@ struct HomeView: View {
 
                                     
                                 }) {
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(showpopup ? Color.blue : Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                         ZStack {
                                             //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                             Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))

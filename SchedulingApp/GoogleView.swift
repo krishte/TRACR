@@ -342,7 +342,7 @@ struct GoogleView: View {
                         Spacer()
                     }
                 }
-            }.frame(width: UIScreen.main.bounds.size.width).toolbar
+            }.navigationBarTitle("Google Classroom", displayMode: .inline).frame(width: UIScreen.main.bounds.size.width).toolbar
             {
                 ToolbarItem(placement: .navigationBarLeading)
                 {

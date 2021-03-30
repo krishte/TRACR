@@ -1252,10 +1252,8 @@ struct NewClassModalView: View {
                     }.padding(.bottom, 8)
                 }
                 
-                Section
-                {
-                    if (gradingschemelist.count > 0)
-                    {
+                if (gradingschemelist.count > 0) {
+                    Section {
                         Picker(selection: $gradingscheme, label: Text("Grading Scheme")) {
                             ForEach(0 ..< gradingschemelist.count) {
                                 if (gradingschemelist[$0][0..<1] == "P")

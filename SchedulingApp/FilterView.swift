@@ -20,7 +20,7 @@ struct DropDown: View {
         self._showCompleted = showCompleted2
     }
     @State var selectedbutton = "Class"
-    let filters: [String] = ["Class", "Due date", "Length", "Work Left", "Name", "Type"]
+    let filters: [String] = ["Class", "Due Date", "Length", "Work Left", "Name", "Type"]
     @State var filterspresented: Bool = false
     var body: some View {
         VStack {
@@ -104,7 +104,7 @@ struct AssignmentsView: View {
     @EnvironmentObject var masterRunning: MasterRunning
     
     init(selectedFilter:String, value: Bool){
-        if (selectedFilter == "Due date") {
+        if (selectedFilter == "Due Date") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
         }
@@ -124,7 +124,7 @@ struct AssignmentsView: View {
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.name, ascending: true)])
         }
             
-        else if (selectedFilter == "Work left") {
+        else if (selectedFilter == "Work Left") {
             self.assignmentlistrequest = FetchRequest(entity: Assignment.entity(),
             sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.timeleft, ascending: true)])
         }
@@ -307,7 +307,7 @@ struct FilterView: View {
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .foregroundColor(Color.blue)
                                               .frame(width: widthAndHeight, height: widthAndHeight)
-                                            Image(systemName: "paperclip")
+                                            Image(systemName: "doc.plaintext")
                                               .resizable().scaledToFit()
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
@@ -327,7 +327,7 @@ struct FilterView: View {
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .foregroundColor(Color.blue)
                                               .frame(width: widthAndHeight, height: widthAndHeight)
-                                            Image(systemName: "list.bullet")
+                                            Image(systemName: "folder")
                                               .resizable().scaledToFit()
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)

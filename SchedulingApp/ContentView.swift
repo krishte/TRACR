@@ -145,12 +145,12 @@ struct ContentView: View {
                 }
                 
                 FilterView().tabItem {
-                    Image(systemName:"paperclip").resizable().scaledToFill()
+                    Image(systemName:"doc.plaintext").resizable().scaledToFill()
                     Text("Assignments")
                 }
                 
                 ClassesView().tabItem {
-                    Image(systemName: "list.dash").resizable().scaledToFill()
+                    Image(systemName: "folder").resizable().scaledToFill()
                     Text("Classes")
                 }
                 

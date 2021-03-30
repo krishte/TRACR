@@ -80,10 +80,10 @@ struct IndividualAssignmentFilterView: View {
             VStack {
                 if (!isExpanded) {
                     HStack {
-                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-100, height: 30, alignment: .topLeading).padding(.leading, 5)
+                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 50, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
-                    }
-             //       Text(assignmentduedate).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(5)
+                        Text("\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 1])").fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
+                    }.padding(.bottom, -3)
                 }
                     
                 else {
@@ -99,10 +99,10 @@ struct IndividualAssignmentFilterView: View {
                            
                             HStack {
                               //  Text("Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
-                                Text(assignment.type).frame(height: 20, alignment: .topLeading)//.padding(5)
+                                Text(assignment.type).frame(height: 20, alignment: .topLeading)
                                 Spacer()
-                                Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing)//.padding(5)
-                            }.padding(.horizontal, 5)
+                                Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing)
+                            }.padding(.horizontal, 5).padding(.bottom, 2)
                         }
                         VStack {
                             HStack {
@@ -123,13 +123,13 @@ struct IndividualAssignmentFilterView: View {
                     
                     RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.white).frame(width:  UIScreen.main.bounds.size.width-50, height: 20)
                     HStack {
-                            if (assignment.progress == 100) {
-                                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height: 20, alignment: .leading)
-                            }
-                            else {
-                                RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height:20, alignment: .leading)
-                                Spacer()
-                            }
+                        if (assignment.progress == 100) {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height: 20, alignment: .leading)
+                        }
+                        else {
+                            RoundedRectangle(cornerRadius: 25, style: .continuous).fill(Color.blue).frame(width:  CGFloat(CGFloat(assignment.progress)/100*(UIScreen.main.bounds.size.width-50)),height: 20, alignment: .leading)
+                            Spacer()
+                        }
                     }
                 }
             }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(14).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
@@ -361,7 +361,7 @@ struct GradedAssignmentsView: View {
                     }
                     else
                     {
-                        Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.vertical, 0)
+                        Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.bottom, 1)
                     }
                     
                 }
@@ -383,7 +383,7 @@ struct GradedAssignmentsView: View {
                             }
                             else
                             {
-                                Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.vertical, 0)
+                                Text("Grade: " + getdisplaygrade()).frame(width: UIScreen.main.bounds.size.width-50,height: 20, alignment: .topLeading).padding(.horizontal, 5).padding(.bottom, 1)
                             }
                             
                             

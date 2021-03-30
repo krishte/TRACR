@@ -554,7 +554,7 @@ struct DetailView: View {
             VStack {
                 Text(classcool.name).font(.system(size: 24)).fontWeight(.bold) .frame(maxWidth: UIScreen.main.bounds.size.width-50, alignment: .center).multilineTextAlignment(.center)
                 Spacer()
-                Text("Tolerance: " + String(classcool.tolerance))
+//                Text("Tolerance: " + String(classcool.tolerance)).padding(2)
                 Spacer()
                 
                 ScrollView {
@@ -605,7 +605,7 @@ struct DetailView: View {
                 sheetnavigator.showeditclass.toggle()
                 
             })
-            { Text("Edit").frame(height: 100, alignment: .trailing) }
+            { Text("Edit Class").frame(height: 100, alignment: .trailing) }
             ).sheet(isPresented: $NewSheetPresenting, content: sheetContent)
             VStack {
                 Spacer()
@@ -629,7 +629,7 @@ struct DetailView: View {
                             self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
                         }) {
                             Text("Assignment")
-                            Image(systemName: "paperclip")
+                            Image(systemName: "doc.plaintext")
                         }
                     }.animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool), preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {
                         Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
@@ -1495,7 +1495,7 @@ struct ClassesView: View {
                                         HStack {
                                             Text("Add Assignment")
                                             Spacer()
-                                            Image(systemName: "paperclip")
+                                            Image(systemName: "doc.plaintext")
                                         }
                                     }
                                     Divider()
@@ -1577,7 +1577,7 @@ struct ClassesView: View {
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .foregroundColor(Color.blue)
                                               .frame(width: widthAndHeight, height: widthAndHeight)
-                                            Image(systemName: "paperclip")
+                                            Image(systemName: "doc.plaintext")
                                               .resizable().scaledToFit()
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
@@ -1597,7 +1597,7 @@ struct ClassesView: View {
                                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                                 .foregroundColor(Color.blue)
                                               .frame(width: widthAndHeight, height: widthAndHeight)
-                                            Image(systemName: "list.bullet")
+                                            Image(systemName: "folder")
                                               .resizable().scaledToFit()
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)

@@ -399,11 +399,9 @@ struct SubassignmentAddTimeAction: View {
                 
             masterRunning.masterRunningNow = true
             masterRunning.displayText = true
-            print("Signal Sent.")
             
             do {
                 try self.managedObjectContext.save()
-                print("AddTime logged")
             } catch {
                 print(error.localizedDescription)
             }
@@ -620,7 +618,6 @@ struct SubassignmentBacklogAction: View {
                     if (element.name == addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL") {
                         let lengthAsDouble = Double((addTimeSubassignmentBacklog.backlogList[0]["subassignmentlength"] ?? "0.0").replacingOccurrences(of: "[^\\.\\d+]", with: "", options: [.regularExpression])) ?? 0.0
                         let minutescompleted = (self.subassignmentcompletionpercentage / 100) * lengthAsDouble
-                        print(lengthAsDouble, minutescompleted)
                         let minutescompletedroundeddown = Int(minutescompleted / 5) * 5
                         
                         element.timeleft -= Int64(minutescompletedroundeddown)
@@ -630,7 +627,6 @@ struct SubassignmentBacklogAction: View {
 
                 do {
                     try self.managedObjectContext.save()
-                    print("Subassignment time added")
                 } catch {
                     print(error.localizedDescription)
                 }
@@ -640,7 +636,6 @@ struct SubassignmentBacklogAction: View {
                 addTimeSubassignmentBacklog.backlogList.remove(at: 0)
                 
                 masterRunning.masterRunningNow = true
-                print("Signal Sent.")
             }) {
                 Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Next" : "Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
             }.padding(.vertical, 8).padding(.bottom, -3)
@@ -1155,7 +1150,6 @@ struct HomeBodyView: View {
                                 Spacer()
                                 Button(action:{
                                     self.hidingupcoming.toggle()
-                                    print(hidingupcoming)
                                     if (self.hidingupcoming)
                                     {
                                         upcomingoffset = Int(UIScreen.main.bounds.size.height)
@@ -1164,7 +1158,6 @@ struct HomeBodyView: View {
                                     {
                                         upcomingoffset = 0
                                     }
-                                    print(upcomingoffset)
                                 }) {
                                     ZStack {
                                         RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
@@ -1280,7 +1273,6 @@ struct HomeBodyView: View {
                         Spacer()
                         Button(action:{
                             self.hidingupcoming.toggle()
-                            print(hidingupcoming)
                             if (self.hidingupcoming)
                             {
                                 upcomingoffset = Int(UIScreen.main.bounds.size.height)
@@ -1289,7 +1281,6 @@ struct HomeBodyView: View {
                             {
                                 upcomingoffset = 0
                             }
-                            print(upcomingoffset)
                         }) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
@@ -1505,7 +1496,7 @@ struct IndividualSubassignmentView: View {
     @State var incompleted: Bool = false
     @State var incompletedonce: Bool = true
     @State var dragoffset = CGSize.zero
-    
+    @State var weeklyminutesworked: Int = 0
     @State var isrepeated: Bool
     var fixedHeight: Bool
     
@@ -1567,7 +1558,6 @@ struct IndividualSubassignmentView: View {
     func simpleSuccess() {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
-        print("phone vibrated")
     }
  
     func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
@@ -1616,11 +1606,11 @@ struct IndividualSubassignmentView: View {
                     Spacer().frame(height: 10)
                     if (self.isrepeated)
                     {
-                        Text((self.getgrouplength()/60 == 0 ? "" : (self.getgrouplength()/60 == 1 ? "1 hour" : String(self.getgrouplength()/60) + " hours "))  + (self.getgrouplength() % 60 == 0 ? "" : String(self.getgrouplength() % 60) + " minutes")).frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                        Text((self.getgrouplength()/60 == 0 ? "" : (self.getgrouplength()/60 == 1 ? "1 hour " : String(self.getgrouplength()/60) + " hours "))  + (self.getgrouplength() % 60 == 0 ? "" : String(self.getgrouplength() % 60) + " minutes")).frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                     }
                     else
                     {
-                        Text((self.subassignmentlength/60 == 0 ? "" : (self.subassignmentlength/60 == 1 ? "1 hour" : String(self.subassignmentlength/60) + " hours ")) + (self.subassignmentlength % 60 == 0 ? "" : String(self.subassignmentlength % 60) + " minutes")).frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                        Text((self.subassignmentlength/60 == 0 ? "" : (self.subassignmentlength/60 == 1 ? "1 hour " : String(self.subassignmentlength/60) + " hours ")) + (self.subassignmentlength % 60 == 0 ? "" : String(self.subassignmentlength % 60) + " minutes")).frame(width:  self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                     }
                 }
                 else
@@ -1685,10 +1675,8 @@ struct IndividualSubassignmentView: View {
                     self.dragoffset = .zero
                     
 
-                    print("drag gesture ended")
                     if (self.incompleted == true) {
                         if (self.incompletedonce == true) {
-                            print("incompleted")
                             
                             actionViewPresets.actionViewOffset = 0
                             actionViewPresets.actionViewHeight = 280
@@ -1717,10 +1705,8 @@ struct IndividualSubassignmentView: View {
                     }
                     
                     else if (self.deleted == true) {
-                        print("success")
                         if (self.deleteonce == true) {
                             self.deleteonce = false
-                            print("deleting")
                             for (_, element) in self.assignmentlist.enumerated() {
                                 if (element.name == self.name) {
                                     var minutes = self.subassignmentlength
@@ -1734,7 +1720,7 @@ struct IndividualSubassignmentView: View {
                                     }
                                     
                                     element.timeleft -= Int64(minutes)
-                                    print(element.timeleft)
+                                    weeklyminutesworked += minutes
                                     withAnimation(.spring()) {
                                         if (element.totaltime != 0) {
                                             element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
@@ -1770,19 +1756,24 @@ struct IndividualSubassignmentView: View {
                             }
                             do {
                                 try self.managedObjectContext.save()
-                                print("Subassignment completed")
                             } catch {
                                 print(error.localizedDescription)
                             }
                             simpleSuccess()
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
-                            print("Signal Sent.")
                         }
                     }
                 }).animation(.spring())
-        }.frame(width: UIScreen.main.bounds.size.width-40).onDisappear {
+        }.frame(width: UIScreen.main.bounds.size.width-40).onAppear
+        {
+          
+        }.onDisappear {
             self.dragoffset.width = 0
+            let defaults = UserDefaults.standard
+            let val = defaults.object(forKey: "weeklyminutesworked") as! Int
+                
+            defaults.set(val+weeklyminutesworked, forKey: "weeklyminutesworked")
         }
     }
 }

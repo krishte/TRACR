@@ -301,7 +301,7 @@ struct NewGoogleAssignmentModalView: View {
                     {
                         HStack
                         {
-                            Text("Click Me")
+                            Text("Classroom assignments")
                             Spacer()
                             if (foundassignments.count > 0)
                             {
@@ -607,7 +607,7 @@ struct NewGoogleAssignmentModalView: View {
                     }
                 }
                 
-            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Assignment", displayMode: .inline)
+            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
         }
         .onAppear
         {
@@ -1079,7 +1079,7 @@ struct NewAssignmentModalView: View {
                     }
                 }
                 
-            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Assignment", displayMode: .inline)
+            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
         }
         
         if masterRunning.masterRunningNow {
@@ -1530,7 +1530,7 @@ struct NewClassModalView: View {
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
-                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Class", displayMode: .inline)
+                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Class").navigationBarTitleDisplayMode(.inline)
         }.onAppear()
         {
             let defaults = UserDefaults.standard
@@ -2175,7 +2175,7 @@ struct NewFreetimeModalView: View {
                         }.buttonStyle(PlainButtonStyle()).foregroundColor(colorScheme == .light ? Color.black : Color.white).frame(width: UIScreen.main.bounds.size.width-40)
                     
                 }
-            }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Free Time", displayMode: .inline)
+            }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Free Time").navigationBarTitleDisplayMode(.inline)
         }
         
         if masterRunning.masterRunningNow {
@@ -2491,7 +2491,7 @@ struct FreetimeDetailView: View {
             else {
                 self.selection.removeAll()
             }
-        }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("View & Delete Free Times", displayMode: .inline)
+        }, label: {selection.count == 8 ? Text("Collapse All"): Text("Expand All")})).navigationTitle("View & Delete Free Times").navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -2675,7 +2675,7 @@ struct NewGradeModalView: View {
                         Text("Add Grade")
                     }
                 }
-            }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Add Grade", displayMode: .inline)
+            }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Grade").navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -3104,7 +3104,7 @@ struct EditAssignmentModalView: View {
                     }.foregroundColor(Color.red)
                 }
                 
-            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationBarTitle("Edit Assignment", displayMode: .inline)
+            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline)
         }
         if masterRunning.masterRunningNow {
             MasterClass()

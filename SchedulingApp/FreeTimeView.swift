@@ -1091,7 +1091,7 @@ struct WorkHours: View {
             if masterRunning.masterRunningNow {
                 MasterClass()
             }
-        }.navigationBarTitle("Work Hours", displayMode: .large)
+        }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading)
             {

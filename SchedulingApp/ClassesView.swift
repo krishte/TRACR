@@ -452,7 +452,7 @@ struct EditClassModalView: View {
                                                     self.showeditclass = false
                                                     self.EditClassPresenting = false
                 
-            }, label: {Text("Cancel")})).navigationBarTitle("Edit Class", displayMode: .inline)
+            }, label: {Text("Cancel")})).navigationTitle("Edit Class").navigationBarTitleDisplayMode(.inline)
         }
 
         if masterRunning.masterRunningNow {

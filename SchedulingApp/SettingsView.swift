@@ -370,7 +370,7 @@ struct SyllabusView: View {
                    }
                 }
             }
-        }.navigationBarTitle("Syllabus", displayMode: .large).onAppear()
+        }.navigationTitle("Syllabus").navigationBarTitleDisplayMode(.large).onAppear()
         {
             let defaults = UserDefaults.standard
             
@@ -554,7 +554,7 @@ struct SettingsView: View {
                 
                 Section {
                         NavigationLink(destination:
-                                        TutorialView().navigationBarTitle("Tutorial", displayMode: .inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
+                                        TutorialView().navigationTitle("Tutorial").navigationBarTitleDisplayMode(.inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
                         ) {
                             HStack {
                                 ZStack {
@@ -570,7 +570,7 @@ struct SettingsView: View {
 //                        NavigationLink(destination:
 //
 //                            EmptyView()
-//                            PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationBarTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)
+//                            PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)
    
                         
 //                        ) {
@@ -662,7 +662,7 @@ struct SettingsView: View {
                     }
                 }
             }
-        }.navigationBarTitle("Settings")
+        }.navigationTitle("Settings")
         
         if masterRunning.masterRunningNow {
             MasterClass()
@@ -764,7 +764,7 @@ struct HelpCenterView: View {
                     self.selection.removeAll()
                 }
                 
-            }, label: {selection.count == 5 ? Text("Collapse All"): Text("Expand All")})).navigationBarTitle("FAQ", displayMode: .inline)
+            }, label: {selection.count == 5 ? Text("Collapse All"): Text("Expand All")})).navigationTitle("FAQ").navigationBarTitleDisplayMode(.inline)
         
     }
 }
@@ -819,14 +819,14 @@ struct PreferencesView: View {
                         DetailPreferencesView(assignmenttype: assignmenttype)
                     }//.animation(.spring())
                 }//.animation(.spring())
-           // }.navigationBarTitle("Preferences")
-        }.navigationBarTitle("Type Sliders", displayMode: .large).toolbar {
+           // }.navigationTitle("Preferences")
+        }.navigationTitle("Type Sliders").navigationBarTitleDisplayMode(.large).toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Text("")
             }
         }.onDisappear {
             masterRunning.masterRunningNow = true
-        }.navigationBarTitle("Type Sliders")
+        }.navigationTitle("Type Sliders")
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading)
             {
@@ -1216,7 +1216,7 @@ struct NotificationsView: View {
                             }
                             
 
-                        }.navigationBarTitle("Notifications", displayMode: .inline)
+                        }.navigationTitle("Notifications").navigationBarTitleDisplayMode(.inline)
         }.onAppear() {
             let defaults = UserDefaults.standard
             let array = defaults.object(forKey: "savedassignmentnotifications") as? [String] ?? ["None"]
@@ -1236,7 +1236,7 @@ struct NotificationsView: View {
             print(masterRunning.onlyNotifications)
         }
                    // }
-               // }//.navigationBarItems(leading: Text("H")).navigationBarTitle("Notifications", displayMode: .inline)
+               // }//.navigationBarItems(leading: Text("H")).navigationTitle("Notifications", displayMode: .inline)
         //}
     }
 }

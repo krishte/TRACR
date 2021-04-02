@@ -1122,7 +1122,7 @@ struct ProgressView: View {
                                                         })
                                                         {
                                                           
-                                                            Text(classcool.name).font(.system(size: 15)).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-50, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selectedGraphClass == getclassindex(classity: classcool) ? 1.0 : 0.5)
+                                                            Text(classcool.name).font(.system(size: 15)).fontWeight(self.selectedGraphClass == getclassindex(classity: classcool) ? .semibold : .regular).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-60, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selectedGraphClass == getclassindex(classity: classcool) ? 1.0 : 0.5)
                                                         }
         //                                                Spacer()
         //                                                if (self.selection.contains(classcool.name)) {
@@ -1210,6 +1210,8 @@ struct ProgressView: View {
                         
 
                     }
+                    
+                    Spacer().frame(height: 5)
                 }
                 VStack {
                     Spacer()
@@ -1342,7 +1344,7 @@ struct ProgressView: View {
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                     Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
 
-                }.padding(.top, 0))//.navigationBarTitle("Progress")
+                }.padding(.top, 0))//.navigationTitle("Progress")
          }.onDisappear {
             let defaults = UserDefaults.standard
             defaults.set(weeklygoal, forKey: "weeklygoal")
@@ -1401,7 +1403,8 @@ struct WorkloadSliver: View {
             GeometryReader { geometry in
                 let centerPoint =  CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
                 let innerRadius = (geometry.size.width / 7)
-                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius)))
+//                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius)))
+                let largeRadius = (innerRadius + (0.88 * (((geometry.size.width / 2) - 40) - innerRadius)))
             
                 if self.selectedSliver == self.sliverinfo && self.thisSliverClicked {
                     Path { path in
@@ -1538,13 +1541,12 @@ struct WorkloadPie: View {
             
             if self.slivers.count > 1 {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("workloadpiechartbg1"), Color("workloadpiechartbg2")]), startPoint: .top, endPoint: .bottom)).frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.width + 20).shadow(radius: 1)
+                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("workloadpiechartbg1"), Color("workloadpiechartbg2")]), startPoint: .top, endPoint: .bottom)).frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.width).shadow(radius: 1)
                     
                     VStack {
                         HStack {
-                            Text("Workload Distribution").fontWeight(.semibold).multilineTextAlignment(.leading).frame(width: 100)
+                            Text("Workload Distribution").font(.system(size: 19)).fontWeight(.semibold).multilineTextAlignment(.leading).frame(width: 200)
                             Spacer()
-                            Text("Progress of Tasks").fontWeight(.light).multilineTextAlignment(.trailing).frame(width: 100)
                         }.padding(.horizontal, 9).padding(.top, 9)
 
                         ZStack {
@@ -1563,21 +1565,22 @@ struct WorkloadPie: View {
                                 HStack(spacing: 0) {
                                     Text("% Workload: \(Int(round(100 * Double(selectedSliver[5])!)))%").fontWeight(.light).animation(.spring())
                                     Spacer()
-                                    Text("% Completed: \(Int(round(100 * Double(selectedSliver[4])!)))%").fontWeight(.light).animation(.spring())
+//                                    Text("% Completed: \(Int(round(100 * Double(selectedSliver[4])!)))%").fontWeight(.light).animation(.spring())
                                 }
-                            }.frame(height: 70).padding(.horizontal, 9).animation(.spring())
+                            }.frame(height: 60).padding(.horizontal, 9).animation(.spring())
                         }
                         
                         else {
                             VStack(alignment: .leading) {
-                                Text("Key:").font(.system(size: 15)).fontWeight(.semibold)
-                                Text("Proportion of the Pie: Proportion of Workload of that Class").font(.system(size: 12)).fontWeight(.light)//.frame(height: 50)
-                                Text("Height of a Piece: Percentage of Work Completed").font(.system(size: 12)).fontWeight(.light)
                                 Spacer()
-                            }.frame(height: 70).padding(.horizontal, 9)
+                                HStack {
+                                    Text("Proportion of the Pie: Proportion of Total Workload of that Class").font(.system(size: 15)).fontWeight(.light).animation(.spring())//.frame(height: 50)
+                                    Spacer()
+                                }
+                            }.frame(height: 60).padding(.horizontal, 9).padding(.bottom, 9)
                         }
                     }.animation(.spring())
-                }.frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.width + 20)
+                }.frame(width: UIScreen.main.bounds.size.width - 20, height: UIScreen.main.bounds.size.width)
                 
                 Spacer().frame(height: 9)
             }

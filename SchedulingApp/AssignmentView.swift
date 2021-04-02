@@ -82,7 +82,16 @@ struct IndividualAssignmentFilterView: View {
                     HStack {
                         Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 50, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
-                        Text("\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 1])").fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
+                        
+                        let datedifference = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: assignment.duedate)).day
+                        
+                        let previewduedatetext: String = datedifference == 1 ? "Tomorrow" : (datedifference == 0 ? "Today" : "\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2])")
+                        
+                        let previewduedateweight: Font.Weight = datedifference ?? 0 < 2 ? (Date() > assignment.duedate ? .bold : .semibold) : .light
+                        
+                        let previewduedatecolor: Color = Date() > assignment.duedate ? Color("ohnored") : Color.black
+                        
+                        Text(previewduedatetext).fontWeight(previewduedateweight).foregroundColor(previewduedatecolor).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
                     }.padding(.bottom, -3)
                 }
                     

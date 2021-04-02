@@ -410,7 +410,7 @@ struct FilterView: View {
                         }) {
                             Image(systemName: self.completedvalue ? "checkmark.circle.fill" : "checkmark.circle").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
-                }.padding(.top, 0)).navigationBarTitle("Assignments")
+                }.padding(.top, 0)).navigationTitle("Assignments")
         }.onDisappear() {
             self.showingSettingsView = false
             self.showpopup = false

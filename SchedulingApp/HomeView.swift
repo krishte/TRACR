@@ -724,7 +724,7 @@ struct NoClassesOrFreetime: View {
             if subpage == "None" {
                 HStack {
                     NavigationLink(destination:
-                                    TutorialView().navigationBarTitle("Tutorial", displayMode: .inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
+                                    TutorialView().navigationTitle("Tutorial").navigationBarTitleDisplayMode(.inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
                     ) {
                         HStack {
                             Text("Head to Tutorial").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)

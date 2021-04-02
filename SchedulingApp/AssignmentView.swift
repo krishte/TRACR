@@ -80,9 +80,9 @@ struct IndividualAssignmentFilterView: View {
             VStack {
                 if (!isExpanded) {
                     HStack {
-                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 50, height: 30, alignment: .topLeading).padding(.leading, 5)
+                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 40, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
-                        Text("\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 1])").fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
+                        Text("\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2]) ").fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
                     }.padding(.bottom, -3)
                 }
                     
@@ -168,7 +168,6 @@ struct IndividualAssignmentFilterView: View {
                         if (self.incompleted == true) {
                             if (self.incompletedonce == true) {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                          if (self.deleted == true) {
@@ -193,7 +192,6 @@ struct IndividualAssignmentFilterView: View {
                                  }
                                  do {
                                      try self.managedObjectContext.save()
-                                     print("Assignment completed")
                                  } catch {
                                      print(error.localizedDescription)
                                  }
@@ -212,7 +210,6 @@ struct IndividualAssignmentFilterView: View {
                             if (self.incompletedonce == true)
                             {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                     }
@@ -237,7 +234,6 @@ struct IndividualAssignmentFilterView: View {
     func simpleSuccess() {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
-        print("phone vibrated")
     }
 }
 
@@ -446,7 +442,6 @@ struct GradedAssignmentsView: View {
                             if (self.incompletedonce == true)
                             {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                          if (self.deleted == true) {
@@ -470,7 +465,6 @@ struct GradedAssignmentsView: View {
                                  }
                                  do {
                                      try self.managedObjectContext.save()
-                                     print("Assignment completed")
                                  } catch {
                                      print(error.localizedDescription)
                                  }
@@ -482,7 +476,6 @@ struct GradedAssignmentsView: View {
                         if (self.incompleted == true) {
                             if (self.incompletedonce == true) {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                     }

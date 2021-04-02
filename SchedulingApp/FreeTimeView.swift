@@ -369,7 +369,6 @@ struct ObstructingFreeTimes: View {
     func appendToObstructingList() -> Void {
         ObstructingFreeTimeObjectsWhenAdding.append(freetime)
         PossibleDateBrackets = updateObstructions()
-        print(PossibleDateBrackets)
     }
     
     func removeFromObstructingList() -> Void {
@@ -514,7 +513,6 @@ struct FreeTimeToAdd: View {
         if self.addFreeTimeCGFloats.isEmpty || self.addFreeTimeCGFloats[0] < (self.pdb[0] - 5) || self.addFreeTimeCGFloats[1] > (self.pdb[1] + 5) {
             Button(action:
             {
-                print(addFreeTimeCGFloats, pdb)
                 self.addFreeTimeCGFloats = [self.pdb[0], CGFloat(self.pdb[0] + 60.35/2)]
                 self.yoffset = self.addFreeTimeCGFloats[0]
                 self.height = self.addFreeTimeCGFloats[1] - self.addFreeTimeCGFloats[0]
@@ -910,10 +908,6 @@ struct WorkHours: View {
                             }
                             
                             else {
-                                print("dsf")
-                                print(self.selection.contains(day))
-                                print(!self.freetimeediting.editingmode)
-                                print("fsd")
                                 
                                 
                                 if (self.selection.contains(day) && !self.freetimeediting.editingmode) {

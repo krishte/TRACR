@@ -89,7 +89,6 @@ struct ContentView: View {
 //        changingDate.score = 1
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
             if success {
-                print("All set!")
             } else if let error = error {
                 print(error.localizedDescription)
             }
@@ -97,12 +96,20 @@ struct ContentView: View {
     }
     
     func initialize() {
-        print("sfsdfsdgasgs")
         let defaults = UserDefaults.standard
         
         if !defaults.bool(forKey: "Launched Before") {
             defaults.set(true, forKey: "Launched Before")
+            let gradingschemes: [String] = ["P", "N1-7", "LA-F"]
+            defaults.set(0, forKey: "weeklyminutesworked")
+            let lastmondaydate =  Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
+            let nextmondaydate = Date(timeInterval: 604800, since: lastmondaydate)
             
+            defaults.set(nextmondaydate, forKey: "weeklyzeroday")
+            
+            
+            
+            defaults.set(gradingschemes, forKey: "savedgradingschemes")
             let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
             
             for assignmenttype in assignmenttypes {
@@ -114,7 +121,6 @@ struct ContentView: View {
                 
                 do {
                     try self.managedObjectContext.save()
-                    print("new Subassignment")
                 } catch {
                     print(error.localizedDescription)
                 }
@@ -123,6 +129,19 @@ struct ContentView: View {
             defaults.set(Date(), forKey: "lastNudgeDate")
             
             self.firstLaunchTutorial = true
+        }
+        var val = defaults.object(forKey: "weeklyzeroday") as? Date
+        if (val == nil)
+        {
+            val = Date()
+        }
+        if (Date() > val!)
+        {
+            defaults.set(0, forKey: "weeklyminutesworked")
+            let lastmondaydate =  Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
+            let nextmondaydate = Date(timeInterval: 604800, since: lastmondaydate)
+            defaults.set(nextmondaydate, forKey: "weeklyzeroday")
+            
         }
         for (index, element) in classlist.enumerated()
         {

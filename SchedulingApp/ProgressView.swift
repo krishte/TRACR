@@ -442,11 +442,9 @@ struct DetailProgressView: View {
         }
     }
     func getassignmentindex() -> Int {
-        print(sheetnavigator.selectedassignmentedit)
         for (index, assignment) in assignmentlist.enumerated() {
             if (assignment.name == sheetnavigator.selectedassignmentedit)
             {
-                print(assignment.name)
                 return index
             }
         }
@@ -677,6 +675,7 @@ struct Line: View {
     var path: Path {
         let points = self.data
         return Path.lineChart(points: points, step: CGPoint(x: stepWidth, y: stepHeight))
+
     }
     
     func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
@@ -686,13 +685,29 @@ struct Line: View {
         
         return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
     }
-    
+    func getval(val: Int) -> CGFloat
+    {
+        if (val < self.data.count)
+        {
+            return CGFloat(self.data[val])
+        }
+        return CGFloat(0)
+    }
     public var body: some View {
         
    //     ZStack {
  
             self.path
                 .stroke(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color) ,style: StrokeStyle(lineWidth: 3, lineJoin: .round))
+            if (self.data.count >= 2)
+            {
+                Circle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color) ).frame(width: 7, height: 7).position(x:20, y: 235-CGFloat(self.data[0]) * CGFloat(stepHeight) )
+                ForEach(1..<self.data.count)
+                {
+                    val in
+                    Circle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color) ).frame(width: 7, height: 7).position(x: 20 + stepWidth * CGFloat(val), y: 235 - stepHeight*getval(val: val))
+                }
+            }
            
       //  }
     }
@@ -705,13 +720,10 @@ extension Path {
             return path
         }
         let p1 = CGPoint(x: 20, y: 235 - CGFloat(points[0]) * step.y)
-     //   print(points[0], step.y)
-     //   print( 235 - CGFloat(points[0]) * step.y)
         path.move(to: p1)
         for pointIndex in 1..<points.count {
             let p2 = CGPoint(x: 20 + step.x * CGFloat(pointIndex), y: 235 - step.y*CGFloat(points[pointIndex]))
-          //  print(points[pointIndex], step.y)
-         //   print(235 - step.y*CGFloat(points[pointIndex]))
+
             path.addLine(to: p2)
         }
         return path
@@ -757,6 +769,7 @@ struct ProgressView: View {
     @State var widthAndHeight: CGFloat = 50
     @State var displayinggoalsetting: Bool = false
     @State var weeklygoal: Int = 0
+    @State var editingweeklygoal: Bool = false
     @State var completedamountofweeklygoalminutes: Int = 90
     
     
@@ -1032,7 +1045,8 @@ struct ProgressView: View {
                                     .fill(Color("thirteen"))
                                     .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
                                 VStack {
-                                    TabView
+                                   
+                                    if (editingweeklygoal)
                                     {
                                         VStack
                                         {
@@ -1052,45 +1066,78 @@ struct ProgressView: View {
                                             }
                                             
                                         }
-                                        VStack
+                                    }
+                                    else
+                                    {
+                                        HStack
                                         {
-                                            ZStack
+                                            VStack
                                             {
-                                                VStack
+                                                ZStack
                                                 {
-                                                    Spacer().frame(height: 20)
-                                                    Text("\(String(format: "%.0f", Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal)*100))" + "%").fontWeight(.bold).font(.system(size: 25))
-                                                    Spacer()
-                                                }
-                                                VStack
-                                                {
-                                                    Spacer().frame(height: 70)
-                                                    HStack
+                                                    VStack
                                                     {
-                                                        Spacer()
-                                                        Rectangle().frame(width: 5, height: 80)
-                                                        Spacer().frame(width: 60)
-                                                        Rectangle().frame(width: 5, height: 80)
+                                                        Spacer().frame(height: 20)
+                                                        Text("\(String(format: "%.0f", Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal)*100))" + "%").fontWeight(.bold).font(.system(size: 25))
                                                         Spacer()
                                                     }
-                                                    Spacer()
-                                                }
-                                                VStack
-                                                {
-                                                    Spacer().frame(height: 150)
-                                                    Rectangle().frame(width: 70, height: 5)
-                                                    Spacer()
-                                                }
-                                                VStack
-                                                {
-                                                    Spacer().frame(height: 150 -  min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
-                                                    Rectangle().fill(Color.blue).frame(width: 60, height: min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
-                                                    Spacer()
+                                                    VStack
+                                                    {
+                                                        Spacer().frame(height: 70)
+                                                        HStack
+                                                        {
+                                                            Spacer()
+                                                            Rectangle().frame(width: 5, height: 80)
+                                                            Spacer().frame(width: 60)
+                                                            Rectangle().frame(width: 5, height: 80)
+                                                            Spacer()
+                                                        }
+                                                        Spacer()
+                                                    }
+                                                    VStack
+                                                    {
+                                                        Spacer().frame(height: 150)
+                                                        Rectangle().frame(width: 70, height: 5)
+                                                        Spacer()
+                                                    }
+                                                    VStack
+                                                    {
+                                                        Spacer().frame(height: 150 -  min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+                                                        Rectangle().fill(Color.blue).frame(width: 60, height: min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+                                                        Spacer()
+                                                    }
+
                                                 }
                                             }
-                                            //Text("Coming Soon").fontWeight(.light).foregroundColor(Color.black)
+                                            Spacer()
+                                            Rectangle().frame(width: 2, height: 160)
+                                            Spacer()
+                                            VStack
+                                            {
+                                                Text(String(completedamountofweeklygoalminutes/60) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
+                                                Rectangle().frame(width: 100, height: 2)
+                                                Text(String(weeklygoal) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
+                                            }
                                         }
-                                    }.tabViewStyle(PageTabViewStyle())
+                                    }
+                                    
+                                }
+                                VStack
+                                {
+                                    HStack
+                                    {
+                                        Spacer()
+                                        Button(action:
+                                        {
+                                            editingweeklygoal.toggle()
+                                        })
+                                        {
+                                            Image(systemName: editingweeklygoal ? "pencil.circle.fill" : "pencil.circle").resizable().frame(width: 20, height:20).padding(10)
+                                        }.buttonStyle(PlainButtonStyle())
+
+//
+                                    }
+                                    Spacer()
                                 }
  
                             }
@@ -1353,6 +1400,11 @@ struct ProgressView: View {
          }.onAppear {
             let defaults = UserDefaults.standard
             weeklygoal = defaults.object(forKey: "weeklygoal") as? Int ?? 0
+            if (weeklygoal == 0)
+            {
+                editingweeklygoal = true
+            }
+            completedamountofweeklygoalminutes = defaults.object(forKey: "weeklyminutesworked") as! Int
             if (classlist.count > 0)
             {
                 self.selectDeselect(classlist[0].name)
@@ -1501,7 +1553,6 @@ struct WorkloadPie: View {
         for (classname, totalangle) in ClassToAngleDegrees {
             firstAngle = secondAngle
             secondAngle = firstAngle + totalangle
-            print(firstAngle, secondAngle)
             
             ClassToFirstAngle[classname] = firstAngle
             ClassToSecondAngle[classname] = secondAngle

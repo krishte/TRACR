@@ -700,7 +700,7 @@ struct MasterClass: View {
     @EnvironmentObject var masterRunning: MasterRunning
     
     func theBigMaster() {
-        print("Signal Received.")
+      //  print("Signal Received.")
         
         if masterRunning.displayText {
             masterRunning.masterDisplay = true
@@ -721,7 +721,6 @@ struct MasterClass: View {
             do {
                 try master()
             } catch MasterErrors.ImpossibleDueDate {
-                print("Impossible Due Date Entered.")
                 
 //                for classity in self.classlist {
 //                    if (classity.originalname == self.assignmentlist[0].subject) {
@@ -732,22 +731,19 @@ struct MasterClass: View {
 //                self.managedObjectContext.delete(self.assignmentlist[0])
                 do {
                     try self.managedObjectContext.save()
-                    print("AddTime logged")
                 } catch {
-                    print(error.localizedDescription)
                 }
                 DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1500)) {
                     theBigMaster()
                 }
 
             } catch {
-                print("failed somewhere but moving on for now")
             }
             masterRunning.masterRunningNow = false
             schedulenotifications()
         }
         
-        print("Terminating Signal.")
+       // print("Terminating Signal.")
     }
     
     func schedulenotifications() {
@@ -815,7 +811,6 @@ struct MasterClass: View {
                     }
             }
         }
-        print("success")
     }
     
     func bulk(assignment: Assignment, daystilldue: Int, totaltime: Int, bulk: Bool, dateFreeTimeDict: [Date: Int]) throws -> ([(Int, Int)], Int)
@@ -824,7 +819,6 @@ struct MasterClass: View {
         var tempsubassignmentlist: [(Int, Int)] = []
         let newd = Int(ceil(Double(daystilldue)*Double(safetyfraction)))
         let defaults = UserDefaults.standard
-        print(defaults.object(forKey: "savedbreakvalue") as? Int ?? 10)
         _ = defaults.object(forKey: "savedbreakvalue") as? Int ?? 10
         guard newd > 0 else {
             throw MasterErrors.ImpossibleDueDate
@@ -847,7 +841,6 @@ struct MasterClass: View {
                     }
                 }
             }
-        //    print(approxlength)
             approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(5))*5)
     //        print(approxlength)
            // print(approxlength)
@@ -879,7 +872,6 @@ struct MasterClass: View {
             
             if (ntotal == possibledays)
             {
-                print("exact number of days")
                 var sumsy = 0
                 for i in 0..<ntotal-1 {
                     tempsubassignmentlist.append((possibledayslist[i], approxlength))
@@ -889,7 +881,6 @@ struct MasterClass: View {
             }
             else
             {
-                print("too many days")
                 let breaks = possibledays-ntotal
                 //print("Breaks: " + String(possibledays-ntotal))
              //   print("Required Days: " + String(ntotal))
@@ -919,9 +910,7 @@ struct MasterClass: View {
             }
         }
         else {
-            print("not enought time")
             var extratime = totaltime - approxlength*possibledays
-            print(totaltime, possibledays, approxlength, extratime, newd)
             for i in 0..<newd {
                 if ( dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! < approxlength) {
                     notpossibledayslist.append(i)
@@ -979,9 +968,7 @@ struct MasterClass: View {
                         for j in 0..<tempsubassignmentlist.count {
                             if (tempsubassignmentlist[j].0 == possibledayslist[i])
                             {
-                                print("kewl")
                                 let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 30 )
-                                print(value)
                                 tempsubassignmentlist[j].1 += value
                                 extratime -= value
                                 if (extratime == 0)
@@ -999,15 +986,12 @@ struct MasterClass: View {
                 }
                 if (extratime != 0)
                 {
-                    print(extratime)
-                    print("epic fail")
                     
                 }
 
             }
         }
         for (daysfromnow, lengthofwork) in tempsubassignmentlist {
-            print(daysfromnow, lengthofwork)
         }
         return (tempsubassignmentlist, newd)
     }
@@ -1020,7 +1004,6 @@ struct MasterClass: View {
         
         do {
             try self.managedObjectContext.save()
-            print("new Subassignment")
         } catch {
             print(error.localizedDescription)
         }
@@ -1039,7 +1022,6 @@ struct MasterClass: View {
         
         do {
             try self.managedObjectContext.save()
-            print("new Subassignment")
         } catch {
             print(error.localizedDescription)
         }
@@ -1154,7 +1136,6 @@ struct MasterClass: View {
 //                }
             }
         }
-        print("Free Time Today = " + String(dateFreeTimeDict[startOfDay]!))
         var deletelist: [Int] = []
         var changelist: [Int] = []
         for (index,(start, end)) in specificdatefreetimedict[startOfDay]!.enumerated()
@@ -1171,8 +1152,6 @@ struct MasterClass: View {
                 changelist.append(index)
             }
         }
-        print("deletelist", deletelist)
-        print("changelist", changelist)
         for index in changelist
         {
             var minutesfromstart = Calendar.current.dateComponents([.minute], from: startOfDay, to: Date()).minute!
@@ -1187,7 +1166,6 @@ struct MasterClass: View {
             specificdatefreetimedict[startOfDay]!.remove(at: index-counter)
             counter += 1
         }
-        print("Free Time Today = " + String(dateFreeTimeDict[startOfDay]!))
 //        for i in 0...daystilllatestdate {
 //
 //         //   print( Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!.description, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! ,startoffreetimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]?.description )
@@ -1201,7 +1179,6 @@ struct MasterClass: View {
                 //print(daystilldue)
             if (!assignment.completed)
             {
-                print(assignment.name)
                 let (subassignments, _) = try bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.timeleft), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
              //   print(assignment.name, daystilldue)
@@ -1300,7 +1277,6 @@ struct MasterClass: View {
                            
                             do {
                                 try self.managedObjectContext.save()
-                                print("Subassignments made")
                             } catch {
                                 print(error.localizedDescription)
                             }
@@ -1514,7 +1490,6 @@ struct ClassesView: View {
                                         }
                                         do {
                                             try self.managedObjectContext.save()
-                                            print("Class deleted")
                                         } catch {
                                             print(error.localizedDescription)
                                         }

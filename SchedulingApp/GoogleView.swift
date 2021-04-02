@@ -159,8 +159,7 @@ struct GoogleView: View {
         if (valstuffity)
         {
             let defaults = UserDefaults.standard
-            print("yay")
-            print(defaults.object(forKey: "savedgoogleclasses") as! [String])
+        //    print(defaults.object(forKey: "savedgoogleclasses") as! [String])
             classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
             classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
         }
@@ -290,9 +289,9 @@ struct GoogleView: View {
                         ForEach(0..<getiterationcounter(), id: \.self) { classityval in
                             HStack {
                                 Button(action:{
-                                    print("hello")
+                                   // print("hello")
                                     self.selectedClass = 2*classityval
-                                    print(self.selectedClass!)
+                                   // print(self.selectedClass!)
                                 }) {
                                     ZStack {
                                        // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(self.checklinkedclass(classval: 2*classityval) ? Color.blue : Color.gray).frame(width: (UIScreen.main.bounds.size.width-30)/2, height: 100)
@@ -307,7 +306,7 @@ struct GoogleView: View {
                                 Button(action:{
                                     print("hello")
                                     self.selectedClass = 2*classityval+1
-                                    print(self.selectedClass!)
+                                    //print(self.selectedClass!)
 
                                 })
                                 {
@@ -377,7 +376,6 @@ struct GoogleView: View {
                     if (googleDelegate.signedIn)
                     {
                     defaults.set(true, forKey: "accessedclassroom")
-                    print("fetching stuff")
                     var partiallist: [(String, String)] = []
                     
                     let service = GTLRClassroomService()
@@ -392,7 +390,6 @@ struct GoogleView: View {
                         for course in stuff1.courses! {
                             if course.courseState == kGTLRClassroom_Course_CourseState_Active {
                                 partiallist.append((course.identifier!, course.name!))
-                                print(course.name!)
                             }
                         }
                         
@@ -401,8 +398,6 @@ struct GoogleView: View {
     //                partiallist = getclasses(service: service)
                     
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
-                        print("ASDFASDFASDJFPIASJFIASPDFJASPFJASDPFJADFAPJADSPFJDSA:FJADSFJDS:FAD")
-                        print(partiallist.count)
                         for val in partiallist
                         {
                             classeslist.append(val.1)
@@ -483,7 +478,6 @@ struct GoogleView: View {
                 else
                 {
                     let defaults = UserDefaults.standard
-                    print("yay")
                     classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
                     classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
                     
@@ -570,7 +564,6 @@ struct GoogleAssignmentsView: View
                         }
                     }
                     assignmentsforclass[classeslist[index]] = vallist
-                    print(vallist)
                     self.refreshID = UUID()
                 })
 

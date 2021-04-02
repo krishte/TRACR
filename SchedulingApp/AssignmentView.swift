@@ -80,7 +80,7 @@ struct IndividualAssignmentFilterView: View {
             VStack {
                 if (!isExpanded) {
                     HStack {
-                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 50, height: 30, alignment: .topLeading).padding(.leading, 5)
+                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 40, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
                         
                         let datedifference = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: assignment.duedate)).day
@@ -177,7 +177,6 @@ struct IndividualAssignmentFilterView: View {
                         if (self.incompleted == true) {
                             if (self.incompletedonce == true) {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                          if (self.deleted == true) {
@@ -202,7 +201,6 @@ struct IndividualAssignmentFilterView: View {
                                  }
                                  do {
                                      try self.managedObjectContext.save()
-                                     print("Assignment completed")
                                  } catch {
                                      print(error.localizedDescription)
                                  }
@@ -221,7 +219,6 @@ struct IndividualAssignmentFilterView: View {
                             if (self.incompletedonce == true)
                             {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                     }
@@ -246,7 +243,6 @@ struct IndividualAssignmentFilterView: View {
     func simpleSuccess() {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
-        print("phone vibrated")
     }
 }
 
@@ -455,7 +451,6 @@ struct GradedAssignmentsView: View {
                             if (self.incompletedonce == true)
                             {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                          if (self.deleted == true) {
@@ -479,7 +474,6 @@ struct GradedAssignmentsView: View {
                                  }
                                  do {
                                      try self.managedObjectContext.save()
-                                     print("Assignment completed")
                                  } catch {
                                      print(error.localizedDescription)
                                  }
@@ -491,7 +485,6 @@ struct GradedAssignmentsView: View {
                         if (self.incompleted == true) {
                             if (self.incompletedonce == true) {
                                 self.incompletedonce = false;
-                                print("incompleted")
                             }
                         }
                     }

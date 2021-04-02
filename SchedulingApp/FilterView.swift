@@ -199,11 +199,9 @@ struct AssignmentsView: View {
        // return Int(self.assignmenttypes.firstIndex(of: self.assignmentlist2[self.getassignmentindex()].type)!)
     }
     func getassignmentindex() -> Int {
-        print(sheetnavigator.selectedassignmentedit)
         for (index, assignment) in assignmentlist2.enumerated() {
             if (assignment.name == sheetnavigator.selectedassignmentedit)
             {
-                print(assignment.name)
                 return index
             }
         }

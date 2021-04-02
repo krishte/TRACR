@@ -187,8 +187,7 @@ struct GoogleView: View {
         if (valstuffity)
         {
             let defaults = UserDefaults.standard
-            print("yay")
-            print(defaults.object(forKey: "savedgoogleclasses") as! [String])
+        //    print(defaults.object(forKey: "savedgoogleclasses") as! [String])
             classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
             classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
         }
@@ -345,7 +344,7 @@ struct GoogleView: View {
 
                             }.buttonStyle(PlainButtonStyle())
                         }
-                }.padding(.horizontal, 10)//.id(refreshID)
+                    }.padding(.horizontal, 10)//.id(refreshID)
                 
 //                    NavigationLink(destination: GoogleAssignmentsView())
 //                    {
@@ -357,6 +356,7 @@ struct GoogleView: View {
                 ScrollView {
                     Text("Google Classroom").font(.largeTitle).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 12)
                     Text("Sign in with your Google Account to link your Google Classroom classes and assignments with TRACR.").font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 8)
+
                     
                     TabView(selection: self.$currentPageGCPreview) {
                         Image("Progress View").resizable().aspectRatio(contentMode: .fit).tag(0)
@@ -368,9 +368,9 @@ struct GoogleView: View {
                             self.currentPageGCPreview = self.currentPageGCPreview < 1 ? self.currentPageGCPreview + 1 : 0
                         }
                     })
-                    
+
                     Spacer()
-                    
+
 //                        Button(action: {
 //                            GIDSignIn.sharedInstance().signIn()
 //                        }) {
@@ -380,14 +380,14 @@ struct GoogleView: View {
 //                                Spacer()
 //                            }.padding(.all, 0).overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.black, lineWidth: 1)).background(Color.white).frame(width: UIScreen.main.bounds.size.width-120, height: 48).padding(.horizontal, 60)
 //                        }
-                    
-                    Button(action: {
-                        GIDSignIn.sharedInstance().signIn()
-                    }) {
-                        Image("Google Sign In Button with Text").resizable().frame(width: 382/1.5, height: 90/1.5).padding(.horizontal, 60).shadow(radius: 3, x: -2, y: 2)
-                    }.buttonStyle(PlainButtonStyle())
-                    
-                    Spacer()
+
+                Button(action: {
+                    GIDSignIn.sharedInstance().signIn()
+                }) {
+                    Image("Google Sign In Button with Text").resizable().frame(width: 382/1.5, height: 90/1.5).padding(.horizontal, 60).shadow(radius: 3, x: -2, y: 2)
+                }.buttonStyle(PlainButtonStyle())
+
+                Spacer()
                 }
             }
         }.navigationTitle("Google Classroom").navigationBarTitleDisplayMode(.inline).frame(width: UIScreen.main.bounds.size.width).toolbar
@@ -424,39 +424,32 @@ struct GoogleView: View {
                 if (googleDelegate.signedIn)
                 {
                 defaults.set(true, forKey: "accessedclassroom")
-                print("fetching stuff")
                 var partiallist: [(String, String)] = []
-                
+
                 let service = GTLRClassroomService()
                 service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
-                
+
                 let coursesquery = GTLRClassroomQuery_CoursesList.query()
 
                 coursesquery.pageSize = 1000
                 service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
                     let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
-
                     for course in stuff1.courses! {
                         if course.courseState == kGTLRClassroom_Course_CourseState_Active {
                             partiallist.append((course.identifier!, course.name!))
-                            print(course.name!)
                         }
                     }
-                    
                 })
-                
-//                partiallist = getclasses(service: service)
-                
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
-                    print("ASDFASDFASDJFPIASJFIASPDFJASPFJASDPFJADFAPJADSPFJDSA:FJADSFJDS:FAD")
-                    print(partiallist.count)
-                    for val in partiallist
-                    {
-                        classeslist.append(val.1)
-                    }
-                    var islinked: [Bool] = []
-                    classeslist = Array(Set(classeslist))
-                    classeslist.sort()
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+                        for val in partiallist
+                        {
+                            classeslist.append(val.1)
+                        }
+                        var islinked: [Bool] = []
+                        classeslist = Array(Set(classeslist))
+                        classeslist.sort()
+
 
                     for val in classeslist
                     {
@@ -468,7 +461,7 @@ struct GoogleView: View {
                             }
                         }
                     }
-                    
+
                     for val in classesidlist
                     {
                         var found = false
@@ -484,7 +477,7 @@ struct GoogleView: View {
                     }
                     var newclasseslist: [String] = []
                     var newclassesidlist: [String] = []
-                    
+
                     for (index, val) in classeslist.enumerated()
                     {
                         if (islinked[index])
@@ -501,14 +494,15 @@ struct GoogleView: View {
                             newclassesidlist.append(classesidlist[index])
                         }
                     }
+
                     classeslist = newclasseslist
                     classesidlist = newclassesidlist
-                    
+
 //                    for _ in classeslist
 //                    {
 //                        classesselected.append(false)
 //                    }
-                    
+
 //                    let arraykewl = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
 //                    for (index, classval) in classeslist.enumerated()
 //                    {
@@ -517,13 +511,9 @@ struct GoogleView: View {
 //                            classesselected[index] = true
 //                        }
 //                    }
-                    
-                    
-                    self.refreshID = UUID()
-                    
-                    
-                }
 
+
+                }
 
                 }
             }
@@ -533,7 +523,7 @@ struct GoogleView: View {
                 print("yay")
                 classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
                 classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
-                
+
                // self.refreshID = UUID()
 
             }
@@ -617,7 +607,6 @@ struct GoogleAssignmentsView: View
                         }
                     }
                     assignmentsforclass[classeslist[index]] = vallist
-                    print(vallist)
                     self.refreshID = UUID()
                 })
 

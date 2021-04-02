@@ -214,7 +214,7 @@ struct SyllabusView: View {
 
     @State var selectedsyllabus: Int = 0
     @State var mainsyllabus: Int = 0
-    var mainsyllabuslist: [String] = ["None", "International Baccalaureate (IB)"]
+    var mainsyllabuslist: [String] = ["None", "International Baccalaureate (IB)", "Hello"]
     @State var isIB: Bool = false
     var syllabuslist: [String] = ["Percentage-based", "Letter-based", "Number-based"]
     var badlettergrades: [String] = ["E", "F"]
@@ -222,119 +222,39 @@ struct SyllabusView: View {
     @State private var gradingschemes: [String] = []
     var goodnumbergrades: [Int] = [4, 5, 6, 7, 8, 9, 10]
     @State var selectedgoodnumbergrade: Int = 0
+    @State var refreshID: UUID = UUID()
     
     @State var MainSyllabusChanged: Bool = false
+    @State var addinggradingscheme: Bool = false
+    @State var showinginfo: Bool = false
+    
 
     
     var body: some View {
         Form {
-            Section(header: Text("Main Syllabus"), footer: Text("Use the International Baccalaureate's Grading Scheme and Subject Choices").font(.footnote))
+            if (showinginfo)
+            {
+                Section
+                {
+                    Text("Selecting an IB syllabus will give you access to IB Statistics for the classes. The 'None' option allows for more flexibility")
+                }
+            }
+            Section(header: Text("Main Syllabus"), footer: Text(mainsyllabus == 1 ? "Use the International Baccalaureate's Subject Choices" : "Hello").font(.footnote))
             {
                 Picker(selection: $mainsyllabus, label: Text("Main Syllabus")) {
                     ForEach(0..<mainsyllabuslist.count) { mainsyllabusindex in
                         Text(mainsyllabuslist[mainsyllabusindex])
                     }
-                }.pickerStyle(DefaultPickerStyle())
+                }.pickerStyle(DefaultPickerStyle()).id(refreshID)
                 
 //                Toggle(isOn: $isIB) {
 //                    Text("International Baccalaureate (IB)")
 //                }
-            }.onChange(of: self.mainsyllabus) { _ in
-                print("sfsf")
-                self.MainSyllabusChanged = true
             }
-            
-            Section
-            {
-                Picker(selection: $selectedsyllabus, label: Text("Grading Scheme")) {
-                    ForEach(0..<syllabuslist.count) {
-                        val in
-                        Text(syllabuslist[val])
-
-
-                    }
-                }.pickerStyle(WheelPickerStyle())
-            }
-            
-            Section
-            {
-
-                if (selectedsyllabus == 1)
-                {
-                    HStack
-                    {
-                        Text("Best Grade")
-                        Spacer()
-                        Text("A").foregroundColor(Color.gray)
-                    }
-                    VStack
-                    {
-                        HStack
-                        {
-                            Text("Worst Grade:")
-                            Spacer()
-                        }
-                        Picker(selection: $selectedbadlettergrade, label: Text("Worst Grade"))
-                        {
-                            ForEach(0..<badlettergrades.count)
-                            {
-                                val in
-                                Text(badlettergrades[val])
-                            }
-                        }.pickerStyle(SegmentedPickerStyle())
-                    }
-                }
-                if (selectedsyllabus == 2)
-                {
-                    HStack
-                    {
-                        Text("Worst Grade")
-                        Spacer()
-                        Text("1").foregroundColor(Color.gray)
-                    }
-                    VStack
-                    {
-                        HStack
-                        {
-                            Text("Best Grade:")
-                            Spacer()
-                        }
-                        Picker(selection: $selectedgoodnumbergrade, label: Text("Best Grade"))
-                        {
-                            ForEach(0..<goodnumbergrades.count)
-                            {
-                                val in
-                                Text(String(goodnumbergrades[val]))
-                            }
-                        }.pickerStyle(WheelPickerStyle())
-                    }
-                }
-            }
-            Section
-            {
-                Button(action:
-                {
-                    if (selectedsyllabus == 0)
-                    {
-                        gradingschemes.append("P")
-                        //print("P")
-                    }
-                    else if (selectedsyllabus == 1)
-                    {
-                        gradingschemes.append("LA-" + badlettergrades[selectedbadlettergrade])
-                      //  print("LA-" + badlettergrades[selectedbadlettergrade])
-                    }
-                    else
-                    {
-                        gradingschemes.append("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
-                        //print("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
-                    }
-                    
-                })
-                {
-                    Text("Save Grading Scheme")
-                }
-            }
+//            .onChange(of: self.mainsyllabus) { _ in
+//                print("sfsf")
+//                self.MainSyllabusChanged = true
+//            }
             Section
             {
                 Text("My Grading Schemes:").font(.title2)
@@ -366,32 +286,148 @@ struct SyllabusView: View {
                         for index in indexSet {
                             gradingschemes.remove(at: index)
                         }
-                      print("Freetime deleted")
                    }
                 }
             }
-        }.navigationTitle("Syllabus").navigationBarTitleDisplayMode(.large).onAppear()
+            Section
+            {
+                Button(action:{
+                    withAnimation(.spring())
+                    {
+                        addinggradingscheme.toggle()
+                    }
+                })
+                {
+                    Text("Add Custom Grading Scheme")
+                }
+            }
+            if (addinggradingscheme)
+            {
+                Section
+                {
+                    Picker(selection: $selectedsyllabus, label: Text("Grading Scheme")) {
+                        ForEach(0..<syllabuslist.count) {
+                            val in
+                            Text(syllabuslist[val])
+
+
+                        }
+                    }.pickerStyle(WheelPickerStyle())
+                }
+                
+                Section
+                {
+
+                    if (selectedsyllabus == 1)
+                    {
+                        HStack
+                        {
+                            Text("Best Grade")
+                            Spacer()
+                            Text("A").foregroundColor(Color.gray)
+                        }
+                        VStack
+                        {
+                            HStack
+                            {
+                                Text("Worst Grade:")
+                                Spacer()
+                            }
+                            Picker(selection: $selectedbadlettergrade, label: Text("Worst Grade"))
+                            {
+                                ForEach(0..<badlettergrades.count)
+                                {
+                                    val in
+                                    Text(badlettergrades[val])
+                                }
+                            }.pickerStyle(SegmentedPickerStyle())
+                        }
+                    }
+                    if (selectedsyllabus == 2)
+                    {
+                        HStack
+                        {
+                            Text("Worst Grade")
+                            Spacer()
+                            Text("1").foregroundColor(Color.gray)
+                        }
+                        VStack
+                        {
+                            HStack
+                            {
+                                Text("Best Grade:")
+                                Spacer()
+                            }
+                            Picker(selection: $selectedgoodnumbergrade, label: Text("Best Grade"))
+                            {
+                                ForEach(0..<goodnumbergrades.count)
+                                {
+                                    val in
+                                    Text(String(goodnumbergrades[val]))
+                                }
+                            }.pickerStyle(WheelPickerStyle())
+                        }
+                    }
+                }
+                Section
+                {
+                    Button(action:
+                    {
+                        if (selectedsyllabus == 0)
+                        {
+                            gradingschemes.append("P")
+                            //print("P")
+                        }
+                        else if (selectedsyllabus == 1)
+                        {
+                            gradingschemes.append("LA-" + badlettergrades[selectedbadlettergrade])
+                          //  print("LA-" + badlettergrades[selectedbadlettergrade])
+                        }
+                        else
+                        {
+                            gradingschemes.append("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
+                            //print("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
+                        }
+                        addinggradingscheme = false
+                    })
+                    {
+                        Text("Save Grading Scheme")
+                    }
+                }
+            }
+
+            }.navigationTitle("Syllabus").navigationBarTitleDisplayMode(.large).onAppear()
         {
             let defaults = UserDefaults.standard
             
             let value = defaults.object(forKey: "savedgradingschemes") as? [String] ?? []
             gradingschemes = value
-            print("Value from store")
-            print(defaults.object(forKey: "savedgradingschemes") as? [String] ?? [])
-         //   print(gradingschemes)
-        //    print(gradingscheme)
+
             let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
             isIB = ibval
-            
-            if MainSyllabusChanged {
-                print("YAH")
-                isIB = mainsyllabus == 1 ? true : false
-                MainSyllabusChanged = false
+            if (ibval)
+            {
+                mainsyllabus = 1
             }
-            
-            else {
-                mainsyllabus = isIB ? 1 : 0
+            else
+            {
+                mainsyllabus = 0
             }
+         //   print(gradingschemes)
+        //    print(gradingscheme)
+//            let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
+//            isIB = ibval
+
+        //    refreshID = UUID()
+//            if MainSyllabusChanged {
+//                print("YAH")
+//                isIB = mainsyllabus == 1 ? true : false
+//                MainSyllabusChanged = false
+//            }
+//
+//            else {
+//                mainsyllabus = isIB ? 1 : 0
+//            }
          //   print(ibval)
            // print(gradingscheme, ibval)
           //  selectedsyllabus = 1
@@ -400,10 +436,17 @@ struct SyllabusView: View {
         {
             let defaults = UserDefaults.standard
 //            isIB = mainsyllabus == 1 ? true : false
+            if (mainsyllabus == 1)
+            {
+                isIB = true
+            }
+            else
+            {
+                isIB = false
+            }
             defaults.set(isIB, forKey: "isIB")
             defaults.set(gradingschemes, forKey: "savedgradingschemes")
-            print("Value stored")
-            print(defaults.object(forKey: "savedgradingschemes") as? [String] ?? [])
+
 //            if (selectedsyllabus == 0)
 //            {
 //                defaults.set("P", forKey: "savedgradingschemes")
@@ -420,6 +463,25 @@ struct SyllabusView: View {
 //                //print("N1-" + String(goodnumbergrades[selectedgoodnumbergrade]))
 //            }
 //            //defaults.set("hello", forKey: "savedbreakvalue")
+        }.toolbar
+        {
+            ToolbarItem(placement: .navigationBarLeading)
+            {
+                Text("")
+            }
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action:{
+                    withAnimation(.spring())
+                    {
+                        showinginfo.toggle()
+                    }
+                })
+                {
+                    Image(systemName: showinginfo ? "info.circle.fill" : "info.circle").resizable().scaledToFit().frame(height: 20)
+                }
+                
+            }
+            
         }
         
     }
@@ -657,7 +719,6 @@ struct SettingsView: View {
                     }.alert(isPresented:$cleardataalert) {
                         Alert(title: Text("Are you sure you want to clear all data?"), message: Text("You cannot undo this operation."), primaryButton: .destructive(Text("Clear All Data")) {
                             self.delete()
-                            print("data cleared")
                         }, secondaryButton: .cancel())
                     }
                 }
@@ -848,7 +909,6 @@ struct DetailBreakView: View {
     @State var breakvalue: Double
     init() {
         let defaults = UserDefaults.standard
-        print(defaults.object(forKey: "savedbreakvalue") as? Int ?? 10)
         let breakval = defaults.object(forKey: "savedbreakvalue") as? Int ?? 10
         _breakvalue = State(initialValue: Double(breakval)/5)
         
@@ -1070,7 +1130,6 @@ struct DetailPreferencesView: View {
             } catch {
                 print(error.localizedDescription)
             }
-            print("Signal Sent.")
         }
     }
     
@@ -1232,8 +1291,6 @@ struct NotificationsView: View {
             
             masterRunning.masterRunningNow = true
 //            masterRunning.onlyNotifications = true
-            print("Signal Sent.")
-            print(masterRunning.onlyNotifications)
         }
                    // }
                // }//.navigationBarItems(leading: Text("H")).navigationTitle("Notifications", displayMode: .inline)

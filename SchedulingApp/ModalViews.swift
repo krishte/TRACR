@@ -75,11 +75,9 @@ struct SelectGoogleAssignmentView: View
             }
             self.selectedDate = foundassignmentdates[selectedgoogleassignment]
          //   refreshID2 = UUID()
-            print("hello")//  print(foundassignmentdates[selectedgoogleassignment].description)
         }
         activeselection = false
 
-        print(activeselection)
         
     }
     
@@ -193,7 +191,6 @@ struct NewGoogleAssignmentModalView: View {
     @ObservedObject var textfieldmanager: TextFieldManager = TextFieldManager(blah: "")
     
     init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
-        print("IMRUNNING")
         self._NewAssignmentPresenting = NewAssignmentPresenting
         formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -465,7 +462,7 @@ struct NewGoogleAssignmentModalView: View {
                     if #available(iOS 14.0, *) {
                         Button(action: {
                                 self.expandedduedate.toggle()
-                            print(selectedDate.description)
+                            
 
                         }) {
                             HStack {
@@ -520,7 +517,6 @@ struct NewGoogleAssignmentModalView: View {
                         {
                             self.createassignmentallowed = false
                         }
-                        print(createassignmentallowed)
                         if self.createassignmentallowed {
                             if (!self.completedassignment)
                             {
@@ -590,7 +586,6 @@ struct NewGoogleAssignmentModalView: View {
                             }
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
-                            print("Signal Sent. asfoij")
                             
 
                             
@@ -1058,7 +1053,6 @@ struct NewAssignmentModalView: View {
                             }
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
-                            print("Signal Sent. asfoij")
                             
                             do {
                                 try self.managedObjectContext.save()
@@ -1118,7 +1112,8 @@ extension String {
 struct NewClassModalView: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.managedObjectContext) var managedObjectContext
-    
+    @EnvironmentObject var googleDelegate: GoogleDelegate
+
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
     
     var classlist: FetchedResults<Classcool>
@@ -1154,6 +1149,9 @@ struct NewClassModalView: View {
     @State var customcolor1: Color = Color("one")
     @State var customcolor2: Color = Color("one-b")
     @State var customcolorchosen: Bool = false
+    @State var linkableclasses = [(String, String)]()
+    @State var linkingtogc: Bool = false
+    @State var selectedgoogleclassroomclass = 0
 
     var body: some View {
         NavigationView {
@@ -1225,6 +1223,29 @@ struct NewClassModalView: View {
                     else
                     {
                         TextField("Class Name", text: self.$classnamenonib).keyboardType(.default)
+                    }
+                }
+                Section
+                {
+                    Button(action:{
+                        withAnimation(.spring())
+                        {
+                            linkingtogc.toggle()
+                        }
+                    })
+                    {
+                        Text("Link to a Google Classroom class")
+                    }
+                    if (linkingtogc && linkableclasses.count > 0)
+                    {
+                        Picker(selection: $selectedgoogleclassroomclass, label: Text("Select GC Class"))
+                        {
+                            ForEach(0 ..< linkableclasses.count, id: \.self)
+                            {
+                                index in
+                                Text(linkableclasses[index].1)
+                            }
+                        }
                     }
                 }
                 
@@ -1449,6 +1470,10 @@ struct NewClassModalView: View {
                             newClass.originalname = testname
                             newClass.isTrash = false
                             newClass.googleclassroomid = ""
+                            if (linkingtogc && linkableclasses.count > 0)
+                            {
+                                newClass.googleclassroomid = linkableclasses[selectedgoogleclassroomclass].0
+                            }
                             if (gradingschemelist.count > 0)
                             {
                                 newClass.gradingscheme = self.gradingschemelist[self.gradingscheme]
@@ -1522,7 +1547,6 @@ struct NewClassModalView: View {
                         }
                             
                         else {
-                            print("Class with Same Name Exists; Change Name")
                             self.showingAlert = true
                         }
                     }) {
@@ -1539,6 +1563,47 @@ struct NewClassModalView: View {
             let gradingscheme2 = defaults.object(forKey: "savedgradingschemes") as? [String] ?? []
             self.gradingschemelist = gradingscheme2
             
+            GIDSignIn.sharedInstance().restorePreviousSignIn()
+            if (googleDelegate.signedIn)
+            {
+               // defaults.set(true, forKey: "accessedclassroom")
+                var partiallist: [(String, String)] = []
+                
+                let service = GTLRClassroomService()
+                service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
+                
+                let coursesquery = GTLRClassroomQuery_CoursesList.query()
+
+                coursesquery.pageSize = 1000
+                service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
+                    let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
+
+                    for course in stuff1.courses! {
+                        if course.courseState == kGTLRClassroom_Course_CourseState_Active {
+                            var found = false
+                            for classity in classlist
+                            {
+                                if (classity.googleclassroomid == course.identifier!)
+                                {
+                                    found = true
+                                }
+                            }
+                            if (!found)
+                            {
+                                partiallist.append((course.identifier!, course.name!))
+                            }
+                        }
+                    }
+                    
+                })
+                
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+                    linkableclasses = partiallist
+//                    print(linkableclasses)
+
+                }
+            
+            }
         }
     }
     func getNextColor(currentColor: String) -> Color {
@@ -2027,7 +2092,6 @@ struct NewFreetimeModalView: View {
                                         if ((setstartminutes > foundstartminutes && setstartminutes < foundendminutes) || (setendminutes > foundstartminutes && setendminutes < foundendminutes) || (setstartminutes < foundstartminutes && setendminutes > foundendminutes) || (setstartminutes == foundstartminutes && setendminutes == foundendminutes))
                                         {
                                             self.createfreetimeallowed = false
-                                            print(freetime.startdatetime.description, freetime.enddatetime.description)
                                             break
                                         }
                                     }
@@ -2133,19 +2197,16 @@ struct NewFreetimeModalView: View {
 
                                 do {
                                     try self.managedObjectContext.save()
-                                    print("object saved")
                                 } catch {
                                     print(error.localizedDescription)
                                 }
                                 
                                 masterRunning.masterRunningNow = true
-                                print("Signal Sent.")
                                 
                                 self.NewFreetimePresenting = false
                             }
                             else
                             {
-                                print("Overlapping free times")
                                 self.showingalert = true
                             }
                         }) {
@@ -2252,7 +2313,6 @@ struct FreetimeDetailView: View {
                              print(error.localizedDescription)
                          }
 
-                        print("Freetime deleted")
                     }
                 }
                 Button(action: {self.selectDeselect("Tuesday")}) {
@@ -2283,7 +2343,6 @@ struct FreetimeDetailView: View {
                               print(error.localizedDescription)
                           }
                         
-                        print("Freetime deleted")
                      }
                 }
                 Button(action: {self.selectDeselect("Wednesday")}) {
@@ -2314,7 +2373,6 @@ struct FreetimeDetailView: View {
                              print(error.localizedDescription)
                          }
 
-                        print("Freetime deleted")
                     }
                 }
                 Button(action: {self.selectDeselect("Thursday")}) {
@@ -2345,7 +2403,6 @@ struct FreetimeDetailView: View {
                              print(error.localizedDescription)
                          }
                         
-                        print("Freetime deleted")
                     }
                 }
                 Button(action: {self.selectDeselect("Friday")}) {
@@ -2376,7 +2433,6 @@ struct FreetimeDetailView: View {
                              print(error.localizedDescription)
                          }
                         
-                        print("Freetime deleted")
                     }
                 }
             }
@@ -2408,7 +2464,6 @@ struct FreetimeDetailView: View {
                              print(error.localizedDescription)
                          }
                         
-                        print("Freetime deleted")
                     }
                 }
                 
@@ -2440,7 +2495,6 @@ struct FreetimeDetailView: View {
                              print(error.localizedDescription)
                          }
                         
-                        print("Freetime deleted")
                     }
                 }
                 Spacer()
@@ -2473,13 +2527,11 @@ struct FreetimeDetailView: View {
                              print(error.localizedDescription)
                          }
                         
-                        print("Freetime deleted")
                     }
                 }
             }
         }.onDisappear(perform: {
             masterRunning.masterRunningNow = true
-            print("Signal Sent.")
         }).animation(.spring()).navigationBarItems(trailing: Button(action: {
             if (self.selection.count < 8) {
                 for dayname in self.daylist {
@@ -2518,7 +2570,6 @@ struct NewGradeModalView: View {
     {
      //   print(classfilter)
       //  print(classeslist[classfilter].originalname)
-        print(classfilter)
         var gradableAssignments: [Int] = []
         for (index, assignment) in assignmentlist.enumerated() {
             if (classfilter == -1)
@@ -2653,8 +2704,7 @@ struct NewGradeModalView: View {
                 }
                 Section {
                     Button(action: {
-                        print(self.selectedassignment)
-                        print(self.getgradableassignments())
+          
                       //  print(self.getgradableassignments()[4])
                         let value = self.getgradableassignments()[self.selectedassignment]
                         for assignment in self.assignmentlist {
@@ -2814,7 +2864,6 @@ struct EditAssignmentModalView: View {
                         self.minutes = 0
                       //  print(!self.iscompleted)
                     }
-                    print(assignmenttypeval)
                 }
                 //Text(String(assignmenttype))
                 if (self.iscompleted)
@@ -2982,7 +3031,6 @@ struct EditAssignmentModalView: View {
                             self.assignmentslist[self.selectedassignment].name = self.nameofassignment
                             self.assignmentslist[self.selectedassignment].duedate = self.selectedDate
                             self.assignmentslist[self.selectedassignment].type = self.assignmenttypes2[self.assignmenttypeval]
-                            print(self.hours, self.minutes)
                             let change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
                             self.assignmentslist[self.selectedassignment].timeleft += change
                             self.assignmentslist[self.selectedassignment].totaltime += change
@@ -3043,13 +3091,11 @@ struct EditAssignmentModalView: View {
                             }
 
                             masterRunning.masterRunningNow = true
-                            print("Signal Sent.")
                             
                             self.NewAssignmentPresenting = false
                         }
                      
                         else {
-                            print("Assignment with Same Name Exists; Change Name")
                             self.showingAlert = true
                         }
                     }) {

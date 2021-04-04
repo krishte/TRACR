@@ -1234,7 +1234,12 @@ struct NewClassModalView: View {
                         }
                     })
                     {
-                        Text("Link to a Google Classroom class")
+                        HStack
+                        {
+                            Text("Link to a Google Classroom class")
+                            Spacer()
+                            Image(systemName: linkingtogc ? "minus" : "plus")//.resizable().aspectRatio(.fit)
+                        }
                     }
                     if (linkingtogc && linkableclasses.count > 0)
                     {

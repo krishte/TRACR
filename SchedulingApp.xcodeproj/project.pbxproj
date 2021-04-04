@@ -33,7 +33,6 @@
 		56E8187E25C9F36300AB7422 /* Pods_SchedulingApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 121F684FEEDDBAA1DD7D231E /* Pods_SchedulingApp.framework */; };
 		56FD9B0524BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */; };
 		56FD9B0624BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0424BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift */; };
-		CF4214292615E482007EEA78 /* Roboto-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF4214282615E482007EEA78 /* Roboto-Medium.ttf */; };
 		CF84EBC724DC65FD00C5DDEF /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF84EBC624DC65FD00C5DDEF /* SettingsView.swift */; };
 		CFADF84424D1D249001A92D5 /* ModalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFADF84324D1D249001A92D5 /* ModalViews.swift */; };
 		CFADF84624D1D45E001A92D5 /* AssignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFADF84524D1D45E001A92D5 /* AssignmentView.swift */; };
@@ -97,7 +96,6 @@
 		89F9AA62C5C65484364DA65E /* Pods-SchedulingApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchedulingApp.release.xcconfig"; path = "Target Support Files/Pods-SchedulingApp/Pods-SchedulingApp.release.xcconfig"; sourceTree = "<group>"; };
 		99D4D5C010F241A24EF2245A /* Pods_SchedulingApp_SchedulingAppUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SchedulingApp_SchedulingAppUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8A36527D173EFD02F5953C0 /* Pods-SchedulingApp-SchedulingAppUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SchedulingApp-SchedulingAppUITests.debug.xcconfig"; path = "Target Support Files/Pods-SchedulingApp-SchedulingAppUITests/Pods-SchedulingApp-SchedulingAppUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		CF4214282615E482007EEA78 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Roboto-Medium.ttf"; path = "../../../../Downloads/Roboto/Roboto-Medium.ttf"; sourceTree = "<group>"; };
 		CF84EBC624DC65FD00C5DDEF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		CFADF84324D1D249001A92D5 /* ModalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModalViews.swift; sourceTree = "<group>"; };
 		CFADF84524D1D45E001A92D5 /* AssignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentView.swift; sourceTree = "<group>"; };
@@ -245,7 +243,6 @@
 		CF4214222615E21B007EEA78 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				CF4214282615E482007EEA78 /* Roboto-Medium.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -366,7 +363,6 @@
 			files = (
 				CFDB39E324B8845A0055C48A /* Colors.xcassets in Resources */,
 				561880B324AB4A8600558F29 /* Preview Assets.xcassets in Resources */,
-				CF4214292615E482007EEA78 /* Roboto-Medium.ttf in Resources */,
 				CFDB3AA524BF4BE00055C48A /* LaunchScreen.storyboard in Resources */,
 				561880B024AB4A8600558F29 /* Assets.xcassets in Resources */,
 			);

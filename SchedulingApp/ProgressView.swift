@@ -979,66 +979,68 @@ struct ProgressView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .center )
                     {
-                        TabView(selection: $selectedGraphClass)
-                        {
-                            ForEach(classlist)
+                        if (classlist.count > 0) {
+                            TabView(selection: $selectedGraphClass)
                             {
-                                classity in
-                                if (!classity.isTrash)
+                                ForEach(classlist)
                                 {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                            .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
-                                            .frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
-                                            //.padding(5)
-                                        
-                                        VStack {
-                                            HStack {
-                                                Rectangle().frame(width:(UIScreen.main.bounds.size.width-40), height: 1).padding(.top, 15).padding(.leading, 20)
-                                                Spacer()
-                                            }
-                                            Spacer()
-                                            HStack {
-                                                Rectangle().frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.bottom, 15).padding(.leading, 20)
-                                                Spacer()
-                                            }
-             
-                                        }.frame(height: 250)
-             
-                                        HStack {
-                                            Spacer()
-                                            VStack {
-                                                Spacer()
-                                                Rectangle().frame(width: 1, height: 220).padding(.bottom, 15).padding(.trailing, 40)
-                                            }
-                                        }.frame(height: 250)
-                                        
-                                        ForEach(0..<getloopnumber(classity: classity)) {
-                                            value in
-                                            VStack {
-                                                Spacer()
-                                                HStack {
-                                                    Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1)).opacity(0.3)
-                                                    Spacer()
-                                                }
-                                            }
-                                            VStack {
-                                                Spacer()
-                                                HStack {
-                                                    Spacer()
-                                                    Text(gettextval(value2: value, classity: classity)).font(.system(size: 12)).padding(.trailing, getrightpadding(classity: classity)).padding(.bottom, (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1) - 5)
-                                                }
-                                            }
-                                        }//.id(refreshID)
-
-           
-                                        Line(classcool: classity)
+                                    classity in
+                                    if (!classity.isTrash)
+                                    {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                                .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
+                                                .frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
+                                                //.padding(5)
                                             
+                                            VStack {
+                                                HStack {
+                                                    Rectangle().frame(width:(UIScreen.main.bounds.size.width-40), height: 1).padding(.top, 15).padding(.leading, 20)
+                                                    Spacer()
+                                                }
+                                                Spacer()
+                                                HStack {
+                                                    Rectangle().frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.bottom, 15).padding(.leading, 20)
+                                                    Spacer()
+                                                }
+                 
+                                            }.frame(height: 250)
+                 
+                                            HStack {
+                                                Spacer()
+                                                VStack {
+                                                    Spacer()
+                                                    Rectangle().frame(width: 1, height: 220).padding(.bottom, 15).padding(.trailing, 40)
+                                                }
+                                            }.frame(height: 250)
+                                            
+                                            ForEach(0..<getloopnumber(classity: classity)) {
+                                                value in
+                                                VStack {
+                                                    Spacer()
+                                                    HStack {
+                                                        Rectangle().fill(Color.black).frame(width: (UIScreen.main.bounds.size.width-40), height: 1).padding(.leading, 20).padding(.bottom, 15 + (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1)).opacity(0.3)
+                                                        Spacer()
+                                                    }
+                                                }
+                                                VStack {
+                                                    Spacer()
+                                                    HStack {
+                                                        Spacer()
+                                                        Text(gettextval(value2: value, classity: classity)).font(.system(size: 12)).padding(.trailing, getrightpadding(classity: classity)).padding(.bottom, (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1) - 5)
+                                                    }
+                                                }
+                                            }//.id(refreshID)
 
-                                    }.tag(getclassindex(classity: classity)).id(refreshID)
+               
+                                            Line(classcool: classity)
+                                                
+
+                                        }.tag(getclassindex(classity: classity)).id(refreshID)
+                                    }
                                 }
-                            }
-                        }.tabViewStyle(PageTabViewStyle()).frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
+                            }.tabViewStyle(PageTabViewStyle()).frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
+                        }
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)

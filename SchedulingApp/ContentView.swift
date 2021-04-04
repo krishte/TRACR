@@ -95,6 +95,8 @@ struct ContentView: View {
         }
     }
     
+    
+    //every time new update, create new userdefaultsvar for that update. If false, recreate userdefaultsvars and core data safely (with whatever updated properties)
     func initialize() {
         let defaults = UserDefaults.standard
         

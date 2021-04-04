@@ -240,6 +240,10 @@ struct GoogleView: View {
     }
     func getiterationcounter() -> Int
     {
+        if (classeslist.count == 0)
+        {
+            return 10
+        }
         if (classeslist.count % 2 == 0)
         {
             return classeslist.count/2
@@ -308,41 +312,56 @@ struct GoogleView: View {
                     }//.id(refreshID)
 
                     ForEach(0..<getiterationcounter(), id: \.self) { classityval in
-                        HStack {
-                            Button(action:{
-                                print("hello")
-                                self.selectedClass = 2*classityval
-                                print(self.selectedClass!)
-                            }) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: 2*classityval)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
-                                        
-                                    Text(classeslist[2*classityval]).font(.system(size: 18)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80, alignment: .bottomLeading).lineLimit(2)
-                                            .allowsTightening(true).padding(.bottom, 6)
-                                }
-                            }.buttonStyle(PlainButtonStyle())
-                            //need to add check if odd number of google classes without type-check error
-                            Spacer()
-                    
-                            Button(action:{
-                                print("hello")
-                                self.selectedClass = 2*classityval+1
-                                print(self.selectedClass!)
-
-                            })
+                        if (classeslist.count == 0)
+                        {
+                            HStack
                             {
-                                ZStack {
-                                    let n = 2*classityval+1
-                                    if (n < classesidlist.count) {
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: n)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
+                                RoundedRectangle(cornerRadius: 7, style: .continuous).rotationEffect(Angle.degrees(10.0))
+                                    .animation(Animation.easeInOut(duration: 0.19).repeatForever(autoreverses: true))
+                                    .rotationEffect(Angle.degrees(-10.0))
+                             
+                                    Spacer()
+                                RoundedRectangle(cornerRadius: 7, style: .continuous).fill(Color("CharansOCD")).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2).frame(height: 80)
+                            }
+                        }
+                        else
+                        {
+                            HStack {
+                                Button(action:{
+                                    print("hello")
+                                    self.selectedClass = 2*classityval
+                                    print(self.selectedClass!)
+                                }) {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: 2*classityval)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
                                             
-                                        Text(classeslist[n < classeslist.count ? n : 0]).font(.system(size: 18)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80, alignment: .bottomLeading).lineLimit(2)
+                                        Text(classeslist[2*classityval]).font(.system(size: 18)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80, alignment: .bottomLeading).lineLimit(2)
                                                 .allowsTightening(true).padding(.bottom, 6)
-//                                        }.frame(height: 86)
                                     }
-                                }//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
+                                }.buttonStyle(PlainButtonStyle())
+                                //need to add check if odd number of google classes without type-check error
+                                Spacer()
+                        
+                                Button(action:{
+                                    print("hello")
+                                    self.selectedClass = 2*classityval+1
+                                    print(self.selectedClass!)
 
-                            }.buttonStyle(PlainButtonStyle())
+                                })
+                                {
+                                    ZStack {
+                                        let n = 2*classityval+1
+                                        if (n < classesidlist.count) {
+                                            RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: n)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
+                                                
+                                            Text(classeslist[n < classeslist.count ? n : 0]).font(.system(size: 18)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80, alignment: .bottomLeading).lineLimit(2)
+                                                    .allowsTightening(true).padding(.bottom, 6)
+    //                                        }.frame(height: 86)
+                                        }
+                                    }//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)
+
+                                }.buttonStyle(PlainButtonStyle())
+                            }
                         }
                     }.padding(.horizontal, 10)//.id(refreshID)
                 

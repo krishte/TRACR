@@ -162,6 +162,98 @@ struct DetailGoogleView: View
     }
 }
 
+struct GCLoadingView: View {
+    @State var dummytogglevar: Bool = true
+
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
+    var body: some View {
+        HStack {
+            ZStack {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD"), Color("CharansOCD twin")]), startPoint: .leading, endPoint: .trailing))
+                    .shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2).frame(height: 80)
+                
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD twin"), Color("CharansOCD")]), startPoint: .leading, endPoint: .trailing))
+                    .opacity(self.dummytogglevar ? 0.0 : 1.0)
+                    .animation(Animation.easeInOut(duration: 0.78).repeatForever(autoreverses: true))
+                
+                //text thing
+                VStack(alignment: .leading, spacing: 6) {
+                    Spacer()
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text twin"), Color("CharansOCD text")]), startPoint: .leading, endPoint: .trailing))
+                        
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text"), Color("CharansOCD text twin")]), startPoint: .leading, endPoint: .trailing))
+                            .opacity(self.dummytogglevar ? 0.0 : 1.0)
+                            .animation(Animation.easeInOut(duration: 0.78).repeatForever(autoreverses: true))
+                    }
+                    .frame(width: (UIScreen.main.bounds.size.width-140)/2, height: 19)
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text twin"), Color("CharansOCD text")]), startPoint: .leading, endPoint: .trailing))
+                        
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text"), Color("CharansOCD text twin")]), startPoint: .leading, endPoint: .trailing))
+                            .opacity(self.dummytogglevar ? 0.0 : 1.0)
+                            .animation(Animation.easeInOut(duration: 0.78).repeatForever(autoreverses: true))
+                    }
+                    .frame(width: (UIScreen.main.bounds.size.width-80)/2, height: 19)
+                    .padding(.bottom, 6).padding(.leading, 0)
+                }
+            }
+         
+            Spacer()
+            
+            ZStack {
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD"), Color("CharansOCD twin")]), startPoint: .leading, endPoint: .trailing))
+                    .shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2).frame(height: 80)
+                
+                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                    .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD twin"), Color("CharansOCD")]), startPoint: .leading, endPoint: .trailing))
+                    .opacity(self.dummytogglevar ? 0.0 : 1.0)
+                    .animation(Animation.easeInOut(duration: 0.78).repeatForever(autoreverses: true))
+                
+                //text thing
+                VStack(alignment: .leading, spacing: 6) {
+                    Spacer()
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text twin"), Color("CharansOCD text")]), startPoint: .leading, endPoint: .trailing))
+                        
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text"), Color("CharansOCD text twin")]), startPoint: .leading, endPoint: .trailing))
+                            .opacity(self.dummytogglevar ? 0.0 : 1.0)
+                            .animation(Animation.easeInOut(duration: 0.78).repeatForever(autoreverses: true))
+                    }
+                    .frame(width: (UIScreen.main.bounds.size.width-140)/2, height: 19)
+                    
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text twin"), Color("CharansOCD text")]), startPoint: .leading, endPoint: .trailing))
+                        
+                        RoundedRectangle(cornerRadius: 5, style: .continuous)
+                            .fill(LinearGradient(gradient: Gradient(colors: [Color("CharansOCD text"), Color("CharansOCD text twin")]), startPoint: .leading, endPoint: .trailing))
+                            .opacity(self.dummytogglevar ? 0.0 : 1.0)
+                            .animation(Animation.easeInOut(duration: 0.78).repeatForever(autoreverses: true))
+                    }
+                    .frame(width: (UIScreen.main.bounds.size.width-80)/2, height: 19)
+                    .padding(.bottom, 6).padding(.leading, 0)
+                }
+            }
+        }.onAppear {
+            self.dummytogglevar = false
+        }
+    }
+}
+
 
 struct GoogleView: View {
     @EnvironmentObject var googleDelegate: GoogleDelegate
@@ -290,7 +382,7 @@ struct GoogleView: View {
     
     @State var currentPageGCPreview = 0
     let GCtimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
-    
+        
     var body: some View {
         VStack {
             if googleDelegate.signedIn {
@@ -314,15 +406,7 @@ struct GoogleView: View {
                     ForEach(0..<getiterationcounter(), id: \.self) { classityval in
                         if (classeslist.count == 0)
                         {
-                            HStack
-                            {
-                                RoundedRectangle(cornerRadius: 7, style: .continuous).rotationEffect(Angle.degrees(10.0))
-                                    .animation(Animation.easeInOut(duration: 0.19).repeatForever(autoreverses: true))
-                                    .rotationEffect(Angle.degrees(-10.0))
-                             
-                                    Spacer()
-                                RoundedRectangle(cornerRadius: 7, style: .continuous).fill(Color("CharansOCD")).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2).frame(height: 80)
-                            }
+                            GCLoadingView()
                         }
                         else
                         {

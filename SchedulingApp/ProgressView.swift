@@ -979,12 +979,7 @@ struct ProgressView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .center )
                     {
-<<<<<<< HEAD
                         if (classlist.count > 0) {
-=======
-                        if (classlist.count > 0)
-                        {
->>>>>>> 9823c65d128a06f19a2d82b59577234d488d0931
                             TabView(selection: $selectedGraphClass)
                             {
                                 ForEach(classlist)

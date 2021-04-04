@@ -9,8 +9,6 @@
 import Foundation
 import UIKit
 import SwiftUI
-import GoogleSignIn
-import GoogleAPIClientForREST
  
 extension Calendar {
     static let gregorian = Calendar(identifier: .gregorian)
@@ -1101,52 +1099,52 @@ struct HomeBodyView: View {
             
 
                         ZStack {
-                            ZStack {
-                                if (subassignmentlist.count > 0) {
-                                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: selectedColor.contains("rgbcode") ? [GetColorFromRGBCode(rgbcode: selectedColor, number: 1), GetColorFromRGBCode(rgbcode: selectedColor, number: 2)] : [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
-                                }
-                                
-                                
-                                else {
-                                    RoundedRectangle(cornerRadius: 0, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("thirteen"), Color("thirteen-b")]), startPoint: .leading, endPoint: .trailing))
-                                }
+                        ZStack {
+                            if (subassignmentlist.count > 0) {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: selectedColor.contains("rgbcode") ? [GetColorFromRGBCode(rgbcode: selectedColor, number: 1), GetColorFromRGBCode(rgbcode: selectedColor, number: 2)] : [getNextColor(currentColor: selectedColor), Color(selectedColor)]), startPoint: .leading, endPoint: .trailing))
+                            }
+                            
+                            
+                            else {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("thirteen"), Color("thirteen-b")]), startPoint: .leading, endPoint: .trailing))
+                            }
 
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        if (subassignmentlist.count == 0) {
-                                            Text("No Upcoming Tasks").font(.system(size: 19))
-                                        }
-                                        else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
-                                            Text("No Upcoming Tasks").font(.system(size: 19))
-                                        }
-                                        else {
-                                            Text("Coming Up:").fontWeight(.semibold)//.animation(.none)
-                                            Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading)//.animation(.none)
-
-                                            Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
-                                            Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
-                                        }
-                                    }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150)//.animation(.none)
-
-                                    if self.subassignmentassignmentname != "" {
-                                        Spacer().frame(width: 10)
-                                        Divider().frame(width: 1).background(Color.black)
-                                        Spacer().frame(width: 10)
-                                        VStack(alignment: .leading) {
-                                            ForEach(self.assignmentlist) { assignment in
-                                                if (assignment.name == self.subassignmentassignmentname) {
-                                                    Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 25, alignment: .topLeading)
-                                                    Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12)).frame(height:15)
-                                                    Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
-                                                    UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
-                                                }
-                                            }
-                                        }.frame(width: 150)
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    if (subassignmentlist.count == 0) {
+                                        Text("No Upcoming Tasks").font(.system(size: 19))
                                     }
-                                }.padding(10)
-                                
+                                    else if (self.getsubassignment() == -1 || self.upcomingDisplayTime() == "No Upcoming Subassignments") {
+                                        Text("No Upcoming Tasks").font(.system(size: 19))
+                                    }
+                                    else {
+                                        Text("Coming Up:").fontWeight(.semibold)//.animation(.none)
+                                        Text(self.upcomingDisplayTime()).frame(width: self.subassignmentassignmentname == "" ? 200: 150, height:30, alignment: .topLeading)//.animation(.none)
 
-                            }.frame(width: UIScreen.main.bounds.size.width, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
+                                        Text(subassignmentlist[self.getsubassignment()].assignmentname).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(height:20)
+                                        Text(timeformatter.string(from: subassignmentlist[self.getsubassignment()].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[self.getsubassignment()].enddatetime)).font(.system(size: 15)).frame(height:20)
+                                    }
+                                }.frame(width:self.subassignmentassignmentname == "" ? UIScreen.main.bounds.size.width-60:150)//.animation(.none)
+
+                                if self.subassignmentassignmentname != "" {
+                                    Spacer().frame(width: 10)
+                                    Divider().frame(width: 1).background(Color.black)
+                                    Spacer().frame(width: 10)
+                                    VStack(alignment: .leading) {
+                                        ForEach(self.assignmentlist) { assignment in
+                                            if (assignment.name == self.subassignmentassignmentname) {
+                                                Text(assignment.name).font(.system(size: 15)).fontWeight(.bold).multilineTextAlignment(.leading).lineLimit(nil).frame(width: 150, height: 25, alignment: .topLeading)
+                                                Text("Due Date: " + self.shortdateformatter.string(from: assignment.duedate)).font(.system(size: 12)).frame(height:15)
+                                                Text("Type: " + assignment.type).font(.system(size: 12)).frame(height:15)
+                                                UpcomingSubassignmentProgressBar(assignment: assignment).frame(height:10)
+                                            }
+                                        }
+                                    }.frame(width: 150)
+                                }
+                            }.padding(10)
+                            
+
+                        }.frame(width: UIScreen.main.bounds.size.width+20, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
                             HStack {
 
                                 Spacer()
@@ -1162,11 +1160,11 @@ struct HomeBodyView: View {
                                     }
                                 }) {
                                     ZStack {
-                                        RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 2.5, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 15)
-                                        Image(systemName: "chevron.up").resizable().aspectRatio(contentMode: .fit).frame(width: 8).foregroundColor(colorScheme == .light ? Color.white : Color.black)
+                                        RoundedRectangle(cornerRadius: self.hidingupcoming ? 2.5 : 0, style: .continuous).fill(Color.blue).frame(width: 15, height: self.hidingupcoming ? 15 : 60)
+                                        Image(systemName: "chevron.compact.right").resizable().frame(width: 4, height: self.hidingupcoming ? 8 : 30).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                                     }
-                                }.rotationEffect(Angle(degrees: self.hidingupcoming ? 180 : 0), anchor: .center).animation(.spring()).padding(.trailing, 15)
-                            }.padding(.top, self.hidingupcoming ? -90 : -45)
+                                }.rotationEffect(Angle(degrees: self.hidingupcoming ? 90 : 0), anchor: .top).animation(.spring())
+                            }.padding(.top, self.hidingupcoming ? -50 : 0)
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
                                                     
                 VStack {
@@ -1800,8 +1798,6 @@ enum AlertView {
 struct HomeView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-     @EnvironmentObject var googleDelegate: GoogleDelegate
-
  
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
@@ -1835,7 +1831,6 @@ struct HomeView: View {
     @ObservedObject var sheetNavigator = SheetNavigator()
     @State var showpopup: Bool = false
     @State var widthAndHeight: CGFloat = 50
-    @State var countnewassignments: Int = 0
     
     init() {
         let defaults = UserDefaults.standard
@@ -1865,7 +1860,7 @@ struct HomeView: View {
         }
         else
         {
-            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+           NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
 
         }
     }
@@ -1895,14 +1890,12 @@ struct HomeView: View {
                                                 self.sheetNavigator.modalView = .assignment
                                                 self.NewSheetPresenting = true
 //                                                self.NewAssignmentPresenting = true
-                                           //     print(self.sheetNavigator.modalView)
                                             }
                                             else
                                             {
                                                 self.sheetNavigator.alertView = .noclass
                                                 self.NewAlertPresenting = true
                                             }
-                                            countnewassignments = 0
                                             
                                         })
                                         {
@@ -1916,24 +1909,8 @@ struct HomeView: View {
                                                     //.padding(.bottom, 20).padding(.trailing, 100)
                                                  // .frame(width: widthAndHeight, height: widthAndHeight)
                                                     .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
-                                                if (countnewassignments > 0)
-                                                {
-                                                    VStack
-                                                    {
-                                                        HStack
-                                                        {
-                                                            Spacer()
-                                                            ZStack
-                                                            {
-                                                                Circle().fill(Color.red).frame(width: 15, height: 15)
-                                                                Text(String(countnewassignments)).foregroundColor(Color.white).font(.system(size: 10)).frame(width: 15, height: 15)
-                                                            }.offset(x: 5, y: -5)
-                                                        }
-                                                        Spacer()
-                                                    }
-                                                }
                                               }.frame(width: widthAndHeight, height: widthAndHeight)
-                                        }.offset(x: -70, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1)
+                                        }.offset(x: -70, y: 10).shadow(radius: 5)
                                         Button(action:
                                         {
                                             self.sheetNavigator.modalView = .classity
@@ -1948,20 +1925,10 @@ struct HomeView: View {
                                                   .frame(width: widthAndHeight, height: widthAndHeight)
                                                 Image(systemName: "folder")
                                                   .resizable().scaledToFit()
-
+                                               //   .aspectRatio(contentMode: .fit)
+                                                    //.padding(.bottom, 20).padding(.trailing, 100)
+                                                 // .frame(width: widthAndHeight, height: widthAndHeight)
                                                     .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
-                                                if (classlist.count == 0)
-                                                {
-                                                    VStack
-                                                    {
-                                                        HStack
-                                                        {
-                                                            Spacer()
-                                                            Circle().fill(Color.red).frame(width: 15, height: 15).offset(x: 5, y: -5)
-                                                        }
-                                                        Spacer()
-                                                    }
-                                                }
                                               }.frame(width: widthAndHeight, height: widthAndHeight)
                                         }.offset(x: -130, y: 10).shadow(radius: 5)
 
@@ -1991,7 +1958,7 @@ struct HomeView: View {
                                                  // .frame(width: widthAndHeight, height: widthAndHeight)
                                                     .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
                                               }.frame(width: widthAndHeight, height: widthAndHeight)
-                                        }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1)
+                                        }.offset(x: -190, y: 10).shadow(radius: 5)
                                     }.transition(.scale)
                                   }
                                 
@@ -2058,69 +2025,6 @@ struct HomeView: View {
             self.showingSettingsView = false
             defaults.set(self.uniformlistshows, forKey: "savedtoggleview")
             self.showpopup = false
-        }.onAppear() {
-            let defaults = UserDefaults.standard
-            let lastlauncheddate = defaults.object(forKey: "lastlauncheddate") as? Date ?? Date(timeIntervalSince1970: 0)
-         //   let lastlauncheddate = Date(timeIntervalSince1970: 0)
-
-    
-        //    GIDSignIn.sharedInstance().restorePreviousSignIn()
-            countnewassignments = 0
-    
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
-                print(googleDelegate.signedIn)
-    
-    
-                if (googleDelegate.signedIn)
-                {
-                    print("kewl")
-                    var idlist: [String] = []
-                    for classity in classlist
-                    {
-                        if (classity.googleclassroomid != "")
-                        {
-                            idlist.append(classity.googleclassroomid)
-                        }
-                    }
-                    print(idlist)
-                    let service = GTLRClassroomService()
-                    service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
-    
-                        for idiii in idlist {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
-                                let assignmentsquery = GTLRClassroomQuery_CoursesCourseWorkList.query(withCourseId: idiii)
-                                //let workingdate = Date(timeIntervalSinceNow: -3600*24*7)
-                                let dayformatter = DateFormatter()
-                                let monthformatter = DateFormatter()
-                                let yearformatter = DateFormatter()
-                                yearformatter.dateFormat = "yyyy"
-                                monthformatter.dateFormat = "MM"
-                                dayformatter.dateFormat = "dd"
-                                assignmentsquery.pageSize = 1000
-                                service.executeQuery(assignmentsquery, completionHandler: {(ticket, stuff, error) in
-                                    let assignmentsforid = stuff as! GTLRClassroom_ListCourseWorkResponse
-    
-                                    if assignmentsforid.courseWork != nil {
-                                        for assignment in assignmentsforid.courseWork! {
-                                            print(assignment.creationTime!.date.description)
-                                            if (assignment.creationTime!.date > lastlauncheddate)
-                                            {
-                                                countnewassignments += 1
-                                            }
-                                        }
-                                    }
-                                    //assignmentsforclass[idiii.1] = vallist
-                                })
-    
-                            }
-                        }
-                }
-            }
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(3000)) {
-                print("Homeview", countnewassignments)
-                defaults.set(countnewassignments, forKey: "countnewassignments")
-                defaults.set(Date(), forKey: "lastlauncheddate")
-            }
         }
     }
     

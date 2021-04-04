@@ -5,7 +5,7 @@
 //  Created by Tejas Krishnan on 6/30/20.
 //  Copyright © 2020 Tejas Krishnan. All rights reserved.
 //
-import Foundation
+
 import SwiftUI
 import UserNotifications
 import GoogleSignIn
@@ -63,8 +63,6 @@ struct MasterRunningDisplay: View {
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-   // @EnvironmentObject var googleDelegate: GoogleDelegate
-
     @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
@@ -83,7 +81,6 @@ struct ContentView: View {
             UITableView.appearance().tableFooterView = UIView()
         }
         GIDSignIn.sharedInstance().restorePreviousSignIn()
-        
 
        // UITableView.appearance().tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: Double.leastNonzeroMagnitude))
         // To remove all separators including the actual ones:
@@ -102,7 +99,7 @@ struct ContentView: View {
     //every time new update, create new userdefaultsvar for that update. If false, recreate userdefaultsvars and core data safely (with whatever updated properties)
     func initialize() {
         let defaults = UserDefaults.standard
-
+        
         if !defaults.bool(forKey: "Launched Before") {
             defaults.set(true, forKey: "Launched Before")
             let gradingschemes: [String] = ["P", "N1-7", "LA-F"]

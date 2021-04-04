@@ -7,6 +7,22 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
+            uuid = "B7E72050-208F-409C-A415-EC3E00A3C332"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SchedulingApp/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
+            landmarkName = "init()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
             uuid = "E1AF0232-FD54-4E86-B75A-39B67A2BD233"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -76,8 +92,8 @@
             filePath = "SchedulingApp/ModalViews.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1722"
-            endingLineNumber = "1722"
+            startingLineNumber = "1717"
+            endingLineNumber = "1717"
             landmarkName = "repetitionTextCreator(_:)"
             landmarkType = "7">
             <Locations>
@@ -124,8 +140,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1013"
-            endingLineNumber = "1013"
+            startingLineNumber = "1011"
+            endingLineNumber = "1011"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -140,8 +156,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1214"
-            endingLineNumber = "1214"
+            startingLineNumber = "1211"
+            endingLineNumber = "1211"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -156,8 +172,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1205"
-            endingLineNumber = "1205"
+            startingLineNumber = "1202"
+            endingLineNumber = "1202"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -172,8 +188,8 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1204"
-            endingLineNumber = "1204"
+            startingLineNumber = "1201"
+            endingLineNumber = "1201"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>

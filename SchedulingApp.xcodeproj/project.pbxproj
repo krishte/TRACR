@@ -33,6 +33,9 @@
 		56E8187E25C9F36300AB7422 /* Pods_SchedulingApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 121F684FEEDDBAA1DD7D231E /* Pods_SchedulingApp.framework */; };
 		56FD9B0524BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */; };
 		56FD9B0624BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0424BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift */; };
+		CF3F9947261D13A000529F2D /* ClassModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 56A66EBC24B77D5000CCD161 /* ClassModel.xcdatamodeld */; };
+		CF3F994C261D13AA00529F2D /* Subassignmentnew+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0424BF80FC0004BC0B /* Subassignmentnew+CoreDataProperties.swift */; };
+		CF3F9951261D13AD00529F2D /* Subassignmentnew+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD9B0324BF80FC0004BC0B /* Subassignmentnew+CoreDataClass.swift */; };
 		CF42144726177B4C007EEA78 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF42144626177B4C007EEA78 /* WidgetKit.framework */; };
 		CF42144926177B4C007EEA78 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CF42144826177B4C007EEA78 /* SwiftUI.framework */; };
 		CF42144C26177B4C007EEA78 /* Today_s_Tasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF42144B26177B4C007EEA78 /* Today_s_Tasks.swift */; };
@@ -650,6 +653,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CF3F9951261D13AD00529F2D /* Subassignmentnew+CoreDataClass.swift in Sources */,
+				CF3F994C261D13AA00529F2D /* Subassignmentnew+CoreDataProperties.swift in Sources */,
+				CF3F9947261D13A000529F2D /* ClassModel.xcdatamodeld in Sources */,
 				CF42144C26177B4C007EEA78 /* Today_s_Tasks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

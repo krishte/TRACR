@@ -436,10 +436,16 @@ struct GoogleView: View {
                                     ZStack {
                                         let n = 2*classityval+1
                                         if (n < classesidlist.count) {
-                                            RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: n)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
+                                            if n < classeslist.count {
+                                                RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: n)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
                                                 
-                                            Text(classeslist[n < classeslist.count ? n : 0]).font(.system(size: 18)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80, alignment: .bottomLeading).lineLimit(2)
-                                                    .allowsTightening(true).padding(.bottom, 6)
+                                                Text(classeslist[n]).font(.system(size: 18)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80, alignment: .bottomLeading).lineLimit(2)
+                                                        .allowsTightening(true).padding(.bottom, 6)
+                                            }
+                                            
+                                            else {
+                                                RoundedRectangle(cornerRadius: 7, style: .continuous).fill(Color.gray)
+                                            }
     //                                        }.frame(height: 86)
                                         }
                                     }//.opacity(2*classityval+1 < classeslist.count ? 1 : 0)

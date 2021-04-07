@@ -275,7 +275,7 @@ struct GoogleView: View {
     {
         let defaults = UserDefaults.standard
       //  print(defaults.object(forKey: "accessedclassroom") ?? false)
-        let valstuffity = defaults.object(forKey: "accessedclassroom") as! Bool
+        let valstuffity = defaults.object(forKey: "accessedclassroom") as? Bool ?? false
         if (valstuffity)
         {
             let defaults = UserDefaults.standard

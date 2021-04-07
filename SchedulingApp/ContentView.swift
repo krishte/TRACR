@@ -159,65 +159,139 @@ struct ContentView: View {
         
         
     }
+    @State var selectedtab = 0
 
     var body: some View {
         ZStack {
             if (!firstLaunchTutorial)
             {
-                NavigationView
-                {
-                    TabView
+//                NavigationView
+//                {
+                    ZStack
                     {
-                        
-                        NavigationLink(destination: TutorialView())
+                     //   TabView(selection: $selectedtab)
+            //            {
+                        if (selectedtab == 0)
                         {
-                            Text("Tutorial")
-                        }
-                            
-                        
-                            NavigationLink(destination: GoogleView())
+                            VStack
                             {
-                                Text("Click me")
-                            }
-                            //GoogleView()
+                                Text("Welcome to TRACR. You have now been inducted into our cult. Prepare yourself.")
+                            }.tag(0)
+                        }
+                        if (selectedtab == 1)
+                        {
+                            
+//                                NavigationLink(destination: GoogleView())
+//                                {
+//                                    Text("Click me")
+//                                }.gesture(DragGesture()).tag(1)
+                            NavigationView
+                            {
+                                GoogleView().tag(1)
+                            }.navigationTitle("Google Stuff").navigationBarTitleDisplayMode(.inline)
+                        }
+                        if (selectedtab == 2)
+                        {
+                            NavigationView
+                            {
+                                SyllabusView().tag(2)
+                               // Text("This is the syllabus stuff")
+
+                            }.navigationTitle("Syllabus").navigationBarTitleDisplayMode(.large)
+                        }
+                        if (selectedtab == 3)
+                        {
+                           VStack
+                           {
+                            Text("Choose your work hours type")
+                           }.tag(3)
+                        }
+                        if (selectedtab == 4)
+                        {
+                            NavigationView
+                            {
+                                WorkHours().tag(4)
+                            }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
+                        }
+                        if (selectedtab == 5)
+                        {
+                            NavigationView
+                            {
+                                VStack
+                                {
+                                    NavigationLink(destination: NewClassModalView(NewClassPresenting: $newclasspresenting), isActive: $newclasspresenting)
+                                    {
+                                        EmptyView()
+                                    }
+                                    // something like ClassesView so multiple classes can be added
+                                    Button(action:
+                                            {
+                                                newclasspresenting = true
+                                            })
+                                    {
+                                        Text("Add Class")
+                                    }
+                                }.tag(5)
+                            }.navigationTitle("Add Class").navigationBarTitleDisplayMode(.large)
+                        }
+                        if (selectedtab == 6)
+                        {
+                            
+                            Button(action:
+                            {
+                                firstLaunchTutorial = true
+
+                            })
+                            {
+                                Text("Get Rekt")
+                            }.tag(6)
+                        }
+                //        }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
                         
-                        NavigationLink(destination: SyllabusView())
+                        VStack
                         {
-                            Text("Syllabus")
-                        }
-                        NavigationLink(destination: WorkHours())
-                        {
-                            Text("Work hours")
-                        }
-                        NavigationLink(destination: PreferencesView())
-                        {
-                            Text("Sliders")
+                            Spacer()
+                            HStack
+                            {
+                                Spacer()
+                                Button(action:
+                                {
+                                    print("kewl")
+                                    withAnimation(.spring())
+                                    {
+                                        selectedtab += 1
+                                    }
+                                })
+                                {
+                                    Text("Kewl")
+                                }
+                                Spacer().frame(width: 30)
+                            }
+                            Spacer().frame(height: 50)
                         }
                         VStack
                         {
-                            NavigationLink(destination: NewClassModalView(NewClassPresenting: $newclasspresenting), isActive: $newclasspresenting)
+                            Spacer()
+                            HStack
                             {
-                                EmptyView()
-                            }
-                            Button(action:
+                                Spacer().frame(width: 30)
+                                Button(action:
+                                {
+                                    print("Not Kewl")
+                                    withAnimation(.spring())
                                     {
-                                        newclasspresenting = true
-                                    })
-                            {
-                                Text("Add Class")
+                                        selectedtab -= 1
+                                    }
+                                })
+                                {
+                                    Text("Kewl")
+                                }
+                                Spacer()
                             }
+                            Spacer().frame(height: 50)
                         }
-                        
-                        Button(action:
-                        {
-                            firstLaunchTutorial = true
-
-                        })
-                        {
-                            Text("Get Rekt")
-                        }
-                    }.tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
-                }
+                    }
+//                }
                 
 //                TabView
 //                {

@@ -112,6 +112,8 @@
 		561880DF24AB75B100558F29 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		5621A72B24C49A0D008ADB07 /* Freetime+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Freetime+CoreDataClass.swift"; path = "SchedulingApp/Freetime+CoreDataClass.swift"; sourceTree = "<group>"; };
 		5621A72C24C49A0D008ADB07 /* Freetime+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Freetime+CoreDataProperties.swift"; path = "SchedulingApp/Freetime+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		5634A620261E118600E349C6 /* Today's TasksExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Today's TasksExtension.entitlements"; sourceTree = "<group>"; };
+		5634A621261E118D00E349C6 /* SchedulingApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SchedulingApp.entitlements; sourceTree = "<group>"; };
 		5694280625A64A1700F501CE /* GoogleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleView.swift; sourceTree = "<group>"; };
 		56A6108524DDB4330063CE54 /* AssignmentTypes+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AssignmentTypes+CoreDataClass.swift"; path = "SchedulingApp/AssignmentTypes+CoreDataClass.swift"; sourceTree = "<group>"; };
 		56A6108624DDB4330063CE54 /* AssignmentTypes+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AssignmentTypes+CoreDataProperties.swift"; path = "SchedulingApp/AssignmentTypes+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 		5618809D24AB4A8500558F29 = {
 			isa = PBXGroup;
 			children = (
+				5634A620261E118600E349C6 /* Today's TasksExtension.entitlements */,
 				CF9F77DC261D2170009DD207 /* Today's TasksExtensionDebug.entitlements */,
 				56A6108524DDB4330063CE54 /* AssignmentTypes+CoreDataClass.swift */,
 				56A6108624DDB4330063CE54 /* AssignmentTypes+CoreDataProperties.swift */,
@@ -220,6 +223,7 @@
 		561880A824AB4A8500558F29 /* SchedulingApp */ = {
 			isa = PBXGroup;
 			children = (
+				5634A621261E118D00E349C6 /* SchedulingApp.entitlements */,
 				CF9F77D7261D2161009DD207 /* SchedulingAppDebug.entitlements */,
 				CFDB3AA424BF4BE00055C48A /* LaunchScreen.storyboard */,
 				561880A924AB4A8500558F29 /* AppDelegate.swift */,
@@ -820,7 +824,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"SchedulingApp/Preview Content\"";
-				DEVELOPMENT_TEAM = 99FUU9Y9TA;
+				DEVELOPMENT_TEAM = QP3T865764;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = SchedulingApp/Info.plist;
@@ -846,6 +850,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = SchedulingApp/SchedulingApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 7;
@@ -976,7 +981,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Today's TasksExtensionDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 99FUU9Y9TA;
+				DEVELOPMENT_TEAM = QP3T865764;
 				INFOPLIST_FILE = "Today's Tasks/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -997,6 +1002,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "Today's TasksExtension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = QP3T865764;

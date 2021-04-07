@@ -62,13 +62,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let container = NSPersistentContainer(name: "ClassModel")
         container.persistentStoreDescriptions = [description]
-        
+
         container.loadPersistentStores(completionHandler: { storeDescription, error in
             if let error = error as NSError? {
                 fatalError(error.localizedDescription)
             }
         })
-        
+
         return container
     }()
     

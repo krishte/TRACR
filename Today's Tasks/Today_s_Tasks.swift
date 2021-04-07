@@ -216,7 +216,7 @@ struct TasksProvider: TimelineProvider {
                     else {
                         entries.append(SimpleEntry(date: lastSAEndDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray))
                         
-                        entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "\(minorProgressCount)", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
+                        entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
                     }
                     
                     lastSAEndDate = subassignmentlist[index].enddatetime

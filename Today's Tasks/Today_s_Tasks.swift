@@ -152,7 +152,7 @@ struct TasksProvider: TimelineProvider {
             }
         }
         
-        var entry: SimpleEntry = SimpleEntry(date: Date(), isPlaceholder: true, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, minorProgressCount: 0, schedule: [])
+        var entry = SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")])
         
         if subassignmentlist.count > 0 {
             if (subassignmentlist[0].enddatetime > nowDate) && (subassignmentlist[0].startdatetime < tomorrowDate) {
@@ -175,11 +175,7 @@ struct TasksProvider: TimelineProvider {
                 entry = SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: headerText, largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
             }
         }
-        
-        else {
-            entry = SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")])
-        }
-        
+
         completion(entry)
     }
     
@@ -224,7 +220,7 @@ struct TasksProvider: TimelineProvider {
             }
         }
         
-        else {
+        if scheduleArray.count == 0 {
             entries.append(SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")]))
         }
         

@@ -152,27 +152,26 @@ struct TasksProvider: TimelineProvider {
             }
         }
         
-        var entry = SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")])
+        var entry: SimpleEntry = SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")])
         
         if subassignmentlist.count > 0 {
-            if (subassignmentlist[0].enddatetime > nowDate) && (subassignmentlist[0].startdatetime < tomorrowDate) {
-                let startdatetime = subassignmentlist[0].startdatetime
-                let largeBodyText = subassignmentlist[0].assignmentname
-                var (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[0].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[0].startdatetime, to: subassignmentlist[0].enddatetime).minute!)
-                let smallBodyText1 = "\(dateToTime(date: subassignmentlist[0].startdatetime)) - \(dateToTime(date: subassignmentlist[0].enddatetime))"
-                
-                var headerText = ""
-                
-                if startdatetime < nowDate {
-                    headerText = "NOW"
+            for (index, _) in subassignmentlist.enumerated() {
+                if (subassignmentlist[index].enddatetime > nowDate) && (subassignmentlist[index].startdatetime < tomorrowDate) {
+                    let startdatetime = subassignmentlist[index].startdatetime
+                    let largeBodyText = subassignmentlist[index].assignmentname
+                    let (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
+                    let smallBodyText1 = "\(dateToTime(date: subassignmentlist[index].startdatetime)) - \(dateToTime(date: subassignmentlist[index].enddatetime))"
+                    
+                    if startdatetime < nowDate {
+                        entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
+                    }
+                    
+                    else {
+                        entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray)
+                    }
+                    
+                    break
                 }
-                
-                else {
-                    headerText = "COMING UP"
-                    minorProgressCount = 0
-                }
-                
-                entry = SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: headerText, largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
             }
         }
 

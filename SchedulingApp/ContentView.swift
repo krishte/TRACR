@@ -98,7 +98,7 @@ struct ContentView: View {
         }
     }
     
-    
+    @State var newclasspresenting = false
     //every time new update, create new userdefaultsvar for that update. If false, recreate userdefaultsvars and core data safely (with whatever updated properties)
     func initialize() {
         let defaults = UserDefaults.standard
@@ -162,54 +162,131 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            TabView {
-                HomeView().tabItem {
-                    Image(systemName: "house").resizable().scaledToFill()
-                    Text("Home").font(.body)
-                }
-                
-                FilterView().tabItem {
-                    Image(systemName:"doc.plaintext").resizable().scaledToFill()
-                    Text("Assignments")
-                }
-                
-                ClassesView().tabItem {
-                    Image(systemName: "folder").resizable().scaledToFill()
-                    Text("Classes")
-                }
-                
-                ProgressView().tabItem {
-                    Image(systemName: "chart.bar").resizable().scaledToFit()
-                    Text("Progress")
-                }
-                
-//                GoogleView().tabItem {
-//                    Image(systemName: "person.circle.fill").resizable().scaledToFit()
-//                    Text("Hello")
-//                }
-
-                
-                
-                
-
-            }.onAppear
+            if (!firstLaunchTutorial)
             {
-                initialize()
-                let defaults = UserDefaults.standard
+                NavigationView
+                {
+                    TabView
+                    {
+                        
+                        NavigationLink(destination: TutorialView())
+                        {
+                            Text("Tutorial")
+                        }
+                            
+                        
+                            NavigationLink(destination: GoogleView())
+                            {
+                                Text("Click me")
+                            }
+                            //GoogleView()
+                        
+                        NavigationLink(destination: SyllabusView())
+                        {
+                            Text("Syllabus")
+                        }
+                        NavigationLink(destination: WorkHours())
+                        {
+                            Text("Work hours")
+                        }
+                        NavigationLink(destination: PreferencesView())
+                        {
+                            Text("Sliders")
+                        }
+                        VStack
+                        {
+                            NavigationLink(destination: NewClassModalView(NewClassPresenting: $newclasspresenting), isActive: $newclasspresenting)
+                            {
+                                EmptyView()
+                            }
+                            Button(action:
+                                    {
+                                        newclasspresenting = true
+                                    })
+                            {
+                                Text("Add Class")
+                            }
+                        }
+                        
+                        Button(action:
+                        {
+                            firstLaunchTutorial = true
 
-                defaults.set(false, forKey:"accessedclassroom")
+                        })
+                        {
+                            Text("Get Rekt")
+                        }
+                    }.tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
+                }
                 
-            }.onDisappear
+//                TabView
+//                {
+//                    TutorialView()
+//                    GoogleView()
+//                    SyllabusView()
+//                    //PreferencesView()
+//                    WorkHours()
+//
+//                    Button(action:
+//                    {
+//                        firstLaunchTutorial = true
+//                    })
+//                    {
+//                        Text("Go Away")
+//                    }
+//                }.tabViewStyle(PageTabViewStyle())
+            }
+            else
             {
-                let defaults = UserDefaults.standard
-                defaults.set(Date(timeIntervalSinceNow: 0), forKey: "lastaccessdate")
-                
-            }//.accentColor(Color.orange)
+                TabView {
+                    HomeView().tabItem {
+                        Image(systemName: "house").resizable().scaledToFill()
+                        Text("Home").font(.body)
+                    }
+                    
+                    FilterView().tabItem {
+                        Image(systemName:"doc.plaintext").resizable().scaledToFill()
+                        Text("Assignments")
+                    }
+                    
+                    ClassesView().tabItem {
+                        Image(systemName: "folder").resizable().scaledToFill()
+                        Text("Classes")
+                    }
+                    
+                    ProgressView().tabItem {
+                        Image(systemName: "chart.bar").resizable().scaledToFit()
+                        Text("Progress")
+                    }
+                    
+    //                GoogleView().tabItem {
+    //                    Image(systemName: "person.circle.fill").resizable().scaledToFit()
+    //                    Text("Hello")
+    //                }
             
-            VStack {
-                MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())
-                Spacer()
-            }.frame(width: UIScreen.main.bounds.size.width).background((masterRunning.masterDisplay ? Color(UIColor.label).opacity(0.15) : Color.clear).edgesIgnoringSafeArea(.all))
+                
+                    
+
+                }.onAppear
+                {
+                    initialize()
+                    let defaults = UserDefaults.standard
+
+                    defaults.set(false, forKey:"accessedclassroom")
+                    
+                }.onDisappear
+                {
+                    let defaults = UserDefaults.standard
+                    defaults.set(Date(timeIntervalSinceNow: 0), forKey: "lastaccessdate")
+                    
+                }//.accentColor(Color.orange)
+                
+                VStack {
+                    MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())
+                    Spacer()
+                }.frame(width: UIScreen.main.bounds.size.width).background((masterRunning.masterDisplay ? Color(UIColor.label).opacity(0.15) : Color.clear).edgesIgnoringSafeArea(.all))
+            }
+            
         }
     }
 }
@@ -221,3 +298,16 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+struct CoolView1: View
+{
+    
+    var body: some View
+    {
+        NavigationLink(destination: Text("kewl2"))
+        {
+            Text("kewl")
+        }
+    }
+}
+

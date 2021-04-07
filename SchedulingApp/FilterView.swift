@@ -156,7 +156,9 @@ struct AssignmentsView: View {
             
             if !incompleteAssignmentsThereBool && !self.showCompleted {
                 Spacer().frame(height: 100)
-                Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+                Image(systemName: "zzz").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)
+                Image(systemName: "bed.double").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)
+               // Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
                 Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
             }
             

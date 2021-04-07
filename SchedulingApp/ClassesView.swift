@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import WidgetKit
 
 struct ClassView: View {
     @ObservedObject var classcool: Classcool
@@ -700,6 +701,7 @@ struct MasterClass: View {
     @EnvironmentObject var masterRunning: MasterRunning
     
     func theBigMaster() {
+        WidgetCenter.shared.reloadTimelines(ofKind: "Today's Tasks")
       //  print("Signal Received.")
         
         if masterRunning.displayText {

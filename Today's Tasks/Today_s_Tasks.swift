@@ -12,8 +12,6 @@ import Foundation
 import UIKit
 import CoreData
 
-//group.com.schedulingapp.tracr.widget
-
 class CoreDataStack {
     static let shared = CoreDataStack()
 
@@ -29,8 +27,6 @@ class CoreDataStack {
         return context
     }
 
-    // MARK: - Core Data stack
-    
     lazy var persistentContainer: NSPersistentContainer = {
         let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.schedulingapp.tracr.widget")!
         let storeURL = containerURL.appendingPathComponent("ClassModel.sqlite")
@@ -45,33 +41,8 @@ class CoreDataStack {
             }
         })
         
-        
-//        private let persistentContainer: NSPersistentContainer = {
-//            let storeURL = FileManager.appGroupContainerURL.appendingPathComponent("DataModel.sqlite")
-//            let container = NSPersistentContainer(name: "DataModel")
-//            container.persistentStoreDescriptions = [NSPersistentStoreDescription(url: storeURL)]
-//            container.loadPersistentStores(completionHandler: { storeDescription, error in
-//                if let error = error as NSError? {
-//                    print(error.localizedDescription)
-//                }
-//            })
-//            return container
-//        }()
-        
-        
-//        if managedObjectContext.hasChanges {
-//            do {
-//                try managedObjectContext.save()
-//                WidgetCenter.shared.reloadAllTimelines()
-//            } catch let error {
-//                print("Error Save Oppty: \(error.localizedDescription)")
-//            }
-//        }
-        
         return container
     }()
-
-    // MARK: - Core Data Saving support
 
     func saveContext() {
         self.managedObjectContext.performAndWait {
@@ -100,86 +71,164 @@ class CoreDataStack {
 }
 
 
-
-extension TasksProvider {
-    static let sharedDataFileURL: URL = {
-        let appGroupIdentifier = "group.com.schedulingapp.tracr.widget"
-        if let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) {
-            return url.appendingPathComponent("WidgetSAList.plist")
-        }
-        else {
-            preconditionFailure("Expected a valid app group container")
-        }
-    }()
-}
-
-
-
-
-
 struct TasksProvider: TimelineProvider {
     @Environment(\.managedObjectContext) var managedObjectContext
-        
+    
     //all functions create and return entries as quickly as possible
     //all the data will be sent from this struct to the entries, which will then be sent to the View.
         //therefore, CoreData stuff will be from read here and sent as variables to the entry --> View.
     
+    func getSAandAList() -> ([Subassignmentnew], [Assignment]) {
+        var subassignmentlist: [Subassignmentnew] {
+            let request1 = NSFetchRequest<Subassignmentnew>(entityName: "Subassignmentnew")
+            request1.sortDescriptors = [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)]
+            
+            do {
+                return try CoreDataStack.shared.managedObjectContext.fetch(request1)
+            } catch {
+                print(error.localizedDescription)
+                return []
+            }
+        }
+        
+        var assignmentlist: [Assignment] {
+            let request2 = NSFetchRequest<Assignment>(entityName: "Assignment")
+            request2.sortDescriptors = [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)]
+            
+            do {
+                return try CoreDataStack.shared.managedObjectContext.fetch(request2)
+            } catch {
+                print(error.localizedDescription)
+                return []
+            }
+        }
+        
+        return (subassignmentlist, assignmentlist)
+    }
+    
+    func getProgress(assignmentlist: [Assignment], subassignmentname: String, subassignmentlength: Int) -> (Int64, Int64) {
+        for (index, _) in assignmentlist.enumerated() {
+            if subassignmentname == assignmentlist[index].name {
+                return (assignmentlist[index].progress, (Int64(Double(Double(subassignmentlength) / Double(assignmentlist[index].totaltime)) * 100)))
+            }
+        }
+        
+        return (0, 0)
+    }
+    
+    func getClass(assignmentlist: [Assignment], subassignmentname: String) -> String {
+        for (index, _) in assignmentlist.enumerated() {
+            if subassignmentname == assignmentlist[index].name {
+                return assignmentlist[index].subject
+            }
+        }
+        
+        return "NA"
+    }
+    
+    func dateToTime(date: Date) -> String {
+        let shortdateformatter = DateFormatter()
+        shortdateformatter.dateFormat = "HH:mm"
+        return shortdateformatter.string(from: date)
+    }
+    
+    
     func placeholder(in context: Context) -> SimpleEntry {
-        return SimpleEntry(date: Date(), isPlaceholder: true, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, schedule: [TodaysScheduleEntry(taskName: "", className: "")])
+        return SimpleEntry(date: Date(), isPlaceholder: true, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, minorProgressCount: 0, schedule: [])
     }
 
     //sometimes in the preview
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), isPlaceholder: false, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, schedule: [TodaysScheduleEntry(taskName: "", className: "test")])
+        let (subassignmentlist, assignmentlist) = getSAandAList()
+
+        let nowDate: Date = Date()
+        let tomorrowDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: Date()))!
+        
+        var scheduleArray: [TodaysScheduleEntry] = []
+        
+        for (index, _) in subassignmentlist.enumerated() {
+            if (subassignmentlist[index].enddatetime > nowDate) && (subassignmentlist[index].startdatetime < tomorrowDate) {
+                scheduleArray.append(TodaysScheduleEntry(taskName: subassignmentlist[index].assignmentname, className: getClass(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname)))
+            }
+        }
+        
+        var entry: SimpleEntry = SimpleEntry(date: Date(), isPlaceholder: true, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, minorProgressCount: 0, schedule: [])
+        
+        if subassignmentlist.count > 0 {
+            if (subassignmentlist[0].enddatetime > nowDate) && (subassignmentlist[0].startdatetime < tomorrowDate) {
+                let startdatetime = subassignmentlist[0].startdatetime
+                let largeBodyText = subassignmentlist[0].assignmentname
+                var (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[0].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[0].startdatetime, to: subassignmentlist[0].enddatetime).minute!)
+                let smallBodyText1 = "\(dateToTime(date: subassignmentlist[0].startdatetime)) - \(dateToTime(date: subassignmentlist[0].enddatetime))"
+                
+                var headerText = ""
+                
+                if startdatetime < nowDate {
+                    headerText = "NOW"
+                }
+                
+                else {
+                    headerText = "COMING UP"
+                    minorProgressCount = 0
+                }
+                
+                entry = SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: headerText, largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
+            }
+        }
+        
+        else {
+            entry = SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")])
+        }
         
         completion(entry)
     }
     
+    
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var subassignmentlist: [Subassignmentnew] = []
-        let moc = CoreDataStack.shared.managedObjectContext
-//
-//        var assignmentlistrequest: FetchRequest<Subassignmentnew>
-//        let request = FetchRequest<Subassignmentnew>(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentduedate, ascending: true)])
-//
-//        var assignmentlist: FetchedResults<Subassignmentnew>{request.wrappedValue}
-
-        
-//        let request = FetchRequest<NSFetchRequestResult>(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentduedate, ascending: true)])
-//        let request = NSFetchRequest<Subassignmentnew>(entityName: "Subassignmentnew")
-//        let result = try! moc.fetch(request)
-
-//        do {
-//            let subassignmentlista = {assignmentlistrequest.wrappedValue}
-//            let subassignmentlista = try moc.fetch(request)
-//
-//            subassignmentlist = subassignmentlista
-//
-//            print("asfsfsf")
-//        } catch {
-////            print("Failed to fetch: \(error)")
-//        }
-        
-//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
-//        print(subassignmentlist.count)
-//        fatalError(String(subassignmentlist.count))
-//
-//        print(assignmentlist.count)
-//        fatalError(String(assignmentlist.count))
-        
+        let (subassignmentlist, assignmentlist) = getSAandAList()
         var entries: [SimpleEntry] = []
 
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 1 {
-            let entryDate = Calendar.current.date(byAdding: .second, value: hourOffset*10, to: currentDate)!
+        let nowDate: Date = Date()
+        let tomorrowDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Calendar.current.startOfDay(for: Date()))!
+        
+        var scheduleArray: [TodaysScheduleEntry] = []
+        
+        if subassignmentlist.count > 0 {
+            for (index, _) in subassignmentlist.enumerated() {
+                if (subassignmentlist[index].enddatetime > nowDate) && (subassignmentlist[index].startdatetime < tomorrowDate) {
+                    scheduleArray.append(TodaysScheduleEntry(taskName: subassignmentlist[index].assignmentname, className: getClass(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname)))
+                }
+            }
             
-            let entry = SimpleEntry(date: entryDate, isPlaceholder: false, headerText: "NOW", largeBodyText: "Eat Chicken long longer longest", smallBodyText1: "28 minutes left", smallBodyText2: "", progressCount: 53, schedule: [TodaysScheduleEntry(taskName: "Eat Something (long example so that text is cut appropriately)", className: "IDK"), TodaysScheduleEntry(taskName: "Just Do It.", className: "Nike"), TodaysScheduleEntry(taskName: "OKAY", className: "sdf")])
+            var lastSAEndDate = nowDate
             
-            entries.append(entry)
+            for (index, _) in subassignmentlist.enumerated() {
+                if (subassignmentlist[index].enddatetime > nowDate) && (subassignmentlist[index].startdatetime < tomorrowDate) {
+                    let startdatetime = subassignmentlist[index].startdatetime
+                    let largeBodyText = subassignmentlist[index].assignmentname
+                    let (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
+                    let smallBodyText1 = "\(dateToTime(date: subassignmentlist[index].startdatetime)) - \(dateToTime(date: subassignmentlist[index].enddatetime))"
+                    
+                    if startdatetime < nowDate {
+                        entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
+                    }
+                    
+                    else {
+                        entries.append(SimpleEntry(date: lastSAEndDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray))
+                        
+                        entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "\(minorProgressCount)", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
+                    }
+                    
+                    lastSAEndDate = subassignmentlist[index].enddatetime
+                }
+            }
         }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd) //maybe change to .never?
+        
+        else {
+            entries.append(SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")]))
+        }
+        
+        let timeline = Timeline(entries: entries, policy: .after(tomorrowDate))
         completion(timeline)
     }
 }
@@ -213,6 +262,9 @@ struct SimpleEntry: TimelineEntry {
     
     //if progress bar shown, then progressCount relevant (medium and large views)
     let progressCount: Int64
+    
+    //if progress bar shown, and if NOW, then minorProgressBar also shown (medium and large views)
+    let minorProgressCount: Int64
     
     //background gradient, normally based on class colours
     //left out for now
@@ -272,44 +324,23 @@ struct TodaysTasksSmallView: View {
     var entry: TasksProvider.Entry
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     
-//    let request = FetchRequest<Subassignmentnew>(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentduedate, ascending: true)])
-//
-//    var assignmentlist: FetchedResults<Subassignmentnew>{request.wrappedValue}
-
-    var itemsCount: Int {
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "Subassignmentnew")
+    var bgGradient: LinearGradient
+    
+    init(entryParameter: TasksProvider.Entry) {
+        entry = entryParameter
         
-        do {
-            return try CoreDataStack.shared.managedObjectContext.count(for: request)
-        } catch {
-            print(error.localizedDescription)
-            return 0
+        if entry.headerText == "TODAY" {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientE"), Color("gradientF")]), startPoint: .top, endPoint: .bottom)
+        }
+        
+        else if entry.headerText == "COMING UP" {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientG"), Color("gradientH")]), startPoint: .top, endPoint: .bottom)
+        }
+        
+        else {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .top, endPoint: .bottom)
         }
     }
-    
-//    var subassignmentlist: [Subassignmentnew] = []
-//    let moc = CoreDataStack.shared.managedObjectContext
-//
-//        var assignmentlistrequest: FetchRequest<Subassignmentnew>
-//        let request = FetchRequest<Subassignmentnew>(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentduedate, ascending: true)])
-//
-//        var assignmentlist: FetchedResults<Subassignmentnew>{request.wrappedValue}
-
-    
-//    let request = FetchRequest<NSFetchRequestResult>(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.assignmentduedate, ascending: true)])
-//    let request = NSFetchRequest<Subassignmentnew>(entityName: "Subassignmentnew")
-//    let result = try! moc.fetch(request)
-    
-//    do {
-//        let subassignmentlista = try moc.fetch(request)
-//
-//        subassignmentlist = subassignmentlista
-//
-//        print("asfsfsf")
-//    } catch {
-////            print("Failed to fetch: \(error)")
-//    }
-    
     
     var body: some View {
         GeometryReader { geometry in
@@ -319,27 +350,34 @@ struct TodaysTasksSmallView: View {
             
             else {
                 VStack {
-                    HStack {
-                        Text(String(self.itemsCount))
-                        Text(entry.headerText).fontWeight(.light).font(.caption2)
+                    VStack {
+                        HStack {
+                            Text(entry.headerText).fontWeight(.light).font(.caption2)
+                            Spacer()
+                        }
+                        
+                        Spacer()
+                    }.frame(height: 15)
+                    
+                    VStack {
+                        HStack {
+                            Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(3).allowsTightening(true)
+                            Spacer()
+                        }
+                        
                         Spacer()
                     }
                     
-                    Spacer()
-                    
-                    HStack {
-                        Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(3).allowsTightening(true)
+                    VStack {
                         Spacer()
-                    }
-                    
-                    Spacer()
-                    
-                    HStack {
-                        Text(entry.smallBodyText1).fontWeight(.regular).font(.caption2)
-                        Spacer()
-                        Text(entry.smallBodyText2).fontWeight(.light).font(.caption2)
-                    }
-                }.padding(.all, 16).background(LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .top, endPoint: .bottom)).frame(width: geometry.size.width, height: geometry.size.height)
+                        
+                        HStack {
+                            Text(entry.smallBodyText1).fontWeight(.regular).font(.caption2)
+                            Spacer()
+                            Text(entry.smallBodyText2).fontWeight(.light).font(.caption2)
+                        }
+                    }.frame(height: 15)
+                }.padding(.all, 16).background(self.bgGradient).frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
     }
@@ -406,6 +444,24 @@ struct TodaysTasksMediumView: View {
     var entry: TasksProvider.Entry
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     
+    var bgGradient: LinearGradient
+    
+    init(entryParameter: TasksProvider.Entry) {
+        entry = entryParameter
+        
+        if entry.headerText == "TODAY" {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientE"), Color("gradientF")]), startPoint: .top, endPoint: .bottom)
+        }
+        
+        else if entry.headerText == "COMING UP" {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientG"), Color("gradientH")]), startPoint: .top, endPoint: .bottom)
+        }
+        
+        else {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .top, endPoint: .bottom)
+        }
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             if entry.isPlaceholder {
@@ -414,39 +470,59 @@ struct TodaysTasksMediumView: View {
             
             else {
                 VStack {
-                    HStack {
-                        Text(entry.headerText).fontWeight(.light).font(.caption2)
-                        Spacer()
-                    }
-                    
-                    Spacer()
-                    
-                    HStack {
-                        Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
-                        
-                        Spacer()
-                    }
-                    
-                    Spacer()
-                    
-                    HStack {
-                        Text(entry.smallBodyText1).fontWeight(.regular).font(.caption2)
-                        Spacer()
-                        Text(entry.smallBodyText2).fontWeight(.light).font(.caption2)
-                    }
-                    
-                    Spacer()
-                    
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 24), height: 15)
-                        
+                    VStack {
                         HStack {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 24)), height: 15, alignment: .leading)
+                            Text(entry.headerText).fontWeight(.light).font(.caption2)
+                            Spacer()
+                        }
+                        
+                        Spacer()
+                    }.frame(height: 15)
+                    
+                    Spacer()
+                    
+                    VStack {
+                        HStack {
+                            Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
                             
                             Spacer()
                         }
+                        
+                        Spacer()
                     }
-                }.padding(.all, 16).background(LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .top, endPoint: .bottom)).frame(width: geometry.size.width, height: geometry.size.height)
+                    
+                    VStack {
+                        HStack {
+                            Text(entry.smallBodyText1).fontWeight(.regular).font(.caption2)
+                            Spacer()
+                            Text(entry.smallBodyText2).fontWeight(.light).font(.caption2)
+                        }
+                    }.frame(height: 15)
+                    
+                    Spacer()
+                    
+                    HStack(alignment: .center) {
+                        ZStack {
+                            HStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
+                                
+                                Spacer()
+                            }
+                            
+                            HStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("minorProgressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                
+                                Spacer()
+                            }
+                            
+                            HStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                
+                                Spacer()
+                            }
+                        }
+                    }
+                }.padding(.all, 16).background(self.bgGradient).frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
     }
@@ -542,6 +618,24 @@ struct TodaysTasksLargeView: View {
     var entry: TasksProvider.Entry
     @Environment(\.colorScheme) var colorScheme: ColorScheme
         
+    var bgGradient: LinearGradient
+    
+    init(entryParameter: TasksProvider.Entry) {
+        entry = entryParameter
+        
+        if entry.headerText == "TODAY" {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientE"), Color("gradientF")]), startPoint: .top, endPoint: .bottom)
+        }
+        
+        else if entry.headerText == "COMING UP" {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientG"), Color("gradientH")]), startPoint: .top, endPoint: .bottom)
+        }
+        
+        else {
+            bgGradient = LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .top, endPoint: .bottom)
+        }
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             if entry.isPlaceholder {
@@ -551,36 +645,56 @@ struct TodaysTasksLargeView: View {
             else {
                 VStack {
                     VStack {
-                        HStack {
-                            Text(entry.headerText).fontWeight(.light).font(.caption2)
-                            Spacer()
-                        }
-                        
-                        Spacer()
-                        
-                        HStack {
-                            Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
-                            
-                            Spacer()
-                        }
-                        
-                        Spacer()
-                        
-                        HStack {
-                            Text(entry.smallBodyText1).fontWeight(.regular).font(.caption2)
-                            Spacer()
-                            Text(entry.smallBodyText2).fontWeight(.light).font(.caption2)
-                        }
-                        
-                        Spacer()
-                        
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
-                            
+                        VStack {
                             HStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                Text(entry.headerText).fontWeight(.light).font(.caption2)
+                                Spacer()
+                            }
+                            
+                            Spacer()
+                        }.frame(height: 15)
+                        
+                        Spacer()
+                        
+                        VStack {
+                            HStack {
+                                Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
                                 
                                 Spacer()
+                            }
+                            
+                            Spacer()
+                        }
+                        
+                        VStack {
+                            HStack {
+                                Text(entry.smallBodyText1).fontWeight(.regular).font(.caption2)
+                                Spacer()
+                                Text(entry.smallBodyText2).fontWeight(.light).font(.caption2)
+                            }
+                        }.frame(height: 15)
+                        
+                        Spacer()
+                        
+                        HStack(alignment: .center) {
+                            ZStack {
+                                HStack {
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
+                                    
+                                    Spacer()
+                                }
+                                
+                                HStack {
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("minorProgressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                    
+                                    Spacer()
+                                }
+                                
+                                HStack {
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                    
+                                    Spacer()
+                                }
                             }
                         }
                     }.frame(height: (geometry.size.height * 0.35))
@@ -610,7 +724,7 @@ struct TodaysTasksLargeView: View {
                                             }.padding(.top, 6)
                                             
                                             HStack {
-                                                Text(entry.schedule[n].className).fontWeight(.light).font(.callout)
+                                                Text(entry.schedule[n].className).fontWeight(.light).font(.caption)
                                                 Spacer()
                                             }
                                             
@@ -619,7 +733,7 @@ struct TodaysTasksLargeView: View {
                                     }
                                     
                                     else {
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.03)
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.05)
                                     }
                                 }
 
@@ -636,7 +750,7 @@ struct TodaysTasksLargeView: View {
                                             }.padding(.top, 6)
                                             
                                             HStack {
-                                                Text(entry.schedule[n].className).fontWeight(.light).font(.callout)
+                                                Text(entry.schedule[n].className).fontWeight(.light).font(.caption)
                                                 Spacer()
                                             }
                                             
@@ -645,13 +759,13 @@ struct TodaysTasksLargeView: View {
                                     }
                                     
                                     else {
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.07)
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.05)
                                     }
                                 }
                             }
                         }
                     }
-                }.padding(.all, 16).background(LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .top, endPoint: .bottom)).frame(width: geometry.size.width, height: geometry.size.height)
+                }.padding(.all, 16).background(self.bgGradient).frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
     }
@@ -671,9 +785,9 @@ struct TodaysTasksEntryView: View {
     @ViewBuilder
     var body: some View {
         switch family {
-            case .systemSmall: TodaysTasksSmallView(entry: self.entry)
-            case .systemMedium: TodaysTasksMediumView(entry: self.entry)
-            case .systemLarge: TodaysTasksLargeView(entry: self.entry)
+            case .systemSmall: TodaysTasksSmallView(entryParameter: self.entry)
+            case .systemMedium: TodaysTasksMediumView(entryParameter: self.entry)
+            case .systemLarge: TodaysTasksLargeView(entryParameter: self.entry)
             default: TodaysTasksNAView()
         }
     }
@@ -695,7 +809,7 @@ struct TodaysTasks: Widget {
 
 struct TodaysTasksPreviews: PreviewProvider {
     static var previews: some View {
-        TodaysTasksEntryView(entry: SimpleEntry(date: Date(), isPlaceholder: false, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, schedule: [TodaysScheduleEntry(taskName: "", className: "")]))
+        TodaysTasksEntryView(entry: SimpleEntry(date: Date(), isPlaceholder: false, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "", className: "")]))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }

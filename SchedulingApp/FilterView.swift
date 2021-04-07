@@ -19,8 +19,8 @@ struct DropDown: View {
         UITableView.appearance().tableHeaderView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: Double.leastNonzeroMagnitude))
         self._showCompleted = showCompleted2
     }
-    @State var selectedbutton = "Class"
-    let filters: [String] = ["Class", "Due Date", "Length", "Work Left", "Name", "Type"]
+    @State var selectedbutton = "Due Date"
+    let filters: [String] = ["Due Date", "Class", "Length", "Work Left", "Name", "Type"]
     @State var filterspresented: Bool = false
     var body: some View {
         VStack {

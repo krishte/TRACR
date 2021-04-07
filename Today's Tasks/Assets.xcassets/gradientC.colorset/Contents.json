@@ -37,7 +37,7 @@
         "color-space" : "gray-gamma-22",
         "components" : {
           "alpha" : "1.000",
-          "white" : "0.043"
+          "white" : "0.000"
         }
       },
       "idiom" : "universal"
@@ -93,7 +93,7 @@
         "color-space" : "gray-gamma-22",
         "components" : {
           "alpha" : "1.000",
-          "white" : "0.043"
+          "white" : "0.000"
         }
       },
       "idiom" : "universal"

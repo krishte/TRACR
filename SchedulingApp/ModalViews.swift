@@ -189,6 +189,7 @@ struct NewGoogleAssignmentModalView: View {
     
     @EnvironmentObject var masterRunning: MasterRunning
     @ObservedObject var textfieldmanager: TextFieldManager = TextFieldManager(blah: "")
+    @State var countnewassignments = 0
     
     init(NewAssignmentPresenting: Binding<Bool>, selectedClass: Int, preselecteddate: Int) {
         self._NewAssignmentPresenting = NewAssignmentPresenting
@@ -294,7 +295,10 @@ struct NewGoogleAssignmentModalView: View {
                     
                     TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch)
                     
-                    NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection, selectedclass: $selectedclass, assignmenttype: $assignmenttype, nameofassignment: $nameofassignment, selectedDate: $selectedDate, foundassignmentdates: $foundassignmentdates), isActive: $activeselection)
+                    NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection, selectedclass: $selectedclass, assignmenttype: $assignmenttype, nameofassignment: $nameofassignment, selectedDate: $selectedDate, foundassignmentdates: $foundassignmentdates).onAppear
+                    {
+                        countnewassignments = 0
+                    }, isActive: $activeselection)
                     {
                         HStack
                         {
@@ -303,6 +307,10 @@ struct NewGoogleAssignmentModalView: View {
                             if (foundassignments.count > 0)
                             {
                                 Text(foundassignments[selectedgoogleassignment].0).foregroundColor(Color.gray)
+                            }
+                            if (countnewassignments > 0)
+                            {
+                                Text(String(countnewassignments)).fontWeight(.bold)
                             }
                         }
                     }
@@ -606,6 +614,8 @@ struct NewGoogleAssignmentModalView: View {
         }
         .onAppear
         {
+            let defaults = UserDefaults.standard
+            countnewassignments = defaults.object(forKey: "countnewassignments") as! Int
             GIDSignIn.sharedInstance().restorePreviousSignIn()
            
             if (googleDelegate.signedIn)

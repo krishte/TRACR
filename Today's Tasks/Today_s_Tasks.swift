@@ -126,6 +126,19 @@ struct TasksProvider: TimelineProvider {
         return "NA"
     }
     
+    func getDueDate(assignmentlist: [Assignment], subassignmentname: String) -> String {
+        let shortdateformatter = DateFormatter()
+        shortdateformatter.dateFormat = "HH:mm"
+        
+        for (index, _) in assignmentlist.enumerated() {
+            if subassignmentname == assignmentlist[index].name {
+                return shortdateformatter.string(from: assignmentlist[index].duedate)
+            }
+        }
+        
+        return "NA"
+    }
+    
     func dateToTime(date: Date) -> String {
         let shortdateformatter = DateFormatter()
         shortdateformatter.dateFormat = "HH:mm"
@@ -165,6 +178,8 @@ struct TasksProvider: TimelineProvider {
                     if startdatetime < nowDate {
                         entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
                     }
+                    
+                    
                     
                     else {
                         entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray)
@@ -223,7 +238,7 @@ struct TasksProvider: TimelineProvider {
             entries.append(SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")]))
         }
         
-        let timeline = Timeline(entries: entries, policy: .after(tomorrowDate))
+        let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
     }
 }

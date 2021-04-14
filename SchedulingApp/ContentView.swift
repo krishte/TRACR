@@ -162,7 +162,7 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            if (!firstLaunchTutorial)
+            if (firstLaunchTutorial)
             {
                 NavigationView
                 {

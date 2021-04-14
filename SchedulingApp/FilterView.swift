@@ -283,7 +283,6 @@ struct FilterView: View {
                     HStack {
                         Spacer()
                         ZStack {
-                            // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             if (showpopup)
                             {
                                 ZStack() {
@@ -293,13 +292,15 @@ struct FilterView: View {
                                         {
                                             self.sheetNavigator.modalView = .assignment
                                             self.NewSheetPresenting = true
-                                            self.NewAssignmentPresenting = true
+//                                                self.NewAssignmentPresenting = true
+                                       //     print(self.sheetNavigator.modalView)
                                         }
                                         else
                                         {
                                             self.sheetNavigator.alertView = .noclass
                                             self.NewAlertPresenting = true
                                         }
+                                     //   countnewassignments = 0
                                         
                                     })
                                     {
@@ -312,9 +313,25 @@ struct FilterView: View {
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
-                                                .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+//                                            if (countnewassignments > 0)
+//                                            {
+//                                                VStack
+//                                                {
+//                                                    HStack
+//                                                    {
+//                                                        Spacer()
+//                                                        ZStack
+//                                                        {
+//                                                            Circle().fill(Color.red).frame(width: 15, height: 15)
+//                                                            Text(String(countnewassignments)).foregroundColor(Color.white).font(.system(size: 10)).frame(width: 15, height: 15)
+//                                                        }.offset(x: 5, y: -5)
+//                                                    }
+//                                                    Spacer()
+//                                                }
+//                                            }
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -70, y: 10).shadow(radius: 5)
+                                    }.offset(x: -70, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1)
                                     Button(action:
                                     {
                                         self.sheetNavigator.modalView = .classity
@@ -329,10 +346,20 @@ struct FilterView: View {
                                               .frame(width: widthAndHeight, height: widthAndHeight)
                                             Image(systemName: "folder")
                                               .resizable().scaledToFit()
-                                           //   .aspectRatio(contentMode: .fit)
-                                                //.padding(.bottom, 20).padding(.trailing, 100)
-                                             // .frame(width: widthAndHeight, height: widthAndHeight)
-                                                .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
+
+                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                            if (classlist.count == 0)
+                                            {
+                                                VStack
+                                                {
+                                                    HStack
+                                                    {
+                                                        Spacer()
+                                                        Circle().fill(Color.red).frame(width: 15, height: 15).offset(x: 5, y: -5)
+                                                    }
+                                                    Spacer()
+                                                }
+                                            }
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
                                     }.offset(x: -130, y: 10).shadow(radius: 5)
 
@@ -360,9 +387,9 @@ struct FilterView: View {
                                            //   .aspectRatio(contentMode: .fit)
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
-                                                .foregroundColor(.white).frame(width: widthAndHeight-22, height: widthAndHeight-22)
+                                                .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -190, y: 10).shadow(radius: 5)
+                                    }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1).opacity(!self.getcompletedAssignments() ? 0.5: 1)
                                 }.transition(.scale)
                               }
                             
@@ -375,14 +402,13 @@ struct FilterView: View {
 
                                 
                             }) {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(showpopup ? Color.blue : Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {
                                         //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                         Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
                                     }
                                 )
                             }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)
-
                         }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                             Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                         }

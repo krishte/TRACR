@@ -28,7 +28,7 @@ class CoreDataStack {
     }
 
     lazy var persistentContainer: NSPersistentContainer = {
-        let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.schedulingapp.tracr.widget")!
+        let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.schedulingapp.tracrwidget")!
         let storeURL = containerURL.appendingPathComponent("ClassModel.sqlite")
         let description = NSPersistentStoreDescription(url: storeURL)
 

@@ -204,6 +204,28 @@ struct TutorialView: View {
                 EmptyView()
                 // Fallback on earlier versions
             }//.frame(height: UIScreen.main.bounds.size.height-200)//.padding(.top, -60)
+        }.toolbar
+        {
+            ToolbarItem(placement: .navigationBarLeading)
+            {
+                Text("")
+            }
+            ToolbarItem(placement: .navigationBarTrailing)
+            {
+                Button(action:
+                {
+                    withAnimation(.spring())
+                    {
+                        tutorialPageSelected = 0
+                    }
+                })
+                {
+                    if (tutorialPageSelected != 0)
+                    {
+                        Text("Contents")
+                    }
+                }
+            }
         }
     }
 }
@@ -211,10 +233,10 @@ struct TutorialView: View {
 
 struct SyllabusView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-
+    
     @State var selectedsyllabus: Int = 0
     @State var mainsyllabus: Int = 0
-    var mainsyllabuslist: [String] = ["None", "International Baccalaureate (IB)", "Hello"]
+    var mainsyllabuslist: [String] = ["None", "IB"]
     @State var isIB: Bool = false
     var syllabuslist: [String] = ["Percentage-based", "Letter-based", "Number-based"]
     var badlettergrades: [String] = ["E", "F"]
@@ -226,7 +248,7 @@ struct SyllabusView: View {
     
     @State var MainSyllabusChanged: Bool = false
     @State var addinggradingscheme: Bool = false
-    @State var showinginfo: Bool = false
+    @State var showinginfo: Bool
     
 
     
@@ -239,13 +261,13 @@ struct SyllabusView: View {
                     Text("Selecting an IB syllabus will give you access to IB Statistics for the classes. The 'None' option allows for more flexibility")
                 }
             }
-            Section(header: Text("Main Syllabus"), footer: Text(mainsyllabus == 1 ? "Use the International Baccalaureate's Subject Choices" : "Hello").font(.footnote))
+            Section(header: Text("Main Syllabus"), footer: Text(mainsyllabus == 1 ? "Use the International Baccalaureate's Subject Choices" : "FREEDOM").font(.footnote))
             {
                 Picker(selection: $mainsyllabus, label: Text("Main Syllabus")) {
                     ForEach(0..<mainsyllabuslist.count) { mainsyllabusindex in
                         Text(mainsyllabuslist[mainsyllabusindex])
                     }
-                }.pickerStyle(DefaultPickerStyle()).id(refreshID)
+                }.pickerStyle(SegmentedPickerStyle()).id(refreshID)
                 
 //                Toggle(isOn: $isIB) {
 //                    Text("International Baccalaureate (IB)")
@@ -280,27 +302,28 @@ struct SyllabusView: View {
 
                        //     Text(gradingscheme)
                             Spacer()
-                            Image(systemName: "chevron.left").foregroundColor(Color.gray)
+                          //  Image(systemName: "chevron.left").foregroundColor(Color.gray)
                         }
-                    }.onDelete { indexSet in
-                        for index in indexSet {
-                            gradingschemes.remove(at: index)
-                        }
-                   }
-                }
-            }
-            Section
-            {
-                Button(action:{
-                    withAnimation(.spring())
-                    {
-                        addinggradingscheme.toggle()
                     }
-                })
-                {
-                    Text("Add Custom Grading Scheme")
+//                    .onDelete { indexSet in
+//                        for index in indexSet {
+//                            gradingschemes.remove(at: index)
+//                        }
+//                   }
                 }
             }
+//            Section
+//            {
+//                Button(action:{
+//                    withAnimation(.spring())
+//                    {
+//                        addinggradingscheme.toggle()
+//                    }
+//                })
+//                {
+//                    Text("Add Custom Grading Scheme")
+//                }
+//            }
             if (addinggradingscheme)
             {
                 Section
@@ -668,7 +691,7 @@ struct SettingsView: View {
                     
                 Section {
                     NavigationLink(destination:
-                        SyllabusView()
+                                    SyllabusView(showinginfo: false)
                     ) {
                         HStack {
                             ZStack {

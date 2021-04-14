@@ -669,7 +669,7 @@ struct NewGoogleAssignmentModalView: View {
      
                                             }
                                             let cooldate = Date(timeInterval: TimeInterval(TimeZone.current.secondsFromGMT()), since: Calendar.current.date(from: newComponents)!)
-                                            if (Calendar.current.dateComponents([.day], from: cooldate, to: Date(timeIntervalSinceNow: 0)).day! < 30)
+                                            if (cooldate >= Date())
                                             {
                                                 foundassignments.append((assignment.title!, idiii))
                                                 foundassignmentdates.append(cooldate)
@@ -685,6 +685,10 @@ struct NewGoogleAssignmentModalView: View {
                         }
                     }
             }
+        }.onDisappear
+        {
+            let defaults = UserDefaults.standard
+            defaults.set(0, forKey: "countnewassignments")
         }
         
         if masterRunning.masterRunningNow {
@@ -2875,7 +2879,7 @@ struct EditAssignmentModalView: View {
                 }.onTapGesture {
                     if (!self.iscompleted)
                      {
-                        self.hours = 0
+                        self.hours = 1
                         self.minutes = 0
                       //  print(!self.iscompleted)
                     }

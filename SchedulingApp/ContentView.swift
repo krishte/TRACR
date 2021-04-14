@@ -105,7 +105,7 @@ struct ContentView: View {
 
         if !defaults.bool(forKey: "Launched Before") {
             defaults.set(true, forKey: "Launched Before")
-            let gradingschemes: [String] = ["P", "N1-7", "LA-F"]
+            let gradingschemes: [String] = ["P", "N1-7", "LA-F", "N1-8", "N1-4"]
             defaults.set(0, forKey: "weeklyminutesworked")
             let lastmondaydate =  Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
             let nextmondaydate = Date(timeInterval: 604800, since: lastmondaydate)
@@ -160,6 +160,7 @@ struct ContentView: View {
         
     }
     @State var selectedtab = 0
+    @State var worktype1selected: Bool = true
 
     var body: some View {
         ZStack {
@@ -167,15 +168,26 @@ struct ContentView: View {
             {
 //                NavigationView
 //                {
+                VStack
+                {
                     ZStack
                     {
                      //   TabView(selection: $selectedtab)
             //            {
                         if (selectedtab == 0)
                         {
+                            
+                            
                             VStack
                             {
-                                Text("Welcome to TRACR. You have now been inducted into our cult. Prepare yourself.")
+                                Spacer().frame(height: 20)
+                                Text("Intro").font(.system(size: 50)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)//.padding(.top, -30)//.frame(alignment: .leading)
+                                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 300)//.padding(.top, -50)
+                                Spacer().frame(height: 50)
+                                Image("Tracr").resizable().aspectRatio(contentMode: .fit).frame(width: 200)
+                               
+                                Text("Welcome to TRACR. An app designed to help you stay on top of your schoolwork. Press next to continue the setup process and get started with the app. You can edit the settings you're about to select at any point unless otherwise indicated. ").padding(20)
+                                Spacer()
                             }.tag(0)
                         }
                         if (selectedtab == 1)
@@ -187,24 +199,79 @@ struct ContentView: View {
 //                                }.gesture(DragGesture()).tag(1)
                             NavigationView
                             {
-                                GoogleView().tag(1)
+                                GoogleUnsignedinView().tag(1)
                             }.navigationTitle("Google Stuff").navigationBarTitleDisplayMode(.inline)
                         }
                         if (selectedtab == 2)
                         {
                             NavigationView
                             {
-                                SyllabusView().tag(2)
+                                SyllabusView(showinginfo: true).tag(2)
                                // Text("This is the syllabus stuff")
 
                             }.navigationTitle("Syllabus").navigationBarTitleDisplayMode(.large)
                         }
                         if (selectedtab == 3)
                         {
-                           VStack
-                           {
-                            Text("Choose your work hours type")
-                           }.tag(3)
+                            NavigationView
+                            {
+                            ScrollView
+                            {
+                               VStack
+                               {
+                                Spacer().frame(height: 20)
+                                    HStack
+                                    {
+                                        Spacer()
+                                        Button(action:
+                                                {
+                                                    worktype1selected = true
+                                                })
+                                        {
+                                            ZStack
+                                            {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white).frame(width:UIScreen.main.bounds.size.width/2)
+                                                if (worktype1selected)
+                                                {
+                                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width:UIScreen.main.bounds.size.width/2 - 20 )
+                                                }
+                                                Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-60).padding(.vertical, 20)
+                                            }.offset(x: 10)
+                                        }
+                                        Spacer().frame(width: 20)
+                                        Button(action:
+                                                {
+                                                    worktype1selected = false
+                                                })
+                                        {
+                                            ZStack
+                                            {
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white).frame(width:UIScreen.main.bounds.size.width/2)
+                                                if (!worktype1selected)
+                                                {
+                                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width:UIScreen.main.bounds.size.width/2 - 20 )
+                                                }
+                                                Image("WorkHoursType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-60).padding(.vertical, 20)
+                                            }.offset(x: -10)
+                                        }
+                                        Spacer()
+                                    }
+                                Spacer().frame(height: 10)
+                                    HStack
+                                    {
+                                        Spacer()
+                                        Text("Option 1 \n This option requires you only to select amounts of time to work on each day. For example, you could set yourself 5 hours on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
+                                        Spacer().frame(width: 20)
+                                        Text("Option 2 \n This option requires you to select amonts of time to work on each day in addition to when the time will take place. For example, you could set yourself 5 hours from 8am to 13pm on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
+                                        Spacer()
+                                    }
+                                
+                               }
+                            }.navigationTitle("Work Hours Type").navigationBarTitleDisplayMode(.inline)
+                            }.onDisappear {
+                                let defaults = UserDefaults.standard
+                                defaults.set(!worktype1selected, forKey: "specificworktimes")
+                            }
                         }
                         if (selectedtab == 4)
                         {
@@ -213,84 +280,53 @@ struct ContentView: View {
                                 WorkHours().tag(4)
                             }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
                         }
+
                         if (selectedtab == 5)
                         {
                             NavigationView
                             {
-                                VStack
+                                ScrollView
                                 {
-                                    NavigationLink(destination: NewClassModalView(NewClassPresenting: $newclasspresenting), isActive: $newclasspresenting)
+                                    VStack
                                     {
-                                        EmptyView()
+                                        Spacer()
+                                        Text("Yay! Looks like you've completed the setup. Press 'Continue' to start using the app")
+                                        Spacer()
                                     }
-                                    // something like ClassesView so multiple classes can be added
-                                    Button(action:
-                                            {
-                                                newclasspresenting = true
-                                            })
-                                    {
-                                        Text("Add Class")
-                                    }
-                                }.tag(5)
-                            }.navigationTitle("Add Class").navigationBarTitleDisplayMode(.large)
-                        }
-                        if (selectedtab == 6)
-                        {
-                            
-                            Button(action:
-                            {
-                                firstLaunchTutorial = true
-
-                            })
-                            {
-                                Text("Get Rekt")
-                            }.tag(6)
+                                }
+                            }
                         }
                 //        }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
                         
-                        VStack
-                        {
-                            Spacer()
-                            HStack
-                            {
-                                Spacer()
-                                Button(action:
-                                {
-                                    print("kewl")
-                                    withAnimation(.spring())
-                                    {
-                                        selectedtab += 1
-                                    }
-                                })
-                                {
-                                    Text("Kewl")
-                                }
-                                Spacer().frame(width: 30)
-                            }
-                            Spacer().frame(height: 50)
-                        }
-                        VStack
-                        {
-                            Spacer()
-                            HStack
-                            {
-                                Spacer().frame(width: 30)
-                                Button(action:
-                                {
-                                    print("Not Kewl")
-                                    withAnimation(.spring())
-                                    {
-                                        selectedtab -= 1
-                                    }
-                                })
-                                {
-                                    Text("Kewl")
-                                }
-                                Spacer()
-                            }
-                            Spacer().frame(height: 50)
-                        }
+
                     }
+     
+                    Spacer()
+                        HStack
+                        {
+                            Button(action:
+                                    {
+                                        if (selectedtab < 5)
+                                        {
+                                            selectedtab += 1
+                                        }
+                                        else
+                                        {
+                                            firstLaunchTutorial.toggle()
+                                        }
+                                     //   selectedtab += 1
+                                    })
+                            {
+                                ZStack
+                                {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 50)
+                                    Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
+                                }
+                            }
+                        }.frame(height: 50)
+                    
+
+                }
 //                }
                 
 //                TabView

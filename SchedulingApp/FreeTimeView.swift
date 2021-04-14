@@ -705,7 +705,7 @@ struct WorkHours: View {
     @State private var selection: Set<String> = ["Monday"]
     @State private var addingselection: Set<String> = ["Monday"]
     @ObservedObject var freetimeediting: FreeTimeEditingView = FreeTimeEditingView()
-
+    var colorlist: [String] = ["one", "two", "three", "four", "five", "six", "seven"]
     @State var ObstructingFreeTimeObjectsWhenAdding: [Freetime] = []
     
     @State var rotationdegree = 20.0
@@ -714,11 +714,12 @@ struct WorkHours: View {
     @State var addFreeTimeCGFloats: [CGFloat] = []
     
     @State var pressing: Bool = false
+    @State var storedtimesnonspecific: [Int] = [0, 0, 0, 0, 0, 0, 0]
     
     @EnvironmentObject var masterRunning: MasterRunning
     
     @State var refreshID = UUID()
-    
+    @State var specificworkhoursview: Bool = true
     private func selectDeselect(_ singularassignment: String) {
         selection.removeAll()
         selection.insert(singularassignment)
@@ -804,6 +805,37 @@ struct WorkHours: View {
             return false
         }
     }
+    var boollist: [Bool] = [true, false, false, false, false, false, false]
+    func savenonspecificfreetimes() -> Void
+    {
+        for (index, _) in freetimelist.enumerated()
+        {
+            self.managedObjectContext.delete(self.freetimelist[index])
+        }
+        
+       
+        for i in 0..<7
+        {
+            let newFreetime = Freetime(context: self.managedObjectContext)
+            newFreetime.startdatetime = Date(timeIntervalSince1970: 0)
+            newFreetime.enddatetime = Date(timeIntervalSince1970: TimeInterval(storedtimesnonspecific[i]*60))
+            newFreetime.tempstartdatetime = newFreetime.startdatetime
+            newFreetime.tempenddatetime = newFreetime.enddatetime
+            newFreetime.monday = boollist[i%7]
+            newFreetime.tuesday = boollist[(i+6)%7]
+            newFreetime.wednesday = boollist[(i+5)%7]
+            newFreetime.thursday = boollist[(i+4)%7]
+            newFreetime.friday = boollist[(i+3)%7]
+            newFreetime.saturday = boollist[(i+2)%7]
+            newFreetime.sunday = boollist[(i+1)%7]
+            do {
+                try self.managedObjectContext.save()
+                //print("AssignmentTypes rangemin/rangemax changed")
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+    }
     
     func savefreetimes() -> Void {
         for freetime in freetimelist {
@@ -880,202 +912,285 @@ struct WorkHours: View {
             self.refreshID = UUID()
         }
     }
+    func getcolorindex(day: String) -> Int
+    {
+        for (index, dayity) in dayslist.enumerated()
+        {
+            if (dayity == day)
+            {
+                return index
+            }
+        }
+        return 0
+    }
     
     var body: some View {
         ZStack {
-            VStack {
-                Spacer().frame(height: 5)
+            if (specificworkhoursview)
+            {
+                VStack {
+                    Spacer().frame(height: 5)
 
-                HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
-                    ForEach(dayslist,  id: \.self) { day in
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill((self.selection.contains(day) && !self.freetimeediting.addingmode) ? Color("datenumberred") : Color.clear).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).animation(.easeInOut(duration: 0.14))
-                            
-                            RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(((self.addingselection.contains(day) && self.freetimeediting.addingmode) ? Color("datenumberred") : Color.clear), lineWidth: 2).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).animation(.easeInOut(duration: 0.14))
-                            
-                            Text(String(Array(day)[0..<3]))
-                        }.rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(self.rotationdegree) : Angle.degrees(0.0))
-                        .animation((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Animation.easeInOut(duration: 0.19).repeatForever(autoreverses: true) : Animation.linear(duration: 0))
-                        .rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(-10.0) : Angle.degrees(0.0))
-                        .animation(.easeInOut(duration: 0.14))
-                        .brightness(self.pressing ? -0.14 : 0)
-                        .scaleEffect(self.pressing ? 0.95 : 1.00)
-                        .animation(.easeIn(duration: 0.17))
-                        .onTapGesture {
-                            if self.freetimeediting.addingmode {
-                                self.addingSelectDeselect(day)
-                                self.addFreeTimeCGFloats.removeAll()
-                            }
-                            
-                            else {
+                    HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
+                        ForEach(dayslist,  id: \.self) { day in
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill((self.selection.contains(day) && !self.freetimeediting.addingmode) ? Color("datenumberred") : Color.clear).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).animation(.easeInOut(duration: 0.14))
                                 
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(((self.addingselection.contains(day) && self.freetimeediting.addingmode) ? Color("datenumberred") : Color.clear), lineWidth: 2).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).animation(.easeInOut(duration: 0.14))
                                 
-                                if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
-                                    self.savefreetimes()
-                                    self.freetimeediting.editingmode = true
-                                    self.freetimeediting.showsavebuttons = false
-                                }
-
-                                else {
-                                    self.selectDeselect(day)
-                                }
-                            }
-                        }
-                        .onLongPressGesture(minimumDuration: 0.45, pressing: { _ in
-                            if !self.freetimeediting.addingmode {
-                                self.pressing = true
-                                self.selectDeselect(day)
-                                
-                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(20)) {
-                                    self.pressing = false
-                                }
-                            }
-                        }) {
-                            if !self.freetimeediting.addingmode {
-                                if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
-                                    self.savefreetimes()
-                                    self.freetimeediting.editingmode = true
-                                    self.freetimeediting.showsavebuttons = false
+                                Text(String(Array(day)[0..<3]))
+                            }.rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(self.rotationdegree) : Angle.degrees(0.0))
+                            .animation((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Animation.easeInOut(duration: 0.19).repeatForever(autoreverses: true) : Animation.linear(duration: 0))
+                            .rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(-10.0) : Angle.degrees(0.0))
+                            .animation(.easeInOut(duration: 0.14))
+                            .brightness(self.pressing ? -0.14 : 0)
+                            .scaleEffect(self.pressing ? 0.95 : 1.00)
+                            .animation(.easeIn(duration: 0.17))
+                            .onTapGesture {
+                                if self.freetimeediting.addingmode {
+                                    self.addingSelectDeselect(day)
+                                    self.addFreeTimeCGFloats.removeAll()
                                 }
                                 
                                 else {
-                                    self.selectDeselect(day)
-                                    self.freetimeediting.editingmode = false
-                                    self.freetimeediting.showsavebuttons = true
-                                }
-                            }
-                        }
-                    }
-                }
-                      
-                ZStack {
-                    ScrollView {
-                        ZStack {
-                            HStack(alignment: .top) {
-                                VStack(alignment: .leading) {
-                                    ForEach((0...24), id: \.self) { hour in
-                                        HStack {
-                                            Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
-                                            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
-                                        }
-                                    }.frame(height: 50)
-                                }
-                            }
-                            
-                            HStack(alignment: .top) {
-                                Spacer()
-                                VStack {
-                                    Spacer().frame(height: 25)
                                     
-        //                            ZStack(alignment: .topTrailing) {
-        //                                ForEach(freetimelist, id: \.self) { freetime in
-        //                                    FreeTimeIndividual(freetime: freetime)
-        //                                }.animation(.spring())
-        //                            }
-                                    ZStack(alignment: .topTrailing) {
-        //                                ForEach((0...3), id: \.self) { num in
-        //                                    FreeTimeIndividual(yoffset: CGFloat(181.05*Double(num)))
-        //                                }//.animation(.spring())
-                               //         if (!self.freetimeediting.editingmode)
-                                     //   {
-                                        ForEach(freetimelist, id: \.self) { freetime in
-                                            if self.freetimeediting.addingmode {
-                                                if addinggetdisplayval(freetimeval: freetime) {
-                                                    ObstructingFreeTimes(ObstructingFreeTimeObjectsWhenAdding: self.$ObstructingFreeTimeObjectsWhenAdding, freetime: freetime, PossibleDateBrackets: self.$PossibleDateBrackets)
-                                                }
-                                            }
-                                            
-                                            else {
-                                                if (getdisplayval(freetimeval: freetime)) {
-                                                    FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime)
-                                                }
-                                            }
-                                        }.id(self.refreshID)
-                                            
-                                        if self.freetimeediting.addingmode {
-                                            ForEach(self.PossibleDateBrackets, id: \.self) { PossibleDateBracket in
-                                                FreeTimeToAdd(pdb: [PossibleDateBracket[0], PossibleDateBracket[1]], addFreeTimeCGFloats: self.$addFreeTimeCGFloats, showsavebuttons: self.$freetimeediting.showsavebuttons)
-                                            }
-                                        }
-                                    }
                                     
-                                    Spacer()
-                                }
-                            }
-                        }
-                    }
-                
-                    VStack {
-                        Spacer()
-                        
-                        HStack {
-                            if (self.freetimeediting.showsavebuttons) {
-                                Button(action: {
-                                    if self.freetimeediting.addingmode {
-                                        if !self.addFreeTimeCGFloats.isEmpty {
-                                            self.addfreetime()
-                                            self.freetimeediting.editingmode = true
-                                            self.freetimeediting.addingmode = false
-                                            self.freetimeediting.showsavebuttons = false
-                                            self.addFreeTimeCGFloats.removeAll()
-                                            self.addingselection = self.selection
-                                        }
-                                    }
-                                    else {
+                                    if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
                                         self.savefreetimes()
                                         self.freetimeediting.editingmode = true
                                         self.freetimeediting.showsavebuttons = false
                                     }
-                                }) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color("ftaddmenubg")).frame(width: 120, height: 46)
-                                        Text(self.freetimeediting.addingmode ? "Add" : "Save").font(.system(size: 18)).fontWeight(.semibold).foregroundColor((self.freetimeediting.addingmode && self.addFreeTimeCGFloats.isEmpty) ? Color.gray : Color.blue)
-                                    }.padding(.all, 7).padding(.trailing, -7)
-                                }
-                                
-                                Rectangle().fill(Color.gray).frame(width: 0.4, height: 26)
-                                
-                                Button(action: {
-                                    self.cancelfreetimes()
-                                    self.addFreeTimeCGFloats.removeAll()
-                                    self.freetimeediting.editingmode = true
-                                    self.freetimeediting.addingmode = false
-                                    self.freetimeediting.showsavebuttons = false
-                                    self.addingselection = self.selection
-                                }) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color("ftaddmenubg")).frame(width: 120, height: 46)
-                                        Text("Cancel").font(.system(size: 18)).fontWeight(.semibold).foregroundColor(Color.red)
-                                    }.padding(.all, 7).padding(.leading, -7)
+
+                                    else {
+                                        self.selectDeselect(day)
+                                    }
                                 }
                             }
-                        }.background(Color("ftaddmenubg")).cornerRadius(14).padding(.all, 14).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
+                            .onLongPressGesture(minimumDuration: 0.45, pressing: { _ in
+                                if !self.freetimeediting.addingmode {
+                                    self.pressing = true
+                                    self.selectDeselect(day)
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(20)) {
+                                        self.pressing = false
+                                    }
+                                }
+                            }) {
+                                if !self.freetimeediting.addingmode {
+                                    if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
+                                        self.savefreetimes()
+                                        self.freetimeediting.editingmode = true
+                                        self.freetimeediting.showsavebuttons = false
+                                    }
+                                    
+                                    else {
+                                        self.selectDeselect(day)
+                                        self.freetimeediting.editingmode = false
+                                        self.freetimeediting.showsavebuttons = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                          
+                    ZStack {
+                        ScrollView {
+                            ZStack {
+                                HStack(alignment: .top) {
+                                    VStack(alignment: .leading) {
+                                        ForEach((0...24), id: \.self) { hour in
+                                            HStack {
+                                                Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
+                                                Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                            }
+                                        }.frame(height: 50)
+                                    }
+                                }
+                                
+                                HStack(alignment: .top) {
+                                    Spacer()
+                                    VStack {
+                                        Spacer().frame(height: 25)
+                                        
+            //                            ZStack(alignment: .topTrailing) {
+            //                                ForEach(freetimelist, id: \.self) { freetime in
+            //                                    FreeTimeIndividual(freetime: freetime)
+            //                                }.animation(.spring())
+            //                            }
+                                        ZStack(alignment: .topTrailing) {
+            //                                ForEach((0...3), id: \.self) { num in
+            //                                    FreeTimeIndividual(yoffset: CGFloat(181.05*Double(num)))
+            //                                }//.animation(.spring())
+                                   //         if (!self.freetimeediting.editingmode)
+                                         //   {
+                                            ForEach(freetimelist, id: \.self) { freetime in
+                                                if self.freetimeediting.addingmode {
+                                                    if addinggetdisplayval(freetimeval: freetime) {
+                                                        ObstructingFreeTimes(ObstructingFreeTimeObjectsWhenAdding: self.$ObstructingFreeTimeObjectsWhenAdding, freetime: freetime, PossibleDateBrackets: self.$PossibleDateBrackets)
+                                                    }
+                                                }
+                                                
+                                                else {
+                                                    if (getdisplayval(freetimeval: freetime)) {
+                                                        FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime)
+                                                    }
+                                                }
+                                            }.id(self.refreshID)
+                                                
+                                            if self.freetimeediting.addingmode {
+                                                ForEach(self.PossibleDateBrackets, id: \.self) { PossibleDateBracket in
+                                                    FreeTimeToAdd(pdb: [PossibleDateBracket[0], PossibleDateBracket[1]], addFreeTimeCGFloats: self.$addFreeTimeCGFloats, showsavebuttons: self.$freetimeediting.showsavebuttons)
+                                                }
+                                            }
+                                        }
+                                        
+                                        Spacer()
+                                    }
+                                }
+                            }
+                        }
+                    
+                        VStack {
+                            Spacer()
+                            
+                            HStack {
+                                if (self.freetimeediting.showsavebuttons) {
+                                    Button(action: {
+                                        if self.freetimeediting.addingmode {
+                                            if !self.addFreeTimeCGFloats.isEmpty {
+                                                self.addfreetime()
+                                                self.freetimeediting.editingmode = true
+                                                self.freetimeediting.addingmode = false
+                                                self.freetimeediting.showsavebuttons = false
+                                                self.addFreeTimeCGFloats.removeAll()
+                                                self.addingselection = self.selection
+                                            }
+                                        }
+                                        else {
+                                            self.savefreetimes()
+                                            self.freetimeediting.editingmode = true
+                                            self.freetimeediting.showsavebuttons = false
+                                        }
+                                    }) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color("ftaddmenubg")).frame(width: 120, height: 46)
+                                            Text(self.freetimeediting.addingmode ? "Add" : "Save").font(.system(size: 18)).fontWeight(.semibold).foregroundColor((self.freetimeediting.addingmode && self.addFreeTimeCGFloats.isEmpty) ? Color.gray : Color.blue)
+                                        }.padding(.all, 7).padding(.trailing, -7)
+                                    }
+                                    
+                                    Rectangle().fill(Color.gray).frame(width: 0.4, height: 26)
+                                    
+                                    Button(action: {
+                                        self.cancelfreetimes()
+                                        self.addFreeTimeCGFloats.removeAll()
+                                        self.freetimeediting.editingmode = true
+                                        self.freetimeediting.addingmode = false
+                                        self.freetimeediting.showsavebuttons = false
+                                        self.addingselection = self.selection
+                                    }) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color("ftaddmenubg")).frame(width: 120, height: 46)
+                                            Text("Cancel").font(.system(size: 18)).fontWeight(.semibold).foregroundColor(Color.red)
+                                        }.padding(.all, 7).padding(.leading, -7)
+                                    }
+                                }
+                            }.background(Color("ftaddmenubg")).cornerRadius(14).padding(.all, 14).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
+                        }
+                    }
+                }
+            }
+            else
+            {
+                VStack
+                {
+                    ForEach(dayslist, id: \.self)
+                    {
+                        day in
+                        ZStack
+                        {
+                            
+                           // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white).frame(width: UIScreen.main.bounds.size.width*2/3, height: 50)
+                            HStack
+                            {
+                                ZStack
+                                {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color(colorlist[getcolorindex(day: day)])).frame(height: 50)
+                                    HStack
+                                    {
+                                        Text(day).font(.title).fontWeight(.bold)//.padding(20)
+                                        Spacer()
+                                        Text("\(storedtimesnonspecific[getcolorindex(day: day)] / 60)h \(storedtimesnonspecific[getcolorindex(day: day)] % 60)min")
+                                    }.padding(.horizontal, 20)
+                                }//.offset(x: 10)
+                               // Spacer()
+                                Spacer().frame(width: 10)
+                                Button(action:
+                                {
+                                    if (storedtimesnonspecific[getcolorindex(day: day)] > 0)
+                                    {
+                                        
+                                        storedtimesnonspecific[getcolorindex(day: day)] -= 15
+                                        savenonspecificfreetimes()
+                                    }
+                                })
+                                {
+                                    ZStack
+                                    {
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.red).frame(width: 50, height: 40).opacity(storedtimesnonspecific[getcolorindex(day: day)] == 0 ? 0.6 : 1)
+                                        Text("-15").fontWeight(.bold).foregroundColor(Color.white)
+                                    }
+                                }
+                                Button(action:
+                                {
+                                    if (storedtimesnonspecific[getcolorindex(day: day)] < 1440)
+                                    {
+                                        storedtimesnonspecific[getcolorindex(day: day)] += 15
+                                        savenonspecificfreetimes()
+                                    }
+                                    
+                                })
+                                {
+                                    
+                                    ZStack
+                                    {
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.green).frame(width: 50, height: 40).opacity(storedtimesnonspecific[getcolorindex(day: day)] == 1440 ? 0.6 : 1)
+                                        Text("+15").fontWeight(.bold).foregroundColor(Color.white)
+                                    }
+                                    
+                                }
+                              //  Stepper("", value: $storedtimesnonspecific[getcolorindex(day: day)], in: 0...24).padding(.trailing, 30)
+                            }.padding(.horizontal, 15)
+                        }
+                        Spacer().frame(height: 30)
                     }
                 }
             }
 //End of main VStack, Start of Add Button
-            VStack {
-                Spacer()
-                if self.freetimeediting.editingmode && !self.freetimeediting.addingmode {
-                    HStack {
-                        Spacer()
-                        
-                        Button(action: {
-                            self.freetimeediting.addingmode = true
-                            self.freetimeediting.showsavebuttons = true
-                        }) {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
-                                ZStack {
-                                    Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
-                                }
-                            )
-                        }.buttonStyle(PlainButtonStyle()).contextMenu {
+            if (specificworkhoursview)
+            {
+                VStack {
+                    Spacer()
+                    if self.freetimeediting.editingmode && !self.freetimeediting.addingmode {
+                        HStack {
+                            Spacer()
+                            
                             Button(action: {
                                 self.freetimeediting.addingmode = true
                                 self.freetimeediting.showsavebuttons = true
                             }) {
-                                Text("Work Hours")
-                                Image(systemName: "clock")
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
+                                    ZStack {
+                                        Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                    }
+                                )
+                            }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                Button(action: {
+                                    self.freetimeediting.addingmode = true
+                                    self.freetimeediting.showsavebuttons = true
+                                }) {
+                                    Text("Work Hours")
+                                    Image(systemName: "clock")
+                                }
                             }
                         }
                     }
@@ -1085,6 +1200,24 @@ struct WorkHours: View {
             if masterRunning.masterRunningNow {
                 MasterClass()
             }
+        }.onAppear
+        {
+            let defaults = UserDefaults.standard
+            specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+            if (!specificworkhoursview)
+            {
+                for freetime in freetimelist
+                {
+                    for i in 0..<7
+                    {
+                        if (boollist[i%7] == freetime.monday && boollist[(i+6)%7] == freetime.tuesday && boollist[(i+5)%7] == freetime.wednesday && boollist[(i+4)%7] == freetime.thursday && boollist[(i+3)%7] == freetime.friday && boollist[(i+2)%7] == freetime.saturday && boollist[(i+1)%7] == freetime.sunday)
+                        {
+                            storedtimesnonspecific[i] +=  Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+                        }
+                    }
+                }
+            }
+            
         }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading)

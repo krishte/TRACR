@@ -826,9 +826,7 @@ struct MasterClass: View {
             throw MasterErrors.ImpossibleDueDate
         }
         let totaltime = totaltime
-        //let rangeoflengths = [30, 300]
-      //  print(assignment.name)
-     //   print(newd, daystilldue)
+
         var approxlength = 0
         if (bulk) {
             for classity in classlist {
@@ -838,15 +836,12 @@ struct MasterClass: View {
                         if (assignmenttype.type == assignment.type)
                         {
                             approxlength = Int(assignmenttype.rangemin + ((assignmenttype.rangemax - assignmenttype.rangemin)/5) * classity.tolerance)
-                          //  print(approxlength)
                         }
                     }
                 }
             }
             approxlength = Int(ceil(CGFloat(approxlength)/CGFloat(5))*5)
-    //        print(approxlength)
-           // print(approxlength)
-            //check if doable in totaltime and newd assuming 1 subassignment per day
+
         }
         
         if (Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(newd))/CGFloat(5))*5) > approxlength)
@@ -854,8 +849,7 @@ struct MasterClass: View {
             approxlength = Int(ceil(CGFloat(CGFloat(totaltime)/CGFloat(newd))/CGFloat(5))*5)
         }
 
-       // print(totaltime, approxlength, daystilldue)
-        //possibly 0...newd or 0..<newd
+
         var possibledays = 0
         var possibledayslist: [Int] = []
         var notpossibledayslist: [Int] = []
@@ -866,9 +860,7 @@ struct MasterClass: View {
                 possibledayslist.append(i)
             }
         }
-      //  print(totaltime, approxlength)
         let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
-     //   print(totaltime, approxlength)
         if (ntotal <= possibledays)
         {
             
@@ -883,10 +875,9 @@ struct MasterClass: View {
             }
             else
             {
+                // needs to be fixed
                 let breaks = possibledays-ntotal
-                //print("Breaks: " + String(possibledays-ntotal))
-             //   print("Required Days: " + String(ntotal))
-               // print("Possible Days: " + String(possibledays))
+
                 var groupslist: [Int] = []
                 for _ in 0..<breaks {
                     groupslist.append(ntotal/breaks)
@@ -918,28 +909,22 @@ struct MasterClass: View {
                     notpossibledayslist.append(i)
                 }
             }
-            //print(tempsubassignmentlist)
-            //print(notpossibledayslist)
+
             for value in notpossibledayslist {
-                //print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
-               // print(possibledays)
-                //print(extratime)
+
                 
                 if (dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]! >= 30) // could be a different more dynamic bound
                 {
 
                     if (extratime > dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]!) {
                         tempsubassignmentlist.append((value,dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]! ))
-                       // print(dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!)
                         extratime -= dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]!
                     }
                     else {
-                        // print(extratime)
 
                         tempsubassignmentlist.append((value, extratime))
                         extratime = 0
                     }
-                    //totaltime -= dateFreeTimeDict[Date(timeInterval: TimeInterval(86400*value), since: startOfDay)]!
                     if (extratime == 0) {
                         break;
                     }
@@ -988,18 +973,18 @@ struct MasterClass: View {
                 }
                 if (extratime != 0)
                 {
-                    
+                    print("EPIC FAIL")
                 }
 
             }
         }
-        for (daysfromnow, lengthofwork) in tempsubassignmentlist {
-        }
+
         return (tempsubassignmentlist, newd)
     }
 
     
     func master() throws -> Void {
+        // delete all subassignments RECONSIDER
         for (index, _) in subassignmentlist.enumerated() {
              self.managedObjectContext.delete(self.subassignmentlist[index])
         }
@@ -1011,7 +996,7 @@ struct MasterClass: View {
         }
         
         var counterb: Int = 0
-        
+        // update assignmentnumber property
         for classitye in classlist {
             counterb = 0
             for assignmentye in assignmentlist {
@@ -1027,6 +1012,8 @@ struct MasterClass: View {
         } catch {
             print(error.localizedDescription)
         }
+        
+        // calculating free time on each day
         
         var timemonday = 0
         var timetuesday = 0
@@ -1045,23 +1032,18 @@ struct MasterClass: View {
 
         var monfreetimelist:[(Date, Date)] = [], tuefreetimelist:[(Date, Date)] = [], wedfreetimelist:[(Date, Date)] = [], thufreetimelist:[(Date, Date)] = [], frifreetimelist:[(Date, Date)] = [], satfreetimelist:[(Date, Date)] = [], sunfreetimelist:[(Date, Date)] = []
         
-        //let timezoneOffset =  TimeZone.current.secondsFromGMT()
         
         var latestDate = Date(timeIntervalSinceNow: TimeInterval(0))
         var dateFreeTimeDict = [Date: Int]()
-        //var startoffreetimeDict = [Date: Date]()
         var specificdatefreetimedict = [Date: [(Date,Date)]]()
         //initial subassignment objects are added just as (assignmentname, length of subassignment)
         var subassignmentdict = [Int: [(String, Int)]]()
-       // print(startOfDay.description)
         
         for freetime in freetimelist {
             if (freetime.monday) {
                 timemonday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 monfreetimelist.append((freetime.startdatetime, freetime.enddatetime))
-//                print(Calendar.current.dateComponents([.minute], from: Date(timeInterval: 0, since: Calendar.current.startOfDay(for: freetime.startdatetime)), to: freetime.startdatetime).minute!, Calendar.current.dateComponents([.minute], from: Date(timeInterval: 0, since: Calendar.current.startOfDay(for: startoffreetimemonday)), to: startoffreetimemonday).minute!)
-//                print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeInterval: -7200, since: startoffreetimemonday))).description)
-//                print(startoffreetimemonday.description)
+
             }
             if (freetime.tuesday) {
                 timetuesday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
@@ -1086,26 +1068,22 @@ struct MasterClass: View {
                 satfreetimelist.append((freetime.startdatetime, freetime.enddatetime))
             }
             if (freetime.sunday) {
-              //  print( Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!, freetime.startdatetime.description)
                 timesunday += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
                 sunfreetimelist.append((freetime.startdatetime, freetime.enddatetime))
             }
         }
-       // print("Time Sunday: " + String(timesunday))//
         var generalfreetimelist = [timesunday, timemonday, timetuesday, timewednesday, timethursday, timefriday, timesaturday]
 
         let actualfreetimeslist = [sunfreetimelist, monfreetimelist, tuefreetimelist, wedfreetimelist, thufreetimelist, frifreetimelist, satfreetimelist, sunfreetimelist]
-     //   print(generalfreetimelist)
         for (index, _) in generalfreetimelist.enumerated() {
                 generalfreetimelist[index] = Int(Double(generalfreetimelist[index])/Double(5) * 5)
                 
-        //    print(generalfreetimelist[index])
         }
-        
-     //   print(generalfreetimelist)
         
 
         
+
+        // latest duedate among all assignments
         for assignment in assignmentlist {
             latestDate = max(latestDate, assignment.duedate)
         }
@@ -1116,28 +1094,24 @@ struct MasterClass: View {
             subassignmentdict[i] = []
             
             dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!] = generalfreetimelist[(Calendar.current.component(.weekday, from: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!) - 1)]
-//            startoffreetimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!] = startoffreetimelist[(Calendar.current.component(.weekday, from: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!) - 1)]
+
             specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!] = actualfreetimeslist[(Calendar.current.component(.weekday, from: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!) - 1)]
-            //print( Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!.description, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! )
-           // print(dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!])
+     
         }
     
         for freetime in freetimelist {
             if (!freetime.monday && !freetime.tuesday && !freetime.wednesday && !freetime.thursday && !freetime.friday && !freetime.saturday && !freetime.sunday) {
-                //print("sdfdsfdsf")
-                //print(startoffreetimeDict)
-                //error is here
+
                 if (freetime.enddatetime > Date())
                 {
                     dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! += Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
-                    //print(dateFreeTimeDict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!)
                     specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]!.append((freetime.startdatetime, freetime.enddatetime))
                 }
-//                for (x,y) in specificdatefreetimedict[Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: freetime.startdatetime))]! {
-//                    print(x.description, y.description)
-//                }
+
             }
         }
+        
+        // look at free times objects that have passed today
         var deletelist: [Int] = []
         var changelist: [Int] = []
         for (index,(start, end)) in specificdatefreetimedict[startOfDay]!.enumerated()
@@ -1168,28 +1142,19 @@ struct MasterClass: View {
             specificdatefreetimedict[startOfDay]!.remove(at: index-counter)
             counter += 1
         }
-//        for i in 0...daystilllatestdate {
-//
-//         //   print( Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!.description, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! ,startoffreetimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]?.description )
-//
-//        }
+
         for assignment in assignmentlist {
             let daystilldue = Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeInterval: 0, since: assignment.duedate)))).day!
-                //print(Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 7200))).description, Date(timeInterval: 7200, since: Calendar.current.startOfDay(for: assignment.duedate)), daystilldue)
-               // print(daystilldue)
-                
-                //print(daystilldue)
+
             if (!assignment.completed)
             {
                 let (subassignments, _) = try bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.timeleft), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
-             //   print(assignment.name, daystilldue)
-               // print(daystilldue)
+
                             
                 for (daysfromnow, lengthofwork) in subassignments {
                     dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: daysfromnow, to: startOfDay)!]! -= lengthofwork
                     subassignmentdict[daysfromnow]!.append((assignment.name, lengthofwork))
-                 //   print(daysfromnow, lengthofwork)
                 }
             }
         }
@@ -1199,10 +1164,8 @@ struct MasterClass: View {
             {
                 if (specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]!.count == 1)
                 {
-                   // print("Days from now: " + String(i))
                     let startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0)), to: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0).minute!*60), since: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!)
-                   // let startime = specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0
-                 //   print("Start time: " + startime.description)
+
                     var timeoffset = 0
                     
                     for (name, lengthofwork) in subassignmentdict[i]! {
@@ -1217,16 +1180,12 @@ struct MasterClass: View {
                             }
                         }
                         
-                         //  let randomDate = Double.random(in: 10000 ... 1700000)
                         newSubassignment4.startdatetime = Date(timeInterval:     TimeInterval(timeoffset), since: startime)
-                      //  print(newSubassignment4.startdatetime.description)
                         newSubassignment4.enddatetime = Date(timeInterval: TimeInterval(timeoffset+lengthofwork*60), since: startime)
                         timeoffset += lengthofwork*60
                         do {
                             try self.managedObjectContext.save()
-                           // print("Subassignments made")
                         } catch {
-                         //å   print(error.localizedDescription)
                         }
                     }
                 }
@@ -1530,7 +1489,6 @@ struct ClassesView: View {
                     HStack {
                         Spacer()
                         ZStack {
-                            // RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("fifteen")).frame(width: 70, height: 70).opacity(1).padding(20)
                             if (showpopup)
                             {
                                 ZStack() {
@@ -1540,13 +1498,15 @@ struct ClassesView: View {
                                         {
                                             self.sheetNavigator.modalView = .assignment
                                             self.NewSheetPresenting = true
-                                            self.NewAssignmentPresenting = true
+//                                                self.NewAssignmentPresenting = true
+                                       //     print(self.sheetNavigator.modalView)
                                         }
                                         else
                                         {
                                             self.sheetNavigator.alertView = .noclass
                                             self.NewAlertPresenting = true
                                         }
+                            //            countnewassignments = 0
                                         
                                     })
                                     {
@@ -1560,8 +1520,24 @@ struct ClassesView: View {
                                                 //.padding(.bottom, 20).padding(.trailing, 100)
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
                                                 .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+//                                            if (countnewassignments > 0)
+//                                            {
+//                                                VStack
+//                                                {
+//                                                    HStack
+//                                                    {
+//                                                        Spacer()
+//                                                        ZStack
+//                                                        {
+//                                                            Circle().fill(Color.red).frame(width: 15, height: 15)
+//                                                            Text(String(countnewassignments)).foregroundColor(Color.white).font(.system(size: 10)).frame(width: 15, height: 15)
+//                                                        }.offset(x: 5, y: -5)
+//                                                    }
+//                                                    Spacer()
+//                                                }
+//                                            }
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -70, y: 10).shadow(radius: 5)
+                                    }.offset(x: -70, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1)
                                     Button(action:
                                     {
                                         self.sheetNavigator.modalView = .classity
@@ -1576,10 +1552,20 @@ struct ClassesView: View {
                                               .frame(width: widthAndHeight, height: widthAndHeight)
                                             Image(systemName: "folder")
                                               .resizable().scaledToFit()
-                                           //   .aspectRatio(contentMode: .fit)
-                                                //.padding(.bottom, 20).padding(.trailing, 100)
-                                             // .frame(width: widthAndHeight, height: widthAndHeight)
+
                                                 .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
+                                            if (classlist.count == 0)
+                                            {
+                                                VStack
+                                                {
+                                                    HStack
+                                                    {
+                                                        Spacer()
+                                                        Circle().fill(Color.red).frame(width: 15, height: 15).offset(x: 5, y: -5)
+                                                    }
+                                                    Spacer()
+                                                }
+                                            }
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
                                     }.offset(x: -130, y: 10).shadow(radius: 5)
 
@@ -1609,7 +1595,7 @@ struct ClassesView: View {
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
                                                 .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -190, y: 10).shadow(radius: 5)
+                                    }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1).opacity(!self.getcompletedAssignments() ? 0.5: 1)
                                 }.transition(.scale)
                               }
                             
@@ -1622,17 +1608,20 @@ struct ClassesView: View {
 
                                 
                             }) {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(showpopup ? Color.blue : Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {
                                         //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                         Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
                                     }
                                 )
                             }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)
-
                         }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                             Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                         }
+                        
+                        
+                        
+                        
                     }
                 }
             }

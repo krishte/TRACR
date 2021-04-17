@@ -1218,24 +1218,61 @@ struct WorkHours: View {
                 }
             }
             
+        }.onDisappear
+        {
+            let defaults = UserDefaults.standard
+            defaults.set(specificworkhoursview, forKey: "specificworktimes")
         }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading)
             {
                 Text("")
             }
+//            ToolbarItem(placement: .navigationBarTrailing)
+//            {
+//                Button(action:
+//                {
+//                    withAnimation(.spring())
+//                    {
+//                        specificworkhoursview.toggle()
+//                        for i in 0..<7
+//                        {
+//                            storedtimesnonspecific[i] = 0
+//                        }
+//                        for freetime in freetimelist
+//                        {
+//                            for i in 0..<7
+//                            {
+//                                if (boollist[i%7] == freetime.monday && boollist[(i+6)%7] == freetime.tuesday && boollist[(i+5)%7] == freetime.wednesday && boollist[(i+4)%7] == freetime.thursday && boollist[(i+3)%7] == freetime.friday && boollist[(i+2)%7] == freetime.saturday && boollist[(i+1)%7] == freetime.sunday)
+//                                {
+//                                    storedtimesnonspecific[i] +=  Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!
+//                                }
+//                            }
+//                        }
+//                        
+//                    }
+//                })
+//                {
+//                   // Text("hello")
+//                    Image(systemName: specificworkhoursview ? "calendar.circle.fill" : "calendar.circle").resizable().aspectRatio(contentMode: .fit)
+//                }
+//            }
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    withAnimation(.spring()) {
-                        self.freetimeediting.editingmode.toggle()
-                        self.freetimeediting.showsavebuttons.toggle()
-                        
-                        if self.freetimeediting.editingmode {
-                            self.savefreetimes()
+                HStack
+                {
+
+                    Button(action: {
+                        withAnimation(.spring()) {
+                            self.freetimeediting.editingmode.toggle()
+                            self.freetimeediting.showsavebuttons.toggle()
+                            
+                            if self.freetimeediting.editingmode {
+                                self.savefreetimes()
+                            }
                         }
+                    }) {
+                        Text(self.freetimeediting.addingmode ? "" : (self.freetimeediting.editingmode ? "Edit" : "Save")).fontWeight(.bold).foregroundColor(Color.blue)
                     }
-                }) {
-                    Text(self.freetimeediting.addingmode ? "" : (self.freetimeediting.editingmode ? "Edit" : "Save")).fontWeight(.bold).foregroundColor(Color.blue)
                 }
             }
         }

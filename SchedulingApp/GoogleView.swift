@@ -337,8 +337,8 @@ struct GoogleView: View {
         {
             let defaults = UserDefaults.standard
         //    print(defaults.object(forKey: "savedgoogleclasses") as! [String])
-            classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
-            classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
+            classeslist = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
+            classesidlist = defaults.object(forKey: "savedgoogleclassesids") as? [String] ?? []
         }
         
     }
@@ -582,10 +582,14 @@ struct GoogleView: View {
           //  print("success")
             let defaults = UserDefaults.standard
           //  print(defaults.object(forKey: "accessedclassroom") ?? false)
-            let valstuffity = defaults.object(forKey: "accessedclassroom") as! Bool
+            classeslist = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
+            classesidlist = defaults.object(forKey: "savedgoogleclassesids") as? [String] ?? []
+            let valstuffity = defaults.object(forKey: "accessedclassroom") as? Bool ?? false
             //let bobbity = defaults.object(forKey: "lastaccessdate")
-            if (!valstuffity)
+            if (!valstuffity || classeslist.count == 0)
             {
+                classeslist = []
+                classesidlist = []
                 GIDSignIn.sharedInstance().restorePreviousSignIn()
                 if (googleDelegate.signedIn)
                 {
@@ -687,8 +691,8 @@ struct GoogleView: View {
             {
                 let defaults = UserDefaults.standard
                 print("yay")
-                classeslist = defaults.object(forKey: "savedgoogleclasses") as! [String]
-                classesidlist = defaults.object(forKey: "savedgoogleclassesids") as! [String]
+                classeslist = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
+                classesidlist = defaults.object(forKey: "savedgoogleclassesids") as? [String] ?? []
 
                // self.refreshID = UUID()
 

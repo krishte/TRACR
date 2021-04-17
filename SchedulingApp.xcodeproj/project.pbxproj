@@ -822,10 +822,11 @@
 				CODE_SIGN_ENTITLEMENTS = SchedulingApp/SchedulingAppDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "\"SchedulingApp/Preview Content\"";
 				DEVELOPMENT_TEAM = QP3T865764;
 				ENABLE_PREVIEWS = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = SchedulingApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -853,10 +854,11 @@
 				CODE_SIGN_ENTITLEMENTS = SchedulingApp/SchedulingApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "\"SchedulingApp/Preview Content\"";
 				DEVELOPMENT_TEAM = QP3T865764;
 				ENABLE_PREVIEWS = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -981,6 +983,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Today's TasksExtensionDebug.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = QP3T865764;
 				INFOPLIST_FILE = "Today's Tasks/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
@@ -989,7 +992,8 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.schedulingapp.tracr.Today-s-Tasks";
+				MARKETING_VERSION = 0.9;
+				PRODUCT_BUNDLE_IDENTIFIER = com.schedulingapp.tracr.tracrwidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -1005,6 +1009,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Today's TasksExtension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = QP3T865764;
 				INFOPLIST_FILE = "Today's Tasks/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
@@ -1013,7 +1018,8 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.schedulingapp.tracr.Today-s-Tasks";
+				MARKETING_VERSION = 0.9;
+				PRODUCT_BUNDLE_IDENTIFIER = com.schedulingapp.tracr.tracrwidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;

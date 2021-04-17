@@ -21,6 +21,8 @@ class TextFieldManager: ObservableObject {
 
 struct SelectGoogleAssignmentView: View
 {
+    @EnvironmentObject var googleDelegate: GoogleDelegate
+
     @Environment(\.managedObjectContext) var managedObjectContext
 
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
@@ -81,38 +83,46 @@ struct SelectGoogleAssignmentView: View
         
     }
     
+    
     var body: some View
     {
         Form
         {
-            ForEach(classlist)
+            if (!googleDelegate.signedIn)
             {
-                classity in
-                if (classity.googleclassroomid != "")
+                Text("Log in to google to use this feature!")
+            }
+            else
+            {
+                ForEach(classlist)
                 {
-                    Section(header: Text(classity.name).fontWeight(.bold).padding(10 ).font(.system(size: 20)).foregroundColor(Color.black))
+                    classity in
+                    if (classity.googleclassroomid != "")
                     {
-                        ForEach(0 ..< foundassignments.count, id: \.self)
+                        Section(header: Text(classity.name).fontWeight(.bold).padding(10 ).font(.system(size: 20)).foregroundColor(Color.black))
                         {
-                            val in
-                            if (foundassignments[val].1 == classity.googleclassroomid)
+                            ForEach(0 ..< foundassignments.count, id: \.self)
                             {
-                                Button(action:{
-                                    selectedgoogleassignment = val
-                                    dostuff()
-                                })
+                                val in
+                                if (foundassignments[val].1 == classity.googleclassroomid)
                                 {
-                                    HStack
+                                    Button(action:{
+                                        selectedgoogleassignment = val
+                                        dostuff()
+                                    })
                                     {
-                                        Text(foundassignments[val].0)//.frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20)
-                                        Spacer()
-                                        if (selectedgoogleassignment == val)
+                                        HStack
                                         {
-                                            Image(systemName: "checkmark").foregroundColor(.blue)
+                                            Text(foundassignments[val].0)//.frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20)
+                                            Spacer()
+                                            if (selectedgoogleassignment == val)
+                                            {
+                                                Image(systemName: "checkmark").foregroundColor(.blue)
+                                            }
                                         }
-                                    }
-                                }.buttonStyle(PlainButtonStyle())
-                                
+                                    }.buttonStyle(PlainButtonStyle())
+                                    
+                                }
                             }
                         }
                     }
@@ -1266,6 +1276,10 @@ struct NewClassModalView: View {
                             }
                         }
                     }
+                    else if (linkingtogc)
+                    {
+                        Text("Log in to google to use this feature!")
+                    }
                 }
                 
                 Section {
@@ -1292,28 +1306,55 @@ struct NewClassModalView: View {
                     }.padding(.bottom, 8)
                 }
                 
-                if (gradingschemelist.count > 0) {
+          //      if (gradingschemelist.count > 0) {
                     Section {
-                        Picker(selection: $gradingscheme, label: Text("Grading Scheme")) {
-                            ForEach(0 ..< gradingschemelist.count) {
-                                if (gradingschemelist[$0][0..<1] == "P")
+                        if (isIB)
+                        {
+                           
+                            if (groups[classgroupnameindex][classnameindex] == "Theory of Knowledge" || groups[classgroupnameindex][classnameindex] == "Extended Essay" )
+                            {
+                                HStack
                                 {
-                                    Text("Percentage-based")
+                                    Text("Grading Scheme")
+                                    Spacer()
+                                    Text("Letter-based: A-E")
+                                    
                                 }
-                                else if (gradingschemelist[$0][0..<1] == "L")
+                            }
+                            else
+                            {
+                                HStack
                                 {
-                                    Text("Letter-based: " + String(gradingschemelist[$0][1..<gradingschemelist[$0].count]))
+                                    Text("Grading Scheme")
+                                    Spacer()
+                                    Text("Number-based: 1-7")
+                                    
                                 }
-                                else
-                                {
-                                    Text("Number-based: " + String(gradingschemelist[$0][1..<gradingschemelist[$0].count]))
-                                }                                //Text(gradingschemelist[$0])
-                                
+                            }
+                        }
+                        else
+                        {
+                            Picker(selection: $gradingscheme, label: Text("Grading Scheme")) {
+                                ForEach(0 ..< gradingschemelist.count) {
+                                    if (gradingschemelist[$0][0..<1] == "P")
+                                    {
+                                        Text("Percentage-based")
+                                    }
+                                    else if (gradingschemelist[$0][0..<1] == "L")
+                                    {
+                                        Text("Letter-based: " + String(gradingschemelist[$0][1..<gradingschemelist[$0].count]))
+                                    }
+                                    else
+                                    {
+                                        Text("Number-based: " + String(gradingschemelist[$0][1..<gradingschemelist[$0].count]))
+                                    }                                //Text(gradingschemelist[$0])
+                                    
+                                }
                             }
                         }
                     }
                    // Text("Grading Scheme: " + self.gradingscheme)
-                }
+         //       }
                 
                 Section {
                     HStack {
@@ -1499,7 +1540,7 @@ struct NewClassModalView: View {
                             }
                             else
                             {
-                                newClass.gradingscheme = ""
+                                newClass.gradingscheme = (groups[classgroupnameindex][classnameindex] == "Extended Essay" || groups[classgroupnameindex][classnameindex] == "Theory of Knowledge" ) ? "LA-E" : "N1-7"
                             }
                          //   newClass.isarchived = false
                             
@@ -1579,8 +1620,11 @@ struct NewClassModalView: View {
             let defaults = UserDefaults.standard
             let ibval = defaults.object(forKey: "isIB") as? Bool ?? false
             self.isIB = ibval
-            let gradingscheme2 = defaults.object(forKey: "savedgradingschemes") as? [String] ?? []
-            self.gradingschemelist = gradingscheme2
+            if (!isIB)
+            {
+                let gradingscheme2 = defaults.object(forKey: "savedgradingschemes") as? [String] ?? []
+                self.gradingschemelist = gradingscheme2
+            }
             
             GIDSignIn.sharedInstance().restorePreviousSignIn()
             if (googleDelegate.signedIn)
@@ -2814,7 +2858,8 @@ struct EditAssignmentModalView: View {
         self._assignmentsubject = State(initialValue: assignmentsubject)
         self._originalname = State(initialValue: assignmentname)
         self._assignmenttypeval = State(initialValue: assignmenttype) // State(initialValue: assignmenttype)
-        print(type(of: assignmenttypeval))
+       // print(type(of: assignmenttypeval))
+        print(gradeval)
         
     }
     
@@ -2900,7 +2945,11 @@ struct EditAssignmentModalView: View {
                                     }
                                     else
                                     {
-                                        if (self.getgradingscheme()[3..<4] == "F")
+                                        if (Int(gradeval.rounded(.down)) == 0)
+                                        {
+                                            Text("Grade: NA")
+                                        }
+                                        else if (self.getgradingscheme()[3..<4] == "F")
                                         {
                                             Text("Grade: " + otherclassgradesaf[Int(gradeval.rounded(.down))-1])
                                         }

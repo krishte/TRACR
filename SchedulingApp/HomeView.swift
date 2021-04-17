@@ -1155,6 +1155,11 @@ struct HomeBodyView: View {
                                                     Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "No Tasks" : subassignmentlist[0].assignmentname) : self.subassignmentassignmentname).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
                                                     
                                                     Spacer()
+                                                    VStack
+                                                    {
+                                                        Spacer()
+                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: subassignmentlist[0].startdatetime)) : shortdateformatter.string(from: subassignmentstartdatetime)).fontWeight(.light).font(.caption)
+                                                    }
                                                 }
                                                 
                                                 Spacer()
@@ -1164,7 +1169,7 @@ struct HomeBodyView: View {
                                                 HStack {
                                                     Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)) : timeformatter.string(from: subassignmentstartdatetime) + " - " + timeformatter.string(from: subassignmentenddatetime)).fontWeight(.light).font(.caption)
                                                     Spacer()
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.light).font(.caption)
+                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
                                                 }
                                             }.frame(height: 15)
                                             
@@ -1177,11 +1182,14 @@ struct HomeBodyView: View {
                                               
                                                     HStack
                                                     {
-                                                        if (subassignmentlist.count != 0)
+                                                        if (subassignmentlist.count != 0 && subassignmentassignmentname != "")
                                                         {
                                                          //   Text("hello")
                                                             RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width: CGFloat((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) * (UIScreen.main.bounds.size.width-32)), height: 15)
-                                                            Spacer()
+                                                            if ((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) < 0.99)
+                                                            {
+                                                                Spacer()
+                                                            }
                                                         }
                                                     }
                                                     
@@ -1219,7 +1227,7 @@ struct HomeBodyView: View {
                                     }
                                 }.rotationEffect(Angle(degrees: self.hidingupcoming ? 180 : 0), anchor: .center).animation(.spring()).padding(.trailing, 15)
                             }.padding(.top, self.hidingupcoming ? -90 : -55)
-                        }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
+                        }.frame(width: UIScreen.main.bounds.size.width).animation(.spring()).padding(.top, 5)
                                                     
                 VStack {
                     ScrollView {
@@ -1247,7 +1255,7 @@ struct HomeBodyView: View {
                                         ForEach(subassignmentlist) { subassignment in
 
                                             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
                                                     if (self.subassignmentstartdatetime == subassignment.startdatetime)
                                                     {
                                                         self.subassignmentassignmentname = "";
@@ -1499,7 +1507,7 @@ struct SubassignmentListView: View {
                 {
                     if (isfirstofgroup(subassignment3: subassignment))
                     {
-                        IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: true).onTapGesture {
+                        IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: true, subassignmentassignmentname2: self.$subassignmentassignmentname).onTapGesture {
                             selectedcolor = subassignment.color
                             if (self.subassignmentassignmentname == subassignment.assignmentname)
                             {
@@ -1515,7 +1523,7 @@ struct SubassignmentListView: View {
                 }
                 else
                 {
-                    IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: false).onTapGesture {
+                    IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname).onTapGesture {
                         selectedcolor = subassignment.color
                         if (self.subassignmentassignmentname == subassignment.assignmentname)
                         {
@@ -1605,6 +1613,7 @@ struct IndividualSubassignmentView: View {
     
     @Binding var showeditassignment: Bool
     @Binding var selectededitassignment: String
+    @Binding var subassignmentassignmentname: String
     
     @EnvironmentObject var masterRunning: MasterRunning
     
@@ -1612,10 +1621,11 @@ struct IndividualSubassignmentView: View {
     
     var shortdateformatter: DateFormatter
     
-    init(subassignment2: Subassignmentnew, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>, isrepeated: Bool) {
+    init(subassignment2: Subassignmentnew, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>, isrepeated: Bool, subassignmentassignmentname2: Binding<String>) {
 
         self._showeditassignment = showeditassignment
         self._selectededitassignment = selectededitassignment
+        self._subassignmentassignmentname = subassignmentassignmentname2
         
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
@@ -1734,7 +1744,7 @@ struct IndividualSubassignmentView: View {
                             Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
 
                             
-                            Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                        //    Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                             
                         }
                     }
@@ -1743,7 +1753,7 @@ struct IndividualSubassignmentView: View {
                         Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
 
                         
-                        Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
+                      // Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
                     }
                 }
 
@@ -1869,6 +1879,7 @@ struct IndividualSubassignmentView: View {
                                     }
                                 }
                             }
+                            self.subassignmentassignmentname = ""
                             do {
                                 try self.managedObjectContext.save()
                             } catch {

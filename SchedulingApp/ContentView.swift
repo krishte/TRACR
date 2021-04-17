@@ -103,8 +103,8 @@ struct ContentView: View {
     func initialize() {
         let defaults = UserDefaults.standard
 
-        if !defaults.bool(forKey: "Launched Before") {
-            defaults.set(true, forKey: "Launched Before")
+        if !(defaults.object(forKey: "LaunchedBefore") as? Bool ?? false) {
+            defaults.set(true, forKey: "LaunchedBefore")
             let gradingschemes: [String] = ["P", "N1-7", "LA-F", "N1-8", "N1-4"]
             defaults.set(0, forKey: "weeklyminutesworked")
             let lastmondaydate =  Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
@@ -164,7 +164,7 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            if (firstLaunchTutorial)
+            if (!firstLaunchTutorial)
             {
 //                NavigationView
 //                {
@@ -235,7 +235,7 @@ struct ContentView: View {
                                                 {
                                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width:UIScreen.main.bounds.size.width/2 - 20 )
                                                 }
-                                                Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-60).padding(.vertical, 20)
+                                                Image("WorkHoursType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-60).padding(.vertical, 20)
                                             }.offset(x: 10)
                                         }
                                         Spacer().frame(width: 20)

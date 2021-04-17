@@ -179,8 +179,6 @@ struct TasksProvider: TimelineProvider {
                         entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
                     }
                     
-                    
-                    
                     else {
                         entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray)
                     }
@@ -205,7 +203,7 @@ struct TasksProvider: TimelineProvider {
         
         if subassignmentlist.count > 0 {
             for (index, _) in subassignmentlist.enumerated() {
-                if (subassignmentlist[index].enddatetime > nowDate) && (subassignmentlist[index].startdatetime < tomorrowDate) {
+                if (subassignmentlist[index].enddatetime > Calendar.current.startOfDay(for: Date())) && (subassignmentlist[index].startdatetime < tomorrowDate) {
                     scheduleArray.append(TodaysScheduleEntry(taskName: subassignmentlist[index].assignmentname, className: getClass(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname)))
                 }
             }
@@ -230,6 +228,10 @@ struct TasksProvider: TimelineProvider {
                     }
                     
                     lastSAEndDate = subassignmentlist[index].enddatetime
+                    
+                    if index == subassignmentlist.count - 1 {
+                        entries.append(SimpleEntry(date: subassignmentlist[index].enddatetime, isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: scheduleArray))
+                    }
                 }
             }
         }
@@ -238,7 +240,7 @@ struct TasksProvider: TimelineProvider {
             entries.append(SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: [TodaysScheduleEntry(taskName: "Listen to Music", className: ""), TodaysScheduleEntry(taskName: "Go for a Walk", className: ""), TodaysScheduleEntry(taskName: "Hang out", className: ""), TodaysScheduleEntry(taskName: "Exercise", className: ""), TodaysScheduleEntry(taskName: "Take a Nap", className: ""), TodaysScheduleEntry(taskName: "Relax", className: "")]))
         }
         
-        let timeline = Timeline(entries: entries, policy: .atEnd)
+        let timeline = Timeline(entries: entries, policy: .after(tomorrowDate))
         completion(timeline)
     }
 }
@@ -513,23 +515,27 @@ struct TodaysTasksMediumView: View {
                     
                     HStack(alignment: .center) {
                         ZStack {
+                            RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
+                            
                             HStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
+                                if Double(entry.progressCount + entry.minorProgressCount)/100 > 0.98 {
+                                    Spacer()
+                                }
                                 
-                                Spacer()
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15)
+                                
+                                if Double(entry.progressCount + entry.minorProgressCount)/100 < 0.98 {
+                                    Spacer()
+                                }
                             }
                             
                             HStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15)
                                 
-                                Spacer()
-                            }
-                            
-                            HStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
-                                
-                                Spacer()
-                            }
+                                if entry.progressCount != 100 {
+                                    Spacer()
+                                }
+                            }.frame(width: (geometry.size.width - 32))
                         }
                     }
                 }.padding(.all, 16).background(self.bgGradient).frame(width: geometry.size.width, height: geometry.size.height)
@@ -688,23 +694,27 @@ struct TodaysTasksLargeView: View {
                         
                         HStack(alignment: .center) {
                             ZStack {
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
+                                
                                 HStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
+                                    if Double(entry.progressCount + entry.minorProgressCount)/100 > 0.98 {
+                                        Spacer()
+                                    }
                                     
-                                    Spacer()
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15)
+                                    
+                                    if Double(entry.progressCount + entry.minorProgressCount)/100 < 0.98 {
+                                        Spacer()
+                                    }
                                 }
                                 
                                 HStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15)
                                     
-                                    Spacer()
-                                }
-                                
-                                HStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
-                                    
-                                    Spacer()
-                                }
+                                    if entry.progressCount != 100 {
+                                        Spacer()
+                                    }
+                                }.frame(width: (geometry.size.width - 32))
                             }
                         }
                     }.frame(height: (geometry.size.height * 0.35))

@@ -520,7 +520,7 @@ struct TodaysTasksMediumView: View {
                             }
                             
                             HStack {
-                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("minorProgressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
                                 
                                 Spacer()
                             }
@@ -695,7 +695,7 @@ struct TodaysTasksLargeView: View {
                                 }
                                 
                                 HStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("minorProgressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15, alignment: .leading)
                                     
                                     Spacer()
                                 }

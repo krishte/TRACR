@@ -539,6 +539,7 @@ struct SettingsView: View {
     @State var easteregg1: Bool = false
     @State var easteregg2: Bool = false
     @State var easteregg3: Bool = false
+    @State var specificworkhoursview: Bool = true
     
     var body: some View {
         Form {
@@ -610,7 +611,7 @@ struct SettingsView: View {
 //                     }
                         HStack {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.yellow).frame(width:40, height:40)
                                 Image(systemName: "questionmark").resizable().frame(width:15, height:25)
                             }
                             Spacer().frame(width:20)
@@ -673,8 +674,52 @@ struct SettingsView: View {
 //
 //                    }
                 }
-                
+        
                 Section {
+                    NavigationLink(destination:
+                        Form
+                        {
+                            Toggle(isOn: $specificworkhoursview)
+                            {
+                                Text("Specifc Work Hours View")
+                            }
+                        }.onAppear
+                        {
+                            let defaults = UserDefaults.standard
+                            specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+                        }.onDisappear
+                        {
+                            let defaults = UserDefaults.standard
+                            defaults.set(specificworkhoursview, forKey: "specificworktimes")
+                        }
+                    )
+                    {
+                        HStack {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color("two")).frame(width:40, height:40)
+                                ZStack {
+                                    Image(systemName: "calendar").resizable().frame(width:25, height:25)
+                                    HStack
+                                    {
+                                        VStack
+                                        {
+                                            Spacer()
+                                            ZStack
+                                            {
+                                                Circle().fill(Color("two")).frame(width: 14, height: 14).offset(x: -4, y:4)
+                                                Image(systemName: "gear").resizable().frame(width: 12, height: 12).offset(x: -4, y: 4)
+                                            }
+                                            
+                                        }
+                                        Spacer()
+                                    }.frame(width: 25, height: 25)
+                                }
+                            }
+                            Spacer().frame(width:20)
+                            Text("Work Hours Options").font(.system(size:20))
+                        }.frame(height:40)
+                        
+                    }
                     NavigationLink(destination:
                         WorkHours()
                     ) {
@@ -706,7 +751,7 @@ struct SettingsView: View {
                 Section
                 {
                     NavigationLink(destination:
-                        GoogleView()
+                        OverallGoogleView()
                     ) {
                         HStack {
                             ZStack {
@@ -1312,7 +1357,7 @@ struct NotificationsView: View {
             let array2 = Array(self.selection2)
             defaults.set(array2, forKey: "savedbreaknotifications")
             
-            masterRunning.masterRunningNow = true
+            masterRunning.onlyNotifications = true
 //            masterRunning.onlyNotifications = true
         }
                    // }

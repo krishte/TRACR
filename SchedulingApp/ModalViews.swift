@@ -99,7 +99,7 @@ struct SelectGoogleAssignmentView: View
                     classity in
                     if (classity.googleclassroomid != "")
                     {
-                        Section(header: Text(classity.name).fontWeight(.bold).padding(10 ).font(.system(size: 20)).foregroundColor(Color.black))
+                        Section(header: Text(classity.name).fontWeight(.bold).padding(10 ).font(.system(size: 20)))
                         {
                             ForEach(0 ..< foundassignments.count, id: \.self)
                             {
@@ -305,7 +305,7 @@ struct NewGoogleAssignmentModalView: View {
                     
                     TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch)
                     
-                    NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection, selectedclass: $selectedclass, assignmenttype: $assignmenttype, nameofassignment: $nameofassignment, selectedDate: $selectedDate, foundassignmentdates: $foundassignmentdates).onAppear
+                    NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection, selectedclass: $selectedclass, assignmenttype: $assignmenttype, nameofassignment: $nameofassignment, selectedDate: $selectedDate, foundassignmentdates: $foundassignmentdates).environmentObject(googleDelegate).onAppear
                     {
                         countnewassignments = 0
                     }, isActive: $activeselection)
@@ -357,26 +357,26 @@ struct NewGoogleAssignmentModalView: View {
 //                    }
                 }
                 
-                Section {
-                    Toggle(isOn: self.$completedassignment) {
-                        Text("Completed Assignment")
-                    }.onTapGesture {
-                        if (!self.completedassignment)
-                         {
-                            self.assignmentgrade = 1
-                            
-                          //  print(!self.iscompleted)
-                        }
-                        else
-                        {
-                            
-                            self.selectedDate = Date()
-                        }
-                       
-                        
-                        
-                    }
-                }
+//                Section {
+//                    Toggle(isOn: self.$completedassignment) {
+//                        Text("Completed Assignment")
+//                    }.onTapGesture {
+//                        if (!self.completedassignment)
+//                         {
+//                            self.assignmentgrade = 1
+//
+//                          //  print(!self.iscompleted)
+//                        }
+//                        else
+//                        {
+//
+//                            self.selectedDate = Date()
+//                        }
+//
+//
+//
+//                    }
+//                }
                 
                 if (self.completedassignment)
                 {
@@ -602,6 +602,8 @@ struct NewGoogleAssignmentModalView: View {
                                     print(error.localizedDescription)
                                 }
                             }
+                            masterRunning.uniqueAssignmentName = self.nameofassignment
+
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
                             
@@ -835,26 +837,26 @@ struct NewAssignmentModalView: View {
                     TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.webSearch)
                 }
                 
-                Section {
-                    Toggle(isOn: self.$completedassignment) {
-                        Text("Completed Assignment")
-                    }.onTapGesture {
-                        if (!self.completedassignment)
-                         {
-                            self.assignmentgrade = 1
-                            
-                          //  print(!self.iscompleted)
-                        }
-                        else
-                        {
-                            
-                            self.selectedDate = Date()
-                        }
-                       
-                        
-                        
-                    }
-                }
+//                Section {
+//                    Toggle(isOn: self.$completedassignment) {
+//                        Text("Completed Assignment")
+//                    }.onTapGesture {
+//                        if (!self.completedassignment)
+//                         {
+//                            self.assignmentgrade = 1
+//
+//                          //  print(!self.iscompleted)
+//                        }
+//                        else
+//                        {
+//
+//                            self.selectedDate = Date()
+//                        }
+//
+//
+//
+//                    }
+//                }
                 
                 if (self.completedassignment)
                 {
@@ -1075,14 +1077,18 @@ struct NewAssignmentModalView: View {
                                     }
                                 }
                             }
-                            masterRunning.masterRunningNow = true
-                            masterRunning.displayText = true
+                            //assignment specific
+                           
                             
                             do {
                                 try self.managedObjectContext.save()
                             } catch {
                                 print(error.localizedDescription)
                             }
+                            masterRunning.uniqueAssignmentName = self.textfieldmanager.userInput
+
+                            masterRunning.masterRunningNow = true
+                            masterRunning.displayText = true
                             
                             self.NewAssignmentPresenting = false
                         }
@@ -1153,9 +1159,9 @@ struct NewClassModalView: View {
 
     let subjectgroups = ["Group 1: Language and Literature", "Group 2: Language Acquisition", "Group 3: Individuals and Societies", "Group 4: Sciences", "Group 5: Mathematics", "Group 6: The Arts", "Extended Essay", "Theory of Knowledge"]
     
-    let groups = [["English A: Literature", "English A: Language and Literatue", "English B"], ["German B", "French B", "Spanish B", "German A: Literature", "French A: Literature", "Spanish A: Literature", "German A: Language and Literatue", "French A: Language and Literatue", "Spanish A: Language and Literatue", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "Environmental Systems and Societies SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "Environmental Systems and Societies SL"], ["Mathematics: Analysis and Approaches", "Mathematics: Applications and Interpretation"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["Extended Essay"], ["Theory of Knowledge"]]
+    let groups = [["English A: Literature", "English A: Language and Literatue", "German A: Literature", "French A: Literature", "Spanish A: Literature", "German A: Language and Literatue", "French A: Language and Literatue", "Spanish A: Language and Literatue", "Chinese A: Language and Literature", "Chinese A: Literature"], ["English B", "German B", "French B", "Spanish B", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio", "English Ab Initio", "Mandarin Ab Initio", "Arabic B", "Chinese B"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "Environmental Systems and Societies SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "Environmental Systems and Societies SL"], ["Mathematics: Analysis and Approaches", "Mathematics: Applications and Interpretation"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["Extended Essay"], ["Theory of Knowledge"]]
     
-    let shortenedgroups = [["English A: Lit", "English A: Lang and Lit", "English B"], ["German B", "French B", "Spanish B", "German A: Lit", "French A: Lit", "Spanish A: Lit", "German A: Lang and Lit", "French A: Lang and Lit", "Spanish A: Lang and Lit", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "ESS SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "ESS SL"], ["Mathematics: AA", "Mathematics: AI"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["EE"], ["TOK"]]
+    let shortenedgroups = [["English A: Lit", "English A: Lang & Lit", "German A: Lit", "French A: Lit", "Spanish A: Lit", "German A: Lang & Lit", "French A: Lang & Lit", "Spanish A: Lang & Lit", "Chinese A: Lang & Lit", "Chinese A: Lit"], ["English B", "German B", "French B", "Spanish B", "German Ab Initio", "French Ab Initio", "Spanish Ab Initio", "English Ab Initio", "Mandarin Ab Initio", "Arabic B", "Chinese B"], ["Geography", "History", "Economics", "Psychology", "Global Politics", "ESS SL"], ["Biology", "Chemistry", "Physics", "Computer Science", "Design Technology", "Sport Science", "ESS SL"], ["Mathematics: AA", "Mathematics: AI"], ["Music", "Visual Arts", "Theatre", "Economics", "Psychology", "Biology", "Chemistry", "Physics"], ["EE"], ["TOK"]]
     
     let colorsa = ["one", "two", "three", "four", "five"]
     let colorsb = ["six", "seven", "eight", "nine", "ten"]
@@ -2612,6 +2618,9 @@ struct FreetimeDetailView: View {
 
 struct NewGradeModalView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @EnvironmentObject var masterRunning: MasterRunning
+
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [])
     var assignmentlist: FetchedResults<Assignment>
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
@@ -2622,10 +2631,16 @@ struct NewGradeModalView: View {
     @Binding var NewGradePresenting: Bool
     var otherclassgradesae: [String] = ["E", "D", "C", "B", "A"]
     var otherclassgradesaf: [String] = ["F", "E", "D", "C", "B", "A"]
-
+    @State var newassignment: Bool = false
+    var formatter: DateFormatter
     
+    //add logic for when it's not possible to add grade to existing assignment so only create a new assignment with grade ----> disable the toggle with a message underneath
     init(NewGradePresenting: Binding<Bool>, classfilter: Int)
     {
+
+        formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
         self._NewGradePresenting = NewGradePresenting
         self._classfilter = State(initialValue: classfilter)
     }
@@ -2666,6 +2681,49 @@ struct NewGradeModalView: View {
         }
         return "P"
     }
+    func getgradingschemebyclass() -> String
+    {
+        if (getnontrashclasslist().count == 0)
+        {
+            return "P"
+        }
+        return classeslist[getnontrashclasslist()[selectedclass]].gradingscheme
+    }
+    func getgrademinbyclass() -> Double
+    {
+        let gradeschemeval = self.getgradingschemebyclass()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            return 1
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return 1
+        }
+        else
+        {
+            return 1
+        }
+    }
+    func getgrademaxbyclass() -> Double
+    {
+        let gradeschemeval = self.getgradingschemebyclass()
+        if (gradeschemeval[0..<1] == "L")
+        {
+            if (gradeschemeval[3..<4] == "F")
+            {
+                return 6
+            }
+            return 5
+        }
+        else if (gradeschemeval[0..<1] == "N")
+        {
+            return Double(gradeschemeval[3..<gradeschemeval.count]) ?? 7
+        }
+        else
+        {
+            return 100
+        }    }
     func getgrademin(assignment: Assignment) -> Double
     {
         let gradeschemeval = self.getgradingscheme(assignment: assignment)
@@ -2710,35 +2768,62 @@ struct NewGradeModalView: View {
         }
         return ""
     }
+    func getnontrashclasslist() -> [Int]
+    {
+        var classitylist: [Int] = []
+        for (index, classity) in classeslist.enumerated()
+        {
+            if (!classity.isTrash)
+            {
+                classitylist.append(index)
+            }
+        }
+        return classitylist
+    }
+    @State var assignmentname: String = ""
+    @State var selectedclass: Int = 0
+    @State var assignmenttype: Int = 0
+    let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+    let hourlist = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]
+    let minutelist = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+    @State var hours = 0
+    @State var minutes = 0
+    @State private var createassignmentallowed = true
+    @State private var showingAlert = false
+    @State private var expandedduedate = false
+    @State private var startDate = Date(timeIntervalSince1970: 0)
+    @State var selectedDate: Date = Date()
     var body: some View {
         NavigationView {
             Form {
                 Section {
-                    Picker(selection: $selectedassignment, label: Text("Assignment")) {
-                        ForEach(0 ..< getgradableassignments().count) {
-                            if ($0 < self.getgradableassignments().count)
-                            {
-                                Text(self.assignmentlist[self.getgradableassignments()[$0]].name)
-                            }
-                        }
-
+                    Toggle(isOn: $newassignment)
+                    {
+                        Text("Create New Completed Assignment")
                     }
                 }
-                Section {
-                    VStack {
-                        //Text("Hello")
-                        if (self.getgradableassignments().count > 0)
-                        {
-                            if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N" || self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "L")
+                if (newassignment)
+                {
+                    Section {
+                        TextField("Assignment Name", text: $assignmentname).keyboardType(.webSearch)
+                    }
+                
+                    
+
+                    Section {
+                        VStack {
+                            //Text("Hello")
+
+                            if (self.getgradingschemebyclass()[0..<1] == "N" || self.getgradingschemebyclass()[0..<1] == "L")
                             {
                                 HStack {
-                                    if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N")
+                                    if (self.getgradingschemebyclass()[0..<1] == "N")
                                     {
                                         Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
                                     }
                                     else
                                     {
-                                        if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[3..<4] == "F")
+                                        if (self.getgradingschemebyclass()[3..<4] == "F")
                                         {
                                             Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
                                         }
@@ -2749,7 +2834,7 @@ struct NewGradeModalView: View {
                                     }
                                    Spacer()
                                 }.frame(height: 30)
-                                Slider(value: $assignmentgrade, in: self.getgrademin(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])...self.getgrademax(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]]))
+                                Slider(value: $assignmentgrade, in: self.getgrademinbyclass()...self.getgrademaxbyclass())
                             }
                             else
                             {
@@ -2760,32 +2845,269 @@ struct NewGradeModalView: View {
                                 Slider(value: $assignmentgrade, in: 1...100)
 
                             }
+
+
                         }
 
                     }
 
-                }
-                Section {
-                    Button(action: {
-          
-                      //  print(self.getgradableassignments()[4])
-                        let value = self.getgradableassignments()[self.selectedassignment]
-                        for assignment in self.assignmentlist {
-                            if (assignment.name == self.assignmentlist[value].name)
-                            {
-                                assignment.grade =  Int64(self.assignmentgrade.rounded(.down))
+                    Section {
+                        Picker(selection: $selectedclass, label: Text("Class")) {
+                            ForEach(0 ..< getnontrashclasslist().count) {
+                                if ($0 < self.getnontrashclasslist().count)
+                                {
+                                    Text(self.classeslist[self.getnontrashclasslist()[$0]].name)
+                                }
+
                             }
                         }
-                     
-                        do {
-                            try self.managedObjectContext.save()
-                        } catch {
-                            print(error.localizedDescription)
+    //                    ForEach(0 ..< getgradableassignments().count) {
+    //                        if ($0 < self.getgradableassignments().count)
+    //                        {
+    //                            Text(self.assignmentlist[self.getgradableassignments()[$0]].name)
+    //                        }
+    //                    }
+                    }
+                    Section {
+                        Picker(selection: $assignmenttype, label: Text("Type")) {
+                            ForEach(0 ..< assignmenttypes.count) {
+                                Text(self.assignmenttypes[$0])
+                            }
                         }
-                        
-                        self.NewGradePresenting = false
-                    }) {
-                        Text("Add Grade")
+                    }
+//
+                    Section {
+                        Text("Assignment Length")
+                        HStack {
+                            VStack {
+                                Picker(selection: $hours, label: Text("Hour")) {
+                                    ForEach(hourlist.indices) { hourindex in
+                                        Text(String(self.hourlist[hourindex]) + (self.hourlist[hourindex] == 1 ? " hour" : " hours"))
+                                     }
+                                 }.pickerStyle(WheelPickerStyle())
+                            }.frame(minWidth: 100, maxWidth: .infinity)
+                            .clipped()
+
+                            VStack {
+                                if hours == 0 {
+                                    Picker(selection: $minutes, label: Text("Minutes")) {
+                                        ForEach(minutelist[6...].indices) { minuteindex in
+                                            Text(String(self.minutelist[minuteindex]) + " mins")
+                                        }
+                                    }.pickerStyle(WheelPickerStyle())
+                                }
+
+                                else {
+                                    Picker(selection: $minutes, label: Text("Minutes")) {
+                                        ForEach(minutelist.indices) { minuteindex in
+                                            Text(String(self.minutelist[minuteindex]) + " mins")
+                                        }
+                                    }.pickerStyle(WheelPickerStyle())
+                                }
+                            }.frame(minWidth: 100, maxWidth: .infinity)
+                            .clipped()
+                        }
+                    }
+//
+                    Section {
+
+
+                        if #available(iOS 14.0, *) {
+                            Button(action: {
+                                    self.expandedduedate.toggle()
+
+                            }) {
+                                HStack {
+                                    Text("Select Due Date and Time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                                }
+
+                            }
+                            if (expandedduedate)
+                            {
+                                VStack {
+                                    DatePicker("", selection: $selectedDate, in:  Date(timeIntervalSince1970: 0)... , displayedComponents: [.date, .hourAndMinute]).animation(.spring()).datePickerStyle(WheelDatePickerStyle())
+                                }.animation(.spring())
+                            }
+
+                        }
+
+                        else {
+                            Button(action: {
+                                    self.expandedduedate.toggle()
+
+                            }) {
+                                HStack {
+                                    Text("Select Due Date and Time").foregroundColor(Color.black)
+                                    Spacer()
+                                    Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
+                                }
+
+                            }
+                            if (expandedduedate)
+                            {
+                                VStack { //change startDate thing to the time-adjusted one (look at iOS 14 implementation
+                                    MyDatePicker(selection: $selectedDate, starttime: $startDate, dateandtimedisplayed: true).frame(width: UIScreen.main.bounds.size.width-40, height: 200, alignment: .center).animation(nil)
+                                }.animation(nil)
+                            }
+
+                        }
+                    }
+
+                    Section {
+                        Button(action: {
+                            self.createassignmentallowed = true
+
+                            for assignment in self.assignmentlist {
+                                if assignment.name == self.assignmentname {
+                                    self.createassignmentallowed = false
+                                }
+                            }
+
+                            if (self.assignmentname == "")
+                            {
+                                self.createassignmentallowed = false
+                            }
+
+                            if self.createassignmentallowed {
+
+                                let newAssignment = Assignment(context: self.managedObjectContext)
+                                newAssignment.completed = true
+                                newAssignment.grade = Int64(self.assignmentgrade)
+                                newAssignment.subject = self.classeslist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                                newAssignment.name = self.assignmentname
+                                newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                                newAssignment.progress = 100
+                                newAssignment.duedate = self.selectedDate
+
+                                if (self.hours == 0)
+                                {
+                                    newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                                }
+                                else
+                                {
+                                    newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                                }
+                                newAssignment.timeleft = 0
+
+                                for classity in self.classeslist {
+                                    if (classity.originalname == newAssignment.subject) {
+                                        newAssignment.color = classity.color
+                                        classity.assignmentnumber += 1
+                                    }
+                                }
+
+                                //assignment specific
+                                
+
+                                do {
+                                    try self.managedObjectContext.save()
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
+                                masterRunning.uniqueAssignmentName = self.assignmentname
+                                masterRunning.masterRunningNow = true
+                                masterRunning.displayText = true
+                                
+                                self.NewGradePresenting = false
+                            }
+
+                            else {
+                                self.showingAlert = true
+                            }
+                        }) {
+                            Text("Add Completed Assignment")
+                        }.alert(isPresented: $showingAlert) {
+                            Alert(title: self.assignmentname == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.assignmentname == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    Section {
+                        Picker(selection: $selectedassignment, label: Text("Assignment")) {
+                            ForEach(0 ..< getgradableassignments().count) {
+                                if ($0 < self.getgradableassignments().count)
+                                {
+                                    Text(self.assignmentlist[self.getgradableassignments()[$0]].name)
+                                }
+                            }
+
+                        }
+                    }
+                
+                    Section {
+                        VStack {
+                            //Text("Hello")
+                            if (self.getgradableassignments().count > 0)
+                            {
+                                if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N" || self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "L")
+                                {
+                                    HStack {
+                                        if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[0..<1] == "N")
+                                        {
+                                            Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                        }
+                                        else
+                                        {
+                                            if (self.getgradingscheme(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])[3..<4] == "F")
+                                            {
+                                                Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
+                                            }
+                                            else
+                                            {
+                                                Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
+                                            }
+                                        }
+                                       Spacer()
+                                    }.frame(height: 30)
+                                    Slider(value: $assignmentgrade, in: self.getgrademin(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]])...self.getgrademax(assignment: self.assignmentlist[self.getgradableassignments()[selectedassignment]]))
+                                }
+                                else
+                                {
+                                    HStack {
+                                        Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+                                        Spacer()
+                                    }.frame(height: 30)
+                                    Slider(value: $assignmentgrade, in: 1...100)
+
+                                }
+                            }
+
+                        }
+
+                    }
+                    if (self.getgradableassignments().count == 0)
+                    {
+                        Text("You currently don't have any completed assignments without a grade. Hit the toggle above to create a new completed assignment.")
+                    }
+                    else
+                    {
+                        Section {
+                            Button(action: {
+                  
+                              //  print(self.getgradableassignments()[4])
+                                let value = self.getgradableassignments()[self.selectedassignment]
+                                for assignment in self.assignmentlist {
+                                    if (assignment.name == self.assignmentlist[value].name)
+                                    {
+                                        assignment.grade =  Int64(self.assignmentgrade.rounded(.down))
+                                    }
+                                }
+                             
+                                do {
+                                    try self.managedObjectContext.save()
+                                } catch {
+                                    print(error.localizedDescription)
+                                }
+                                
+                                self.NewGradePresenting = false
+                            }) {
+                                Text("Add Grade")
+                            }
+                        }
                     }
                 }
             }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Grade").navigationBarTitleDisplayMode(.inline)
@@ -3157,7 +3479,8 @@ struct EditAssignmentModalView: View {
                             } catch {
                                 print(error.localizedDescription)
                             }
-
+                            masterRunning.uniqueAssignmentName = self.nameofassignment
+                            //assignment specific
                             masterRunning.masterRunningNow = true
                             
                             self.NewAssignmentPresenting = false
@@ -3207,7 +3530,7 @@ struct EditAssignmentModalView: View {
                              }
                                 
                             }
-                            masterRunning.masterRunningNow = true
+                          //  masterRunning.masterRunningNow = true
                             
                             self.deleteassignmentallowed = false
                         }

@@ -925,6 +925,7 @@ struct WorkHours: View {
     }
     
     var body: some View {
+        VStack {
         ZStack {
             if (specificworkhoursview)
             {
@@ -1101,7 +1102,7 @@ struct WorkHours: View {
             }
             else
             {
-                VStack
+                ScrollView
                 {
                     ForEach(dayslist, id: \.self)
                     {
@@ -1200,6 +1201,7 @@ struct WorkHours: View {
             if masterRunning.masterRunningNow {
                 MasterClass()
             }
+        }
         }.onAppear
         {
             let defaults = UserDefaults.standard
@@ -1216,6 +1218,20 @@ struct WorkHours: View {
                         }
                     }
                 }
+                var nullval: Bool = false
+                for i in 0..<7
+                {
+                    if (storedtimesnonspecific[i] != 0)
+                    {
+                        nullval = true
+                    }
+                }
+                if (!nullval)
+                {
+                    storedtimesnonspecific = [180, 180, 180, 180, 180, 300, 300]
+                    savenonspecificfreetimes()
+                }
+        
             }
             
         }.onDisappear
@@ -1260,18 +1276,20 @@ struct WorkHours: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack
                 {
-
-                    Button(action: {
-                        withAnimation(.spring()) {
-                            self.freetimeediting.editingmode.toggle()
-                            self.freetimeediting.showsavebuttons.toggle()
-                            
-                            if self.freetimeediting.editingmode {
-                                self.savefreetimes()
+                    if (specificworkhoursview)
+                    {
+                        Button(action: {
+                            withAnimation(.spring()) {
+                                self.freetimeediting.editingmode.toggle()
+                                self.freetimeediting.showsavebuttons.toggle()
+                                
+                                if self.freetimeediting.editingmode {
+                                    self.savefreetimes()
+                                }
                             }
+                        }) {
+                            Text(self.freetimeediting.addingmode ? "" : (self.freetimeediting.editingmode ? "Edit" : "Save")).fontWeight(.bold).foregroundColor(Color.blue)
                         }
-                    }) {
-                        Text(self.freetimeediting.addingmode ? "" : (self.freetimeediting.editingmode ? "Edit" : "Save")).fontWeight(.bold).foregroundColor(Color.blue)
                     }
                 }
             }

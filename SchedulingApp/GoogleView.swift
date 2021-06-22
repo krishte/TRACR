@@ -95,7 +95,7 @@ struct DetailGoogleView: View
                             
                         })
                         {
-                            Text("Unlink Classes")
+                            Text("Unlink Class")
                         }
                         Spacer()
                     }
@@ -311,6 +311,65 @@ struct GoogleUnsignedinView: View
         }.navigationTitle("Google Classroom").navigationBarTitleDisplayMode(.inline)
     }
 }
+struct OverallGoogleView: View {
+    @EnvironmentObject var googleDelegate: GoogleDelegate
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    
+    @State var currentPageGCPreview = 0
+    let GCtimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
+    var body: some View
+    {
+        if (googleDelegate.signedIn)
+        {
+            GoogleView()
+        }
+        else
+        {
+            VStack
+            {
+                ScrollView {
+                    Text("Google Classroom").font(.largeTitle).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 12)
+                    Text("Sign in with your Google Account to link your Google Classroom classes and assignments with TRACR.").font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 8)
+
+                    
+                    TabView(selection: self.$currentPageGCPreview) {
+                        Image("Progress View").resizable().aspectRatio(contentMode: .fit).tag(0)
+                        Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).tag(1)
+                    }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+                    .onReceive(self.GCtimer, perform: { _ in
+                        withAnimation {
+                            print(self.currentPageGCPreview)
+                            self.currentPageGCPreview = self.currentPageGCPreview < 1 ? self.currentPageGCPreview + 1 : 0
+                        }
+                    })
+
+                    Spacer()
+
+//                        Button(action: {
+//                            GIDSignIn.sharedInstance().signIn()
+//                        }) {
+//                            HStack {
+//                                Image("Google Sign In Button").resizable().frame(width: 70, height: 48)//.padding(.all, 0)
+//                                Text("Sign in with Google").font(.custom("Roboto-Medium", size: 21)).foregroundColor(.black)
+//                                Spacer()
+//                            }.padding(.all, 0).overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.black, lineWidth: 1)).background(Color.white).frame(width: UIScreen.main.bounds.size.width-120, height: 48).padding(.horizontal, 60)
+//                        }
+
+                    Button(action: {
+                        GIDSignIn.sharedInstance().signIn()
+                    }) {
+                        Image("Google Sign In Button with Text").resizable().frame(width: 382/1.5, height: 90/1.5).padding(.horizontal, 60).shadow(radius: 3, x: -2, y: 2)
+                    }.buttonStyle(PlainButtonStyle())
+
+                    Spacer()
+                }
+            }
+        }
+    }
+}
 
 struct GoogleView: View {
     @EnvironmentObject var googleDelegate: GoogleDelegate
@@ -436,18 +495,18 @@ struct GoogleView: View {
         
         return Color("CharansOCD")
     }
+
     
     @State var currentPageGCPreview = 0
     let GCtimer = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
         
     var body: some View {
         VStack {
-            if googleDelegate.signedIn {
                 Spacer().frame(height: 5)
                 ScrollView {
                     Spacer().frame(height: 5)
-                    Text(GIDSignIn.sharedInstance().currentUser!.profile.name).font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 12)
-                    Text(GIDSignIn.sharedInstance().currentUser!.profile.email).font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 2)
+                    Text(GIDSignIn.sharedInstance().currentUser == nil ? "" : GIDSignIn.sharedInstance().currentUser!.profile.name).font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 12)
+                    Text(GIDSignIn.sharedInstance().currentUser == nil ? "" : GIDSignIn.sharedInstance().currentUser!.profile.email).font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 2)
                     
                     Spacer().frame(height: 12)
                     Divider().padding(.horizontal, 12)
@@ -518,44 +577,7 @@ struct GoogleView: View {
 //                    }
                     Spacer().frame(height: 10)
                 }.frame(width: UIScreen.main.bounds.size.width)
-            } else {
-                ScrollView {
-                    Text("Google Classroom").font(.largeTitle).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 12)
-                    Text("Sign in with your Google Account to link your Google Classroom classes and assignments with TRACR.").font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 8)
-
-                    
-                    TabView(selection: self.$currentPageGCPreview) {
-                        Image("Progress View").resizable().aspectRatio(contentMode: .fit).tag(0)
-                        Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).tag(1)
-                    }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
-                    .onReceive(self.GCtimer, perform: { _ in
-                        withAnimation {
-                            print(self.currentPageGCPreview)
-                            self.currentPageGCPreview = self.currentPageGCPreview < 1 ? self.currentPageGCPreview + 1 : 0
-                        }
-                    })
-
-                    Spacer()
-
-//                        Button(action: {
-//                            GIDSignIn.sharedInstance().signIn()
-//                        }) {
-//                            HStack {
-//                                Image("Google Sign In Button").resizable().frame(width: 70, height: 48)//.padding(.all, 0)
-//                                Text("Sign in with Google").font(.custom("Roboto-Medium", size: 21)).foregroundColor(.black)
-//                                Spacer()
-//                            }.padding(.all, 0).overlay(RoundedRectangle(cornerRadius: 4).stroke(Color.black, lineWidth: 1)).background(Color.white).frame(width: UIScreen.main.bounds.size.width-120, height: 48).padding(.horizontal, 60)
-//                        }
-
-                Button(action: {
-                    GIDSignIn.sharedInstance().signIn()
-                }) {
-                    Image("Google Sign In Button with Text").resizable().frame(width: 382/1.5, height: 90/1.5).padding(.horizontal, 60).shadow(radius: 3, x: -2, y: 2)
-                }.buttonStyle(PlainButtonStyle())
-
-                Spacer()
-                }
-            }
+            
         }.navigationTitle("Google Classroom").navigationBarTitleDisplayMode(.inline).frame(width: UIScreen.main.bounds.size.width).toolbar
         {
             ToolbarItem(placement: .navigationBarLeading)

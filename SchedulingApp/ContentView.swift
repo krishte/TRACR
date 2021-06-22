@@ -44,6 +44,7 @@ class MasterRunning: ObservableObject {
     @Published var masterDisplay: Bool = false
     @Published var onlyNotifications: Bool = false
     @Published var displayText: Bool = false
+    @Published var uniqueAssignmentName: String = ""
 }
 
 struct MasterRunningDisplay: View {
@@ -105,6 +106,7 @@ struct ContentView: View {
 
         if !(defaults.object(forKey: "LaunchedBefore") as? Bool ?? false) {
             defaults.set(true, forKey: "LaunchedBefore")
+         //   print("kewl")
             let gradingschemes: [String] = ["P", "N1-7", "LA-F", "N1-8", "N1-4"]
             defaults.set(0, forKey: "weeklyminutesworked")
             let lastmondaydate =  Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!
@@ -170,10 +172,12 @@ struct ContentView: View {
 //                {
                 VStack
                 {
-                    ZStack
-                    {
+                  //  ZStack
+                   // {
                      //   TabView(selection: $selectedtab)
             //            {
+                    VStack
+                    {
                         if (selectedtab == 0)
                         {
                             
@@ -230,12 +234,16 @@ struct ContentView: View {
                                         {
                                             ZStack
                                             {
-                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white).frame(width:UIScreen.main.bounds.size.width/2)
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.clear).frame(width:UIScreen.main.bounds.size.width/2)
                                                 if (worktype1selected)
                                                 {
                                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width:UIScreen.main.bounds.size.width/2 - 20 )
                                                 }
-                                                Image("WorkHoursType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-60).padding(.vertical, 20)
+                                                TabView
+                                                {
+                                                    Image("WorkHoursType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
+                                                    Image("HomeViewType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
+                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle())
                                             }.offset(x: 10)
                                         }
                                         Spacer().frame(width: 20)
@@ -246,12 +254,16 @@ struct ContentView: View {
                                         {
                                             ZStack
                                             {
-                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.white).frame(width:UIScreen.main.bounds.size.width/2)
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.clear).frame(width:UIScreen.main.bounds.size.width/2)
                                                 if (!worktype1selected)
                                                 {
                                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width:UIScreen.main.bounds.size.width/2 - 20 )
                                                 }
-                                                Image("WorkHoursType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-60).padding(.vertical, 20)
+                                                TabView
+                                                {
+                                                    Image("WorkHoursType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
+                                                    Image("HomeViewType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
+                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle())
                                             }.offset(x: -10)
                                         }
                                         Spacer()
@@ -260,9 +272,19 @@ struct ContentView: View {
                                     HStack
                                     {
                                         Spacer()
-                                        Text("Option 1 \n This option requires you only to select amounts of time to work on each day. For example, you could set yourself 5 hours on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
+                                        VStack
+                                        {
+                                            Text("Option 1").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-40)
+                                            Text("This option requires you only to select amounts of time to work on each day. For example, you could set yourself 5 hours on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
+                                            Spacer()
+                                        }
                                         Spacer().frame(width: 20)
-                                        Text("Option 2 \n This option requires you to select amonts of time to work on each day in addition to when the time will take place. For example, you could set yourself 5 hours from 8am to 13pm on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
+                                        VStack
+                                        {
+                                            Text("Option 2").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-40)
+                                            Text("This option requires you to select amonts of time to work on each day in addition to when the time will take place. For example, you could set yourself 5 hours from 8am to 13pm on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
+                                            Spacer()
+                                        }
                                         Spacer()
                                     }
                                 
@@ -278,7 +300,7 @@ struct ContentView: View {
                             NavigationView
                             {
                                 WorkHours().tag(4)
-                            }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
+                            }//.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.inline)
                         }
 
                         if (selectedtab == 5)
@@ -296,55 +318,45 @@ struct ContentView: View {
                                 }
                             }
                         }
+                    }.frame(height: UIScreen.main.bounds.size.height-90)
+                    //Spacer()
                 //        }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
-                        
-
-                    }
-     
-                    Spacer()
-                        HStack
-                        {
-                            Button(action:
-                                    {
-                                        if (selectedtab < 5)
-                                        {
-                                            selectedtab += 1
-                                        }
-                                        else
-                                        {
-                                            firstLaunchTutorial.toggle()
-                                        }
-                                     //   selectedtab += 1
-                                    })
-                            {
-                                ZStack
+                    VStack
+                    {
+                        Spacer()
+                        Button(action:
                                 {
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 50)
-                                    Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
-                                }
+                                    if (selectedtab < 5)
+                                    {
+                                        selectedtab += 1
+                                    }
+                                    else
+                                    {
+                                        print("hello")
+                                        firstLaunchTutorial.toggle()
+                                        print("hello2")
+                                    }
+                                 //   selectedtab += 1
+                                })
+                        {
+                            ZStack
+                            {
+                                Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-40, height: 70)
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 50)
+                                Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
                             }
-                        }.frame(height: 50)
+                        }
+                        Spacer().frame(height: 10)
+                    }//.frame(height: 50)//.offset(y: UIScreen.main.bounds.size.height-70)
+
+             //   }
+ 
+              //  Spacer()
+                        
                     
 
                 }
-//                }
-                
-//                TabView
-//                {
-//                    TutorialView()
-//                    GoogleView()
-//                    SyllabusView()
-//                    //PreferencesView()
-//                    WorkHours()
-//
-//                    Button(action:
-//                    {
-//                        firstLaunchTutorial = true
-//                    })
-//                    {
-//                        Text("Go Away")
-//                    }
-//                }.tabViewStyle(PageTabViewStyle())
+
             }
             else
             {

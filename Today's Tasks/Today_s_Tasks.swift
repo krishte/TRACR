@@ -709,7 +709,7 @@ struct TodaysTasksLargeView: View {
                                 }
                                 
                                 HStack {
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15)
+                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("progressBlue")).frame(width:  CGFloat(CGFloat(entry.progressCount)/100 * (geometry.size.width - 32)), height: 15)
                                     
                                     if entry.progressCount != 100 {
                                         Spacer()

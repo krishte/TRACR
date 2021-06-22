@@ -164,7 +164,7 @@ struct ContentView: View {
 
     var body: some View {
         ZStack {
-            if (!firstLaunchTutorial)
+            if (firstLaunchTutorial)
             {
 //                NavigationView
 //                {
@@ -327,24 +327,8 @@ struct ContentView: View {
                     
 
                 }
-//                }
                 
-//                TabView
-//                {
-//                    TutorialView()
-//                    GoogleView()
-//                    SyllabusView()
-//                    //PreferencesView()
-//                    WorkHours()
-//
-//                    Button(action:
-//                    {
-//                        firstLaunchTutorial = true
-//                    })
-//                    {
-//                        Text("Go Away")
-//                    }
-//                }.tabViewStyle(PageTabViewStyle())
+                
             }
             else
             {

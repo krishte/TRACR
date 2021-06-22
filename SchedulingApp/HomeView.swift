@@ -398,7 +398,8 @@ struct SubassignmentAddTimeAction: View {
                     element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
                 }
             }
-                
+            //assignment specific
+            masterRunning.uniqueAssignmentName = addTimeSubassignment.subassignmentname
             masterRunning.masterRunningNow = true
             masterRunning.displayText = true
             
@@ -636,7 +637,8 @@ struct SubassignmentBacklogAction: View {
                 self.subassignmentcompletionpercentage = 0
                 
                 addTimeSubassignmentBacklog.backlogList.remove(at: 0)
-                
+                //assignment specific
+                masterRunning.uniqueAssignmentName = addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL"
                 masterRunning.masterRunningNow = true
             }) {
                 Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Next" : "Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
@@ -1398,6 +1400,20 @@ struct HomeBodyView: View {
         }
         }.sheet(isPresented: $showeditassignment, content: {
                     EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)})
+        .onAppear
+        {
+            let defaults = UserDefaults.standard
+         //   let lastlauncheddate = defaults.object(forKey: "lastlauncheddate") as? Date ?? Date(timeIntervalSince1970: 0)
+            let specificworktimes = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+            if (specificworktimes)
+            {
+                self.uniformlistviewshows = false
+            }
+            else
+            {
+                self.uniformlistviewshows = true
+            }
+        }
     }
     func getsubassignmentsondate(dayIndex: Int) -> Bool {
         for subassignment in subassignmentlist {
@@ -1886,8 +1902,8 @@ struct IndividualSubassignmentView: View {
                                 print(error.localizedDescription)
                             }
                             simpleSuccess()
-                            masterRunning.masterRunningNow = true
-                            masterRunning.displayText = true
+                          // masterRunning.masterRunningNow = true
+                          //  masterRunning.displayText = true
                         }
                     }
                 }).animation(.spring())
@@ -2091,16 +2107,16 @@ struct HomeView: View {
 
                                         Button(action:
                                         {
-                                            if (self.getcompletedAssignments())
-                                            {
+//                                            if (self.getcompletedAssignments())
+//                                            {
                                                 self.sheetNavigator.modalView = .grade
                                                 self.NewSheetPresenting = true
-                                            }
-                                            else
-                                            {
-                                                self.sheetNavigator.alertView = .noassignment
-                                                self.NewAlertPresenting = true
-                                            }
+//                                            }
+//                                            else
+//                                            {
+//                                                self.sheetNavigator.alertView = .noassignment
+//                                                self.NewAlertPresenting = true
+//                                            }
                                             
                                         })
                                         {
@@ -2115,7 +2131,7 @@ struct HomeView: View {
                                                  // .frame(width: widthAndHeight, height: widthAndHeight)
                                                     .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
                                               }.frame(width: widthAndHeight, height: widthAndHeight)
-                                        }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1).opacity(!self.getcompletedAssignments() ? 0.5: 1)
+                                        }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1) //.opacity(!self.getcompletedAssignments() ? 0.5: 1)
                                     }.transition(.scale)
                                   }
                                 
@@ -2132,6 +2148,18 @@ struct HomeView: View {
                                         ZStack {
                                             //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                             Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
+                                            if (classlist.count == 0)
+                                            {
+                                                VStack
+                                                {
+                                                    HStack
+                                                    {
+                                                        Spacer()
+                                                        Circle().fill(Color.red).frame(width: 20, height: 20).offset(x: -12, y: 12)
+                                                    }
+                                                    Spacer()
+                                                }
+                                            }
                                         }
                                     )
                                 }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)
@@ -2160,15 +2188,15 @@ struct HomeView: View {
                                                     }.padding(.leading, 2.0)
 
                                                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
-                                                    Button(action: {
-                                                      //  withAnimation(.spring())
-                                                      //  {
-                                                            self.uniformlistshows.toggle()
-                                                       // }
-
-                                                    }) {
-                                                        Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                                                    }
+//                                                    Button(action: {
+//                                                      //  withAnimation(.spring())
+//                                                      //  {
+//                                                            self.uniformlistshows.toggle()
+//                                                       // }
+//
+//                                                    }) {
+//                                                        Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+//                                                    }
                                                 }.padding(.top, -5).frame(height: 40)
 
                 )
@@ -2185,6 +2213,15 @@ struct HomeView: View {
         }.onAppear() {
             let defaults = UserDefaults.standard
             let lastlauncheddate = defaults.object(forKey: "lastlauncheddate") as? Date ?? Date(timeIntervalSince1970: 0)
+            let specificworktimes = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+            if (specificworktimes)
+            {
+                uniformlistshows = false
+            }
+            else
+            {
+                uniformlistshows = true
+            }
          //   let lastlauncheddate = Date(timeIntervalSince1970: 0)
 
     
@@ -2226,7 +2263,7 @@ struct HomeView: View {
     
                                     if assignmentsforid.courseWork != nil {
                                         for assignment in assignmentsforid.courseWork! {
-                                            print(assignment.creationTime!.date.description)
+                                          //  print(assignment.creationTime!.date.description)
                                             if (assignment.creationTime!.date > lastlauncheddate)
                                             {
                                                 countnewassignments += 1
@@ -2241,7 +2278,7 @@ struct HomeView: View {
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(3000)) {
-                print("Homeview", countnewassignments)
+                //print("Homeview", countnewassignments)
                 defaults.set(countnewassignments, forKey: "countnewassignments")
                 defaults.set(Date(), forKey: "lastlauncheddate")
             }

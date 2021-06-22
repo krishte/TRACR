@@ -207,7 +207,7 @@ struct IndividualAssignmentFilterView: View {
                                 
                                 simpleSuccess()
                                 
-                                masterRunning.masterRunningNow = true
+                              //  masterRunning.masterRunningNow = true
                              }
                          }
                     }

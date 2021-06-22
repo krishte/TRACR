@@ -1251,6 +1251,10 @@ struct MasterClass: View {
                     }
                     
                 }
+                for i in 1...3
+                {
+                    print(dateFreeTimeDict[Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: TimeInterval(86400*i)))]!)
+                }
                 
                 dateFreeTimeDictCopy = dateFreeTimeDict
                 var overallpossible: Bool = true
@@ -1273,6 +1277,7 @@ struct MasterClass: View {
                     {
                         for tup in tempsubassignmentdict[i]!
                         {
+                            //need to reinitialize subassignmentdict using current subassiegnmentlist
                             subassignmentdict[i]!.append((tup.0, tup.1))
                         }
                     }

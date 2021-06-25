@@ -846,6 +846,7 @@ struct MasterClass: View {
                     for assignmenttype in assignmenttypeslist {
                         if (assignmenttype.type == assignment.type)
                         {
+                            //we're removing tolerance; yayyyyyy
                             approxlength = Int(assignmenttype.rangemin + ((assignmenttype.rangemax - assignmenttype.rangemin)/5) * classity.tolerance)
                         }
                     }
@@ -865,6 +866,12 @@ struct MasterClass: View {
         var possibledays = 0
         var possibledayslist: [Int] = []
         var notpossibledayslist: [Int] = []
+        var ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
+        if (totaltime <= 60)
+        {
+            approxlength = totaltime
+            ntotal = 1
+        }
 
         for i in 0..<newd {
             if ( dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]! >= approxlength) {
@@ -872,7 +879,7 @@ struct MasterClass: View {
                 possibledayslist.append(i)
             }
         }
-        let ntotal = Int(ceil(CGFloat(totaltime)/CGFloat(approxlength)))
+    
         if (ntotal <= possibledays)
         {
             
@@ -889,28 +896,60 @@ struct MasterClass: View {
             {
                 // needs to be fixed :)))))))))))))))))))))
                 let breaks = possibledays-ntotal
-
-                var groupslist: [Int] = []
-                for _ in 0..<breaks {
-                    groupslist.append(ntotal/breaks)
-                }
-                for i in 0..<(ntotal%breaks)
+                let breakworkratio = Int(floor(Double(breaks)/Double(ntotal)))
+                let x = ntotal*(breakworkratio+1)-breaks
+                
+                var breaklist: [Int] = []
+                if (x-1 >= 0)
                 {
-                    groupslist[i] += 1
+                    for _ in 0...(x-1)
+                    {
+                        breaklist.append(breakworkratio)
+                    }
                 }
+                if (ntotal-x-1 >= 0)
+                {
+                    for _ in 0...(ntotal-x-1)
+                    {
+                        breaklist.append(breakworkratio+1)
+                    }
+                }
+
                 var counter = 0
                 var sumsy = 0
-                for (_, val) in groupslist.enumerated() {
-                    for _ in 0..<val {
-                        tempsubassignmentlist.append((possibledayslist[counter], approxlength))
-                        sumsy += approxlength
-                        counter += 1
-                    }
-                    counter += 1
-                }
-                if (tempsubassignmentlist.count > 0)
+                print(breaklist, possibledayslist, ntotal, x, breakworkratio, possibledays)
+                for i in 0...(ntotal-1)
                 {
-                    tempsubassignmentlist[tempsubassignmentlist.count-1].1 -= (sumsy-totaltime)
+                    tempsubassignmentlist.append((possibledayslist[counter], approxlength))
+                    sumsy += approxlength
+                    counter += 1
+                    counter += breaklist[i]
+                }
+   
+//                if (tempsubassignmentlist.count > 0)
+//                {
+//                    tempsubassignmentlist[tempsubassignmentlist.count-1].1 -= (sumsy-totaltime)
+//                }
+                while (sumsy != totaltime)
+                {
+                    var possible: Bool = false
+                    for (index, _) in tempsubassignmentlist.enumerated()
+                    {
+                        if (tempsubassignmentlist[index].1 >= 45)
+                        {
+                            possible = true
+                            let stuff = min(15, sumsy-totaltime);
+                            sumsy -= stuff
+                            tempsubassignmentlist[index].1 -= stuff
+                            
+                        }
+                    }
+                    if (!possible)
+                    {
+                        
+                        print("Charan thought...")
+                        break
+                    }
                 }
             }
         }
@@ -928,11 +967,13 @@ struct MasterClass: View {
                 if (dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]! >= 30) // could be a different more dynamic bound
                 {
 
-                    if (extratime > dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]!) {
+                    if (extratime > dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]!)
+                    {
                         tempsubassignmentlist.append((value,dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]! ))
                         extratime -= dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: value, to: startOfDay)!]!
                     }
-                    else {
+                    else
+                    {
 
                         tempsubassignmentlist.append((value, extratime))
                         extratime = 0
@@ -942,12 +983,14 @@ struct MasterClass: View {
                     }
                 }
             }
-            if (extratime == 0) {
+            if (extratime == 0)
+            {
                 for day in possibledayslist {
                     tempsubassignmentlist.append((day, approxlength))
                 }
             }
-            else{
+            else
+            {
                 for day in possibledayslist {
                     tempsubassignmentlist.append((day, approxlength))
                 }
@@ -967,7 +1010,7 @@ struct MasterClass: View {
                         for j in 0..<tempsubassignmentlist.count {
                             if (tempsubassignmentlist[j].0 == possibledayslist[i])
                             {
-                                let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 30 )
+                                let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 90 )
                                 tempsubassignmentlist[j].1 += value
                                 extratime -= value
                                 if (extratime == 0)
@@ -1157,9 +1200,9 @@ struct MasterClass: View {
         {
             if (Calendar.current.startOfDay(for: subassignment.startdatetime) != startOfDay)
             {
-                let subassignmentdaysfromnow =  Calendar.current.dateComponents([.day], from: startOfDay, to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day!
+             //   let subassignmentdaysfromnow =  Calendar.current.dateComponents([.day], from: startOfDay, to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day!
                 dateFreeTimeDict[Calendar.current.startOfDay(for: subassignment.startdatetime)]! -= Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!
-                subassignmentdict[subassignmentdaysfromnow]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+              //  subassignmentdict[subassignmentdaysfromnow]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
 
             }
             else
@@ -1170,14 +1213,14 @@ struct MasterClass: View {
                     //add logic not to move the position of this subassignment
                     dateFreeTimeDict[Calendar.current.startOfDay(for: subassignment.startdatetime)]! -= Calendar.current.dateComponents([.minute], from: Date(), to: subassignment.enddatetime).minute!
                     //could change the from: Date() to from: subassignment.startdatetime assuming this isn't referenced anywhere else
-                    subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: Date(), to: subassignment.enddatetime).minute!))
+                  //  subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: Date(), to: subassignment.enddatetime).minute!))
 
                 }
                 else if (subassignment.startdatetime > Date())
                 {
                    // let subassignmentdaysfromnow =  Calendar.current.dateComponents([.day], from: startOfDay, to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day!
                     dateFreeTimeDict[Calendar.current.startOfDay(for: subassignment.startdatetime)] = Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!
-                    subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+                  //  subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
 
                 }
             }
@@ -1221,6 +1264,31 @@ struct MasterClass: View {
             for i in 0...daystilllatestdate
             {
                 print(i, subassignmentdict[i]!.count)
+            }
+            for subassignment in subassignmentlist
+            {
+                if (Calendar.current.startOfDay(for: subassignment.startdatetime) != startOfDay)
+                {
+                   let subassignmentdaysfromnow =  Calendar.current.dateComponents([.day], from: startOfDay, to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day!
+                   subassignmentdict[subassignmentdaysfromnow]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+
+                }
+                else
+                {
+                    // this may cause problems because it assumes there are no existing subassignments today that have been passed but not completed
+                    if (subassignment.enddatetime > Date() && subassignment.startdatetime < Date())
+                    {
+                        //add logic not to move the position of this subassignment
+                        //could change the from: Date() to from: subassignment.startdatetime assuming this isn't referenced anywhere else
+                        subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: Date(), to: subassignment.enddatetime).minute!))
+
+                    }
+                    else if (subassignment.startdatetime > Date())
+                    {
+                        subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+
+                    }
+                }
             }
             print("possible")
         }
@@ -1273,6 +1341,38 @@ struct MasterClass: View {
                 }
                 if (overallpossible)
                 {
+                    for (index, assignment) in assignmentlist.enumerated()
+                    {
+                        for subassignment in subassignmentlist
+                        {
+                            if ((index < assignmentindex || index > assignmentindex+nextbest) && subassignment.assignmentname == assignment.name)
+                            {
+                                if (Calendar.current.startOfDay(for: subassignment.startdatetime) != startOfDay)
+                                {
+                                    let subassignmentdaysfromnow =  Calendar.current.dateComponents([.day], from: startOfDay, to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day!
+                                    subassignmentdict[subassignmentdaysfromnow]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+
+                                }
+                                else
+                                {
+                                    // this may cause problems because it assumes there are no existing subassignments today that have been passed but not completed
+                                    if (subassignment.enddatetime > Date() && subassignment.startdatetime < Date())
+                                    {
+                                        //add logic not to move the position of this subassignment
+                                        //could change the from: Date() to from: subassignment.startdatetime assuming this isn't referenced anywhere else
+                                        subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: Date(), to: subassignment.enddatetime).minute!))
+
+                                    }
+                                    else if (subassignment.startdatetime > Date())
+                                    {
+                                        subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+
+                                    }
+                                }
+                                
+                            }
+                        }
+                    }
                     for i in 0...daystilllatestdate
                     {
                         for tup in tempsubassignmentdict[i]!

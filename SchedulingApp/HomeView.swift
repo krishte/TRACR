@@ -90,6 +90,9 @@ struct WeeklyBlockView: View {
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
     var classlist: FetchedResults<Classcool>
+    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
+    
+    var subassignmentlist: FetchedResults<Subassignmentnew>
     
     @Binding var nthdayfromnow: Int
     @Binding var lastnthdayfromnow: Int
@@ -108,21 +111,29 @@ struct WeeklyBlockView: View {
     @EnvironmentObject var masterRunning: MasterRunning
     
     func getassignmentsbydate(index: Int) -> [String] {
+        // now shows subassignments
         var ans: [String] = []
-
-        
-        for assignment in assignmentlist {
-
-            if (assignment.completed == false)
+        for subassignment in subassignmentlist
+        {
+            let diff = Calendar.current.isDate(Date(timeInterval: 0, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: 0, since: subassignment.startdatetime), toGranularity: .day)
+            if (diff)
             {
-                let diff = Calendar.current.isDate(Date(timeInterval: 0, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: 0, since: assignment.duedate), toGranularity: .day)
-                if (diff == true)
-                {
-                    ans.append(assignment.color)
-                }
-                    
+                ans.append(subassignment.color)
             }
         }
+
+//        for assignment in assignmentlist {
+//
+//            if (assignment.completed == false)
+//            {
+//                let diff = Calendar.current.isDate(Date(timeInterval: 0, since: self.datesfromlastmonday[self.datenumberindices[index]]), equalTo: Date(timeInterval: 0, since: assignment.duedate), toGranularity: .day)
+//                if (diff == true)
+//                {
+//                    ans.append(assignment.color)
+//                }
+//
+//            }
+//        }
         return ans
     }
     

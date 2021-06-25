@@ -964,6 +964,9 @@ struct ProgressView: View {
         return 0
     }
     
+    //bug! changing tab makes it stuck (temp fix: permanently displayed)
+    @State var bigGraphTitleOpacity: Double = 1.0
+    
     var body: some View {
          NavigationView {
             VStack {
@@ -1035,12 +1038,32 @@ struct ProgressView: View {
 
                
                                             Line(classcool: classity)
-                                                
-
+                                            
+                                            VStack {
+                                                HStack {
+                                                    Text("Your Grades (by Class)").font(.footnote).fontWeight(.semibold).padding(.all, 5).background(Color("CharansOCD twin")).overlay(
+                                                        RoundedRectangle(cornerRadius: 5)
+                                                            .stroke(Color("CharansOCD twin"), lineWidth: 4)
+                                                    )
+                                                    Spacer()
+                                                }
+                                                Spacer()
+                                            }.padding(.all, 12).padding(.horizontal, 3).opacity(self.bigGraphTitleOpacity)
+                                            .onAppear {
+                                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2800)) {
+                                                    withAnimation(.spring()) {
+                                                        self.bigGraphTitleOpacity = 0.0
+                                                    }
+                                                }
+                                            }
                                         }.tag(getclassindex(classity: classity)).id(refreshID)
                                     }
                                 }
-                            }.tabViewStyle(PageTabViewStyle()).frame(width: (UIScreen.main.bounds.size.width-20), height: (250 ))
+                            }.tabViewStyle(PageTabViewStyle()).frame(width: (UIScreen.main.bounds.size.width-20), height: (250)).onTapGesture {
+                                withAnimation(.spring()) {
+                                    self.bigGraphTitleOpacity = 1.0
+                                }
+                            }
                         }
                         HStack(alignment: .center) {
                             ZStack {

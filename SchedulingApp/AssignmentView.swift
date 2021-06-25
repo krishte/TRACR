@@ -32,6 +32,8 @@ struct IndividualAssignmentFilterView: View {
     
     @EnvironmentObject var masterRunning: MasterRunning
     
+    var timeformatter: DateFormatter
+    
     init(isExpanded2: Bool, isCompleted2: Bool, assignment2: Assignment, selectededit: Binding<String>, showedit: Binding<Bool>)
     {
         isExpanded = isExpanded2
@@ -44,6 +46,9 @@ struct IndividualAssignmentFilterView: View {
         self._selectededitassignment = selectededit
         self._showeditassignment = showedit
         
+        timeformatter = DateFormatter()
+        timeformatter.dateFormat = "HH:mm"
+        
     }
     
     func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
@@ -52,6 +57,22 @@ struct IndividualAssignmentFilterView: View {
         }
         
         return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
+    }
+    
+    func getNextColor(currentColor: String) -> Color {
+        print(currentColor)
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
+        let existinggradients = ["one", "two", "three", "five", "six", "eleven","thirteen", "fourteen", "fifteen"]
+        if (existinggradients.contains(currentColor)) {
+            return Color(currentColor + "-b")
+        }
+        for color in colorlist {
+            if (color == currentColor)
+            {
+                return Color(colorlist[colorlist.firstIndex(of: color)! + 1])
+            }
+        }
+        return Color("one")
     }
     
     var body: some View {
@@ -89,7 +110,7 @@ struct IndividualAssignmentFilterView: View {
                         
                         let previewduedateweight: Font.Weight = datedifference ?? 0 < 2 ? (Date() > assignment.duedate ? .bold : .semibold) : .light
                         
-                        let previewduedatecolor: Color = Date() > assignment.duedate ? Color("ohnored") : Color.black
+                        let previewduedatecolor: Color = Date() > assignment.duedate ? Color("ohnored") : ((colorScheme == .light) ? Color.black : Color.white)
                         
                         Text(previewduedatetext).fontWeight(previewduedateweight).foregroundColor(previewduedatecolor).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
                     }.padding(.bottom, -3)
@@ -140,6 +161,43 @@ struct IndividualAssignmentFilterView: View {
                             Spacer()
                         }
                     }
+                }
+                
+                if isExpanded {
+                    HStack {
+                        Text("TASKS").font(.footnote).fontWeight(.light).rotationEffect(Angle(degrees: 270.0), anchor: .center).fixedSize().frame(width: 25, height: 90)
+                        
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack {
+                                ForEach(subassignmentlist) { subassignment in
+                                    if subassignment.assignmentname == assignment.name {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 3, style: .continuous).fill(subassignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: subassignment.color, number: 2) : getNextColor(currentColor: subassignment.color)).frame(width: 130, height: 90)
+                                            
+                                            VStack {
+                                                let datedifference = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day
+                                                
+                                                let subassignmentstartdatetimeformatted = formatter.string(from: subassignment.startdatetime)
+                                                
+                                                let previewduedatetext: String = datedifference == 1 ? "Tomorrow" : (datedifference == 0 ? "Today" : "\(subassignmentstartdatetimeformatted.components(separatedBy: " ")[subassignmentstartdatetimeformatted.components(separatedBy: " ").count - 3]) \(subassignmentstartdatetimeformatted.components(separatedBy: " ")[subassignmentstartdatetimeformatted.components(separatedBy: " ").count - 2])")
+                                                                                                
+                                                let subassignmentlength = Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!
+
+//                                                let starttoendtime = timeformatter.string(from: subassignment.startdatetime) + " - " + timeformatter.string(from: subassignment.enddatetime
+
+                                                Text(previewduedatetext).font(.headline).fontWeight(.bold)
+                                                Text((subassignmentlength / 60 == 0 ? "" : (subassignmentlength / 60 == 1 ? "1 hour " : String(subassignmentlength / 60) + " hours ")) + (subassignmentlength % 60 == 0 ? "" : String(subassignmentlength % 60) + " minutes")).font(.footnote).fontWeight(.light)
+                                                
+                                            }.padding(.vertical, 5)
+                                            //maybe on tap, goes to homeview of relevant date (maybe not, since only next 4 weeks displayed)
+                                            //might not account for group stuff in the other homeview (multiple subassignments on same day)
+                                        }.padding(.trailing, 4)
+                                    }
+                                }
+                            }
+                        }.padding(.all, 4)
+                    }.frame(height: 100).animation(.spring())
                 }
             }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(14).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
                 .onChanged { value in

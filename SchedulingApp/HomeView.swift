@@ -1171,8 +1171,7 @@ struct HomeBodyView: View {
                                                     VStack
                                                     {
                                                         Spacer()
-                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: subassignmentlist[0].startdatetime)) : shortdateformatter.string(from: subassignmentstartdatetime)).fontWeight(.light).font(.caption)
-                                                    }
+                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)                                                    }
                                                 }
                                                 
                                                 Spacer()
@@ -1182,7 +1181,7 @@ struct HomeBodyView: View {
                                                 HStack {
                                                     Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)) : timeformatter.string(from: subassignmentstartdatetime) + " - " + timeformatter.string(from: subassignmentenddatetime)).fontWeight(.light).font(.caption)
                                                     Spacer()
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
+                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: subassignmentlist[0].startdatetime)) : shortdateformatter.string(from: subassignmentstartdatetime)).fontWeight(.light).font(.caption)
                                                 }
                                             }.frame(height: 15)
                                             
@@ -1198,7 +1197,15 @@ struct HomeBodyView: View {
                                                         if (subassignmentlist.count != 0 && subassignmentassignmentname != "")
                                                         {
                                                          //   Text("hello")
-                                                            RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width: CGFloat((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) * (UIScreen.main.bounds.size.width-32)), height: 15)
+                                                            ZStack {
+                                                                if ((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) > 0.99) {
+                                                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width: UIScreen.main.bounds.size.width - 32, height: 15).blur(radius: 4)
+                                                                }
+                                                                    
+                                                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width: CGFloat((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) * (UIScreen.main.bounds.size.width-32)), height: 15)
+
+                                                            }
+                                                            
                                                             if ((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) < 0.99)
                                                             {
                                                                 Spacer()
@@ -1312,13 +1319,11 @@ struct HomeBodyView: View {
                     ZStack {
 
                         RoundedRectangle(cornerRadius: 0, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .leading, endPoint: .trailing))
-
-           
                             
                            VStack {
                                     VStack {
                                         HStack {
-                                            Text(subassignmentassignmentname == "" ? "TASK" : "SELECTED").fontWeight(.light).font(.system(size: 15))
+                                            Text(subassignmentassignmentname == "" ? "SELECT A TASK FOR INFORMATION" : "SELECTED").fontWeight(.light).font(.system(size: 15))
                                             Spacer()
                                         }
                                         
@@ -1332,17 +1337,22 @@ struct HomeBodyView: View {
                                             Text(subassignmentassignmentname == "" ? "No Task Selected" : self.subassignmentassignmentname).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
                                             
                                             Spacer()
+                                            
+                                            VStack {
+                                                Spacer()
+                                                Text(subassignmentassignmentname == "" ? "" : "Due: " +  shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
+                                            }
                                         }
                                         
                                         Spacer()
                                     }
                                     
-                                    VStack {
-                                        HStack {
-                                            Spacer()
-                                            Text(subassignmentassignmentname == "" ? "" : shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.light).font(.caption)
-                                        }
-                                    }.frame(height: 15)
+//                                    VStack {
+//                                        HStack {
+//                                            Spacer()
+//                                            Text(subassignmentassignmentname == "" ? "" : shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.light).font(.caption)
+//                                        }
+//                                    }.frame(height: 15)
                                     
                                     Spacer()
                                     
@@ -1578,7 +1588,7 @@ struct SubassignmentListView: View {
     }
 }
  
- 
+ //not used
 struct UpcomingSubassignmentProgressBar: View {
     @ObservedObject var assignment: Assignment
     

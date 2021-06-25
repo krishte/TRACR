@@ -55,8 +55,8 @@ struct MasterRunningDisplay: View {
         VStack {
             Text("Optimizing Schedule").foregroundColor(Color.black)
             ZStack(alignment: .leading) {
-                Rectangle().foregroundColor(.gray).opacity(0.6).frame(width: 163, height: 3)
-                Rectangle().foregroundColor(.blue).frame(width: masterRunning.masterDisplay ? 163 : 0, height: 3).animation(.spring())
+                RoundedRectangle(cornerRadius: 2.5, style: .continuous).foregroundColor(.gray).opacity(0.6).frame(width: 163, height: 5)
+                RoundedRectangle(cornerRadius: 2.5, style: .continuous).foregroundColor(.blue).frame(width: masterRunning.masterDisplay ? 163 : 0, height: 5).animation(Animation.easeInOut(duration: 1.2).delay(0.4))
             }.cornerRadius(3)
         }.padding(.all, 15).frame(maxHeight: 70).background(Color.white).cornerRadius(10).padding(.all, 15).shadow(radius: 3)
     }
@@ -164,6 +164,15 @@ struct ContentView: View {
     @State var selectedtab = 0
     @State var worktype1selected: Bool = true
 
+    @State var rotation = 0.0
+    
+    let demoMaxWidth = UIScreen.main.bounds.size.width/2 - 30
+    
+    @State var essayDemoWidth: CGFloat = 50
+    @State var essayDemoOffset1: CGFloat = 15 //rectangle
+    @State var essayDemoOffset2: CGFloat = -10 //circle 1
+    @State var essayDemoOffset3: CGFloat = 40 //circle 2
+    
     var body: some View {
         ZStack {
             if (!firstLaunchTutorial)
@@ -182,17 +191,101 @@ struct ContentView: View {
                         {
                             
                             
-                            VStack
-                            {
-                                Spacer().frame(height: 20)
-                                Text("Intro").font(.system(size: 50)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)//.padding(.top, -30)//.frame(alignment: .leading)
-                                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 300)//.padding(.top, -50)
-                                Spacer().frame(height: 50)
-                                Image("Tracr").resizable().aspectRatio(contentMode: .fit).frame(width: 200)
-                               
-                                Text("Welcome to TRACR. An app designed to help you stay on top of your schoolwork. Press next to continue the setup process and get started with the app. You can edit the settings you're about to select at any point unless otherwise indicated. ").padding(20)
-                                Spacer()
+                            
+                            HStack {
+                                VStack(spacing: 5) {
+                                    HStack {
+                                        Text("Essay")
+                                        Spacer()
+                                    }
+                                    
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.demoMaxWidth, height: 20, alignment: .leading).overlay(
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: UIScreen.main.bounds.size.width/2 - 30, height: 20, alignment: .leading)
+                                        )
+                                        
+                                        Rectangle().fill(Color.green).frame(width: self.essayDemoWidth, height: 19).offset(x: self.essayDemoOffset1)
+                                    
+                                        Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: self.essayDemoOffset2)
+                                        
+                                        Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: self.essayDemoOffset3)
+                                    }
+                                    
+                                    VStack(spacing: 5) {
+                                        HStack {
+                                            Text("Exam")
+                                            Spacer()
+                                        }
+                                        
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.demoMaxWidth, height: 20, alignment: .leading).overlay(
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: UIScreen.main.bounds.size.width/2 - 30, height: 20, alignment: .leading)
+                                            )
+                                            
+                                            Rectangle().fill(Color.green).frame(width: 0.45 * self.demoMaxWidth, height: 19).offset(x: -0.25 * self.demoMaxWidth)
+                                            
+                                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: -0.35 * self.demoMaxWidth)
+                                            
+                                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: 0.1 * self.demoMaxWidth)
+                                        }
+                                        
+                                        HStack {
+                                            Text("Homework")
+                                            Spacer()
+                                        }
+                                        
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.demoMaxWidth, height: 20, alignment: .leading).overlay(
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: UIScreen.main.bounds.size.width/2 - 30, height: 20, alignment: .leading)
+                                            )
+                                            
+                                            Rectangle().fill(Color.green).frame(width: 0.45 * self.demoMaxWidth, height: 19).offset(x: -0.25 * self.demoMaxWidth)
+                                            
+                                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: -0.35 * self.demoMaxWidth)
+                                            
+                                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: 0.1 * self.demoMaxWidth)
+                                        }
+                                    }.blur(radius: 2)
+                                }.frame(width: UIScreen.main.bounds.size.width/2 - 10)
+                            
+                                VStack {
+                                    
+                                }.frame(width: UIScreen.main.bounds.size.width/2 - 10)
+                            }.frame(width: UIScreen.main.bounds.size.width - 10).padding(.horizontal, 5)
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            VStack {
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).frame(width: 40, height: 60)
+                                
+                                Rectangle()
+                                            .fill(Color.red)
+                                            .frame(width: 200, height: 200)
+                                            .rotationEffect(.degrees(rotation))
+                                            .animation(Animation.easeInOut(duration: 3).delay(1), value: rotation)
+                                            .onTapGesture {
+                                                rotation += 360
+                                            }
+                                
                             }.tag(0)
+                            
+//                            VStack
+//                            {
+//                                Spacer().frame(height: 20)
+//                                Text("Intro").font(.system(size: 50)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)//.padding(.top, -30)//.frame(alignment: .leading)
+//                                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 300)//.padding(.top, -50)
+//                                Spacer().frame(height: 50)
+//                                Image("Tracr").resizable().aspectRatio(contentMode: .fit).frame(width: 200)
+//
+//                                Text("Welcome to TRACR. An app designed to help you stay on top of your schoolwork. Press next to continue the setup process and get started with the app. You can edit the settings you're about to select at any point unless otherwise indicated. ").padding(20)
+//                                Spacer()
+//                            }.tag(0)
                         }
                         if (selectedtab == 1)
                         {

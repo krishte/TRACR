@@ -706,7 +706,7 @@ struct MasterClass: View {
         
         if masterRunning.displayText {
             masterRunning.masterDisplay = true
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1500)) {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1700)) {
                 masterRunning.masterDisplay = false
             }
             masterRunning.displayText = false

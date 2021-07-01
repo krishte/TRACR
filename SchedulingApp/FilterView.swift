@@ -273,6 +273,9 @@ struct FilterView: View {
     var body: some View {
         NavigationView{
             ZStack {
+                NavigationLink(destination: EmptyView()) {
+                    EmptyView()
+                }
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                  { EmptyView() }
                 VStack {

@@ -897,6 +897,176 @@ struct HelpCenterView: View {
         
     }
 }
+
+
+struct TypeSlidersAnimationView: View {
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
+    let demoMaxWidth = UIScreen.main.bounds.size.width/2 - 30
+    
+    @State var essayDemoWidth: CGFloat = 50
+    @State var essayDemoOffset1: CGFloat = 15 //rectangle
+    @State var essayDemoOffset2: CGFloat = -10 //circle 1
+    @State var essayDemoOffset3: CGFloat = 40 //circle 2
+    
+    @State var subassignmentDemoHeight: CGFloat = 120 //subassignment
+    @State var subassignmentDemoOffset: CGFloat = 0 //subassignment
+    
+    @State var backgroungdDemoOpacity: Double = 0.3
+    @State var playButtonOpacity: Double = 1.0
+    
+    var body: some View {
+        ZStack {
+            HStack(spacing: 5) {
+                VStack(spacing: 5) {
+                    HStack {
+                        Text("Essay")
+                        Spacer()
+                    }
+
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.demoMaxWidth, height: 20, alignment: .leading).overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: UIScreen.main.bounds.size.width/2 - 30, height: 20, alignment: .leading)
+                        )
+
+                        Rectangle().fill(Color.green).frame(width: self.essayDemoWidth, height: 19).offset(x: self.essayDemoOffset1)
+
+                        Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: self.essayDemoOffset2)
+
+                        Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: self.essayDemoOffset3)
+                    }
+
+                    VStack(spacing: 5) {
+                        HStack {
+                            Text("Exam")
+                            Spacer()
+                        }
+
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.demoMaxWidth, height: 20, alignment: .leading).overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: UIScreen.main.bounds.size.width/2 - 30, height: 20, alignment: .leading)
+                            )
+
+                            Rectangle().fill(Color.green).frame(width: 0.45 * self.demoMaxWidth, height: 19).offset(x: -0.15 * self.demoMaxWidth)
+
+                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: -0.35 * self.demoMaxWidth)
+
+                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: 0.1 * self.demoMaxWidth)
+                        }
+
+                        HStack {
+                            Text("Homework")
+                            Spacer()
+                        }
+
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("add_overlay_bg")).frame(width: self.demoMaxWidth, height: 20, alignment: .leading).overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(Color.black, lineWidth: 0.5).frame(width: UIScreen.main.bounds.size.width/2 - 30, height: 20, alignment: .leading)
+                            )
+
+                            Rectangle().fill(Color.green).frame(width: 0.45 * self.demoMaxWidth, height: 19).offset(x: -0.15 * self.demoMaxWidth)
+
+                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: -0.35 * self.demoMaxWidth)
+
+                            Circle().fill(Color.white).frame(width: 30, height: 30).shadow(radius: 2).offset(x: 0.1 * self.demoMaxWidth)
+                        }
+                    }.blur(radius: 2)
+                }.frame(width: UIScreen.main.bounds.size.width/2 - 15)
+
+                Rectangle().foregroundColor(.gray).frame(width: 0.5, height: 170)
+
+                VStack {
+                    ZStack {
+                        VStack() {
+                            ForEach((8...12), id: \.self) { hour in
+                                HStack {
+                                    Text(String(format: "%02d", hour)).font(.system(size: 10)).frame(width: 20, height: 20)
+                                    Rectangle().fill(Color.gray).frame(width: self.demoMaxWidth - 25, height: 0.3)
+                                }
+                            }
+                        }
+                        
+                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color("three")).frame(width: self.demoMaxWidth - 30, height: self.subassignmentDemoHeight).offset(x: 25, y: self.subassignmentDemoOffset)
+
+                        HStack {
+                            Text("English Essay").font(.footnote)
+
+                            Spacer()
+                        }.frame(width: self.demoMaxWidth - 30).offset(x: 33, y: -45)
+                    }
+                }.frame(width: UIScreen.main.bounds.size.width/2 - 15)
+            }.opacity(self.backgroungdDemoOpacity).frame(width: UIScreen.main.bounds.size.width - 10).padding(.horizontal, 5)
+                                            
+            Button(action: {
+                if self.playButtonOpacity == 1 {
+                    withAnimation(Animation.easeInOut(duration: 0.2)) {
+                        self.backgroungdDemoOpacity = 1.0
+                        self.playButtonOpacity = 0.0
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(300)) {
+                        withAnimation(Animation.easeInOut(duration: 0.9)) {
+                            self.essayDemoWidth = 90
+                            self.essayDemoOffset1 = -5
+                            self.essayDemoOffset2 = -50
+                        }
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1300)) {
+                        withAnimation(Animation.easeInOut(duration: 0.8)) {
+                            self.essayDemoWidth = 50
+                            self.essayDemoOffset1 = -25
+                            self.essayDemoOffset3 = 0
+                        }
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2900)) {
+                        withAnimation(Animation.easeInOut(duration: 1.0)) {
+                            self.subassignmentDemoHeight = 40
+                            self.subassignmentDemoOffset = -40
+                        }
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(4500)) {
+                        withAnimation(Animation.easeInOut(duration: 0.9)) {
+                            self.essayDemoWidth = 90
+                            self.essayDemoOffset1 = -5
+                            self.essayDemoOffset3 = 40
+                        }
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(5400)) {
+                        withAnimation(Animation.easeInOut(duration: 0.8)) {
+                            self.essayDemoWidth = 50
+                            self.essayDemoOffset1 = 15
+                            self.essayDemoOffset2 = -10
+                        }
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(6800)) {
+                        withAnimation(Animation.easeInOut(duration: 1.0)) {
+                            self.subassignmentDemoHeight = 120
+                            self.subassignmentDemoOffset = 0
+                        }
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(8200)) {
+                        withAnimation(Animation.easeInOut(duration: 0.2)) {
+                            self.backgroungdDemoOpacity = 0.3
+                            self.playButtonOpacity = 1.0
+                        }
+                    }
+                }
+            }) {
+                VStack(spacing: 6) {
+                    Image(systemName: "play.fill").resizable().foregroundColor((self.colorScheme == .light) ? .black : .white).frame(width: 20, height: 25)
+                    Text("Watch Demo").fontWeight(.bold).foregroundColor((self.colorScheme == .light) ? .black : .white)
+                }.opacity(self.playButtonOpacity)
+            }
+        }
+    }
+}
+
 struct PreferencesView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @FetchRequest(entity: AssignmentTypes.entity(),
@@ -925,6 +1095,7 @@ struct PreferencesView: View {
                     {
                         Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
                         Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
+                        TypeSlidersAnimationView()
                         
                     }
 

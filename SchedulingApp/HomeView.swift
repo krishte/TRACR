@@ -1199,7 +1199,8 @@ struct HomeBodyView: View {
                                                          //   Text("hello")
                                                             ZStack {
                                                                 if ((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) > 0.99) {
-                                                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width: UIScreen.main.bounds.size.width - 32, height: 15).blur(radius: 4)
+                                                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width: UIScreen.main.bounds.size.width - 32, height: 15).blur(radius: 2)
+                                                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: UIScreen.main.bounds.size.width - 32, height: 15).blur(radius: 4)
                                                                 }
                                                                     
                                                                 RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width: CGFloat((CGFloat(getcorrespondingassignment().totaltime - getcorrespondingassignment().timeleft) + CGFloat(Calendar.current.dateComponents([.minute], from: self.subassignmentstartdatetime, to: self.subassignmentenddatetime).minute!))/CGFloat(getcorrespondingassignment().totaltime) * (UIScreen.main.bounds.size.width-32)), height: 15)
@@ -1396,7 +1397,7 @@ struct HomeBodyView: View {
                                 Image(systemName: "chevron.up").resizable().aspectRatio(contentMode: .fit).frame(width: 8).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                             }
                         }.rotationEffect(Angle(degrees: self.hidingupcoming ? 180 : 0), anchor: .center).animation(.spring()).padding(.trailing, 15)
-                    }.padding(.top, self.hidingupcoming ? -90 : -55)
+                    }.padding(.top, self.hidingupcoming ? -90 : -50)
                 }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
 
                 ScrollView {

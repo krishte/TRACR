@@ -24,9 +24,11 @@ struct DropDown: View {
     @State var filterspresented: Bool = false
     var body: some View {
         VStack {
-
+            NavigationLink(destination: EmptyView()) {
+                EmptyView()
+            }
             NavigationLink(destination:
-            
+
 
                     List
                     {
@@ -67,7 +69,7 @@ struct DropDown: View {
 //                    Toggle(isOn: $showCompleted) {
 //                        Text("Show Completed Assignments")
 //                    }
-                    //Text(showCompleted ? "Completed Assignments" : "To-Do Assignments").frame(width: 500, alignment: .leading)
+//                    Text(showCompleted ? "Completed Assignments" : "To-Do Assignments").frame(width: 500, alignment: .leading)
                 //}
           //  }.frame(height: 100)
             

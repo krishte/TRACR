@@ -13,6 +13,7 @@ struct IndividualAssignmentFilterView: View {
     @State var deleteonce: Bool = true
     @State var incompleted: Bool = false
     @State var incompletedonce: Bool = true
+    @State var showingexacttimes: Bool = true
     @Binding var selectededitassignment: String
     @Binding var showeditassignment: Bool
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
@@ -24,7 +25,8 @@ struct IndividualAssignmentFilterView: View {
     
     let isCompleted: Bool
     
-    @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [])
+    @FetchRequest(entity: Subassignmentnew.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
@@ -60,7 +62,7 @@ struct IndividualAssignmentFilterView: View {
     }
     
     func getNextColor(currentColor: String) -> Color {
-        print(currentColor)
+     //   print(currentColor)
         let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "one"]
         let existinggradients = ["one", "two", "three", "five", "six", "eleven","thirteen", "fourteen", "fifteen"]
         if (existinggradients.contains(currentColor)) {
@@ -187,7 +189,14 @@ struct IndividualAssignmentFilterView: View {
 //                                                let starttoendtime = timeformatter.string(from: subassignment.startdatetime) + " - " + timeformatter.string(from: subassignment.enddatetime
 
                                                 Text(previewduedatetext).font(.headline).fontWeight(.bold)
-                                                Text((subassignmentlength / 60 == 0 ? "" : (subassignmentlength / 60 == 1 ? "1 hour " : String(subassignmentlength / 60) + " hours ")) + (subassignmentlength % 60 == 0 ? "" : String(subassignmentlength % 60) + " minutes")).font(.footnote).fontWeight(.light)
+                                                if (showingexacttimes)
+                                                {
+                                                    Text(timeformatter.string(from: subassignment.startdatetime) + " - " + timeformatter.string(from: subassignment.enddatetime)).font(.footnote).fontWeight(.light)
+                                                }
+                                                else
+                                                {
+                                                    Text((subassignmentlength / 60 == 0 ? "" : (subassignmentlength / 60 == 1 ? "1 hour " : String(subassignmentlength / 60) + " hours ")) + (subassignmentlength % 60 == 0 ? "" : String(subassignmentlength % 60) + " minutes")).font(.footnote).fontWeight(.light)
+                                                }
                                                 
                                             }.padding(.vertical, 5)
                                             //maybe on tap, goes to homeview of relevant date (maybe not, since only next 4 weeks displayed)
@@ -199,7 +208,7 @@ struct IndividualAssignmentFilterView: View {
                         }.padding(.all, 4)
                     }.frame(height: 100).animation(.spring())
                 }
-            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(14).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: 20, coordinateSpace: .local)
+            }.padding(10).background(assignment.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: assignment.color) : Color(assignment.color)).cornerRadius(14).offset(x: self.dragoffset.width).opacity(isCompleted ? 0.7 : 1.0).gesture(DragGesture(minimumDistance: isExpanded ? 70 : 20, coordinateSpace: .local)
                 .onChanged { value in
                     //self.dragoffset = value.translation
                     if (!self.isCompleted) {
@@ -282,7 +291,11 @@ struct IndividualAssignmentFilterView: View {
                     }
  
                 }).animation(.spring())
-        }.frame(width: UIScreen.main.bounds.size.width-20).padding(.horizontal, 10)
+        }.frame(width: UIScreen.main.bounds.size.width-20).padding(.horizontal, 10).onAppear
+        {
+            let defaults = UserDefaults.standard
+            showingexacttimes = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+        }
     }
     func gethourminutestext(minutenumber: Int) -> String {
         if (minutenumber < 60)

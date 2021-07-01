@@ -3471,6 +3471,7 @@ struct EditAssignmentModalView: View {
                                 }
                                 self.assignmentslist[self.selectedassignment].completed = false
                                 self.assignmentslist[self.selectedassignment].progress =    Int64((Double(self.assignmentslist[self.selectedassignment].totaltime - self.assignmentslist[self.selectedassignment].timeleft)/Double(self.assignmentslist[self.selectedassignment].totaltime )) * 100)
+                                
                             }
                             
                             
@@ -3479,9 +3480,11 @@ struct EditAssignmentModalView: View {
                             } catch {
                                 print(error.localizedDescription)
                             }
+
                             masterRunning.uniqueAssignmentName = self.nameofassignment
                             //assignment specific
                             masterRunning.masterRunningNow = true
+                            print("variable changed in editassignmentmodalview")
                             
                             self.NewAssignmentPresenting = false
                         }
@@ -3544,7 +3547,7 @@ struct EditAssignmentModalView: View {
             }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline)
         }
         if masterRunning.masterRunningNow {
-            MasterClass()
+            MasterClass().environment(\.managedObjectContext, self.managedObjectContext)
         }
     }
 }

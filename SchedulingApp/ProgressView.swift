@@ -1504,26 +1504,26 @@ struct WorkloadSliver: View {
     
     var body: some View {
         ZStack {
-            GeometryReader { geometry in
-                let centerPoint =  CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
-                let innerRadius = (geometry.size.width / 7)
-//                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius)))
-                let largeRadius = (innerRadius + (0.88 * (((geometry.size.width / 2) - 40) - innerRadius)))
-            
-                if self.selectedSliver == self.sliverinfo && self.thisSliverClicked {
-                    Path { path in
-                        path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
-                        path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
-                        path.closeSubpath()
-                    }.stroke(self.colorScheme == .light ? Color.black : Color.white, lineWidth: self.colorScheme == .light ? 1 : 2)
-                }
-                
-                Path { path in
-                    path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
-                    path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
-                    path.closeSubpath()
-                }.foregroundColor(self.color)
-            }
+//            GeometryReader { geometry in
+//                let centerPoint =  CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+//                let innerRadius = (geometry.size.width / 7)
+////                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius)))
+//                let largeRadius = (innerRadius + (0.88 * (((geometry.size.width / 2) - 40) - innerRadius)))
+//            
+//                if self.selectedSliver == self.sliverinfo && self.thisSliverClicked {
+//                    Path { path in
+//                        path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
+//                        path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
+//                        path.closeSubpath()
+//                    }.stroke(self.colorScheme == .light ? Color.black : Color.white, lineWidth: self.colorScheme == .light ? 1 : 2)
+//                }
+//                
+//                Path { path in
+//                    path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
+//                    path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
+//                    path.closeSubpath()
+//                }.foregroundColor(self.color)
+//            }
         }.zIndex((self.selectedSliver == self.sliverinfo && self.thisSliverClicked) ? 1 : 0).animation(.easeInOut(duration: 0.14)).onTapGesture {
             if self.selectedSliver == self.sliverinfo {
                 self.selectedSliver = []

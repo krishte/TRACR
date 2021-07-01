@@ -45,6 +45,8 @@ class MasterRunning: ObservableObject {
     @Published var onlyNotifications: Bool = false
     @Published var displayText: Bool = false
     @Published var uniqueAssignmentName: String = ""
+    @Published var extratimealertmessage: String = ""
+    @Published var showingalert: Bool = false
 }
 
 struct MasterRunningDisplay: View {
@@ -167,7 +169,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if (!firstLaunchTutorial)
+            if (firstLaunchTutorial)
             {
 //                NavigationView
 //                {
@@ -399,7 +401,14 @@ struct ContentView: View {
                     let defaults = UserDefaults.standard
                     defaults.set(Date(timeIntervalSinceNow: 0), forKey: "lastaccessdate")
                     
-                }//.accentColor(Color.orange)
+                }.accentColor(Color.orange).alert(isPresented: $masterRunning.showingalert) {
+                    Alert(title: Text("Scheduling Error"),
+                          message: Text(masterRunning.extratimealertmessage),
+                          dismissButton: .default(Text("OK")) {
+                            masterRunning.extratimealertmessage = ""
+                            masterRunning.showingalert = false
+                          })
+                }
                 
                 VStack {
                     MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())

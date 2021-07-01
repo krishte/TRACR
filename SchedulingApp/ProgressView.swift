@@ -1503,6 +1503,7 @@ struct WorkloadSliver: View {
     @State var thisSliverClicked: Bool = false
     
     var body: some View {
+
         Text("sfd")
 //        ZStack {
 //            GeometryReader { geometry in
@@ -1510,7 +1511,6 @@ struct WorkloadSliver: View {
 //                let innerRadius = (geometry.size.width / 7)
 ////                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius)))
 //                let largeRadius = (innerRadius + (0.88 * (((geometry.size.width / 2) - 40) - innerRadius)))
-//
 //                if self.selectedSliver == self.sliverinfo && self.thisSliverClicked {
 //                    Path { path in
 //                        path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
@@ -1518,7 +1518,6 @@ struct WorkloadSliver: View {
 //                        path.closeSubpath()
 //                    }.stroke(self.colorScheme == .light ? Color.black : Color.white, lineWidth: self.colorScheme == .light ? 1 : 2)
 //                }
-//
 //                Path { path in
 //                    path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
 //                    path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)

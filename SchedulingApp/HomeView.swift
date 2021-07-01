@@ -646,11 +646,11 @@ struct SubassignmentBacklogAction: View {
                 }
                 
                 self.subassignmentcompletionpercentage = 0
-                
-                addTimeSubassignmentBacklog.backlogList.remove(at: 0)
-                //assignment specific
                 masterRunning.uniqueAssignmentName = addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL"
                 masterRunning.masterRunningNow = true
+                addTimeSubassignmentBacklog.backlogList.remove(at: 0)
+                //assignment specific
+                
             }) {
                 Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Next" : "Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
             }.padding(.vertical, 8).padding(.bottom, -3)
@@ -1453,6 +1453,8 @@ struct SubassignmentListView: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
     var daytitle: String
     var daytitlesfromlastmonday: [String]
     var datesfromlastmonday: [Date]
@@ -1522,22 +1524,34 @@ struct SubassignmentListView: View {
     func tasksThereFunc() {
         tasksThereBool = true
     }
+    @State var showingsubassignments: Bool = true
     
     var body: some View {
       //  ScrollView {
         
         if tasksThereBool {
-            HStack {
-                Spacer().frame(width: 10)
-                Text(daytitle).font(.system(size: 20)).foregroundColor(daytitlesfromlastmonday.firstIndex(of: daytitle) == Calendar.current.dateComponents([.day], from: Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
-                Spacer()
-            }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
+            Button(action:
+            {
+                withAnimation(.spring())
+                {
+                    showingsubassignments.toggle()
+                }
+            })
+            {
+                HStack {
+                    Spacer().frame(width: 10)
+                    Text(daytitle).font(.system(size: 20)).foregroundColor(daytitlesfromlastmonday.firstIndex(of: daytitle) == Calendar.current.dateComponents([.day], from: Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
+                    Spacer()
+                    Image(systemName: "chevron.down").resizable().foregroundColor(colorScheme == .light ? Color.black : Color.white).frame(width: 15, height: 10).rotationEffect(Angle(degrees: self.showingsubassignments ? 0 : -90), anchor: .center).padding(.trailing, 10)
+                }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
+            }
         }
         
 //        else {
 //            Rectangle().fill(Color.black).frame(height: 1).padding(.all, 0).position(x: 0, y: 0)
 //        }
-        
+        if (showingsubassignments)
+        {
         ForEach(subassignmentlist) {
             subassignment in
             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
@@ -1577,6 +1591,7 @@ struct SubassignmentListView: View {
             }
             
         }.animation(.spring())
+        }
         
         if masterRunning.masterRunningNow {
             MasterClass()
@@ -1748,13 +1763,12 @@ struct IndividualSubassignmentView: View {
                 if (isDraggedleft) {
                     ZStack {
                         HStack {
-                            Rectangle().fill(Color.gray) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
+                            Rectangle().fill(Color.blue) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
                         }
                         
                         HStack {
-
-                            Text("Add Time").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width > 150 ? self.fixedHeight ? -120 : -150 : self.fixedHeight ? self.dragoffset.width - 270 : self.dragoffset.width-300)
-                            Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width > 150 ? self.fixedHeight ? -160 : -190 : self.fixedHeight ? self.dragoffset.width - 310 : self.dragoffset.width-340)
+                            Text("Reschedule").foregroundColor(Color.white).frame(width:120).offset(x: self.dragoffset.width > 150 ? self.fixedHeight ? -120 : -150 : self.fixedHeight ? self.dragoffset.width - 270 : self.dragoffset.width-300)
+                            Image(systemName: "timer").foregroundColor(Color.white).frame(width:50).offset(x: self.dragoffset.width > 150 ? self.fixedHeight ? -150 : -180 : self.fixedHeight ? self.dragoffset.width - 300 : self.dragoffset.width-330)
                         }
                     }
                 }
@@ -1811,7 +1825,10 @@ struct IndividualSubassignmentView: View {
             }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
- 
+//                    if (self.dragoffset.width > 0 && actualstartdatetime > Date())
+//                    {
+//                        self.dragoffset = .zero
+//                    }
                     if (self.dragoffset.width < 0) {
                         self.isDraggedleft = false
                         self.isDragged = true
@@ -1822,21 +1839,22 @@ struct IndividualSubassignmentView: View {
                         self.isDraggedleft = true
                         self.deleted = false
                     }
-                                        
-                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 1/2) {
-                        self.deleted = true
-                    }
-                    else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
-                        self.incompleted = true
-                    }
+                    
+
                     
                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
                         self.dragoffset = .zero
                     }
                 }
                 .onEnded { value in
-                    self.dragoffset = .zero
                     
+                    if (self.dragoffset.width < -UIScreen.main.bounds.size.width * 1/2) {
+                        self.deleted = true
+                    }
+                    else if (self.dragoffset.width > UIScreen.main.bounds.size.width * 1/2) {
+                        self.incompleted = true
+                    }
+                    self.dragoffset = .zero
 
                     if (self.incompleted == true) {
                         if (self.incompletedonce == true) {
@@ -2036,7 +2054,9 @@ struct HomeView: View {
         NavigationView {
             if #available(iOS 14.0, *) {
                 ZStack {
-                    
+                    NavigationLink(destination: EmptyView()) {
+                        EmptyView()
+                    }
                     NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                         { EmptyView() }
                     HomeBodyView(uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).padding(.top, -40)

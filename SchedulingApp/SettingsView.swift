@@ -543,8 +543,10 @@ struct SettingsView: View {
     
     var body: some View {
         Form {
+
             List {
                 Section {
+                    
                     NavigationLink(destination: PreferencesView()) {
 //                     ZStack {
 ////                      //  RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -791,6 +793,9 @@ struct SettingsView: View {
                     }
                 }
             }
+//            NavigationLink(destination: EmptyView()) {
+//                EmptyView()
+//            }.opacity(0)
         }.navigationTitle("Settings")
         
         if masterRunning.masterRunningNow {
@@ -1517,7 +1522,7 @@ struct NotificationsView: View {
                         }.navigationTitle("Notifications").navigationBarTitleDisplayMode(.inline)
         }.onAppear() {
             let defaults = UserDefaults.standard
-            let array = defaults.object(forKey: "savedassignmentnotifications") as? [String] ?? ["None"]
+            let array = defaults.object(forKey: "savedassignmentnotifications") as? [String] ?? ["At Start"]
             self.selection = Set(array)
             let array2 = defaults.object(forKey: "savedbreaknotifications") as? [String] ?? ["None"]
             self.selection2 = Set(array2)

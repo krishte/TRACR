@@ -312,7 +312,7 @@ struct NewGoogleAssignmentModalView: View {
                     {
                         HStack
                         {
-                            Text("Classroom assignments")
+                            Text("Select a Classroom assignment")
                             Spacer()
                             if (foundassignments.count > 0)
                             {
@@ -378,49 +378,49 @@ struct NewGoogleAssignmentModalView: View {
 //                    }
 //                }
                 
-                if (self.completedassignment)
-                {
-                    Section {
-                        VStack {
-                            //Text("Hello")
-
-                            if (self.getgradingscheme()[0..<1] == "N" || self.getgradingscheme()[0..<1] == "L")
-                            {
-                                HStack {
-                                    if (self.getgradingscheme()[0..<1] == "N")
-                                    {
-                                        Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
-                                    }
-                                    else
-                                    {
-                                        if (self.getgradingscheme()[3..<4] == "F")
-                                        {
-                                            Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
-                                        }
-                                        else
-                                        {
-                                            Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
-                                        }
-                                    }
-                                   Spacer()
-                                }.frame(height: 30)
-                                Slider(value: $assignmentgrade, in: self.getgrademin()...self.getgrademax())
-                            }
-                            else
-                            {
-                                HStack {
-                                    Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
-                                    Spacer()
-                                }.frame(height: 30)
-                                Slider(value: $assignmentgrade, in: 1...100)
-
-                            }
-                            
-
-                        }
-
-                    }
-                }
+//                if (self.completedassignment)
+//                {
+//                    Section {
+//                        VStack {
+//                            //Text("Hello")
+//
+//                            if (self.getgradingscheme()[0..<1] == "N" || self.getgradingscheme()[0..<1] == "L")
+//                            {
+//                                HStack {
+//                                    if (self.getgradingscheme()[0..<1] == "N")
+//                                    {
+//                                        Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+//                                    }
+//                                    else
+//                                    {
+//                                        if (self.getgradingscheme()[3..<4] == "F")
+//                                        {
+//                                            Text("Grade: " + otherclassgradesaf[Int(assignmentgrade.rounded(.down))-1])
+//                                        }
+//                                        else
+//                                        {
+//                                            Text("Grade: " + otherclassgradesae[Int(assignmentgrade.rounded(.down))-1])
+//                                        }
+//                                    }
+//                                   Spacer()
+//                                }.frame(height: 30)
+//                                Slider(value: $assignmentgrade, in: self.getgrademin()...self.getgrademax())
+//                            }
+//                            else
+//                            {
+//                                HStack {
+//                                    Text("Grade: \(assignmentgrade.rounded(.down), specifier: "%.0f")")
+//                                    Spacer()
+//                                }.frame(height: 30)
+//                                Slider(value: $assignmentgrade, in: 1...100)
+//
+//                            }
+//
+//
+//                        }
+//
+//                    }
+//                }
                 Section {
                     Picker(selection: $selectedclass, label: Text("Class")) {
                         ForEach(0 ..< getnontrashclasslist().count) {

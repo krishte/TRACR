@@ -1020,7 +1020,7 @@ struct ActionView: View {
         }
 
         //probably have to change these constraints set to 5?
-        if ((addTimeSubassignmentBacklog.backlogList.count >= 2) || longDueSubassignment) && (actionViewPresets.actionViewHeight == 0) {
+        if ((addTimeSubassignmentBacklog.backlogList.count >= 5) || longDueSubassignment) && (actionViewPresets.actionViewHeight == 0) {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
                 actionViewPresets.actionViewOffset = 0
                 actionViewPresets.actionViewType = "SubassignmentBacklogAction"

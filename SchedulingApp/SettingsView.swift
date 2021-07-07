@@ -188,7 +188,7 @@ struct TutorialView: View {
                         TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "Clicking on the switch indicator on the top-right corner of the Home Tab will give you a diffently structured layout of all of your tasks that doesn't schedule your tasks by time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(2)
                         TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete your Task or you weren't available, swipe right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(3)
                         TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the Add Button to add an Assignment in the Home and Assignments Tabs, a Class in the Classes Tab and a Grade in the Progress Tab.", tutorialInstructions2: "Hold the Add Button to choose to specifically add an Assignment, Class, Free Time or Grade.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(4)
-                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "Select your Tolerance for this Class, which indicates how much you enjoy working for this Class. The tolerance is used to plan a personalized and appropriate schedule.", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(5)
+                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(5)
                         TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free Time.", tutorialInstructions2: "Select when the Free Time should repeat, or the specific date for the Free Time if it only takes place once.", tutorialInstructions3: "To view and delete your Free Times, click 'View Free Times'.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(6)
                     }
                     
@@ -540,6 +540,7 @@ struct SettingsView: View {
     @State var easteregg2: Bool = false
     @State var easteregg3: Bool = false
     @State var specificworkhoursview: Bool = true
+    @State var showingAlert: Bool = false
     
     var body: some View {
         Form {
@@ -681,11 +682,60 @@ struct SettingsView: View {
                     NavigationLink(destination:
                         Form
                         {
-                            Toggle(isOn: $specificworkhoursview)
+                            Section
                             {
-                                Text("Specifc Work Hours View")
+                                Toggle(isOn: $specificworkhoursview)
+                                {
+                                    Text("Specifc Work Hours View").fontWeight(.bold)
+                                }.onChange(of: self.specificworkhoursview) { _ in
+                                    if (specificworkhoursview)
+                                    {
+                                        showingAlert = true
+                                    }
+                                }
                             }
-                        }.onAppear
+                            Section
+                            {
+                                Text("Work hours are used to schedule tasks for assignments. Tasks will always be scheduled during you work hours so make sure to include all the times when you can work.")
+                                Spacer().frame(height: 10)
+                                HStack
+                                {
+                                    VStack
+                                    {
+                                        Image("WorkHoursType1").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 350)
+                                        Text("Non-specific Work Hours View").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
+                                    }
+                                    Spacer()
+                                    VStack
+                                    {
+                                        Image("WorkHoursType2").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 350)
+                                        Text("Specific Work Hours View").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
+                                    }
+                                }
+                            }
+                            
+                        }.alert(isPresented:$showingAlert) {
+                            Alert(
+                                title: Text("Deletion of work hours"),
+                                message: Text("This will delete all current work hours. New work hours will need to be created in settings."),
+                                primaryButton: .destructive(Text("Delete")) {
+                                    print("Deleting...")
+                                    for (index, _) in freetimelist.enumerated()
+                                    {
+                                        self.managedObjectContext.delete(self.freetimelist[index])
+                                    }
+                                    do {
+                                        try self.managedObjectContext.save()
+                                    } catch {
+                                        print(error.localizedDescription)
+                                    }
+                                },
+                                secondaryButton: .cancel() {
+                                    specificworkhoursview = false
+                                }
+                            )
+                        }
+                        .onAppear
                         {
                             let defaults = UserDefaults.standard
                             specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
@@ -723,7 +773,7 @@ struct SettingsView: View {
                         
                     }
                     NavigationLink(destination:
-                        WorkHours()
+                                    WorkHours()
                     ) {
                         HStack {
                             ZStack {
@@ -793,9 +843,7 @@ struct SettingsView: View {
                     }
                 }
             }
-//            NavigationLink(destination: EmptyView()) {
-//                EmptyView()
-//            }.opacity(0)
+
         }.navigationTitle("Settings")
         
         if masterRunning.masterRunningNow {

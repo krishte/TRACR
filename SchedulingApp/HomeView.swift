@@ -1825,10 +1825,10 @@ struct IndividualSubassignmentView: View {
             }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
-//                    if (self.dragoffset.width > 0 && actualstartdatetime > Date())
-//                    {
-//                        self.dragoffset = .zero
-//                    }
+                    if (self.dragoffset.width > 0 && actualstartdatetime > Date())
+                    {
+                        self.dragoffset = .zero
+                    }
                     if (self.dragoffset.width < 0) {
                         self.isDraggedleft = false
                         self.isDragged = true
@@ -2033,7 +2033,7 @@ struct HomeView: View {
         else if (self.sheetNavigator.modalView == .assignment)
         {
             //NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
-            NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+            NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning).environmentObject(googleDelegate)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {

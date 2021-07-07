@@ -200,7 +200,7 @@ struct IndividualAssignmentFilterView: View {
 
 //                                                let starttoendtime = timeformatter.string(from: subassignment.startdatetime) + " - " + timeformatter.string(from: subassignment.enddatetime
 
-                                                Text(previewduedatetext).font(.headline).fontWeight(.bold)
+                                                Text(previewduedatetext).foregroundColor(subassignment.enddatetime < Date() ? Color.red : (subassignment.startdatetime < Date() ? Color.blue : (colorScheme == .light ? Color.black : Color.white) )).font(.headline).fontWeight(.bold)
                                                 if (showingexacttimes)
                                                 {
                                                     Text(timeformatter.string(from: subassignment.startdatetime) + " - " + timeformatter.string(from: subassignment.enddatetime)).font(.footnote).fontWeight(.light)

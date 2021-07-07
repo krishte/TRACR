@@ -171,29 +171,29 @@ struct EditClassModalView: View {
                     TextField("Class Name", text: $textfieldmanager.userInput)
                 }
                 
-                Section {
-                    VStack {
-                        HStack {
-                            Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
-                            Spacer()
-                        }.frame(height: 30)
-                        Slider(value: $classtolerancedouble, in: 1...5)
-                        ZStack {
-                            Image(systemName: "circle").resizable().frame(width: 45, height: 45)
-                            HStack {
-                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
-                                Spacer().frame(width: 8)
-                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
-                            }.padding(.top, -8)
-                            GeometryReader { geometry in
-                                Path { path in
-                                    path.move(to: CGPoint(x: (geometry.size.width / 2) - 9, y: (geometry.size.height / 2) + 7))
-                                    path.addQuadCurve(to: CGPoint(x: (geometry.size.width / 2) + 9, y: (geometry.size.height / 2) + 7), control: CGPoint(x: (geometry.size.width / 2), y: ((geometry.size.height / 2) + 7) + CGFloat(4 * (self.classtolerancedouble - 3))))
-                                }.stroke((colorScheme == .light ? Color.black : Color.white), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                            }
-                        }
-                    }.padding(.bottom, 8)
-                }
+//                Section {
+//                    VStack {
+//                        HStack {
+//                            Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
+//                            Spacer()
+//                        }.frame(height: 30)
+//                        Slider(value: $classtolerancedouble, in: 1...5)
+//                        ZStack {
+//                            Image(systemName: "circle").resizable().frame(width: 45, height: 45)
+//                            HStack {
+//                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+//                                Spacer().frame(width: 8)
+//                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+//                            }.padding(.top, -8)
+//                            GeometryReader { geometry in
+//                                Path { path in
+//                                    path.move(to: CGPoint(x: (geometry.size.width / 2) - 9, y: (geometry.size.height / 2) + 7))
+//                                    path.addQuadCurve(to: CGPoint(x: (geometry.size.width / 2) + 9, y: (geometry.size.height / 2) + 7), control: CGPoint(x: (geometry.size.width / 2), y: ((geometry.size.height / 2) + 7) + CGFloat(4 * (self.classtolerancedouble - 3))))
+//                                }.stroke((colorScheme == .light ? Color.black : Color.white), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+//                            }
+//                        }
+//                    }.padding(.bottom, 8)
+//                }
                 
                 
                 
@@ -1288,8 +1288,17 @@ struct MasterClass: View {
         var extratime: Int = 0
         var subassignments = [(Int, Int)]()
         var possible:Bool = false
+        var tempsubassignmentdict = [Int: [(String, Int)]]()
+        for i in 0...daystilllatestdate
+        {
+            tempsubassignmentdict[i] = []
+        }
  
        (subassignments, extratime, possible) = bulk(assignment: assignmentlist[assignmentindex], daystilldue: daystilldue, totaltime: Int(assignmentlist[assignmentindex].timeleft)-pastassignmenttime, bulk: true, dateFreeTimeDict: dateFreeTimeDict)
+        for (daysfromnow, lengthofwork) in subassignments {
+            //dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: daysfromnow, to: startOfDay)!]! -= lengthofwork
+            tempsubassignmentdict[daysfromnow]!.append((assignmentlist[assignmentindex].name, lengthofwork))
+        }
      //   let (subassignments, _, _) = try bulk(assignment: assignment, daystilldue: daystilldue, totaltime: Int(assignment.timeleft), bulk: true, dateFreeTimeDict: dateFreeTimeDict)
 
 
@@ -1342,7 +1351,7 @@ struct MasterClass: View {
             
             var overalloverallpossible: Bool = false
             var dateFreeTimeDictCopy: [Date: Int] = dateFreeTimeDict
-            var tempsubassignmentdict = [Int: [(String, Int)]]()
+            var overallpossible: Bool = true
             for i in 0...daystilllatestdate
             {
                 tempsubassignmentdict[i] = []
@@ -1372,7 +1381,7 @@ struct MasterClass: View {
                 print("kewl")
 
                 dateFreeTimeDictCopy = dateFreeTimeDict
-                var overallpossible: Bool = true
+                overallpossible = true
                 for i in 0...(nextbest+1)
                 {
                      (subassignments, extratime, possible) = bulk(assignment: assignmentlist[assignmentindex+i], daystilldue: Calendar.current.dateComponents([.day], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeIntervalSinceNow: 0))), to:  Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: Date(timeInterval: 0, since: assignmentlist[assignmentindex+i].duedate)))).day!, totaltime: Int(assignmentlist[assignmentindex+i].timeleft)-pastassignmenttime, bulk: true, dateFreeTimeDict: dateFreeTimeDict)
@@ -1395,58 +1404,62 @@ struct MasterClass: View {
                     print("Being Scheduled but assignment needs to be shortened or work hours incresed")
                     overallpossible = true
                 }
-                
                 if (overallpossible)
                 {
-                    for (index, assignment) in assignmentlist.enumerated()
-                    {
-                        for subassignment in subassignmentlist
-                        {
-                            if ((index < assignmentindex || index > assignmentindex+nextbest) && subassignment.assignmentname == assignment.name)
-                            {
-                                if (subassignment.enddatetime < Date())
-                                {
-                                    continue
-                                }
-                                if (Calendar.current.startOfDay(for: subassignment.startdatetime) != startOfDay)
-                                {
-                                    let subassignmentdaysfromnow =  Calendar.current.dateComponents([.day], from: startOfDay, to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day!
-                                    subassignmentdict[subassignmentdaysfromnow]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
-
-                                }
-                                else
-                                {
-                                    // this may cause problems because it assumes there are no existing subassignments today that have been passed but not completed
-                                    if (subassignment.enddatetime > Date() && subassignment.startdatetime < Date())
-                                    {
-                                        //add logic not to move the position of this subassignment
-                                        //could change the from: Date() to from: subassignment.startdatetime assuming this isn't referenced anywhere else
-                                       // subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: Date(), to: subassignment.enddatetime).minute!))
-
-                                    }
-                                    else if (subassignment.startdatetime > Date())
-                                    {
-                                        subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
-
-                                    }
-                                }
-                                
-                            }
-                        }
-                    }
-                    for i in 0...daystilllatestdate
-                    {
-                        for tup in tempsubassignmentdict[i]!
-                        {
-                            //need to reinitialize subassignmentdict using current subassiegnmentlist
-                            subassignmentdict[i]!.append((tup.0, tup.1))
-                        }
-                    }
-                    overalloverallpossible = true
                     break
                 }
+                
+
                 nextbest += 1
             }
+
+            for (index, assignment) in assignmentlist.enumerated()
+            {
+                for subassignment in subassignmentlist
+                {
+                    if ((index < assignmentindex || index > assignmentindex+nextbest) && subassignment.assignmentname == assignment.name)
+                    {
+                        if (subassignment.enddatetime < Date())
+                        {
+                            continue
+                        }
+                        if (Calendar.current.startOfDay(for: subassignment.startdatetime) != startOfDay)
+                        {
+                            let subassignmentdaysfromnow =  Calendar.current.dateComponents([.day], from: startOfDay, to: Calendar.current.startOfDay(for: subassignment.startdatetime)).day!
+                            subassignmentdict[subassignmentdaysfromnow]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+
+                        }
+                        else
+                        {
+                            // this may cause problems because it assumes there are no existing subassignments today that have been passed but not completed
+                            if (subassignment.enddatetime > Date() && subassignment.startdatetime < Date())
+                            {
+                                //add logic not to move the position of this subassignment
+                                //could change the from: Date() to from: subassignment.startdatetime assuming this isn't referenced anywhere else
+                               // subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: Date(), to: subassignment.enddatetime).minute!))
+
+                            }
+                            else if (subassignment.startdatetime > Date())
+                            {
+                                subassignmentdict[0]!.append((subassignment.assignmentname,  Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!))
+
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            for i in 0...daystilllatestdate
+            {
+                for tup in tempsubassignmentdict[i]!
+                {
+                    //need to reinitialize subassignmentdict using current subassiegnmentlist
+                    subassignmentdict[i]!.append((tup.0, tup.1))
+                }
+            }
+            overalloverallpossible = true
+            
+            
             if (overalloverallpossible)
             {
                 print("You're a BEAST")
@@ -1555,7 +1568,7 @@ struct MasterClass: View {
                 }
             }
         }
-        
+        //needs to be changed because it's possible extratime is not for the correct assignment
         if (extratime != 0)
         {
             masterRunning.extratimealertmessage = "There are " + String(extratime) + " minutes for assignment " + namey + " that cannot be scheduled. Please adjust your work hours or edit the assignment."
@@ -1843,6 +1856,8 @@ struct MasterClass: View {
 }
 
 struct ClassesView: View {
+    @EnvironmentObject var googleDelegate: GoogleDelegate
+
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
@@ -1963,7 +1978,7 @@ struct ClassesView: View {
         }
         else if (self.sheetNavigator.modalView == .assignment)
         {
-            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+            NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning).environmentObject(googleDelegate)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {
@@ -2163,16 +2178,16 @@ struct ClassesView: View {
 
                                     Button(action:
                                     {
-                                        if (self.getcompletedAssignments())
-                                        {
+//                                        if (self.getcompletedAssignments())
+//                                        {
                                             self.sheetNavigator.modalView = .grade
                                             self.NewSheetPresenting = true
-                                        }
-                                        else
-                                        {
-                                            self.sheetNavigator.alertView = .noassignment
-                                            self.NewAlertPresenting = true
-                                        }
+//                                        }
+//                                        else
+//                                        {
+//                                            self.sheetNavigator.alertView = .noassignment
+//                                            self.NewAlertPresenting = true
+//                                        }
                                         
                                     })
                                     {
@@ -2187,7 +2202,7 @@ struct ClassesView: View {
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
                                                 .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1).opacity(!self.getcompletedAssignments() ? 0.5: 1)
+                                    }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1)//.opacity(!self.getcompletedAssignments() ? 0.5: 1)
                                 }.transition(.scale)
                               }
                             
@@ -2204,6 +2219,18 @@ struct ClassesView: View {
                                     ZStack {
                                         //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                         Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
+                                        if (classlist.count == 0)
+                                        {
+                                            VStack
+                                            {
+                                                HStack
+                                                {
+                                                    Spacer()
+                                                    Circle().fill(Color.red).frame(width: 20, height: 20).offset(x: -12, y: 12)
+                                                }
+                                                Spacer()
+                                            }
+                                        }
                                     }
                                 )
                             }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)

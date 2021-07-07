@@ -1288,29 +1288,29 @@ struct NewClassModalView: View {
                     }
                 }
                 
-                Section {
-                    VStack {
-                        HStack {
-                            Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
-                            Spacer()
-                        }.frame(height: 30)
-                        Slider(value: $classtolerancedouble, in: 1...5)
-                        ZStack {
-                            Image(systemName: "circle").resizable().frame(width: 45, height: 45)
-                            HStack {
-                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
-                                Spacer().frame(width: 8)
-                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
-                            }.padding(.top, -8)
-                            GeometryReader { geometry in
-                                Path { path in
-                                    path.move(to: CGPoint(x: (geometry.size.width / 2) - 9, y: (geometry.size.height / 2) + 7))
-                                    path.addQuadCurve(to: CGPoint(x: (geometry.size.width / 2) + 9, y: (geometry.size.height / 2) + 7), control: CGPoint(x: (geometry.size.width / 2), y: ((geometry.size.height / 2) + 7) + CGFloat(5 * (self.classtolerancedouble - 3))))
-                                }.stroke((colorScheme == .light ? Color.black : Color.white), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                            }
-                        }
-                    }.padding(.bottom, 8)
-                }
+//                Section {
+//                    VStack {
+//                        HStack {
+//                            Text("Tolerance: \(classtolerancedouble.rounded(.down), specifier: "%.0f")")
+//                            Spacer()
+//                        }.frame(height: 30)
+//                        Slider(value: $classtolerancedouble, in: 1...5)
+//                        ZStack {
+//                            Image(systemName: "circle").resizable().frame(width: 45, height: 45)
+//                            HStack {
+//                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+//                                Spacer().frame(width: 8)
+//                                Image(systemName: "circle.fill").resizable().frame(width: 5, height: 5)
+//                            }.padding(.top, -8)
+//                            GeometryReader { geometry in
+//                                Path { path in
+//                                    path.move(to: CGPoint(x: (geometry.size.width / 2) - 9, y: (geometry.size.height / 2) + 7))
+//                                    path.addQuadCurve(to: CGPoint(x: (geometry.size.width / 2) + 9, y: (geometry.size.height / 2) + 7), control: CGPoint(x: (geometry.size.width / 2), y: ((geometry.size.height / 2) + 7) + CGFloat(5 * (self.classtolerancedouble - 3))))
+//                                }.stroke((colorScheme == .light ? Color.black : Color.white), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+//                            }
+//                        }
+//                    }.padding(.bottom, 8)
+//                }
                 
           //      if (gradingschemelist.count > 0) {
                     Section {

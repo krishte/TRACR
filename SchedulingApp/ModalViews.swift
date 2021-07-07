@@ -604,6 +604,7 @@ struct NewGoogleAssignmentModalView: View {
                             }
                             masterRunning.uniqueAssignmentName = self.nameofassignment
 
+                            print("C")
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
                             
@@ -703,9 +704,9 @@ struct NewGoogleAssignmentModalView: View {
             defaults.set(0, forKey: "countnewassignments")
         }
         
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
+//        if masterRunning.masterRunningNow {
+//            MasterClass()
+//        }
     }
 }
 struct NewAssignmentModalView: View {
@@ -1087,6 +1088,7 @@ struct NewAssignmentModalView: View {
                             }
                             masterRunning.uniqueAssignmentName = self.textfieldmanager.userInput
 
+                            print("D")
                             masterRunning.masterRunningNow = true
                             masterRunning.displayText = true
                             
@@ -1106,9 +1108,9 @@ struct NewAssignmentModalView: View {
             }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
         }
         
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
+//        if masterRunning.masterRunningNow {
+//            MasterClass()
+//        }
     }
 }
 
@@ -2270,7 +2272,9 @@ struct NewFreetimeModalView: View {
                                     print(error.localizedDescription)
                                 }
                                 
-                                masterRunning.masterRunningNow = true
+//                                print("E")
+                                //not being used
+//                                masterRunning.masterRunningNow = true
                                 
                                 self.NewFreetimePresenting = false
                             }
@@ -2308,9 +2312,9 @@ struct NewFreetimeModalView: View {
             }.navigationBarItems(trailing: Button(action: {self.NewFreetimePresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Free Time").navigationBarTitleDisplayMode(.inline)
         }
         
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
+//        if masterRunning.masterRunningNow {
+//            MasterClass()
+//        }
     }
 
 }
@@ -2600,7 +2604,9 @@ struct FreetimeDetailView: View {
                 }
             }
         }.onDisappear(perform: {
-            masterRunning.masterRunningNow = true
+//            print("F")
+            //not being used
+//            masterRunning.masterRunningNow = true
         }).animation(.spring()).navigationBarItems(trailing: Button(action: {
             if (self.selection.count < 8) {
                 for dayname in self.daylist {
@@ -3007,8 +3013,10 @@ struct NewGradeModalView: View {
                                     print(error.localizedDescription)
                                 }
                                 masterRunning.uniqueAssignmentName = self.assignmentname
-                                masterRunning.masterRunningNow = true
-                                masterRunning.displayText = true
+//                                print("G")
+                                //master function shouldn't be run
+//                                masterRunning.masterRunningNow = true
+//                                masterRunning.displayText = true
                                 
                                 self.NewGradePresenting = false
                             }
@@ -3483,6 +3491,7 @@ struct EditAssignmentModalView: View {
 
                             masterRunning.uniqueAssignmentName = self.nameofassignment
                             //assignment specific
+                            print("H")
                             masterRunning.masterRunningNow = true
                             print("variable changed in editassignmentmodalview")
                             
@@ -3546,8 +3555,8 @@ struct EditAssignmentModalView: View {
                 
             }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline)
         }
-        if masterRunning.masterRunningNow {
-            MasterClass().environment(\.managedObjectContext, self.managedObjectContext)
-        }
+//        if masterRunning.masterRunningNow {
+//            MasterClass().environment(\.managedObjectContext, self.managedObjectContext)
+//        }
     }
 }

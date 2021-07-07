@@ -184,9 +184,9 @@ struct AssignmentsView: View {
                     }
                 }.animation(.spring())
                 
-                if masterRunning.masterRunningNow {
-                    MasterClass()
-                }
+//                if masterRunning.masterRunningNow {
+//                    MasterClass()
+//                }
             }
             
         }.sheet(isPresented: self.$showassignmentedit, content: {
@@ -273,11 +273,11 @@ struct FilterView: View {
     }
 
     var body: some View {
-        NavigationView{
+        NavigationView {
             ZStack {
-                NavigationLink(destination: EmptyView()) {
-                    EmptyView()
-                }
+//                NavigationLink(destination: EmptyView()) {
+//                    EmptyView()
+//                }
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                  { EmptyView() }
                 VStack {
@@ -428,7 +428,7 @@ struct FilterView: View {
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                     Button(action: {self.showingSettingsView = true}) {
-                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }.padding(.leading, 2.0)
                     
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
@@ -442,7 +442,8 @@ struct FilterView: View {
                             Image(systemName: self.completedvalue ? "checkmark.circle.fill" : "checkmark.circle").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                         }
                 }.padding(.top, 0)).navigationTitle("Assignments")
-        }.onDisappear() {
+        }.navigationViewStyle(StackNavigationViewStyle())
+        .onDisappear() {
             self.showingSettingsView = false
             self.showpopup = false
         }

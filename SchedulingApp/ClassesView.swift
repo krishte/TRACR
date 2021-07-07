@@ -431,8 +431,9 @@ struct EditClassModalView: View {
                                         print(error.localizedDescription)
                                     }
                                     //run on all assignments of class (maybe special property in masterrunning)
+                                    //get rid of tolerance and then comment this out!
                                     masterRunning.masterRunningNow = true
-                                    print("Signal Sent.")
+                                    print("I")
                                 }
                             }
                             self.showeditclass = false
@@ -456,9 +457,9 @@ struct EditClassModalView: View {
             }, label: {Text("Cancel")})).navigationTitle("Edit Class").navigationBarTitleDisplayMode(.inline)
         }
 
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
+//        if masterRunning.masterRunningNow {
+//            MasterClass()
+//        }
     }
     
     func getNextColor(currentColor: String) -> Color {
@@ -597,9 +598,9 @@ struct DetailView: View {
 //                            EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject).environment(\.managedObjectContext, self.managedObjectContext)}).animation(.spring())
                     }
                     
-                    if masterRunning.masterRunningNow {
-                        MasterClass()
-                    }
+//                    if masterRunning.masterRunningNow {
+//                        MasterClass()
+//                    }
                 }
             }.navigationBarItems(trailing: Button(action: {
                 self.NewSheetPresenting = true
@@ -713,13 +714,16 @@ struct MasterClass: View {
         }
         
         if masterRunning.onlyNotifications {
+            print("notifications thing being run 1")
             schedulenotifications()
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(200)) {
                 masterRunning.onlyNotifications = false
+                print("notifications thing being run 2 - set false")
             }
         }
         
         else if masterRunning.masterRunningNow {
+            print("SUPPOSED TO BE RUN")
             if (masterRunning.uniqueAssignmentName != "")
             {
                 assignmentspecificmaster()
@@ -1838,7 +1842,8 @@ struct MasterClass: View {
     }
     
     var body: some View {
-        Text("").background(Color.clear).offset(y: UIScreen.main.bounds.size.height).onAppear(perform: theBigMaster).opacity(0)
+        Text("").frame(width: 1, height: 1).background(Color.clear).onAppear(perform: theBigMaster).opacity(0)
+        //.offset(y: UIScreen.main.bounds.size.height)
     }
 }
 
@@ -1989,10 +1994,10 @@ struct ClassesView: View {
     var body: some View {
         NavigationView {
             VStack {
-            HStack {
-                Text("Classes").font(.largeTitle).bold().frame(height:40)
-                Spacer()
-            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
+//            HStack {
+//                Text("Classes").font(.largeTitle).bold().frame(height:40)
+//                Spacer()
+//            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
             ZStack {
                 NavigationLink(destination: EmptyView()) {
                     EmptyView()
@@ -2228,13 +2233,12 @@ struct ClassesView: View {
                         }.padding(.leading, 2.0)
                     
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
-            })
-        }.onDisappear() {
+            }).navigationTitle("Classes")
+        }.navigationViewStyle(StackNavigationViewStyle())
+        .onDisappear() {
             self.showingSettingsView = false
             self.showpopup = false
             self.selectedClass = 0
-
-
         }
     }
     func getcompletedAssignments() -> Bool {

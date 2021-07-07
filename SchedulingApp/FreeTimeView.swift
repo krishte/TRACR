@@ -850,6 +850,7 @@ struct WorkHours: View {
         }
         
         masterRunning.masterRunningNow = true
+        print("K")
         withAnimation(.spring())
         {
             self.refreshID = UUID()
@@ -906,6 +907,7 @@ struct WorkHours: View {
         }
         
         masterRunning.masterRunningNow = true
+        print("L")
         
         withAnimation(.spring())
         {
@@ -1198,9 +1200,9 @@ struct WorkHours: View {
                 }
             }
             
-            if masterRunning.masterRunningNow {
-                MasterClass()
-            }
+//            if masterRunning.masterRunningNow {
+//                MasterClass()
+//            }
         }
         }.onAppear
         {
@@ -1238,6 +1240,8 @@ struct WorkHours: View {
         {
             let defaults = UserDefaults.standard
             defaults.set(specificworkhoursview, forKey: "specificworktimes")
+            masterRunning.masterRunningNow = true
+            print("K2")
         }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading)

@@ -167,8 +167,8 @@ struct WeeklyBlockView: View {
         if (length == 5) {
             return 7*CGFloat(assignmentsindex)-17.5
         }
-         
-        return CGFloat(CGFloat(assignmentsindex)/CGFloat(length) * 20 - 10)
+        
+        return CGFloat(7*CGFloat(assignmentsindex)-(3.5*CGFloat(length)))
     }
     
     func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
@@ -312,6 +312,10 @@ struct SubassignmentAddTimeAction: View {
 
     @EnvironmentObject var masterRunning: MasterRunning
     
+    @State var subPageType: String = "Reschedule All?"
+    
+    @State var uniformlistviewshows = false
+    
     func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
         if number == 1 {
             return Color(.sRGB, red: Double(rgbcode[9..<14])!, green: Double(rgbcode[15..<20])!, blue: Double(rgbcode[21..<26])!, opacity: 1)
@@ -320,9 +324,9 @@ struct SubassignmentAddTimeAction: View {
         return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
     }
 
-    var body : some View {
+    var body: some View {
         HStack {
-            Text("Add Time to Assignment").font(.system(size: 14)).fontWeight(.light)
+            Text("Reschedule Task").font(.system(size: 14)).fontWeight(.light)
             Spacer()
             Button(action: {
                 actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
@@ -331,7 +335,17 @@ struct SubassignmentAddTimeAction: View {
             }, label: {
                 Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
             })
-        }.frame(width: UIScreen.main.bounds.size.width - 75)
+        }.frame(width: UIScreen.main.bounds.size.width - 75).onAppear {
+            let defaults = UserDefaults.standard
+
+            let specificworktimes = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+            if (specificworktimes) {
+                self.uniformlistviewshows = false
+            }
+            else {
+                self.uniformlistviewshows = true
+            }
+        }
         
         Spacer()
         
@@ -347,81 +361,166 @@ struct SubassignmentAddTimeAction: View {
                         Text(addTimeSubassignment.subassignmentname).font(.system(size: 17)).fontWeight(.medium)
                         
                         Spacer()
+                        
+                        if uniformlistviewshows {
+                            Text(addTimeSubassignment.subassignmentdatetext).font(.system(size: 15)).fontWeight(.light)
+                        }
                     }
                     
-                    Spacer().frame(height: 6)
-                    
-                    HStack {
-                        Text(addTimeSubassignment.subassignmentstarttimetext + " - " + addTimeSubassignment.subassignmentendtimetext).font(.system(size: 15)).fontWeight(.light)
+                    if !uniformlistviewshows {
+                        Spacer().frame(height: 6)
                         
-                        Spacer()
-                        
-                        Text(addTimeSubassignment.subassignmentdatetext).font(.system(size: 15)).fontWeight(.light)
-                        
-                        Spacer().frame(width: 15)
+                        HStack {
+                            Text(addTimeSubassignment.subassignmentstarttimetext + " - " + addTimeSubassignment.subassignmentendtimetext).font(.system(size: 15)).fontWeight(.light)
+                            
+                            Spacer()
+                            
+                            Text(addTimeSubassignment.subassignmentdatetext).font(.system(size: 15)).fontWeight(.light)
+                            
+                            Spacer().frame(width: 15)
+                        }
                     }
                 }
             }.frame(width: UIScreen.main.bounds.size.width - 75)
             
             Spacer().frame(height: 15)
+        }
+        
+        if self.subPageType == "Reschedule All?" {
+            VStack {
+                HStack {
+                    Text("Would you like to reschedule the entire task, or only a part of the task?").font(.system(size: 16)).fontWeight(.light).lineLimit(2)
+                    
+                    Spacer()
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+            }
+            
+            Spacer()
+            
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
             
             HStack {
-                Text("How much of the task did you complete?").font(.system(size: 16)).fontWeight(.light)
+                Button(action: {
+                    let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
+
+                    newAddTimeLog.name = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentname
+                    newAddTimeLog.length = Int64(addTimeSubassignment.subassignmentlength)
+                    newAddTimeLog.color = self.subassignmentlist[addTimeSubassignment.subassignmentindex].color
+                    newAddTimeLog.starttime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].startdatetime
+                    newAddTimeLog.endtime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].enddatetime
+                    newAddTimeLog.date = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentduedate
+                    newAddTimeLog.completionpercentage = 0
+                    
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewHeight = 1
+                    actionViewPresets.actionViewType = ""
+                    
+                    self.managedObjectContext.delete(self.subassignmentlist[addTimeSubassignment.subassignmentindex])
+                    
+                    //assignment specific
+                    masterRunning.uniqueAssignmentName = addTimeSubassignment.subassignmentname
+                    print("A2")
+                    masterRunning.masterRunningNow = true
+                    masterRunning.displayText = true
+                    
+                    do {
+                        try self.managedObjectContext.save()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }) {
+                    Text("Entire Task").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.red).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+                }
                 
                 Spacer()
-            }.frame(width: UIScreen.main.bounds.size.width - 75)
-            
-            Section {
-                Slider(value: $addTimeSubassignment.subassignmentcompletionpercentage, in: 0...100)
-            }.frame(width: UIScreen.main.bounds.size.width - 75)
-            
-            Text("\(addTimeSubassignment.subassignmentcompletionpercentage.rounded(.down), specifier: "%.0f")%")
-            Text("≈ \(Int((addTimeSubassignment.subassignmentcompletionpercentage / 100) * Double(addTimeSubassignment.subassignmentlength) / 5) * 5) minutes").fontWeight(.light)
-        }
-        
-        Spacer()
-        
-        Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
-        Button(action: {
-            let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
-
-            newAddTimeLog.name = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentname
-            newAddTimeLog.length = Int64(addTimeSubassignment.subassignmentlength)
-            newAddTimeLog.color = self.subassignmentlist[addTimeSubassignment.subassignmentindex].color
-            newAddTimeLog.starttime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].startdatetime
-            newAddTimeLog.endtime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].enddatetime
-            newAddTimeLog.date = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentduedate
-            newAddTimeLog.completionpercentage = addTimeSubassignment.subassignmentcompletionpercentage
-            
-            actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
-            actionViewPresets.actionViewHeight = 1
-            
-            self.managedObjectContext.delete(self.subassignmentlist[addTimeSubassignment.subassignmentindex])
-            
-            for (_, element) in self.assignmentlist.enumerated() {
-                if (element.name == addTimeSubassignment.subassignmentname) {
-                    let minutescompleted = (addTimeSubassignment.subassignmentcompletionpercentage / 100) * Double(addTimeSubassignment.subassignmentlength)
-                    let minutescompletedroundeddown = Int(minutescompleted / 5) * 5
-                    element.timeleft -= Int64(minutescompletedroundeddown)
-                    element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                
+                Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
+                
+                Spacer()
+                
+                Button(action: {
+                    self.subPageType = "Reschedule Part"
+                    actionViewPresets.actionViewHeight = 280
+                    
+                }) {
+                    Text("Part of Task").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
                 }
+            }.padding(.vertical, 8).padding(.bottom, -3)
+        }
+        
+        else if self.subPageType == "Reschedule Part" {
+            VStack {
+                HStack {
+                    Text("How much of the task did you complete?").font(.system(size: 16)).fontWeight(.light)
+                    
+                    Spacer()
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+                
+                Section {
+                    Slider(value: $addTimeSubassignment.subassignmentcompletionpercentage, in: 0...100)
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+                
+                Text("\(addTimeSubassignment.subassignmentcompletionpercentage.rounded(.down), specifier: "%.0f")%")
+                Text("≈ \(Int((addTimeSubassignment.subassignmentcompletionpercentage / 100) * Double(addTimeSubassignment.subassignmentlength) / 5) * 5) minutes").fontWeight(.light)
             }
-            //assignment specific
-            masterRunning.uniqueAssignmentName = addTimeSubassignment.subassignmentname
-            masterRunning.masterRunningNow = true
-            masterRunning.displayText = true
             
-            do {
-                try self.managedObjectContext.save()
-            } catch {
-                print(error.localizedDescription)
-            }
-        }) {
-            Text("Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
-        }.padding(.vertical, 8).padding(.bottom, -3)
+            Spacer()
+            
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+    //        if masterRunning.masterRunningNow {
+    //            MasterClass()
+    //        }
+            Button(action: {
+                let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
+
+                newAddTimeLog.name = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentname
+                newAddTimeLog.length = Int64(addTimeSubassignment.subassignmentlength)
+                newAddTimeLog.color = self.subassignmentlist[addTimeSubassignment.subassignmentindex].color
+                newAddTimeLog.starttime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].startdatetime
+                newAddTimeLog.endtime = self.subassignmentlist[addTimeSubassignment.subassignmentindex].enddatetime
+                newAddTimeLog.date = self.subassignmentlist[addTimeSubassignment.subassignmentindex].assignmentduedate
+                newAddTimeLog.completionpercentage = addTimeSubassignment.subassignmentcompletionpercentage
+                
+                actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                actionViewPresets.actionViewHeight = 1
+                //following line not there before: watch for bugs!
+                actionViewPresets.actionViewType = ""
+                
+                self.managedObjectContext.delete(self.subassignmentlist[addTimeSubassignment.subassignmentindex])
+                
+                var lastTaskAndCompleted = false
+                
+                for (_, element) in self.assignmentlist.enumerated() {
+                    if (element.name == addTimeSubassignment.subassignmentname) {
+                        let minutescompleted = (addTimeSubassignment.subassignmentcompletionpercentage / 100) * Double(addTimeSubassignment.subassignmentlength)
+                        let minutescompletedroundeddown = Int(minutescompleted / 5) * 5
+                        element.timeleft -= Int64(minutescompletedroundeddown)
+                        element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                        
+                        if element.progress == 100 {
+                            element.completed = true
+                            lastTaskAndCompleted = true
+                        }
+                    }
+                }
+                //assignment specific
+                
+                if !lastTaskAndCompleted {
+                    masterRunning.uniqueAssignmentName = addTimeSubassignment.subassignmentname
+                    print("A")
+                    masterRunning.masterRunningNow = true
+                    masterRunning.displayText = true
+                }
+                
+                do {
+                    try self.managedObjectContext.save()
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }) {
+                Text("Done").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
+            }.padding(.vertical, 8).padding(.bottom, -3)
+        }
     }
 }
 
@@ -444,6 +543,8 @@ struct SubassignmentBacklogAction: View {
     @State var nthTask: Int = 1
     
     @EnvironmentObject var masterRunning: MasterRunning
+    
+    @State var uniformlistviewshows = false
 
     func GetColorFromRGBCode(rgbcode: String, number: Int = 1) -> Color {
         if number == 1 {
@@ -454,105 +555,183 @@ struct SubassignmentBacklogAction: View {
     }
     
     var body: some View {
-        if self.subPageType == "Introduction" {
-            HStack {
-                Text(addTimeSubassignmentBacklog.backlogList.count > 1 ? "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Tasks" : "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Task").font(.system(size: 14)).fontWeight(.light)
-                Spacer()
-                Button(action: {
-                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
-                    actionViewPresets.actionViewHeight = 1
-                    actionViewPresets.actionViewType = ""
-                    
-                    let defaults = UserDefaults.standard
-                    defaults.set(Date(), forKey: "lastNudgeDate")
-                }, label: {
-                    Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
-                })
-            }.frame(width: UIScreen.main.bounds.size.width - 75)
-            
-            Spacer()
-            
-            VStack {
+        if self.subPageType == "Introduction" || (actionViewPresets.actionViewHeight != 280 && actionViewPresets.actionViewHeight != 281) {
+            //301 = MUST case
+            if actionViewPresets.actionViewHeight == 301 {
                 HStack {
-                    Text("You have the following tasks in your backlog:").font(.system(size: 16)).fontWeight(.light)
-                    
+                    Text(addTimeSubassignmentBacklog.backlogList.count != 1 ? "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Tasks" : "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Task").font(.system(size: 14)).fontWeight(.light)
                     Spacer()
-                }.frame(width: UIScreen.main.bounds.size.width - 75)
-                
-                Spacer().frame(height: 15)
-                
-                ScrollView() {
-                    ForEach(0..<addTimeSubassignmentBacklog.backlogList.count) { subassignmentindex in
-                        HStack {
-                            let subassignmentcolortemp = addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentcolor"] ?? "datenumberred"
-                            RoundedRectangle(cornerRadius: 3, style: .continuous).fill(subassignmentcolortemp.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: subassignmentcolortemp) : Color(subassignmentcolortemp)).frame(width: 12, height: 12).overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.black, lineWidth: 0.6)
-                            )
-                            
-                            Spacer().frame(width: 15)
-                            
-                            Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentname"] ?? "FAIL").font(.system(size: 17)).fontWeight(.medium)
-                            
-                            Spacer()
-                            
-                            Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentdatetext"] ?? "FAIL").font(.system(size: 15)).fontWeight(.light)
-                        }.padding(.horizontal, 10).frame(width: UIScreen.main.bounds.size.width - 75, height: 25)
-                    }
-                }.frame(height: CGFloat(min((addTimeSubassignmentBacklog.backlogList.count * 32), 90)))
-                
-                HStack {
-                    Text("Would you like to update your progress on these tasks?").font(.system(size: 16)).fontWeight(.light)
-                    
-                    Spacer()
+                    Text("Must Update Progress").font(.system(size: 14)).fontWeight(.light).foregroundColor(.red)
+                    Spacer().frame(width: 10)
+                    Button(action: {
+                        ()
+//                        actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+//                        actionViewPresets.actionViewHeight = 1
+//                        actionViewPresets.actionViewType = ""
+                    }, label: {
+                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.gray).opacity(0.6)
+                    })
                 }.frame(width: UIScreen.main.bounds.size.width - 75)
             }
             
-            Spacer()
+            else {
+                HStack {
+                    Text(addTimeSubassignmentBacklog.backlogList.count != 1 ? "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Tasks" : "Tasks Backlog - \(addTimeSubassignmentBacklog.backlogList.count) Task").font(.system(size: 14)).fontWeight(.light)
+                    Spacer()
+                    Button(action: {
+                        actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                        actionViewPresets.actionViewHeight = 1
+                        actionViewPresets.actionViewType = ""
+                    }, label: {
+                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
+                    })
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+            }
             
-            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+            Spacer().onAppear {
+                let defaults = UserDefaults.standard
+
+                let specificworktimes = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+                if (specificworktimes) {
+                    self.uniformlistviewshows = false
+                }
+                else {
+                    self.uniformlistviewshows = true
+                }
+            }
             
-            HStack {
-                Button(action: {
-                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
-                    actionViewPresets.actionViewHeight = 1
-                    actionViewPresets.actionViewType = ""
-                    
-                    let defaults = UserDefaults.standard
-                    defaults.set(Date(), forKey: "lastNudgeDate")
-                }) {
-                    Text("Nudge Me Later").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.red).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+            if addTimeSubassignmentBacklog.backlogList.count > 0 {
+                VStack {
+                    HStack {
+                        Text("You have the following tasks in your backlog:").font(.system(size: 16)).fontWeight(.light)
+
+                        Spacer()
+                    }.frame(width: UIScreen.main.bounds.size.width - 75)
+
+                    Spacer().frame(height: 15)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(0..<addTimeSubassignmentBacklog.backlogList.count) { subassignmentindex in
+                                let subassignmentcolortemp = addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentcolor"] ?? "datenumberred"
+
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 3, style: .continuous).fill(subassignmentcolortemp.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: subassignmentcolortemp) : Color(subassignmentcolortemp)).frame(width: 130, height: 90)
+
+                                    VStack {
+                                        Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentname"] ?? "FAIL").font(.system(size: 16)).fontWeight(.semibold).frame(width: 120).lineLimit(1)
+
+                                        Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentdatetext"] ?? "FAIL").font(.footnote).fontWeight(.light)
+                                    }
+                                }.padding(.trailing, 4)
+                            }
+                        }
+                    }.padding(.all, 4).frame(width: UIScreen.main.bounds.size.width - 75, height: 100).animation(.spring())
+
+                    //older version
+//                    ScrollView() {
+//                        ForEach(0..<addTimeSubassignmentBacklog.backlogList.count) { subassignmentindex in
+//                            HStack {
+//                                let subassignmentcolortemp = addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentcolor"] ?? "datenumberred"
+//                                RoundedRectangle(cornerRadius: 3, style: .continuous).fill(subassignmentcolortemp.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: subassignmentcolortemp) : Color(subassignmentcolortemp)).frame(width: 12, height: 12).overlay(RoundedRectangle(cornerRadius: 3).stroke(Color.black, lineWidth: 0.6)
+//                                )
+//
+//                                Spacer().frame(width: 15)
+//
+//                                Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentname"] ?? "FAIL").font(.system(size: 17)).fontWeight(.medium)
+//
+//                                Spacer()
+//
+//                                Text(addTimeSubassignmentBacklog.backlogList[subassignmentindex]["subassignmentdatetext"] ?? "FAIL").font(.system(size: 15)).fontWeight(.light)
+//                            }.padding(.horizontal, 10).frame(width: UIScreen.main.bounds.size.width - 75, height: 25)
+//                        }
+//                    }.frame(height: CGFloat(min((addTimeSubassignmentBacklog.backlogList.count * 32), 90)))
+
+                    HStack {
+                        Text("Click Continue to update your progress on these tasks.").font(.system(size: 16)).fontWeight(.light)
+
+                        Spacer()
+                    }.frame(width: UIScreen.main.bounds.size.width - 75)
                 }
                 
                 Spacer()
                 
-                Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
-                
-                Spacer()
+                Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
                 
                 Button(action: {
                     self.subPageType = "Tasks"
-                    actionViewPresets.actionViewHeight = 280
+                    //MUST case
+                    if actionViewPresets.actionViewHeight == 301 {
+                        actionViewPresets.actionViewHeight = 281
+                    }
+                    
+                    else {
+                        actionViewPresets.actionViewHeight = 280
+                    }
                 }) {
-                    Text("Continue").font(.system(size: 17)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
+                    Text("Continue").font(.system(size: 17)).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
+                }.padding(.vertical, 8).padding(.bottom, -3)
+            }
+            
+            else {
+                VStack {
+                    HStack {
+                        Text("You have 0 tasks in your backlog!").font(.system(size: 18)).fontWeight(.light)
+                        
+                        Spacer()
+//                        insert image
+                    }.frame(width: UIScreen.main.bounds.size.width - 75)
                 }
-            }.padding(.vertical, 8).padding(.bottom, -3)
-        }
-        
-        else if self.subPageType == "Tasks" {
-            HStack {
-                Text("Tasks Backlog (\(self.nthTask)/\(addTimeSubassignmentBacklog.backlogList.count + self.nthTask - 1))").font(.system(size: 14)).fontWeight(.light)
+                
                 Spacer()
+                
+                Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+                
                 Button(action: {
                     actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
                     actionViewPresets.actionViewHeight = 1
                     actionViewPresets.actionViewType = ""
-                    
-                    self.subPageType = ""
-                    let defaults = UserDefaults.standard
-                    defaults.set(Date(), forKey: "lastNudgeDate")
-                }, label: {
-                    Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
-                })
-            }.frame(width: UIScreen.main.bounds.size.width - 75)
+                }) {
+                    Text("Okay!").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.green).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
+                }.padding(.vertical, 8).padding(.bottom, -3)
+            }
+        }
+        
+        else if self.subPageType == "Tasks" {
+            if actionViewPresets.actionViewHeight == 281 {
+                HStack {
+                    Text("Tasks Backlog (\(self.nthTask)/\(addTimeSubassignmentBacklog.backlogList.count + self.nthTask - 1))").font(.system(size: 14)).fontWeight(.light)
+                    Spacer()
+                    Text("Must Update Progress").font(.system(size: 14)).fontWeight(.light).foregroundColor(.red)
+                    Spacer().frame(width: 10)
+                    Button(action: {
+                        ()
+//                        actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+//                        actionViewPresets.actionViewHeight = 1
+//                        actionViewPresets.actionViewType = ""
+//
+//                        self.subPageType = ""
+                    }, label: {
+                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.gray).opacity(0.6)
+                    })
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+            }
+            
+            else {
+                HStack {
+                    Text("Tasks Backlog (\(self.nthTask)/\(addTimeSubassignmentBacklog.backlogList.count + self.nthTask - 1))").font(.system(size: 14)).fontWeight(.light)
+                    Spacer()
+                    Button(action: {
+                        actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                        actionViewPresets.actionViewHeight = 1
+                        actionViewPresets.actionViewType = ""
+                        
+                        self.subPageType = ""
+                    }, label: {
+                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
+                    })
+                }.frame(width: UIScreen.main.bounds.size.width - 75)
+            }
             
             Spacer()
             
@@ -569,18 +748,26 @@ struct SubassignmentBacklogAction: View {
                             Text(addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL").font(.system(size: 17)).fontWeight(.medium)
 
                             Spacer()
+                            
+                            if uniformlistviewshows {
+                                Text(addTimeSubassignmentBacklog.backlogList[0]["subassignmentdatetext"] ?? "FAIL").font(.system(size: 15)).fontWeight(.light)
+
+                                Spacer().frame(width: 15)
+                            }
                         }
 
-                        Spacer().frame(height: 6)
+                        if !uniformlistviewshows {
+                            Spacer().frame(height: 6)
 
-                        HStack {
-                            Text((addTimeSubassignmentBacklog.backlogList[0]["subassignmentstarttimetext"] ?? "FAIL") + " - " + (addTimeSubassignmentBacklog.backlogList[0]["subassignmentendtimetext"] ?? "FAIL")).font(.system(size: 15)).fontWeight(.light)
+                            HStack {
+                                Text((addTimeSubassignmentBacklog.backlogList[0]["subassignmentstarttimetext"] ?? "FAIL") + " - " + (addTimeSubassignmentBacklog.backlogList[0]["subassignmentendtimetext"] ?? "FAIL")).font(.system(size: 15)).fontWeight(.light)
+                                
+                                Spacer()
 
-                            Spacer()
+                                Text(addTimeSubassignmentBacklog.backlogList[0]["subassignmentdatetext"] ?? "FAIL").font(.system(size: 15)).fontWeight(.light)
 
-                            Text(addTimeSubassignmentBacklog.backlogList[0]["subassignmentdatetext"] ?? "FAIL").font(.system(size: 15)).fontWeight(.light)
-
-                            Spacer().frame(width: 15)
+                                Spacer().frame(width: 15)
+                            }
                         }
                     }
                 }.frame(width: UIScreen.main.bounds.size.width - 75)
@@ -628,6 +815,8 @@ struct SubassignmentBacklogAction: View {
 
                 self.managedObjectContext.delete(self.subassignmentlist[0])
                 
+                var lastTaskAndCompleted = false
+                
                 for (_, element) in self.assignmentlist.enumerated() {
                     if (element.name == addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL") {
                         let lengthAsDouble = Double((addTimeSubassignmentBacklog.backlogList[0]["subassignmentlength"] ?? "0.0").replacingOccurrences(of: "[^\\.\\d+]", with: "", options: [.regularExpression])) ?? 0.0
@@ -636,6 +825,11 @@ struct SubassignmentBacklogAction: View {
                         
                         element.timeleft -= Int64(minutescompletedroundeddown)
                         element.progress = Int64((Double(element.totaltime - element.timeleft)/Double(element.totaltime)) * 100)
+                        
+                        if element.progress == 100 {
+                            element.completed = true
+                            lastTaskAndCompleted = true
+                        }
                     }
                 }
 
@@ -646,8 +840,13 @@ struct SubassignmentBacklogAction: View {
                 }
                 
                 self.subassignmentcompletionpercentage = 0
-                masterRunning.uniqueAssignmentName = addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL"
-                masterRunning.masterRunningNow = true
+                
+                if !lastTaskAndCompleted {
+                    masterRunning.uniqueAssignmentName = addTimeSubassignmentBacklog.backlogList[0]["subassignmentname"] ?? "FAIL"
+                    print("B")
+                    masterRunning.masterRunningNow = true
+                }
+                
                 addTimeSubassignmentBacklog.backlogList.remove(at: 0)
                 //assignment specific
                 
@@ -656,9 +855,9 @@ struct SubassignmentBacklogAction: View {
             }.padding(.vertical, 8).padding(.bottom, -3)
         }
         
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
+//        if masterRunning.masterRunningNow {
+//            MasterClass()
+//        }
     }
 }
 
@@ -751,9 +950,6 @@ struct NoClassesOrFreetime: View {
                         actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
                         actionViewPresets.actionViewHeight = 1
                         actionViewPresets.actionViewType = ""
-                        
-                        let defaults = UserDefaults.standard
-                        defaults.set(Date(), forKey: "lastNudgeDate")
                     }) {
                         Text("Okay, Got it!").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.green).frame(width: (UIScreen.main.bounds.size.width - 80) / 2, height: 25)
                     }
@@ -816,20 +1012,21 @@ struct ActionView: View {
                 
                 let calendar = Calendar.current
                 
-                if calendar.date(byAdding: .day, value: 1, to: subassignment.enddatetime)! < Date() {
+                //set to 3?
+                if calendar.date(byAdding: .day, value: 3, to: subassignment.enddatetime)! < Date() {
                     longDueSubassignment = true
                 }
             }
         }
 
-        let defaults = UserDefaults.standard
-        let lastNudgeDate = defaults.object(forKey: "lastNudgeDate") as? Date ?? Date()
-        
-        if ((addTimeSubassignmentBacklog.backlogList.count >= 3) || longDueSubassignment) && (Date(timeInterval: 3600, since: lastNudgeDate) < Date()) && (actionViewPresets.actionViewHeight == 0) {
+        //probably have to change these constraints set to 5?
+        if ((addTimeSubassignmentBacklog.backlogList.count >= 2) || longDueSubassignment) && (actionViewPresets.actionViewHeight == 0) {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
                 actionViewPresets.actionViewOffset = 0
                 actionViewPresets.actionViewType = "SubassignmentBacklogAction"
-                actionViewPresets.actionViewHeight = CGFloat(200 + min((addTimeSubassignmentBacklog.backlogList.count * 32), 90))
+                actionViewPresets.actionViewHeight = CGFloat(301)
+                //older version:
+//                actionViewPresets.actionViewHeight = CGFloat(200 + min((addTimeSubassignmentBacklog.backlogList.count * 32), 90))
             }
         }
         
@@ -1091,23 +1288,72 @@ struct HomeBodyView: View {
         }
         for assignment in assignmentlist
         {
-            if (assignment.name == subassignmentlist[0].assignmentname)
+            if (assignment.name == getnowtext(kind: 2))
             {
                 return assignment
             }
         }
         return assignmentlist[0]
     }
-    func getnowtext() -> String
+    func getnowtext(kind: Int) -> String
     {
         for subassignment in subassignmentlist
         {
             if (subassignment.startdatetime <= Date() && subassignment.enddatetime >= Date())
             {
-                return "NOW"
+                if kind == 1 {
+                    return "NOW"
+                }
+                
+                else {
+                    return subassignment.assignmentname
+                }
             }
         }
+        
+        for subassignment in subassignmentlist {
+            if subassignment.startdatetime >= Date() {
+                if kind == 1 {
+                    return "COMING UP"
+                }
+                
+                else {
+                    return subassignment.assignmentname
+                }
+            }
+        }
+        
         return "COMING UP"
+    }
+    
+    func getnowdates(start: Bool) -> Date {
+        for subassignment in subassignmentlist
+        {
+            if (subassignment.startdatetime <= Date() && subassignment.enddatetime >= Date())
+            {
+                if start {
+                    return subassignment.startdatetime
+                }
+                
+                else {
+                    return subassignment.enddatetime
+                }
+            }
+        }
+        
+        for subassignment in subassignmentlist {
+            if subassignment.startdatetime >= Date() {
+                if start {
+                    return subassignment.startdatetime
+                }
+                
+                else {
+                    return subassignment.enddatetime
+                }
+            }
+        }
+        
+        return Date()
     }
 
     
@@ -1154,7 +1400,7 @@ struct HomeBodyView: View {
                                    VStack {
                                             VStack {
                                                 HStack {
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "TODAY" : getnowtext()) : "SELECTED").fontWeight(.light).font(.system(size: 15))
+                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "TODAY" : getnowtext(kind: 1)) : "SELECTED").fontWeight(.light).font(.system(size: 15))
                                                     Spacer()
                                                 }
                                                 
@@ -1165,13 +1411,13 @@ struct HomeBodyView: View {
                                             
                                             VStack {
                                                 HStack {
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "No Tasks" : subassignmentlist[0].assignmentname) : self.subassignmentassignmentname).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
+                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "No Tasks" : getnowtext(kind: 2)) : self.subassignmentassignmentname).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
                                                     
                                                     Spacer()
-                                                    VStack
-                                                    {
+                                                    VStack {
                                                         Spacer()
-                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)                                                    }
+                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
+                                                    }
                                                 }
                                                 
                                                 Spacer()
@@ -1179,9 +1425,9 @@ struct HomeBodyView: View {
                                             
                                             VStack {
                                                 HStack {
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : timeformatter.string(from: subassignmentlist[0].startdatetime) + " - " + timeformatter.string(from: subassignmentlist[0].enddatetime)) : timeformatter.string(from: subassignmentstartdatetime) + " - " + timeformatter.string(from: subassignmentenddatetime)).fontWeight(.light).font(.caption)
+                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : timeformatter.string(from: getnowdates(start: true)) + " - " + timeformatter.string(from: getnowdates(start: false))) : timeformatter.string(from: subassignmentstartdatetime) + " - " + timeformatter.string(from: subassignmentenddatetime)).fontWeight(.light).font(.caption)
                                                     Spacer()
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: subassignmentlist[0].startdatetime)) : shortdateformatter.string(from: subassignmentstartdatetime)).fontWeight(.light).font(.caption)
+                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: getnowdates(start: true))) : shortdateformatter.string(from: subassignmentstartdatetime)).fontWeight(.light).font(.caption)
                                                 }
                                             }.frame(height: 15)
                                             
@@ -1260,9 +1506,9 @@ struct HomeBodyView: View {
                                             Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
                                             Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
                                         }
-                                        if masterRunning.masterRunningNow {
-                                            MasterClass()
-                                        }
+//                                        if masterRunning.masterRunningNow {
+//                                            MasterClass()
+//                                        }
                                     }.frame(height: 50).animation(.spring())
                                 }
                             }
@@ -1593,9 +1839,9 @@ struct SubassignmentListView: View {
         }.animation(.spring())
         }
         
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
+//        if masterRunning.masterRunningNow {
+//            MasterClass()
+//        }
     }
     func computesubassignmentlength(subassignment: Subassignmentnew) -> Int
     {
@@ -1812,7 +2058,7 @@ struct IndividualSubassignmentView: View {
                 Spacer()
 
             }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: color) : Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
-                Button(action:{
+                Button(action: {
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname
                 })
@@ -1825,10 +2071,10 @@ struct IndividualSubassignmentView: View {
             }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
                 .onChanged { value in
                     self.dragoffset = value.translation
-//                    if (self.dragoffset.width > 0 && actualstartdatetime > Date())
-//                    {
-//                        self.dragoffset = .zero
-//                    }
+                    if (self.dragoffset.width > 0 && actualstartdatetime > Date())
+                    {
+                        self.dragoffset = .zero
+                    }
                     if (self.dragoffset.width < 0) {
                         self.isDraggedleft = false
                         self.isDragged = true
@@ -1860,7 +2106,7 @@ struct IndividualSubassignmentView: View {
                         if (self.incompletedonce == true) {
                             
                             actionViewPresets.actionViewOffset = 0
-                            actionViewPresets.actionViewHeight = 280
+                            actionViewPresets.actionViewHeight = 220
                             actionViewPresets.actionViewType = "SubassignmentAddTimeAction"
                             addTimeSubassignment.subassignmentname = self.name
                             if (isrepeated)
@@ -1980,9 +2226,9 @@ enum AlertView {
 struct HomeView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-     @EnvironmentObject var googleDelegate: GoogleDelegate
+    @EnvironmentObject var googleDelegate: GoogleDelegate
+    @EnvironmentObject var addTimeSubassignmentBacklog: AddTimeSubassignmentBacklog
 
- 
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
     @State var NewOccupiedtimePresenting = false
@@ -2025,6 +2271,10 @@ struct HomeView: View {
     
     @EnvironmentObject var masterRunning: MasterRunning
     
+    @State var BacklogTimer = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
+    @State var elapsedTime = 0
+    @State var backlogWiggle = 0.0
+    
     @ViewBuilder
     private func sheetContent() -> some View {        
         if (self.sheetNavigator.modalView == .freetime) {
@@ -2054,9 +2304,9 @@ struct HomeView: View {
         NavigationView {
             if #available(iOS 14.0, *) {
                 ZStack {
-                    NavigationLink(destination: EmptyView()) {
-                        EmptyView()
-                    }
+//                    NavigationLink(destination: EmptyView()) {
+//                        EmptyView()
+//                    }
                     NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                         { EmptyView() }
                     HomeBodyView(uniformlistshows: self.$uniformlistshows, NewAssignmentPresenting2: $NewAssignmentPresenting).padding(.top, -40)
@@ -2208,10 +2458,6 @@ struct HomeView: View {
                             }.sheet(isPresented: $NewSheetPresenting, content: sheetContent ).alert(isPresented: $NewAlertPresenting) {
                                 Alert(title: self.sheetNavigator.alertView == .noassignment ? Text("No Assignments Completed") : Text("No Classes Added"), message: self.sheetNavigator.alertView == .noassignment ? Text("Complete an Assignment First") : Text("Add a Class First"))
                             }
-                            
-                            
-                            
-                            
                         }
                     }
                
@@ -2219,35 +2465,79 @@ struct HomeView: View {
                         Spacer()
                          
                         ActionView().offset(y: actionViewPresets.actionViewOffset).animation(.spring())
+                        //could change from spring to something else to avoid blocky animation
                     }.frame(width: UIScreen.main.bounds.size.width).background((actionViewPresets.actionViewOffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
-                }
-                            .navigationBarItems(leading:
-                            //                VStack {
-                            //                    Spacer().frame(height:10)
-                                                HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
-                                                    Button(action: {self.showingSettingsView = true}) {
-                                                        Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                                                    }.padding(.leading, 2.0)
+                }.navigationBarItems(leading:
+                    HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
+                        Button(action: {self.actionViewPresets.actionViewHeight < 10 ? self.showingSettingsView = true : ()}) {
+                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        }.padding(.leading, 2.0)
 
-                                                    Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
-//                                                    Button(action: {
-//                                                      //  withAnimation(.spring())
-//                                                      //  {
-//                                                            self.uniformlistshows.toggle()
-//                                                       // }
-//
-//                                                    }) {
-//                                                        Image(systemName: self.uniformlistshows ? "square.righthalf.fill" : "square.lefthalf.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-//                                                    }
-                                                }.padding(.top, -5).frame(height: 40)
+                        Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
+                        
+                        Button(action: {
+                            if actionViewPresets.actionViewType == "" {
+                                var actionViewHeight: CGFloat = 150
+                                
+                                if self.addTimeSubassignmentBacklog.backlogList.count > 0 {
+                                    actionViewHeight = CGFloat(300)
+//                                    older version
+//                                    actionViewHeight = CGFloat(200 + min((addTimeSubassignmentBacklog.backlogList.count * 32), 90))
+                                }
+                                
+                                actionViewPresets.actionViewOffset = 0
+                                actionViewPresets.actionViewType = "SubassignmentBacklogAction"
+                                actionViewPresets.actionViewHeight = actionViewHeight
+                            }
+                            
+                            else if actionViewPresets.actionViewType == "SubassignmentBacklogAction" {
+                                if actionViewPresets.actionViewHeight != 281 && actionViewPresets.actionViewHeight != 301 {
+                                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                                    actionViewPresets.actionViewType = ""
+                                    actionViewPresets.actionViewHeight = 1
+                                }
+                            }
+                        }) {
+                            //.font(Font.title.weight(.medium))
+                            Image(systemName: self.addTimeSubassignmentBacklog.backlogList.count > 0 ? "tray.full.fill" : "tray.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).frame(width: UIScreen.main.bounds.size.width / 12).overlay(
+                                ZStack {
+                                    if (self.addTimeSubassignmentBacklog.backlogList.count > 0) {
+                                        VStack {
+                                            HStack {
+                                                Spacer()
+                                                ZStack {
+                                                    Circle().fill(Color.red).frame(width: 19, height: 19)
+                                                    Text(String(self.addTimeSubassignmentBacklog.backlogList.count)).foregroundColor(Color.white).font(.system(size: 11)).frame(width: 18, height: 18)
+                                                }.offset(x: 6, y: -6)
+                                            }
+                                            
+                                            Spacer()
+                                        }
+                                    }
+                                }
+                            ).rotationEffect(Angle(degrees: self.backlogWiggle)).animation(Animation.easeInOut(duration: 0.12)).onReceive(self.BacklogTimer, perform: { _ in
+                                self.elapsedTime += 2
 
+                                let wiggleInterval = 16 - (2 * self.addTimeSubassignmentBacklog.backlogList.count)
+
+                                if (self.addTimeSubassignmentBacklog.backlogList.count > 0) && (actionViewPresets.actionViewHeight < 10) && (self.elapsedTime % wiggleInterval == 0) {
+                                    self.backlogWiggle = -15.0
+
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(130)) {
+                                            self.backlogWiggle = 15.0
+                                    }
+
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(260)) {
+                                            self.backlogWiggle = 0.0
+                                    }
+                                }
+                            })
+                        }
+                    }//.frame(height: 40)
                 )
-            } else {
-                // Fallback on earlier versions
             }
-                               
-
-        }.onDisappear() {
+        }.navigationViewStyle(StackNavigationViewStyle())
+        .onDisappear() {
             let defaults = UserDefaults.standard
             self.showingSettingsView = false
             defaults.set(self.uniformlistshows, forKey: "savedtoggleview")

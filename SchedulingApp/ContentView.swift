@@ -117,8 +117,6 @@ struct ContentView: View {
             
             defaults.set(nextmondaydate, forKey: "weeklyzeroday")
             
-            
-            
             defaults.set(gradingschemes, forKey: "savedgradingschemes")
             let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
             
@@ -135,8 +133,6 @@ struct ContentView: View {
                     print(error.localizedDescription)
                 }
             }
-            
-            defaults.set(Date(), forKey: "lastNudgeDate")
             
             self.firstLaunchTutorial = true
         }
@@ -360,6 +356,11 @@ struct ContentView: View {
             }
             else
             {
+                if masterRunning.masterRunningNow || masterRunning.onlyNotifications {
+                    MasterClass()
+                    let _ = print("asfasdfasdf")
+                }
+                
                 TabView {
                     HomeView().tabItem {
                         Image(systemName: "house").resizable().scaledToFill()

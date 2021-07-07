@@ -970,12 +970,14 @@ struct ProgressView: View {
     var body: some View {
          NavigationView {
             VStack {
-            HStack {
-                Text("Progress").font(.largeTitle).bold().frame(height:40)
-                Spacer()
-            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
+//            HStack {
+//                Text("Progress").font(.largeTitle).bold().frame(height:40)
+//                Spacer()
+//            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
             ZStack {
-
+                NavigationLink(destination: EmptyView()) {
+                    EmptyView()
+                }
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                 { EmptyView() }
                 
@@ -1432,19 +1434,15 @@ struct ProgressView: View {
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                     Button(action: {self.showingSettingsView = true}) {
- 
                         Image(systemName:"gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                            
-                        
- 
- 
                     }.padding(.leading, 2.0)
                 
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                     Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
 
-                }.padding(.top, 0))//.navigationTitle("Progress")
-         }.onDisappear {
+                }).navigationTitle("Progress")//.padding(.top, 0))//.navigationTitle("Progress")
+         }.navigationViewStyle(StackNavigationViewStyle())
+         .onDisappear {
             let defaults = UserDefaults.standard
             defaults.set(weeklygoal, forKey: "weeklygoal")
             
@@ -1503,41 +1501,40 @@ struct WorkloadSliver: View {
     @State var thisSliverClicked: Bool = false
     
     var body: some View {
+        ZStack {
+            GeometryReader { geometry in
+                let centerPoint = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                let innerRadius: CGFloat = (geometry.size.width / 7)
+//                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius))) nope
+                
+                let largeRadius: CGFloat = (innerRadius + (0.88 * (((geometry.size.width / 2) - 40) - innerRadius)))
+                if self.selectedSliver == self.sliverinfo && self.thisSliverClicked {
+                    Path { path in
+                        path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
+                        path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
+                        path.closeSubpath()
+                    }.stroke(self.colorScheme == .light ? Color.black : Color.white, lineWidth: self.colorScheme == .light ? 1 : 2)
+                }
+                Path { path in
+                    path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
+                    path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
+                    path.closeSubpath()
+                }.foregroundColor(self.color)
+            }
+        }.zIndex((self.selectedSliver == self.sliverinfo && self.thisSliverClicked) ? 1 : 0).animation(.easeInOut(duration: 0.14)).onTapGesture {
+            if self.selectedSliver == self.sliverinfo {
+                self.selectedSliver = []
+                self.thisSliverClicked = false
+            }
 
-        Text("sfd")
-//        ZStack {
-//            GeometryReader { geometry in
-//                let centerPoint =  CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
-//                let innerRadius = (geometry.size.width / 7)
-////                let largeRadius = (innerRadius + (largeRadiusPercentage * (((geometry.size.width / 2) - 40) - innerRadius)))
-//                let largeRadius = (innerRadius + (0.88 * (((geometry.size.width / 2) - 40) - innerRadius)))
-//                if self.selectedSliver == self.sliverinfo && self.thisSliverClicked {
-//                    Path { path in
-//                        path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
-//                        path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
-//                        path.closeSubpath()
-//                    }.stroke(self.colorScheme == .light ? Color.black : Color.white, lineWidth: self.colorScheme == .light ? 1 : 2)
-//                }
-//                Path { path in
-//                    path.addArc(center: centerPoint, radius: innerRadius, startAngle: startingAngle, endAngle: endingAngle, clockwise: false)
-//                    path.addArc(center: centerPoint, radius: largeRadius, startAngle: endingAngle, endAngle: startingAngle, clockwise: true)
-//                    path.closeSubpath()
-//                }.foregroundColor(self.color)
-//            }
-//        }.zIndex((self.selectedSliver == self.sliverinfo && self.thisSliverClicked) ? 1 : 0).animation(.easeInOut(duration: 0.14)).onTapGesture {
-//            if self.selectedSliver == self.sliverinfo {
-//                self.selectedSliver = []
-//                self.thisSliverClicked = false
-//            }
-//
-//            else {
-//                self.selectedSliver = self.sliverinfo
-//                withAnimation(.spring())
-//                {
-//                self.thisSliverClicked = true
-//                }
-//            }
-//        }
+            else {
+                self.selectedSliver = self.sliverinfo
+                withAnimation(.spring())
+                {
+                self.thisSliverClicked = true
+                }
+            }
+        }
     }
 }
 

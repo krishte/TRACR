@@ -542,265 +542,266 @@ struct SettingsView: View {
     @State var specificworkhoursview: Bool = true
     
     var body: some View {
-        Form {
+//        ZStack {
+            Form {
 
-            List {
-                Section {
+                List {
+                    Section {
+                        
+                        NavigationLink(destination: PreferencesView()) {
+    //                     ZStack {
+    ////                      //  RoundedRectangle(cornerRadius: 10, style: .continuous)
+    ////                         .fill(Color("twelve"))
+    ////                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+    //
+    //                        HStack {
+    //                         Text("Preferences").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
+    //                            Spacer()
+    //
+    //                        }.padding(.horizontal, 25)
+    //                     }
+                            HStack {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.green).frame(width:40, height:40)
+                                    Image(systemName: "slider.horizontal.3").resizable().frame(width:25, height:25)
+                                }
+                                Spacer().frame(width:20)
+                                Text("Type Sliders").font(.system(size:20))
+                            }.frame(height:40)
+                        }
+                   // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
                     
-                    NavigationLink(destination: PreferencesView()) {
-//                     ZStack {
-////                      //  RoundedRectangle(cornerRadius: 10, style: .continuous)
-////                         .fill(Color("twelve"))
-////                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-//
-//                        HStack {
-//                         Text("Preferences").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
-//                            Spacer()
-//
-//                        }.padding(.horizontal, 25)
-//                     }
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.green).frame(width:40, height:40)
-                                Image(systemName: "slider.horizontal.3").resizable().frame(width:25, height:25)
-                            }
-                            Spacer().frame(width:20)
-                            Text("Type Sliders").font(.system(size:20))
-                        }.frame(height:40)
-                    }
-               // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
-                
-                    NavigationLink(destination: NotificationsView()) {
-//                    ZStack {
-//
-////                       RoundedRectangle(cornerRadius: 10, style: .continuous)
-////                        .fill(Color("fifteen"))
-////                           .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-//
-//
-//                       HStack {
-//                        Text("Notifications").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
-//                           Spacer()
-//
-//                       }.padding(.horizontal, 25)
-//                    }
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.red).frame(width: 40, height: 40)
+                        NavigationLink(destination: NotificationsView()) {
+    //                    ZStack {
+    //
+    ////                       RoundedRectangle(cornerRadius: 10, style: .continuous)
+    ////                        .fill(Color("fifteen"))
+    ////                           .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+    //
+    //
+    //                       HStack {
+    //                        Text("Notifications").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
+    //                           Spacer()
+    //
+    //                       }.padding(.horizontal, 25)
+    //                    }
+                            HStack {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.red).frame(width: 40, height: 40)
 
-                                Image(systemName: "app.badge").resizable().frame(width: 25, height: 25)
+                                    Image(systemName: "app.badge").resizable().frame(width: 25, height: 25)
+                                }
+                                
+                                Spacer().frame(width: 20)
+                                Text("Notifications").font(.system(size: 20))
+                            }.frame(height: 40)
+                        }
+                   // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
+
+                        NavigationLink(destination: HelpCenterView()) {
+    //                     ZStack {
+    //
+    ////                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+    ////                         .fill(Color("fourteen"))
+    ////                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+    //
+    //
+    //                        HStack {
+    //                         Text("FAQ").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
+    //                            Spacer()
+    //
+    //                        }.padding(.horizontal, 25)
+    //                     }
+                            HStack {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.yellow).frame(width:40, height:40)
+                                    Image(systemName: "questionmark").resizable().frame(width:15, height:25)
+                                }
+                                Spacer().frame(width:20)
+                                Text("FAQ").font(.system(size:20))
+                            }.frame(height:40)
+                        }
+
+                    
+    //
+    //                NavigationLink(destination: Text("email and team")) {
+    //                     ZStack {
+    //
+    //                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+    //                         .fill(Color.orange)
+    //                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
+    //
+    //
+    //                        HStack {
+    //                         Text("About us").font(.system(size: 24)).fontWeight(.bold).frame(height: 80)
+    //                            Spacer()
+    //
+    //                        }.padding(.horizontal, 25)
+    //                     }
+    //                }
+                    }
+                    
+                    Section {
+                            NavigationLink(destination:
+                                            TutorialView().navigationTitle("Tutorial").navigationBarTitleDisplayMode(.inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
+                            ) {
+                                HStack {
+                                    ZStack {
+                                        RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
+                                        Image(systemName: "info.circle").resizable().frame(width:25, height:25)
+                                    }
+                                    Spacer().frame(width:20)
+                                    Text("Tutorial").font(.system(size:20))
+                                }.frame(height:40)
                             }
+    //                    }
+    //                    else {
+    //                        NavigationLink(destination:
+    //
+    //                            EmptyView()
+    //                            PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)
+       
                             
-                            Spacer().frame(width: 20)
-                            Text("Notifications").font(.system(size: 20))
-                        }.frame(height: 40)
+    //                        ) {
+    //
+    //                            HStack {
+    //                                ZStack {
+    //                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
+    //                                    Image(systemName: "info.circle").resizable().frame(width:25, height:25)
+    //                                }
+    //                                Spacer().frame(width:20)
+    //                                Text("Tutorial").font(.system(size:20))
+    //                            }.frame(height:40)
+    //
+    //                        }
+    //
+    //                    }
                     }
-               // Divider().frame(width:UIScreen.main.bounds.size.width-40, height: 2)
-
-                    NavigationLink(destination: HelpCenterView()) {
-//                     ZStack {
-//
-////                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-////                         .fill(Color("fourteen"))
-////                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-//
-//
-//                        HStack {
-//                         Text("FAQ").font(.system(size: 24)).fontWeight(.bold).frame(height: 40)
-//                            Spacer()
-//
-//                        }.padding(.horizontal, 25)
-//                     }
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.yellow).frame(width:40, height:40)
-                                Image(systemName: "questionmark").resizable().frame(width:15, height:25)
-                            }
-                            Spacer().frame(width:20)
-                            Text("FAQ").font(.system(size:20))
-                        }.frame(height:40)
-                    }
-
-                
-//
-//                NavigationLink(destination: Text("email and team")) {
-//                     ZStack {
-//
-//                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-//                         .fill(Color.orange)
-//                            .frame(width: UIScreen.main.bounds.size.width - 40, height: (80))
-//
-//
-//                        HStack {
-//                         Text("About us").font(.system(size: 24)).fontWeight(.bold).frame(height: 80)
-//                            Spacer()
-//
-//                        }.padding(.horizontal, 25)
-//                     }
-//                }
-                }
-                
-                Section {
+            
+                    Section {
                         NavigationLink(destination:
-                                        TutorialView().navigationTitle("Tutorial").navigationBarTitleDisplayMode(.inline)//.edgesIgnoringSafeArea(.all)//.padding(.top, -40)
+                            Form
+                            {
+                                Toggle(isOn: $specificworkhoursview)
+                                {
+                                    Text("Specifc Work Hours View")
+                                }
+                            }.onAppear
+                            {
+                                let defaults = UserDefaults.standard
+                                specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+                            }.onDisappear
+                            {
+                                let defaults = UserDefaults.standard
+                                defaults.set(specificworkhoursview, forKey: "specificworktimes")
+                            }
+                        )
+                        {
+                            HStack {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color("two")).frame(width:40, height:40)
+                                    ZStack {
+                                        Image(systemName: "calendar").resizable().frame(width:25, height:25)
+                                        HStack
+                                        {
+                                            VStack
+                                            {
+                                                Spacer()
+                                                ZStack
+                                                {
+                                                    Circle().fill(Color("two")).frame(width: 14, height: 14).offset(x: -4, y:4)
+                                                    Image(systemName: "gear").resizable().frame(width: 12, height: 12).offset(x: -4, y: 4)
+                                                }
+                                                
+                                            }
+                                            Spacer()
+                                        }.frame(width: 25, height: 25)
+                                    }
+                                }
+                                Spacer().frame(width:20)
+                                Text("Work Hours Options").font(.system(size:20))
+                            }.frame(height:40)
+                            
+                        }
+                        NavigationLink(destination:
+                            WorkHours()
                         ) {
                             HStack {
                                 ZStack {
-                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
-                                    Image(systemName: "info.circle").resizable().frame(width:25, height:25)
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
+                                    Image(systemName: "calendar").resizable().frame(width:25, height:25)
                                 }
                                 Spacer().frame(width:20)
-                                Text("Tutorial").font(.system(size:20))
+                                Text("Work Hours").font(.system(size:20))
                             }.frame(height:40)
                         }
-//                    }
-//                    else {
-//                        NavigationLink(destination:
-//
-//                            EmptyView()
-//                            PageViewControllerTutorial(tutorialPageNum: self.$tutorialPageNum, viewControllers: [UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial1", tutorialTitle: "Adding Free Time", tutorialInstructions1: "This shows the next upcoming task and a detailed description.", tutorialInstructions2: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.", tutorialInstructions3: "If you click on a task, it will divide the pinned box and show details of the assignment e.g. Due Date, Progress Bar, Assignment name and Class name.")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial2", tutorialTitle: "Doing This", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "Do this kinda, needs fixing.", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageView(tutorialScreenshot: "Tutorial3", tutorialTitle: "Sie Posel", tutorialInstructions1: "Do this kinda, needs fixing.", tutorialInstructions2: "", tutorialInstructions3: "")), UIHostingController(rootView: TutorialPageViewLastPage(tutorialPageNum: self.$tutorialPageNum))]).navigationTitle("Tutorial").id(UUID()).frame(height: UIScreen.main.bounds.size.height)
-   
+                    }
                         
-//                        ) {
-//
-//                            HStack {
-//                                ZStack {
-//                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.orange).frame(width:40, height:40)
-//                                    Image(systemName: "info.circle").resizable().frame(width:25, height:25)
-//                                }
-//                                Spacer().frame(width:20)
-//                                Text("Tutorial").font(.system(size:20))
-//                            }.frame(height:40)
-//
-//                        }
-//
-//                    }
-                }
-        
-                Section {
-                    NavigationLink(destination:
-                        Form
-                        {
-                            Toggle(isOn: $specificworkhoursview)
-                            {
-                                Text("Specifc Work Hours View")
-                            }
-                        }.onAppear
-                        {
-                            let defaults = UserDefaults.standard
-                            specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
-                        }.onDisappear
-                        {
-                            let defaults = UserDefaults.standard
-                            defaults.set(specificworkhoursview, forKey: "specificworktimes")
-                        }
-                    )
-                    {
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color("two")).frame(width:40, height:40)
+                    Section {
+                        NavigationLink(destination:
+                                        SyllabusView(showinginfo: false)
+                        ) {
+                            HStack {
                                 ZStack {
-                                    Image(systemName: "calendar").resizable().frame(width:25, height:25)
-                                    HStack
-                                    {
-                                        VStack
-                                        {
-                                            Spacer()
-                                            ZStack
-                                            {
-                                                Circle().fill(Color("two")).frame(width: 14, height: 14).offset(x: -4, y:4)
-                                                Image(systemName: "gear").resizable().frame(width: 12, height: 12).offset(x: -4, y: 4)
-                                            }
-                                            
-                                        }
-                                        Spacer()
-                                    }.frame(width: 25, height: 25)
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.purple).frame(width:40, height:40)
+                                    Image(systemName: "doc.plaintext").resizable().frame(width:25, height:25)
                                 }
-                            }
-                            Spacer().frame(width:20)
-                            Text("Work Hours Options").font(.system(size:20))
-                        }.frame(height:40)
-                        
-                    }
-                    NavigationLink(destination:
-                        WorkHours()
-                    ) {
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
-                                Image(systemName: "calendar").resizable().frame(width:25, height:25)
-                            }
-                            Spacer().frame(width:20)
-                            Text("Work Hours").font(.system(size:20))
-                        }.frame(height:40)
-                    }
-                }
-                    
-                Section {
-                    NavigationLink(destination:
-                                    SyllabusView(showinginfo: false)
-                    ) {
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.purple).frame(width:40, height:40)
-                                Image(systemName: "doc.plaintext").resizable().frame(width:25, height:25)
-                            }
-                            Spacer().frame(width:20)
-                            Text("Syllabus").font(.system(size:20))
-                        }.frame(height:40)
-                    }
-                }
-                Section
-                {
-                    NavigationLink(destination:
-                        OverallGoogleView()
-                    ) {
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.yellow).frame(width:40, height:40)
-                                Image("Google Classroom Square Logo").resizable().frame(width: 35, height: 35)
-                            }
-                            Spacer().frame(width:20)
-                            Text("Google Classroom").font(.system(size:20))
-                        }.frame(height:40)
-                    }
-                    
-                }
-                Section {
-                    HStack {
-                        Text("Version:")
-                        Spacer()
-                        Text("Developer's Beta 0.9").foregroundColor(.gray)
-                    }.contentShape(Rectangle()).onTapGesture(count: 5, perform: {
-                        self.easteregg1 = true
-                    })
-                    
-                    if self.easteregg1 {
-                        VStack {
-                            Text("Hello.").fontWeight(.regular)
+                                Spacer().frame(width:20)
+                                Text("Syllabus").font(.system(size:20))
+                            }.frame(height:40)
                         }
                     }
+                    Section
+                    {
+                        NavigationLink(destination:
+                            OverallGoogleView()
+                        ) {
+                            HStack {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.yellow).frame(width:40, height:40)
+                                    Image("Google Classroom Square Logo").resizable().frame(width: 35, height: 35)
+                                }
+                                Spacer().frame(width:20)
+                                Text("Google Classroom").font(.system(size:20))
+                            }.frame(height:40)
+                        }
+                        
+                    }
+                    Section {
+                        HStack {
+                            Text("Version:")
+                            Spacer()
+                            Text("Developer's Beta 0.9").foregroundColor(.gray)
+                        }.contentShape(Rectangle()).onTapGesture(count: 5, perform: {
+                            self.easteregg1 = true
+                        })
+                        
+                        if self.easteregg1 {
+                            VStack {
+                                Text("Hello.").fontWeight(.regular)
+                            }
+                        }
 
-                    
-                    Button(action: {
-                        self.cleardataalert.toggle()
-                    }) {
-                        Text("Clear All Data").foregroundColor(Color.red)
-                    }.alert(isPresented:$cleardataalert) {
-                        Alert(title: Text("Are you sure you want to clear all data?"), message: Text("You cannot undo this operation."), primaryButton: .destructive(Text("Clear All Data")) {
-                            self.delete()
-                        }, secondaryButton: .cancel())
+                        
+                        Button(action: {
+                            self.cleardataalert.toggle()
+                        }) {
+                            Text("Clear All Data").foregroundColor(Color.red)
+                        }.alert(isPresented:$cleardataalert) {
+                            Alert(title: Text("Are you sure you want to clear all data?"), message: Text("You cannot undo this operation."), primaryButton: .destructive(Text("Clear All Data")) {
+                                self.delete()
+                            }, secondaryButton: .cancel())
+                        }
                     }
                 }
-            }
-//            NavigationLink(destination: EmptyView()) {
-//                EmptyView()
-//            }.opacity(0)
-        }.navigationTitle("Settings")
-        
-        if masterRunning.masterRunningNow {
-            MasterClass()
-        }
+//                if masterRunning.masterRunningNow {
+//                    MasterClass()
+//                }
+    //            NavigationLink(destination: EmptyView()) {
+    //                EmptyView()
+    //            }.opacity(0)
+            }.navigationTitle("Settings")
+//        }
     }
     
     func delete() -> Void {
@@ -1091,6 +1092,9 @@ struct PreferencesView: View {
     @EnvironmentObject var masterRunning: MasterRunning
     
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
+    
+    @State var RandomTogglerForLogic: Bool = true
+    
     var body: some View {
         VStack {
             //Text(String(assignmenttypeslist.count))
@@ -1125,13 +1129,16 @@ struct PreferencesView: View {
                     }//.animation(.spring())
                 }//.animation(.spring())
            // }.navigationTitle("Preferences")
+        }.onAppear {
+            self.RandomTogglerForLogic.toggle()
+        }.onDisappear {
+            masterRunning.masterRunningNow = true
+            print("J")
         }.navigationTitle("Type Sliders").navigationBarTitleDisplayMode(.large).toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Text("")
             }
-        }.onDisappear {
-            masterRunning.masterRunningNow = true
-        }.navigationTitle("Type Sliders")
+        }//.navigationTitle("Type Sliders")
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading)
             {

@@ -736,6 +736,7 @@ class SheetNavigatorProgressView: ObservableObject {
  
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var googleDelegate: GoogleDelegate
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @FetchRequest(entity: Classcool.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
@@ -828,7 +829,7 @@ struct ProgressView: View {
         }
         else if (self.sheetNavigator.modalView == .assignment)
         {
-            NewAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+            NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning).environmentObject(googleDelegate)
         }
         else if (self.sheetNavigator.modalView == .classity)
         {
@@ -1375,16 +1376,16 @@ struct ProgressView: View {
 
                                     Button(action:
                                     {
-                                        if (self.getcompletedAssignments())
-                                        {
+//                                        if (self.getcompletedAssignments())
+//                                        {
                                             self.sheetNavigator.modalView = .grade
                                             self.NewSheetPresenting = true
-                                        }
-                                        else
-                                        {
-                                            self.sheetNavigator.alertView = .noassignment
-                                            self.NewAlertPresenting = true
-                                        }
+//                                        }
+//                                        else
+//                                        {
+//                                            self.sheetNavigator.alertView = .noassignment
+//                                            self.NewAlertPresenting = true
+//                                        }
                                         
                                     })
                                     {
@@ -1399,7 +1400,7 @@ struct ProgressView: View {
                                              // .frame(width: widthAndHeight, height: widthAndHeight)
                                                 .foregroundColor(.white).frame(width: widthAndHeight-20, height: widthAndHeight-20)
                                           }.frame(width: widthAndHeight, height: widthAndHeight)
-                                    }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1).opacity(!self.getcompletedAssignments() ? 0.5: 1)
+                                    }.offset(x: -190, y: 10).shadow(radius: 5).opacity(classlist.count == 0 ? 0.5 : 1)//.opacity(!self.getcompletedAssignments() ? 0.5: 1)
                                 }.transition(.scale)
                               }
                             
@@ -1416,6 +1417,18 @@ struct ProgressView: View {
                                     ZStack {
                                         //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                         Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).rotationEffect(Angle(degrees: showpopup ? 315 : 0))
+                                        if (classlist.count == 0)
+                                        {
+                                            VStack
+                                            {
+                                                HStack
+                                                {
+                                                    Spacer()
+                                                    Circle().fill(Color.red).frame(width: 20, height: 20).offset(x: -12, y: 12)
+                                                }
+                                                Spacer()
+                                            }
+                                        }
                                     }
                                 )
                             }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)

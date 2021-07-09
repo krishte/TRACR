@@ -1323,7 +1323,14 @@ struct HomeBodyView: View {
             }
         }
         
-        return "COMING UP"
+        if (kind==1)
+        {
+            return "TODAY"
+        }
+        else
+        {
+            return "No Tasks"
+        }
     }
     
     func getnowdates(start: Bool) -> Date {
@@ -1354,6 +1361,17 @@ struct HomeBodyView: View {
         }
         
         return Date()
+    }
+    func possiblesubassignment() -> Bool
+    {
+        for subassignment in subassignmentlist
+        {
+            if (subassignment.startdatetime > Date())
+            {
+                return true
+            }
+        }
+        return false
     }
 
     
@@ -1416,7 +1434,10 @@ struct HomeBodyView: View {
                                                     Spacer()
                                                     VStack {
                                                         Spacer()
-                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
+                                                        if (possiblesubassignment() || subassignmentassignmentname != "")
+                                                        {
+                                                            Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate) ) : "Due: " + shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
+                                                        }
                                                     }
                                                 }
                                                 
@@ -1424,10 +1445,13 @@ struct HomeBodyView: View {
                                             }
                                             
                                             VStack {
-                                                HStack {
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : timeformatter.string(from: getnowdates(start: true)) + " - " + timeformatter.string(from: getnowdates(start: false))) : timeformatter.string(from: subassignmentstartdatetime) + " - " + timeformatter.string(from: subassignmentenddatetime)).fontWeight(.light).font(.caption)
-                                                    Spacer()
-                                                    Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: getnowdates(start: true))) : shortdateformatter.string(from: subassignmentstartdatetime)).fontWeight(.light).font(.caption)
+                                                if (possiblesubassignment()  || subassignmentassignmentname != "")
+                                                {
+                                                    HStack {
+                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : timeformatter.string(from: getnowdates(start: true)) + " - " + timeformatter.string(from: getnowdates(start: false))) : timeformatter.string(from: subassignmentstartdatetime) + " - " + timeformatter.string(from: subassignmentenddatetime)).fontWeight(.light).font(.caption)
+                                                        Spacer()
+                                                        Text(subassignmentassignmentname == "" ? (subassignmentlist.count == 0 ? "" : shortdateformatter.string(from: getnowdates(start: true))) : shortdateformatter.string(from: subassignmentstartdatetime)).fontWeight(.light).font(.caption)
+                                                    }
                                                 }
                                             }.frame(height: 15)
                                             
@@ -1461,10 +1485,13 @@ struct HomeBodyView: View {
                                                     }
                                                     
                                                     HStack {
-                                                        RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.blue).frame(width: subassignmentlist.count == 0 ? 0 :  CGFloat(CGFloat(getcorrespondingassignment().progress)/100 * (UIScreen.main.bounds.size.width - 32)), height: 15)
-                                                        if (subassignmentlist.count != 0 && getcorrespondingassignment().progress != 100)
+                                                        if (possiblesubassignment() || subassignmentassignmentname != "")
                                                         {
-                                                            Spacer()
+                                                            RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.blue).frame(width: subassignmentlist.count == 0 ? 0 :  CGFloat(CGFloat(getcorrespondingassignment().progress)/100 * (UIScreen.main.bounds.size.width - 32)), height: 15)
+                                                            if (subassignmentlist.count != 0 && getcorrespondingassignment().progress != 100)
+                                                            {
+                                                                Spacer()
+                                                            }
                                                         }
                                                     }.frame(width:  (UIScreen.main.bounds.size.width - 32))
                                                 }
@@ -1584,10 +1611,12 @@ struct HomeBodyView: View {
                                             Text(subassignmentassignmentname == "" ? "No Task Selected" : self.subassignmentassignmentname).fontWeight(.bold).font(.system(size: 25)).lineLimit(2).allowsTightening(true)
                                             
                                             Spacer()
-                                            
-                                            VStack {
-                                                Spacer()
-                                                Text(subassignmentassignmentname == "" ? "" : "Due: " +  shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
+                                            if (possiblesubassignment() || subassignmentassignmentname != "")
+                                            {
+                                                VStack {
+                                                    Spacer()
+                                                    Text(subassignmentassignmentname == "" ? "" : "Due: " +  shortdateformatter.string(from: getcorrespondingassignment().duedate)).fontWeight(.bold).font(.caption)
+                                                }
                                             }
                                         }
                                         
@@ -1611,10 +1640,13 @@ struct HomeBodyView: View {
                                             
                                             
                                             HStack {
-                                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.blue).frame(width: self.subassignmentassignmentname == "" ? 0 :  CGFloat(CGFloat(getcorrespondingassignment().progress)/100 * (UIScreen.main.bounds.size.width - 32)), height: 15)
-                                                if (subassignmentlist.count != 0 && getcorrespondingassignment().progress != 100)
+                                                if (possiblesubassignment() || subassignmentassignmentname != "")
                                                 {
-                                                    Spacer()
+                                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.blue).frame(width: self.subassignmentassignmentname == "" ? 0 :  CGFloat(CGFloat(getcorrespondingassignment().progress)/100 * (UIScreen.main.bounds.size.width - 32)), height: 15)
+                                                    if (subassignmentlist.count != 0 && getcorrespondingassignment().progress != 100)
+                                                    {
+                                                        Spacer()
+                                                    }
                                                 }
                                             }.frame(width:  (UIScreen.main.bounds.size.width - 32))
                                         }
@@ -2128,6 +2160,7 @@ struct IndividualSubassignmentView: View {
                                     addTimeSubassignment.subassignmentindex = index
                                 }
                             }
+                            self.subassignmentassignmentname = ""
                         }
                     }
                     
@@ -2295,7 +2328,7 @@ struct HomeView: View {
         }
         else
         {
-            NewFreetimeModalView(NewFreetimePresenting: self.$NewSheetPresenting).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)
+            NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning).environmentObject(googleDelegate)
 
         }
     }
@@ -2579,34 +2612,37 @@ struct HomeView: View {
                     let service = GTLRClassroomService()
                     service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
     
-                        for idiii in idlist {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
-                                let assignmentsquery = GTLRClassroomQuery_CoursesCourseWorkList.query(withCourseId: idiii)
-                                //let workingdate = Date(timeIntervalSinceNow: -3600*24*7)
-                                let dayformatter = DateFormatter()
-                                let monthformatter = DateFormatter()
-                                let yearformatter = DateFormatter()
-                                yearformatter.dateFormat = "yyyy"
-                                monthformatter.dateFormat = "MM"
-                                dayformatter.dateFormat = "dd"
-                                assignmentsquery.pageSize = 1000
-                                service.executeQuery(assignmentsquery, completionHandler: {(ticket, stuff, error) in
-                                    let assignmentsforid = stuff as! GTLRClassroom_ListCourseWorkResponse
-    
-                                    if assignmentsforid.courseWork != nil {
-                                        for assignment in assignmentsforid.courseWork! {
-                                          //  print(assignment.creationTime!.date.description)
-                                            if (assignment.creationTime!.date > lastlauncheddate)
-                                            {
-                                                countnewassignments += 1
-                                            }
+                    for idiii in idlist {
+
+                        let assignmentsquery = GTLRClassroomQuery_CoursesCourseWorkList.query(withCourseId: idiii)
+                        //let workingdate = Date(timeIntervalSinceNow: -3600*24*7)
+                        let dayformatter = DateFormatter()
+                        let monthformatter = DateFormatter()
+                        let yearformatter = DateFormatter()
+                        yearformatter.dateFormat = "yyyy"
+                        monthformatter.dateFormat = "MM"
+                        dayformatter.dateFormat = "dd"
+                        assignmentsquery.pageSize = 1000
+                        service.executeQuery(assignmentsquery, completionHandler: {(ticket, stuff, error) in
+                            if (stuff as? GTLRClassroom_ListCourseWorkResponse != nil)
+                            {
+                                let assignmentsforid = stuff as! GTLRClassroom_ListCourseWorkResponse
+
+                                if assignmentsforid.courseWork != nil {
+                                    for assignment in assignmentsforid.courseWork! {
+                                      //  print(assignment.creationTime!.date.description)
+                                        if (assignment.creationTime!.date > lastlauncheddate)
+                                        {
+                                            countnewassignments += 1
                                         }
                                     }
-                                    //assignmentsforclass[idiii.1] = vallist
-                                })
-    
+                                }
                             }
-                        }
+                                //assignmentsforclass[idiii.1] = vallist
+                        })
+
+                        
+                    }
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(3000)) {

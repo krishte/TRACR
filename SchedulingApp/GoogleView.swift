@@ -273,7 +273,7 @@ struct GoogleUnsignedinView: View
                 TabView(selection: self.$currentPageGCPreview) {
                     Image("Progress View").resizable().aspectRatio(contentMode: .fit).tag(0)
                     Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).tag(1)
-                }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+                }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, height: 400, alignment: .leading)
                 .onReceive(self.GCtimer, perform: { _ in
                     withAnimation {
                         print(self.currentPageGCPreview)
@@ -589,6 +589,11 @@ struct GoogleView: View {
                 Button(action:{
                     GIDSignIn.sharedInstance().signOut()
                     googleDelegate.signedIn = false
+                    for classity in classlist
+                    {
+                        classity.googleclassroomid = ""
+                    }
+                    classeslist = []
                 })
                 {
                     if googleDelegate.signedIn {
@@ -626,9 +631,12 @@ struct GoogleView: View {
                 coursesquery.pageSize = 1000
                 service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
                     let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
-                    for course in stuff1.courses! {
-                        if course.courseState == kGTLRClassroom_Course_CourseState_Active {
-                            partiallist.append((course.identifier!, course.name!))
+                    if (stuff1.courses != nil)
+                    {
+                        for course in stuff1.courses! {
+                            if course.courseState == kGTLRClassroom_Course_CourseState_Active {
+                                partiallist.append((course.identifier!, course.name!))
+                            }
                         }
                     }
                 })

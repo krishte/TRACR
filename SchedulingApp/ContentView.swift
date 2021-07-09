@@ -68,7 +68,8 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
    // @EnvironmentObject var googleDelegate: GoogleDelegate
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
     @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
@@ -238,9 +239,9 @@ struct ContentView: View {
                                                 }
                                                 TabView
                                                 {
-                                                    Image("WorkHoursType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
-                                                    Image("HomeViewType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
-                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle())
+                                                    Image("WorkHoursType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
+                                                    Image("HomeViewType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
+                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).frame(height: 440)
                                             }.offset(x: 10)
                                         }
                                         Spacer().frame(width: 20)
@@ -258,9 +259,9 @@ struct ContentView: View {
                                                 }
                                                 TabView
                                                 {
-                                                    Image("WorkHoursType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
-                                                    Image("HomeViewType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10).padding(.vertical, 20)
-                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle())
+                                                    Image("WorkHoursType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
+                                                    Image("HomeViewType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
+                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).frame(height: 440)
                                             }.offset(x: -10)
                                         }
                                         Spacer()
@@ -309,7 +310,7 @@ struct ContentView: View {
                                     VStack
                                     {
                                         Spacer()
-                                        Text("Yay! Looks like you've completed the setup. Press 'Continue' to start using the app")
+                                        Text("Yay! Looks like you've completed the setup. Press 'Continue' then create a class to get started.")
                                         Spacer()
                                     }
                                 }
@@ -338,9 +339,13 @@ struct ContentView: View {
                         {
                             ZStack
                             {
-                                Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-40, height: 70)
-                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 50)
-                                Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
+                                if ((selectedtab == 4 && freetimelist.count != 0) || selectedtab != 4)
+                                {
+                                    Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-40, height: 70)
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 50)
+                                    Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
+                                }
+                                
                             }
                         }
                         Spacer().frame(height: 10)
@@ -402,14 +407,15 @@ struct ContentView: View {
                     let defaults = UserDefaults.standard
                     defaults.set(Date(timeIntervalSinceNow: 0), forKey: "lastaccessdate")
                     
-                }.accentColor(Color.orange).alert(isPresented: $masterRunning.showingalert) {
-                    Alert(title: Text("Scheduling Error"),
-                          message: Text(masterRunning.extratimealertmessage),
-                          dismissButton: .default(Text("OK")) {
-                            masterRunning.extratimealertmessage = ""
-                            masterRunning.showingalert = false
-                          })
                 }
+//                .alert(isPresented: $masterRunning.showingalert) {
+//                    Alert(title: Text("Scheduling Error"),
+//                          message: Text(masterRunning.extratimealertmessage),
+//                          dismissButton: .default(Text("OK")) {
+//                            masterRunning.extratimealertmessage = ""
+//                            masterRunning.showingalert = false
+//                          })
+//                }
                 
                 VStack {
                     MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())

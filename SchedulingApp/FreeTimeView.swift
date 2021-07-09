@@ -157,7 +157,7 @@ struct FreeTimeIndividual: View {
                             withAnimation(.spring()) {
                                 self.showsavebuttons = true
                             }
-                            
+                            print("showsavebutttonsval", self.showsavebuttons)
                             withAnimation(.spring()) {
                                 self.draggingup = false
                             }
@@ -172,6 +172,7 @@ struct FreeTimeIndividual: View {
                             let x = Int(round(100*((self.yoffset+self.height))))
                             let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
                             freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                        
                             do {
                                 try self.managedObjectContext.save()
                                 //print("AssignmentTypes rangemin/rangemax changed")
@@ -817,8 +818,8 @@ struct WorkHours: View {
         for i in 0..<7
         {
             let newFreetime = Freetime(context: self.managedObjectContext)
-            newFreetime.startdatetime = Date(timeIntervalSince1970: 0)
-            newFreetime.enddatetime = Date(timeIntervalSince1970: TimeInterval(storedtimesnonspecific[i]*60))
+            newFreetime.startdatetime = Date(timeIntervalSince1970: TimeInterval(3600*24-storedtimesnonspecific[i]*60))
+            newFreetime.enddatetime = Date(timeIntervalSince1970: TimeInterval(3600*24))
             newFreetime.tempstartdatetime = newFreetime.startdatetime
             newFreetime.tempenddatetime = newFreetime.enddatetime
             newFreetime.monday = boollist[i%7]

@@ -88,6 +88,18 @@ struct IndividualAssignmentFilterView: View {
         return "TASKS (\(counter))"
         
     }
+    func getunscheduledtime() -> Int
+    {
+        var totalsubtime: Int = 0
+        for subassignment in subassignmentlist
+        {
+            if (subassignment.assignmentname == assignment.name)
+            {
+                totalsubtime += Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!
+            }
+        }
+        return Int(assignment.timeleft) - totalsubtime
+    }
     
     var body: some View {
         ZStack {
@@ -127,6 +139,11 @@ struct IndividualAssignmentFilterView: View {
                         let previewduedatecolor: Color = Date() > assignment.duedate ? Color("ohnored") : ((colorScheme == .light) ? Color.black : Color.white)
                         
                         Text(previewduedatetext).fontWeight(previewduedateweight).foregroundColor(previewduedatecolor).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
+                        if (getunscheduledtime() != 0)
+                        {
+                            Image(systemName: "exclamationmark.circle.fill").resizable().foregroundColor(Color.red).frame(width: 15, height: 15)
+                            Spacer().frame(width: 10)
+                        }
                     }.padding(.bottom, -3)
                 }
                     
@@ -147,6 +164,11 @@ struct IndividualAssignmentFilterView: View {
                                 Spacer()
                                 Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing)
                             }.padding(.horizontal, 5).padding(.bottom, 2)
+                            
+                            if (getunscheduledtime() != 0)
+                            {
+                                Text("There are " + String(getunscheduledtime()) + " minutes that could not be scheduled. Please adjust your work hours or shorten the assignment.").foregroundColor(Color.red).frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
+                            }
                         }
                         VStack {
                             HStack {

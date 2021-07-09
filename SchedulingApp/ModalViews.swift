@@ -3517,6 +3517,14 @@ struct EditAssignmentModalView: View {
                             {
                                 if (assignmentval.name == self.originalname)
                                 {
+                                    for (index2, subassignment) in subassignmentlist.enumerated()
+                                    {
+                                        if (subassignment.assignmentname == assignmentval.name)
+                                        {
+                                            self.managedObjectContext.delete(self.subassignmentlist[index2])
+
+                                        }
+                                    }
                                     self.managedObjectContext.delete(self.assignmentslist[index])
                                     for (_, classcool) in classlist.enumerated()
                                     {

@@ -162,12 +162,12 @@ struct IndividualAssignmentFilterView: View {
                               //  Text("Length: " + String(gethourminutestext(minutenumber: Int(assignment.totaltime)))).frame( height: 20, alignment: .topLeading).padding(5)
                                 Text(assignment.type).frame(height: 20, alignment: .topLeading)
                                 Spacer()
-                                Text( gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing)
+                                Text(gethourminutestext(minutenumber: Int(assignment.timeleft)) + " left").fontWeight(.bold).frame( height: 20, alignment: .topTrailing)
                             }.padding(.horizontal, 5).padding(.bottom, 2)
                             
                             if (getunscheduledtime() != 0)
                             {
-                                Text("There are " + String(getunscheduledtime()) + " minutes that could not be scheduled. Please adjust your work hours or shorten the assignment.").foregroundColor(Color.red).frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
+                                Text("There are " + gethourminutestext(minutenumber: getunscheduledtime()) + " minutes that could not be scheduled. Please adjust your work hours or shorten the assignment.").foregroundColor(Color.red).frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
                             }
                         }
                         VStack {

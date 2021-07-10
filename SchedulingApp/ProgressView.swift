@@ -734,6 +734,175 @@ class SheetNavigatorProgressView: ObservableObject {
     @Published var storedindex: Int = -1
 }
  
+struct AddTimeClockView: View {
+    @Binding var clockType: Int
+    @Binding var dateRange: Int
+    
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    
+    @FetchRequest(entity: AddTimeLog.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \AddTimeLog.starttime, ascending: true)])
+    var addtimelog: FetchedResults<AddTimeLog>
+    
+    func ShouldDisplayAndMinutesFromDate(addTimeStartTime: Date) -> (Bool, Double) {
+        let minutesFromStartOfDay = Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: addTimeStartTime), to: addTimeStartTime).minute!
+        
+        let minutesTo12HourSystem = minutesFromStartOfDay % (60 * 12)
+        
+        if minutesFromStartOfDay == minutesTo12HourSystem {
+            if clockType == 0 {
+                return (true, Double(minutesTo12HourSystem) * 0.5)
+            }
+        }
+        
+        else {
+            if clockType == 1 {
+                return (true, Double(minutesTo12HourSystem) * 0.5)
+            }
+        }
+        
+        return (false, Double(minutesTo12HourSystem) * 0.5)
+    }
+    
+    func findOuterBorderAngles() -> ([[Angle]], [Bool]) {
+        var originalMinutes: [[Double]] = []
+        var originalBools: [Bool] = []
+        
+//        let DateRanges: [Date] = [Calendar.current.date(byAdding: .day, value: -1, to: Date().startOfWeek!)!, Calendar.current.date(byAdding: .day, value: -7, to: Date().startOfWeek!)!, Calendar.current.date(byAdding: .day, value: -28, to: Date().startOfWeek!)!, Calendar.current.date(byAdding: .day, value: -365, to: Date().startOfWeek!)!]
+        
+        for addtimeinstance in self.addtimelog {
+            if addtimeinstance.starttime != nil && addtimeinstance.endtime != nil && addtimeinstance.date != nil {
+//                if addtimeinstance.date! >= DateRanges[self.dateRange] {
+                    let (shouldDisplay, startDouble) = ShouldDisplayAndMinutesFromDate(addTimeStartTime: addtimeinstance.starttime!)
+                    let (_, endDouble) = ShouldDisplayAndMinutesFromDate(addTimeStartTime: addtimeinstance.endtime!)
+                    
+                    originalMinutes.append([startDouble, endDouble])
+                    originalBools.append(shouldDisplay)
+//                }
+            }
+        }
+        
+        var originalMinutesDay: [[Double]] = []
+        var originalMinutesNight: [[Double]] = []
+        
+        var finalDoublesDay: [[Double]] = []
+        var finalDoublesNight: [[Double]] = []
+        
+        for (index, originalMinute) in originalMinutes.enumerated() {
+            if originalBools[index] {
+                originalMinutesDay.append(originalMinute)
+            }
+            
+            else {
+                originalMinutesNight.append(originalMinute)
+            }
+        }
+        
+        for originalMinute in originalMinutesDay {
+            var appended = false
+            
+            for (finalDoubleIndex, finalDouble) in finalDoublesDay.enumerated() {
+                if ((originalMinute[0] >= finalDouble[0] && originalMinute[0] <= finalDouble[1]) || (originalMinute[1] >= finalDouble[0] && originalMinute[1] <= finalDouble[1]) || (originalMinute[0] <= finalDouble[0] && originalMinute[0] >= finalDouble[1]) || (originalMinute[0] <= finalDouble[0] && originalMinute[0] >= finalDouble[1])) {
+                    finalDoublesDay[finalDoubleIndex] = [min(originalMinute[0], finalDouble[0]), max(originalMinute[1], finalDouble[1])]
+                    appended = true
+                }
+            }
+            
+            if !appended {
+                finalDoublesDay.append(originalMinute)
+            }
+        }
+        
+        for originalMinute in originalMinutesNight {
+            var appended = false
+            
+            for (finalDoubleIndex, finalDouble) in finalDoublesNight.enumerated() {
+                if ((originalMinute[0] >= finalDouble[0] && originalMinute[0] <= finalDouble[1]) || (originalMinute[1] >= finalDouble[0] && originalMinute[1] <= finalDouble[1]) || (originalMinute[0] <= finalDouble[0] && originalMinute[0] >= finalDouble[1]) || (originalMinute[0] <= finalDouble[0] && originalMinute[0] >= finalDouble[1])) {
+                    finalDoublesNight[finalDoubleIndex] = [min(originalMinute[0], finalDouble[0]), max(originalMinute[1], finalDouble[1])]
+                    appended = true
+                }
+            }
+            
+            if !appended {
+                finalDoublesNight.append(originalMinute)
+            }
+        }
+        
+        var finalAngles: [[Angle]] = []
+        var finalBools: [Bool] = []
+        
+        for finalDouble in finalDoublesDay {
+            finalAngles.append([Angle(degrees: finalDouble[0]), Angle(degrees: finalDouble[1])])
+            finalBools.append(true)
+        }
+        
+        for finalDouble in finalDoublesNight {
+            finalAngles.append([Angle(degrees: finalDouble[0]), Angle(degrees: finalDouble[1])])
+            finalBools.append(false)
+        }
+        
+        return (finalAngles, finalBools)
+    }
+    
+    var body: some View {
+        VStack {
+            ZStack {
+                GeometryReader { geometry in
+                    HStack(alignment: .center) {
+                        Spacer()
+                        ZStack {
+                            ForEach(0..<60) { minute in
+                                VStack {
+                                    RoundedRectangle(cornerRadius: 1, style: .continuous).fill(self.colorScheme == .light ? Color.black : Color.white).frame(width: 3, height: 7).opacity(0.6)
+                                    Spacer()
+                                }.frame(height: geometry.size.width / 2).rotationEffect(Angle(degrees: Double(6 * minute)), anchor: .bottom)
+                            }
+                            
+                            ForEach(0..<12) { semiImportantMinute in
+                                VStack {
+                                    RoundedRectangle(cornerRadius: 1, style: .continuous).fill(self.colorScheme == .light ? Color.black : Color.white).frame(width: 4, height: 9).opacity(0.9)
+                                    Spacer()
+                                }.frame(height: geometry.size.width / 2).rotationEffect(Angle(degrees: Double(30 * semiImportantMinute)), anchor: .bottom)
+                            }
+                            
+                            ForEach(0..<4) { importantMinute in
+                                VStack {
+                                    RoundedRectangle(cornerRadius: 1, style: .continuous).fill(self.colorScheme == .light ? Color.black : Color.white).frame(width: 5, height: 11).opacity(1.0)
+                                    Spacer()
+                                }.frame(height: geometry.size.width / 2).rotationEffect(Angle(degrees: Double(90 * importantMinute)), anchor: .bottom)
+                            }
+                        }
+                        Spacer()
+                    }
+                    
+                    let centerPoint = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                    let radius: CGFloat = (geometry.size.width / 2)
+                    
+                    let (anglesList, shouldDisplayList) = findOuterBorderAngles()
+                    
+                    ForEach(Array(zip(anglesList, shouldDisplayList)), id: \.0) { (angles, shouldDisplay) in
+                        ZStack {
+                            Path { path in
+                                path.addArc(center: centerPoint, radius: radius, startAngle: angles[0], endAngle: angles[1], clockwise: false)
+                                path.addArc(center: centerPoint, radius: 0, startAngle: angles[1], endAngle: angles[0], clockwise: true)
+                                path.closeSubpath()
+                            }.strokedPath(StrokeStyle(lineWidth: 2, lineCap: .square, lineJoin: .round, dash: [8, 14])).foregroundColor(Color("clockfg"))
+                            
+                            Path { path in
+                                path.addArc(center: centerPoint, radius: radius, startAngle: angles[0], endAngle: angles[1], clockwise: false)
+                                path.addArc(center: centerPoint, radius: 0, startAngle: angles[1], endAngle: angles[1], clockwise: true)
+                                path.closeSubpath()
+                            }.foregroundColor(Color("clockfg")).opacity(0.50)
+                        }.opacity(shouldDisplay ? 1.0 : 0.0).animation(.spring())
+                    }
+                }
+            }.frame(width: 180, height: 180)
+            
+            Text("6" + (clockType == 0 ? "AM" : "PM")).font(.footnote).fontWeight(.light).animation(.spring())
+        }
+    }
+}
+
+
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var googleDelegate: GoogleDelegate
@@ -966,7 +1135,11 @@ struct ProgressView: View {
     }
     
     //bug! changing tab makes it stuck (temp fix: permanently displayed)
-    @State var bigGraphTitleOpacity: Double = 1.0
+//    @State var bigGraphTitleOpacity: Double = 1.0
+    
+    @State var isDayClock: Bool = true
+    @State var clockType: Int = 0
+    @State var dateRange: Int = 2
     
     var body: some View {
          NavigationView {
@@ -1051,135 +1224,160 @@ struct ProgressView: View {
                                                     Spacer()
                                                 }
                                                 Spacer()
-                                            }.padding(.all, 12).padding(.horizontal, 3).opacity(self.bigGraphTitleOpacity)
-                                            .onAppear {
-                                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2800)) {
-                                                    withAnimation(.spring()) {
-                                                        self.bigGraphTitleOpacity = 0.0
-                                                    }
-                                                }
-                                            }
+                                            }.padding(.all, 12).padding(.horizontal, 3)
+//                                            .opacity(self.bigGraphTitleOpacity)
+//                                            .onAppear {
+//                                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2800)) {
+//                                                    withAnimation(.spring()) {
+//                                                        self.bigGraphTitleOpacity = 0.0
+//                                                    }
+//                                                }
+//                                            }
                                         }.tag(getclassindex(classity: classity)).id(refreshID)
                                     }
                                 }
-                            }.tabViewStyle(PageTabViewStyle()).frame(width: (UIScreen.main.bounds.size.width-20), height: (250)).onTapGesture {
-                                withAnimation(.spring()) {
-                                    self.bigGraphTitleOpacity = 1.0
-                                }
-                            }
+                            }.tabViewStyle(PageTabViewStyle()).frame(width: (UIScreen.main.bounds.size.width-20), height: (250))
+//                            .onTapGesture {
+//                                withAnimation(.spring()) {
+//                                    self.bigGraphTitleOpacity = 1.0
+//                                }
+//                            }
                         }
                         HStack(alignment: .center) {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Color("thirteen"))
-                                    .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
+                                    .fill(Color("clockbg"))
+                                    .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (300 ))
+                                
                                 VStack {
-                                   
-                                    if (editingweeklygoal)
-                                    {
-                                        VStack
-                                        {
-                                            Text("Set Your Weekly Worload Goal!").font(.system(size: 20)).fontWeight(.bold).foregroundColor(Color.black).padding(10)
-                                            Button(action:{
-                                                withAnimation(.spring())
-                                                {
-                                                    displayinggoalsetting.toggle()
-                                                }
-                                            })
-                                            {
-                                                Image(systemName: "chevron.compact.down").resizable().frame(width: 42, height: 10)
-                                            }.buttonStyle(PlainButtonStyle())
-                                            if (displayinggoalsetting)
-                                            {
-                                                Stepper(String(weeklygoal) + " hours", value: $weeklygoal, in: 0...168).padding(15)
-                                            }
-                                            
-                                        }
-                                    }
-                                    else
-                                    {
-                                        HStack
-                                        {
-                                            VStack
-                                            {
-                                                ZStack
-                                                {
-                                                    VStack
-                                                    {
-                                                        Spacer().frame(height: 20)
-                                                        Text("\(String(format: "%.0f", Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal)*100))" + "%").fontWeight(.bold).font(.system(size: 25))
-                                                        Spacer()
-                                                    }
-                                                    VStack
-                                                    {
-                                                        Spacer().frame(height: 70)
-                                                        HStack
-                                                        {
-                                                            Spacer()
-                                                            Rectangle().frame(width: 5, height: 80)
-                                                            Spacer().frame(width: 60)
-                                                            Rectangle().frame(width: 5, height: 80)
-                                                            Spacer()
-                                                        }
-                                                        Spacer()
-                                                    }
-                                                    VStack
-                                                    {
-                                                        Spacer().frame(height: 150)
-                                                        Rectangle().frame(width: 70, height: 5)
-                                                        Spacer()
-                                                    }
-                                                    VStack
-                                                    {
-                                                        Spacer().frame(height: 150 -  min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
-                                                        Rectangle().fill(Color.blue).frame(width: 60, height: min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
-                                                        Spacer()
-                                                    }
-
-                                                }
-                                            }
-//                                            Spacer()
-//                                            Rectangle().frame(width: 2, height: 160)
-//                                            Spacer()
+                                    Text("Rescheduled Tasks").fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-50)*2/3)
+                                    
+//                                    Picker("Date Range", selection: $dateRange) {
+//                                        Text("Year").tag(3)
+//                                        Text("Month").tag(2)
+//                                        Text("Week").tag(1)
+//                                        Text("Day").tag(0)
+//                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-70)*2/3).padding(.bottom, 4)
+                                    
+                                    Picker("Clock Type", selection: $clockType) {
+                                        Image(systemName: "sun.max.fill").tag(0)
+                                        Image(systemName: "moon.fill").tag(1)
+                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-30)*1/3).padding(.bottom, 4)
+                                    
+                                    AddTimeClockView(clockType: self.$clockType, dateRange: self.$dateRange).transition(.opacity)
+                                }
+                            }
+//                            ZStack {
+//                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+//                                    .fill(Color("thirteen"))
+//                                    .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
+//                                VStack {
+//
+//                                    if (editingweeklygoal)
+//                                    {
+//                                        VStack
+//                                        {
+//                                            Text("Set Your Weekly Worload Goal!").font(.system(size: 20)).fontWeight(.bold).foregroundColor(Color.black).padding(10)
+//                                            Button(action:{
+//                                                withAnimation(.spring())
+//                                                {
+//                                                    displayinggoalsetting.toggle()
+//                                                }
+//                                            })
+//                                            {
+//                                                Image(systemName: "chevron.compact.down").resizable().frame(width: 42, height: 10)
+//                                            }.buttonStyle(PlainButtonStyle())
+//                                            if (displayinggoalsetting)
+//                                            {
+//                                                Stepper(String(weeklygoal) + " hours", value: $weeklygoal, in: 0...168).padding(15)
+//                                            }
+//
+//                                        }
+//                                    }
+//                                    else
+//                                    {
+//                                        HStack
+//                                        {
 //                                            VStack
 //                                            {
-//                                                Text(String(completedamountofweeklygoalminutes/60) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
-//                                                Rectangle().frame(width: 100, height: 2)
-//                                                Text(String(weeklygoal) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
-//                                            }
-                                        }
-                                    }
-                                    
-                                }
-                                VStack
-                                {
-                                    HStack
-                                    {
-                                        Spacer()
-                                        Button(action:
-                                        {
-                                            editingweeklygoal.toggle()
-                                        })
-                                        {
-                                            Image(systemName: editingweeklygoal ? "pencil.circle.fill" : "pencil.circle").resizable().frame(width: 20, height:20).padding(10)
-                                        }.buttonStyle(PlainButtonStyle())
-
+//                                                ZStack
+//                                                {
+//                                                    VStack
+//                                                    {
+//                                                        Spacer().frame(height: 20)
+//                                                        Text("\(String(format: "%.0f", Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal)*100))" + "%").fontWeight(.bold).font(.system(size: 25))
+//                                                        Spacer()
+//                                                    }
+//                                                    VStack
+//                                                    {
+//                                                        Spacer().frame(height: 70)
+//                                                        HStack
+//                                                        {
+//                                                            Spacer()
+//                                                            Rectangle().frame(width: 5, height: 80)
+//                                                            Spacer().frame(width: 60)
+//                                                            Rectangle().frame(width: 5, height: 80)
+//                                                            Spacer()
+//                                                        }
+//                                                        Spacer()
+//                                                    }
+//                                                    VStack
+//                                                    {
+//                                                        Spacer().frame(height: 150)
+//                                                        Rectangle().frame(width: 70, height: 5)
+//                                                        Spacer()
+//                                                    }
+//                                                    VStack
+//                                                    {
+//                                                        Spacer().frame(height: 150 -  min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+//                                                        Rectangle().fill(Color.blue).frame(width: 60, height: min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+//                                                        Spacer()
+//                                                    }
 //
-                                    }
-                                    Spacer()
-                                }
- 
-                            }
+//                                                }
+//                                            }
+////                                            Spacer()
+////                                            Rectangle().frame(width: 2, height: 160)
+////                                            Spacer()
+////                                            VStack
+////                                            {
+////                                                Text(String(completedamountofweeklygoalminutes/60) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
+////                                                Rectangle().frame(width: 100, height: 2)
+////                                                Text(String(weeklygoal) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
+////                                            }
+//                                        }
+//                                    }
+//
+//                                }
+//                                VStack
+//                                {
+//                                    HStack
+//                                    {
+//                                        Spacer()
+//                                        Button(action:
+//                                        {
+//                                            editingweeklygoal.toggle()
+//                                        })
+//                                        {
+//                                            Image(systemName: editingweeklygoal ? "pencil.circle.fill" : "pencil.circle").resizable().frame(width: 20, height:20).padding(10)
+//                                        }.buttonStyle(PlainButtonStyle())
+//
+////
+//                                    }
+//                                    Spacer()
+//                                }
+//
+//                            }
                             ZStack {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                                     .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
 //                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
-                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (200 ))
+                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (300 ))
                                 ScrollView(showsIndicators: false) {
  
  
                                         VStack(alignment: .leading,spacing:10) {
-                                            
+                                            Text("Your Classes:").font(.system(size: 16)).fontWeight(.semibold).padding(.leading, 10)
                                             ForEach(classlist) {
                                                 classcool in
                                                 if (!classcool.isTrash)
@@ -1213,7 +1411,7 @@ struct ProgressView: View {
                                             }
                                     }
                                     
-                                }.frame(height: 180)//.padding(10)
+                                }.frame(height: 280)//.padding(10)
                                 //Text("Key").font(.title)
                             }
                         }.padding(.horizontal, 10)

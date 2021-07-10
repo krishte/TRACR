@@ -295,6 +295,7 @@ struct DummyPageViewControllerForDates: UIViewControllerRepresentable {
 
 struct SubassignmentAddTimeAction: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
 
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     
@@ -333,7 +334,7 @@ struct SubassignmentAddTimeAction: View {
                 actionViewPresets.actionViewHeight = 1
                 actionViewPresets.actionViewType = ""
             }, label: {
-                Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
+                Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(self.colorScheme == .light ? Color.black : Color.white)
             })
         }.frame(width: UIScreen.main.bounds.size.width - 75).onAppear {
             let defaults = UserDefaults.standard
@@ -526,6 +527,7 @@ struct SubassignmentAddTimeAction: View {
 
 struct SubassignmentBacklogAction: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     
     @EnvironmentObject var addTimeSubassignmentBacklog: AddTimeSubassignmentBacklog
     @EnvironmentObject var actionViewPresets: ActionViewPresets
@@ -583,7 +585,7 @@ struct SubassignmentBacklogAction: View {
                         actionViewPresets.actionViewHeight = 1
                         actionViewPresets.actionViewType = ""
                     }, label: {
-                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
+                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(self.colorScheme == .light ? Color.black : Color.white)
                     })
                 }.frame(width: UIScreen.main.bounds.size.width - 75)
             }
@@ -728,7 +730,7 @@ struct SubassignmentBacklogAction: View {
                         
                         self.subPageType = ""
                     }, label: {
-                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(.black)
+                        Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(self.colorScheme == .light ? Color.black : Color.white)
                     })
                 }.frame(width: UIScreen.main.bounds.size.width - 75)
             }
@@ -1520,7 +1522,7 @@ struct HomeBodyView: View {
                                         Image(systemName: "chevron.up").resizable().aspectRatio(contentMode: .fit).frame(width: 8).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                                     }
                                 }.rotationEffect(Angle(degrees: self.hidingupcoming ? 180 : 0), anchor: .center).animation(.spring()).padding(.trailing, 15)
-                            }.padding(.top, self.hidingupcoming ? -90 : -55)
+                            }.padding(.top, self.hidingupcoming ? -100 : -55)
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring()).padding(.top, 5)
                                                     
                 VStack {
@@ -1675,7 +1677,7 @@ struct HomeBodyView: View {
                                 Image(systemName: "chevron.up").resizable().aspectRatio(contentMode: .fit).frame(width: 8).foregroundColor(colorScheme == .light ? Color.white : Color.black)
                             }
                         }.rotationEffect(Angle(degrees: self.hidingupcoming ? 180 : 0), anchor: .center).animation(.spring()).padding(.trailing, 15)
-                    }.padding(.top, self.hidingupcoming ? -90 : -50)
+                    }.padding(.top, self.hidingupcoming ? -100 : -50)
                 }.frame(width: UIScreen.main.bounds.size.width).animation(.spring())
 
                 ScrollView {
@@ -2496,10 +2498,10 @@ struct HomeView: View {
                
                     VStack {
                         Spacer()
-                         
+                        
                         ActionView().offset(y: actionViewPresets.actionViewOffset).animation(.spring())
                         //could change from spring to something else to avoid blocky animation
-                    }.frame(width: UIScreen.main.bounds.size.width).background((actionViewPresets.actionViewOffset <= 110 ? Color(UIColor.label).opacity(0.3) : Color.clear).edgesIgnoringSafeArea(.all))
+                    }.frame(width: UIScreen.main.bounds.size.width).background((actionViewPresets.actionViewOffset <= 110 ? Color(UIColor.label).opacity(self.colorScheme == .light ? 0.3 : 0.05) : Color.clear).edgesIgnoringSafeArea(.all))
                 }.navigationBarItems(leading:
                     HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                         Button(action: {self.actionViewPresets.actionViewHeight < 10 ? self.showingSettingsView = true : ()}) {

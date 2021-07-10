@@ -1149,12 +1149,14 @@ struct PreferencesView: View {
             //Text(String(assignmenttypeslist.count))
           //  Form {
                 ScrollView(showsIndicators: false) {
-                    if (self.selection.contains("show"))
-                    {
-                        Text("These are the Type Sliders. You can drag on the Type Sliders to adjust your preferred task length for each assignment type. For example, you can set your preferred task length for essays to 30 to 60 minutes. Then, if possible, the tasks created for Essay assignments will be between 30 and 60 minutes long. ").multilineTextAlignment(.leading).lineLimit(nil).frame(width: UIScreen.main.bounds.size.width - 40, height: 200, alignment: .topLeading).animation(.spring())
-                        Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).animation(.spring())
-                        TypeSlidersAnimationView()
+                    if (self.selection.contains("show")) {
+                        Text("Drag on the Type Sliders to adjust your preferred task length for each assignment type. TRACR will then schedule tasks which best fit your preferences and assignments.").multilineTextAlignment(.leading).minimumScaleFactor(0.8).frame(width: UIScreen.main.bounds.size.width - 40, alignment: .topLeading)
                         
+                        Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).padding(.all, 3)
+                        
+                        TypeSlidersAnimationView().scaleEffect(0.95).padding(.vertical, 5)
+                        
+                        Divider().frame(width: UIScreen.main.bounds.size.width-40, height: 2).padding(.all, 3)
                     }
 
                     
@@ -1195,9 +1197,10 @@ struct PreferencesView: View {
             }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action:{
-                    self.selectDeselect("show")
-                })
-                {
+                    withAnimation(Animation.spring()) {
+                        self.selectDeselect("show")
+                    }
+                }) {
                     Image(systemName: self.selection.contains("show") ? "info.circle.fill" : "info.circle").resizable().scaledToFit().frame(height: 20)
                 }
                 
@@ -1205,6 +1208,8 @@ struct PreferencesView: View {
         }
     }
 }
+
+
 struct DetailBreakView: View {
     @State var breakvalue: Double
     init() {

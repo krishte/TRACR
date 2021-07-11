@@ -1608,6 +1608,7 @@ struct ProgressView: View {
                                 {
                                     self.showpopup.toggle()
                                 }
+                                simpleSuccess()
 
                                 
                             }) {
@@ -1685,6 +1686,10 @@ struct ProgressView: View {
             }
         }
         return false
+    }
+    func simpleSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
     func getcompletedassignmentsbyclass() -> Bool {
         for assignment in assignmentlist {

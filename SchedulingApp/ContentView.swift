@@ -166,7 +166,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if (firstLaunchTutorial)
+            if (!firstLaunchTutorial)
             {
 //                NavigationView
 //                {
@@ -310,8 +310,9 @@ struct ContentView: View {
                                     VStack
                                     {
                                         Spacer()
-                                        Text("Yay! Looks like you've completed the setup. Press 'Continue' then create a class to get started.")
+                                        Text("Yay! Looks like you've completed the setup. Press 'Continue' then click the add button to add your first class.")
                                         Spacer()
+  
                                     }
                                 }
                             }
@@ -322,33 +323,77 @@ struct ContentView: View {
                     VStack
                     {
                         Spacer()
-                        Button(action:
-                                {
-                                    if (selectedtab < 5)
-                                    {
-                                        selectedtab += 1
-                                    }
-                                    else
-                                    {
-                                        print("hello")
-                                        firstLaunchTutorial.toggle()
-                                        print("hello2")
-                                    }
-                                 //   selectedtab += 1
-                                })
+                        if (selectedtab == 5)
                         {
-                            ZStack
+                            HStack
                             {
-                                if ((selectedtab == 4 && freetimelist.count != 0) || selectedtab != 4)
+                                NavigationLink(destination: TutorialView())
                                 {
-                                    Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-40, height: 70)
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 50)
-                                    Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
+                                    Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-60/2, height: 70)
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("thirteen")).frame(width: UIScreen.main.bounds.size.width-60/2, height: 50)
+                                    Text("Head to Tutorial").foregroundColor(Color.white).fontWeight(.bold)
                                 }
-                                
+                                Spacer().frame(width: 20)
+                                Button(action:
+                                        {
+                                            if (selectedtab < 5)
+                                            {
+                                                selectedtab += 1
+                                            }
+                                            else
+                                            {
+                                                print("hello")
+                                                firstLaunchTutorial.toggle()
+                                                print("hello2")
+                                            }
+                                         //   selectedtab += 1
+                                        })
+                                {
+                                    ZStack
+                                    {
+
+
+                                        Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-60/2, height: 70)
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-60/2, height: 50)
+                                        Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
+                                        
+                                        
+                                    }
+                                }
                             }
+                            Spacer().frame(height: 10)
                         }
-                        Spacer().frame(height: 10)
+                        else
+                        {
+                            Button(action:
+                                    {
+                                        if (selectedtab < 5)
+                                        {
+                                            selectedtab += 1
+                                        }
+                                        else
+                                        {
+                                            print("hello")
+                                            firstLaunchTutorial.toggle()
+                                            print("hello2")
+                                        }
+                                     //   selectedtab += 1
+                                    })
+                            {
+                                ZStack
+                                {
+
+                                    if ((selectedtab == 4 && freetimelist.count != 0) || selectedtab != 4)
+                                    {
+                                        Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-40, height: 70)
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-40, height: 50)
+                                        Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
+                                    }
+                                    
+                                }
+                            }
+                            Spacer().frame(height: 10)
+                        }
                     }//.frame(height: 50)//.offset(y: UIScreen.main.bounds.size.height-70)
 
              //   }

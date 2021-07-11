@@ -3192,6 +3192,45 @@ struct EditAssignmentModalView: View {
         print(gradeval)
         
     }
+    func getminhourindex() -> Int
+    {
+        var minutecount = 0
+        for subassignment in subassignmentlist
+        {
+            if (subassignment.assignmentname == self.originalname)
+            {
+                if (subassignment.startdatetime < Date())
+                {
+                    minutecount += Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!
+                }
+            }
+        }
+        return minutecount/60
+    }
+    func getminminuteindex() -> Int
+    {
+        var minutecount = 0
+        for subassignment in subassignmentlist
+        {
+            if (subassignment.assignmentname == self.originalname)
+            {
+                if (subassignment.startdatetime < Date())
+                {
+                    minutecount += Calendar.current.dateComponents([.minute], from: subassignment.startdatetime, to: subassignment.enddatetime).minute!
+                }
+            }
+        }
+        minutecount %= 60
+        if (hours == 0)
+        {
+            return 6
+        }
+        if (hours != getminhourindex())
+        {
+            return 0
+        }
+        return minutecount/5
+    }
     
     func getgradingscheme() -> String
     {
@@ -3327,7 +3366,7 @@ struct EditAssignmentModalView: View {
                         HStack {
                             VStack {
                                 Picker(selection: $hours, label: Text("Hour")) {
-                                    ForEach(0..<hourlist.count) {
+                                    ForEach(getminhourindex()..<hourlist.count) {
                                         
                                         Text(String(self.hourlist[$0]) + (self.hourlist[$0] == 1 ? " hour" : " hours"))
                                         
@@ -3339,16 +3378,40 @@ struct EditAssignmentModalView: View {
 
 
                             VStack {
-
+                                if (hours == 0)
+                                {
                                     Picker(selection: $minutes, label: Text("Minutes")) {
-                                        ForEach(minutelist.indices) { minuteindex in
-                                            if (minuteindex < minutelist.count)
+                                        ForEach(6..<minutelist.count) {
+                                            if ($0 < minutelist.count)
                                             {
-                                                Text(String(self.minutelist[minuteindex]) + " mins")
+                                                Text(String(self.minutelist[$0]) + " mins")
                                             }
                                         }
                                     }.pickerStyle(WheelPickerStyle())
-
+                                }
+                                else if (hours == getminhourindex())
+                                {
+                                    Picker(selection: $minutes, label: Text("Minutes")) {
+                                        ForEach(getminminuteindex()..<minutelist.count) {
+                                            if ($0 < minutelist.count)
+                                            {
+                                                Text(String(self.minutelist[$0]) + " mins")
+                                            }
+                                        }
+                                    }.pickerStyle(WheelPickerStyle())
+                                }
+                                else
+                                {
+                                    Picker(selection: $minutes, label: Text("Minutes")) {
+                                        ForEach(0..<minutelist.count) {
+                                            if ($0 < minutelist.count)
+                                            {
+                                                Text(String(self.minutelist[$0]) + " mins")
+                                            }
+                                        }
+                                    }.pickerStyle(WheelPickerStyle())
+                                    
+                                }
 
 
                             }.frame(minWidth: 100, maxWidth: .infinity)

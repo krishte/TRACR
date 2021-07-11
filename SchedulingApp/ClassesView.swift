@@ -1003,7 +1003,8 @@ struct MasterClass: View {
                         for j in 0..<tempsubassignmentlist.count {
                             if (tempsubassignmentlist[j].0 == possibledayslist[i])
                             {
-                                let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 90 )
+                                //set the last value to something dynamic or reasonable
+                                let value = min(extratime, dateFreeTimeDict[Calendar.current.date(byAdding: .day, value: tempsubassignmentlist[j].0, to: startOfDay)!]! - tempsubassignmentlist[j].1, 1000 )
                                 tempsubassignmentlist[j].1 += value
                                 extratime -= value
                                 if (extratime == 0)
@@ -1174,7 +1175,7 @@ struct MasterClass: View {
 //        }
 
         // look at free times objects that have passed today
-        print(specificdatefreetimedict[startOfDay]![0].0, specificdatefreetimedict[startOfDay]![0].1)
+//        print(specificdatefreetimedict[startOfDay]![0].0, specificdatefreetimedict[startOfDay]![0].1)
         var deletelist: [Int] = []
         var changelist: [Int] = []
         for (index,(start, end)) in specificdatefreetimedict[startOfDay]!.enumerated()
@@ -2013,6 +2014,10 @@ struct ClassesView: View {
     @ObservedObject var sheetnavigator: SheetNavigatorClassesView = SheetNavigatorClassesView()
     @ObservedObject var classdeleter: ClassDeleter = ClassDeleter()
     @State var showpopup: Bool = false
+    func simpleSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
     
     var body: some View {
         NavigationView {
@@ -2225,6 +2230,7 @@ struct ClassesView: View {
                                 {
                                     self.showpopup.toggle()
                                 }
+                                simpleSuccess()
 
                                 
                             }) {

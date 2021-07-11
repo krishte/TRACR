@@ -9,6 +9,8 @@
 import Foundation
 import Combine
 import SwiftUI
+import GoogleSignIn
+import GoogleAPIClientForREST
 
 struct PageViewControllerTutorial: UIViewControllerRepresentable {
     @Binding var tutorialPageNum: Int
@@ -529,6 +531,8 @@ struct SettingsView: View {
     @FetchRequest(entity: AssignmentTypes.entity(), sortDescriptors: [])
     
     var assignmenttypeslist: FetchedResults<AssignmentTypes>
+    @FetchRequest(entity: AddTimeLog.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \AddTimeLog.name, ascending: true)])
+    var addtimeloglist: FetchedResults<AddTimeLog>
     
     @State var cleardataalert = false
     
@@ -540,6 +544,8 @@ struct SettingsView: View {
     @State var easteregg2: Bool = false
     @State var easteregg3: Bool = false
     @State var specificworkhoursview: Bool = true
+    @State var specificworkhoursviewcounter: Int = 0
+    @State var pickertext: [String] = ["Specific Work Hours", "Non-Specific Work Hours"]
     @State var showingAlert: Bool = false
     
     var body: some View {
@@ -682,18 +688,7 @@ struct SettingsView: View {
                     NavigationLink(destination:
                         Form
                         {
-                            Section
-                            {
-                                Toggle(isOn: $specificworkhoursview)
-                                {
-                                    Text("Specifc Work Hours View").fontWeight(.bold)
-                                }.onChange(of: self.specificworkhoursview) { _ in
-                                    if (specificworkhoursview)
-                                    {
-                                        showingAlert = true
-                                    }
-                                }
-                            }
+
                             Section
                             {
                                 Text("Work hours are used to schedule tasks for assignments. Tasks will always be scheduled during you work hours so make sure to include all the times when you can work.")
@@ -712,6 +707,29 @@ struct SettingsView: View {
                                         Text("Specific Work Hours View").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                     }
                                 }
+                            }
+                            Section
+                            {
+                                Picker(selection: $specificworkhoursviewcounter, label: Text("Work Hours Options")) {
+                                    ForEach(0..<2) { mainsyllabusindex in
+                                        Text(pickertext[mainsyllabusindex])
+                                    }
+                                }.pickerStyle(SegmentedPickerStyle())
+                                .onChange(of: self.specificworkhoursviewcounter) { _ in
+                                    if (specificworkhoursviewcounter == 0)
+                                    {
+                                        showingAlert = true
+                                    }
+                                }
+//                                Toggle(isOn: $specificworkhoursview)
+//                                {
+//                                    Text("Specifc Work Hours View").fontWeight(.bold)
+//                                }.onChange(of: self.specificworkhoursview) { _ in
+//                                    if (specificworkhoursview)
+//                                    {
+//                                        showingAlert = true
+//                                    }
+//                                }
                             }
                             
                         }.alert(isPresented:$showingAlert) {
@@ -734,14 +752,30 @@ struct SettingsView: View {
                                     specificworkhoursview = false
                                 }
                             )
-                        }
+                        }.navigationTitle("Work Hours Options")
                         .onAppear
                         {
                             let defaults = UserDefaults.standard
                             specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+                            if (specificworkhoursview)
+                            {
+                                specificworkhoursviewcounter = 0
+                            }
+                            else
+                            {
+                                specificworkhoursviewcounter = 1
+                            }
                         }.onDisappear
                         {
                             let defaults = UserDefaults.standard
+                            if (specificworkhoursviewcounter == 0)
+                            {
+                                specificworkhoursview = true
+                            }
+                            else
+                            {
+                                specificworkhoursview = false
+                            }
                             defaults.set(specificworkhoursview, forKey: "specificworktimes")
                         }
                     )
@@ -859,15 +893,10 @@ struct SettingsView: View {
                  self.managedObjectContext.delete(self.subassignmentlist[index])
             }
         }
-//        if (self.assignmenttypeslist.count > 0)
-//        {
-//        for (index, _) in self.assignmenttypeslist.enumerated() {
-//             self.managedObjectContext.delete(self.assignmenttypeslist[index])
-//        }
-//        }
+
         for (_, element) in self.assignmenttypeslist.enumerated() {
-            element.rangemin = 30
-            element.rangemax = 300
+            element.rangemin = 60
+            element.rangemax = 180
         }
         
         if (self.assignmentlist.count > 0) {
@@ -880,10 +909,37 @@ struct SettingsView: View {
                  self.managedObjectContext.delete(self.classlist[index])
             }
         }
-//                for (index, _) in self.freetimelist.enumerated() {
-//                     self.managedObjectContext.delete(self.freetimelist[index])
-//                }
-        
+        for (index, _) in self.freetimelist.enumerated() {
+             self.managedObjectContext.delete(self.freetimelist[index])
+        }
+        for (index, _) in self.addtimeloglist.enumerated()
+        {
+            self.managedObjectContext.delete(self.addtimeloglist[index])
+        }
+        GIDSignIn.sharedInstance().signOut()
+        let boollist: [Bool] = [true, false, false, false, false, false, false]
+        for i in 0...4
+        {
+            let newFreetime = Freetime(context: self.managedObjectContext)
+            newFreetime.startdatetime = Date(timeInterval: TimeInterval(3600*16), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+            newFreetime.enddatetime = Date(timeInterval: TimeInterval(3600*20), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+            newFreetime.tempenddatetime = newFreetime.startdatetime
+            newFreetime.tempenddatetime = newFreetime.enddatetime
+            newFreetime.monday = boollist[i]
+            newFreetime.sunday = boollist[(i+1)%7]
+            newFreetime.saturday = boollist[(i+2)%7]
+            newFreetime.friday = boollist[(i+3)%7]
+            newFreetime.thursday = boollist[(i+4)%7]
+            newFreetime.wednesday = boollist[(i+5)%7]
+            newFreetime.tuesday = boollist[(i+6)%7]
+            do {
+                try self.managedObjectContext.save()
+                //print("AssignmentTypes rangemin/rangemax changed")
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+
         do {
             try self.managedObjectContext.save()
             //print("AssignmentTypes rangemin/rangemax changed")

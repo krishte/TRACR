@@ -818,19 +818,19 @@ struct SettingsView: View {
                 }
 
                 Section {
-                    HStack {
-                        Text("Version:")
-                        Spacer()
-                        Text("Developer's Beta 0.9").foregroundColor(.gray)
-                    }.contentShape(Rectangle()).onTapGesture(count: 5, perform: {
-                        self.easteregg1 = true
-                    })
-                    
-                    if self.easteregg1 {
-                        VStack {
-                            Text("Hello.").fontWeight(.regular)
-                        }
-                    }
+//                    HStack {
+//                        Text("Version:")
+//                        Spacer()
+//                        Text("Developer's Beta 0.9").foregroundColor(.gray)
+//                    }.contentShape(Rectangle()).onTapGesture(count: 5, perform: {
+//                        self.easteregg1 = true
+//                    })
+//
+//                    if self.easteregg1 {
+//                        VStack {
+//                            Text("Hello.").fontWeight(.regular)
+//                        }
+//                    }
 
                     
                     Button(action: {

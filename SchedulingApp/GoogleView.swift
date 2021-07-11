@@ -338,7 +338,7 @@ struct OverallGoogleView: View {
                     TabView(selection: self.$currentPageGCPreview) {
                         Image("Progress View").resizable().aspectRatio(contentMode: .fit).tag(0)
                         Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).tag(1)
-                    }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading)
+                    }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, height: 400, alignment: .leading)
                     .onReceive(self.GCtimer, perform: { _ in
                         withAnimation {
                             print(self.currentPageGCPreview)
@@ -384,7 +384,7 @@ struct GoogleView: View {
     @State private var refreshID = UUID()
     @State private var selection: Set<String> = []
     @State var selectedClass: Int? = 100000
-
+    @State var noclassesavailable: Bool = false
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     
     init()
@@ -448,6 +448,10 @@ struct GoogleView: View {
     }
     func getiterationcounter() -> Int
     {
+        if (noclassesavailable)
+        {
+            return 1
+        }
         if (classeslist.count == 0)
         {
             return 10
@@ -495,6 +499,98 @@ struct GoogleView: View {
         
         return Color("CharansOCD")
     }
+    func reloadlist()
+    {
+        classeslist = []
+        classesidlist = []
+        GIDSignIn.sharedInstance().restorePreviousSignIn()
+        if (googleDelegate.signedIn)
+        {
+            var partiallist: [(String, String)] = []
+
+            let service = GTLRClassroomService()
+            service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
+
+            let coursesquery = GTLRClassroomQuery_CoursesList.query()
+
+            coursesquery.pageSize = 1000
+            service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
+                let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
+                if (stuff1.courses != nil)
+                {
+                    for course in stuff1.courses! {
+                        if course.courseState == kGTLRClassroom_Course_CourseState_Active {
+                            partiallist.append((course.identifier!, course.name!))
+                        }
+                    }
+                }
+            })
+
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+                for val in partiallist
+                {
+                    classeslist.append(val.1)
+                }
+                var islinked: [Bool] = []
+                classeslist = Array(Set(classeslist))
+                classeslist.sort()
+
+
+            for val in classeslist
+            {
+                for pairity in partiallist
+                {
+                    if (pairity.1 == val)
+                    {
+                        classesidlist.append(pairity.0)
+                    }
+                }
+            }
+
+            for val in classesidlist
+            {
+                var found = false
+                for numpty in classlist
+                {
+                    if (numpty.googleclassroomid == val)
+                    {
+                        found = true
+                        break
+                    }
+                }
+                islinked.append(found)
+            }
+            var newclasseslist: [String] = []
+            var newclassesidlist: [String] = []
+
+            for (index, val) in classeslist.enumerated()
+            {
+                if (islinked[index])
+                {
+                    newclasseslist.append(val)
+                    newclassesidlist.append(classesidlist[index])
+                }
+            }
+            for (index, val) in classeslist.enumerated()
+            {
+                if (!islinked[index])
+                {
+                    newclasseslist.append(val)
+                    newclassesidlist.append(classesidlist[index])
+                }
+            }
+
+            classeslist = newclasseslist
+            classesidlist = newclassesidlist
+                if (classeslist.count==0)
+                {
+                    noclassesavailable = true
+                }
+                print(classeslist, classesidlist)
+                
+            }
+        }
+    }
 
     
     @State var currentPageGCPreview = 0
@@ -520,9 +616,22 @@ struct GoogleView: View {
                     }//.id(refreshID)
 
                     ForEach(0..<getiterationcounter(), id: \.self) { classityval in
-                        if (classeslist.count == 0)
+                        if (noclassesavailable)
+                        {
+                            Text("No Classes Available")
+                        }
+                        else if (classeslist.count == 0)
                         {
                             GCLoadingView()
+                                .onAppear
+                                {
+                                    //sometimes not being called when log out, log into other account, log out, log back into original account but no crash just infinite loading time
+                                    reloadlist()
+                                }
+//                            .onDisappear
+//                            {
+//                                reloadlist()
+//                            }
                         }
                         else
                         {
@@ -533,7 +642,7 @@ struct GoogleView: View {
                                     print(self.selectedClass!)
                                 }) {
                                     ZStack {
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: 2*classityval)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(self.getclasscolor(classval: 2*classityval)).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2).frame(width: UIScreen.main.bounds.size.width/2-20)
                                             
                                         Text(classeslist[2*classityval]).font(.system(size: 18)).fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-70)/2, height: 80, alignment: .bottomLeading).lineLimit(2)
                                                 .allowsTightening(true).padding(.bottom, 6)
@@ -568,6 +677,10 @@ struct GoogleView: View {
 
                                 }.buttonStyle(PlainButtonStyle())
                             }
+//                            .onAppear
+//                            {
+//                                reloadlist()
+//                            }
                         }
                     }.padding(.horizontal, 10)//.id(refreshID)
                 
@@ -589,11 +702,22 @@ struct GoogleView: View {
                 Button(action:{
                     GIDSignIn.sharedInstance().signOut()
                     googleDelegate.signedIn = false
+                    noclassesavailable = false
                     for classity in classlist
                     {
                         classity.googleclassroomid = ""
                     }
+                    do {
+                        try self.managedObjectContext.save()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                    let defaults = UserDefaults.standard
                     classeslist = []
+                    classesidlist = []
+                    defaults.set([], forKey: "savedgoogleclasses")
+                    defaults.set([], forKey: "savedgoogleclassesids")
+
                 })
                 {
                     if googleDelegate.signedIn {
@@ -607,126 +731,126 @@ struct GoogleView: View {
         .onAppear
         {
           //  print("success")
-            let defaults = UserDefaults.standard
-          //  print(defaults.object(forKey: "accessedclassroom") ?? false)
-            classeslist = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
-            classesidlist = defaults.object(forKey: "savedgoogleclassesids") as? [String] ?? []
-            let valstuffity = defaults.object(forKey: "accessedclassroom") as? Bool ?? false
-            //let bobbity = defaults.object(forKey: "lastaccessdate")
-            if (!valstuffity || classeslist.count == 0)
-            {
-                classeslist = []
-                classesidlist = []
-                GIDSignIn.sharedInstance().restorePreviousSignIn()
-                if (googleDelegate.signedIn)
-                {
-                defaults.set(true, forKey: "accessedclassroom")
-                var partiallist: [(String, String)] = []
-
-                let service = GTLRClassroomService()
-                service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
-
-                let coursesquery = GTLRClassroomQuery_CoursesList.query()
-
-                coursesquery.pageSize = 1000
-                service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
-                    let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
-                    if (stuff1.courses != nil)
-                    {
-                        for course in stuff1.courses! {
-                            if course.courseState == kGTLRClassroom_Course_CourseState_Active {
-                                partiallist.append((course.identifier!, course.name!))
-                            }
-                        }
-                    }
-                })
-
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
-                        for val in partiallist
-                        {
-                            classeslist.append(val.1)
-                        }
-                        var islinked: [Bool] = []
-                        classeslist = Array(Set(classeslist))
-                        classeslist.sort()
-
-
-                    for val in classeslist
-                    {
-                        for pairity in partiallist
-                        {
-                            if (pairity.1 == val)
-                            {
-                                classesidlist.append(pairity.0)
-                            }
-                        }
-                    }
-
-                    for val in classesidlist
-                    {
-                        var found = false
-                        for numpty in classlist
-                        {
-                            if (numpty.googleclassroomid == val)
-                            {
-                                found = true
-                                break
-                            }
-                        }
-                        islinked.append(found)
-                    }
-                    var newclasseslist: [String] = []
-                    var newclassesidlist: [String] = []
-
-                    for (index, val) in classeslist.enumerated()
-                    {
-                        if (islinked[index])
-                        {
-                            newclasseslist.append(val)
-                            newclassesidlist.append(classesidlist[index])
-                        }
-                    }
-                    for (index, val) in classeslist.enumerated()
-                    {
-                        if (!islinked[index])
-                        {
-                            newclasseslist.append(val)
-                            newclassesidlist.append(classesidlist[index])
-                        }
-                    }
-
-                    classeslist = newclasseslist
-                    classesidlist = newclassesidlist
-
-//                    for _ in classeslist
+//            let defaults = UserDefaults.standard
+//          //  print(defaults.object(forKey: "accessedclassroom") ?? false)
+//            classeslist = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
+//            classesidlist = defaults.object(forKey: "savedgoogleclassesids") as? [String] ?? []
+//            let valstuffity = defaults.object(forKey: "accessedclassroom") as? Bool ?? false
+//            //let bobbity = defaults.object(forKey: "lastaccessdate")
+//            if (!valstuffity || classeslist.count == 0)
+//            {
+//                classeslist = []
+//                classesidlist = []
+//                GIDSignIn.sharedInstance().restorePreviousSignIn()
+//                if (googleDelegate.signedIn)
+//                {
+//                defaults.set(true, forKey: "accessedclassroom")
+//                var partiallist: [(String, String)] = []
+//
+//                let service = GTLRClassroomService()
+//                service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
+//
+//                let coursesquery = GTLRClassroomQuery_CoursesList.query()
+//
+//                coursesquery.pageSize = 1000
+//                service.executeQuery(coursesquery, completionHandler: {(ticket, stuff, error) in
+//                    let stuff1 = stuff as! GTLRClassroom_ListCoursesResponse
+//                    if (stuff1.courses != nil)
 //                    {
-//                        classesselected.append(false)
-//                    }
-
-//                    let arraykewl = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
-//                    for (index, classval) in classeslist.enumerated()
-//                    {
-//                        if (arraykewl.contains(classval))
-//                        {
-//                            classesselected[index] = true
+//                        for course in stuff1.courses! {
+//                            if course.courseState == kGTLRClassroom_Course_CourseState_Active {
+//                                partiallist.append((course.identifier!, course.name!))
+//                            }
 //                        }
 //                    }
-
-
-                }
-
-                }
-            }
-            else
-            {
-                let defaults = UserDefaults.standard
-                print("yay")
-                classeslist = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
-                classesidlist = defaults.object(forKey: "savedgoogleclassesids") as? [String] ?? []
-
-               // self.refreshID = UUID()
-
-            }
+//                })
+//
+//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+//                        for val in partiallist
+//                        {
+//                            classeslist.append(val.1)
+//                        }
+//                        var islinked: [Bool] = []
+//                        classeslist = Array(Set(classeslist))
+//                        classeslist.sort()
+//
+//
+//                    for val in classeslist
+//                    {
+//                        for pairity in partiallist
+//                        {
+//                            if (pairity.1 == val)
+//                            {
+//                                classesidlist.append(pairity.0)
+//                            }
+//                        }
+//                    }
+//
+//                    for val in classesidlist
+//                    {
+//                        var found = false
+//                        for numpty in classlist
+//                        {
+//                            if (numpty.googleclassroomid == val)
+//                            {
+//                                found = true
+//                                break
+//                            }
+//                        }
+//                        islinked.append(found)
+//                    }
+//                    var newclasseslist: [String] = []
+//                    var newclassesidlist: [String] = []
+//
+//                    for (index, val) in classeslist.enumerated()
+//                    {
+//                        if (islinked[index])
+//                        {
+//                            newclasseslist.append(val)
+//                            newclassesidlist.append(classesidlist[index])
+//                        }
+//                    }
+//                    for (index, val) in classeslist.enumerated()
+//                    {
+//                        if (!islinked[index])
+//                        {
+//                            newclasseslist.append(val)
+//                            newclassesidlist.append(classesidlist[index])
+//                        }
+//                    }
+//
+//                    classeslist = newclasseslist
+//                    classesidlist = newclassesidlist
+//
+////                    for _ in classeslist
+////                    {
+////                        classesselected.append(false)
+////                    }
+//
+////                    let arraykewl = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
+////                    for (index, classval) in classeslist.enumerated()
+////                    {
+////                        if (arraykewl.contains(classval))
+////                        {
+////                            classesselected[index] = true
+////                        }
+////                    }
+//
+//
+//                }
+//
+//                }
+//            }
+//            else
+//            {
+//                let defaults = UserDefaults.standard
+//                print("yay")
+//                classeslist = defaults.object(forKey: "savedgoogleclasses") as? [String] ?? []
+//                classesidlist = defaults.object(forKey: "savedgoogleclassesids") as? [String] ?? []
+//
+//               // self.refreshID = UUID()
+//
+//            }
         
         }.onDisappear
         {

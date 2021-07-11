@@ -273,7 +273,10 @@ struct FilterView: View {
             NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewSheetPresenting, selectedClass: 0, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning).environmentObject(googleDelegate)
         }
     }
-
+    func simpleSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
     var body: some View {
         NavigationView {
             ZStack {
@@ -406,6 +409,7 @@ struct FilterView: View {
                                 {
                                     self.showpopup.toggle()
                                 }
+                                simpleSuccess()
 
                                 
                             }) {

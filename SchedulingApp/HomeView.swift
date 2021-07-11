@@ -2007,6 +2007,7 @@ struct IndividualSubassignmentView: View {
         return Color(.sRGB, red: Double(rgbcode[36..<41])!, green: Double(rgbcode[42..<47])!, blue: Double(rgbcode[48..<53])!, opacity: 1)
     }
 
+
     
     var body: some View {
         ZStack {
@@ -2334,6 +2335,10 @@ struct HomeView: View {
 
         }
     }
+    func simpleSuccess() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+    }
     
     var body: some View {
         NavigationView {
@@ -2468,6 +2473,7 @@ struct HomeView: View {
                                     {
                                         self.showpopup.toggle()
                                     }
+                                    simpleSuccess()
 
                                     
                                 }) {

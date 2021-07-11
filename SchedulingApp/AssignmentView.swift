@@ -31,6 +31,7 @@ struct IndividualAssignmentFilterView: View {
     var subassignmentlist: FetchedResults<Subassignmentnew>
     
     var assignmentduedate: String
+    var assignmentactualduedate: Date
     
     @EnvironmentObject var masterRunning: MasterRunning
     
@@ -45,6 +46,7 @@ struct IndividualAssignmentFilterView: View {
        // formatter.timeZone = TimeZone(secondsFromGMT: 0)
         assignment = assignment2
         assignmentduedate = formatter.string(from: assignment2.duedate)
+        self.assignmentactualduedate = assignment2.duedate
         self._selectededitassignment = selectededit
         self._showeditassignment = showedit
         
@@ -100,6 +102,7 @@ struct IndividualAssignmentFilterView: View {
         }
         return Int(assignment.timeleft) - totalsubtime
     }
+
     
     var body: some View {
         ZStack {
@@ -130,8 +133,8 @@ struct IndividualAssignmentFilterView: View {
                         Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 40, height: 30, alignment: .topLeading).padding(.leading, 5)
                         Spacer()
                         
-                        let datedifference = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: assignment.duedate)).day
-                        
+                        let datedifference = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: assignmentactualduedate )).day
+
                         let previewduedatetext: String = datedifference == 1 ? "Tomorrow" : (datedifference == 0 ? "Today" : "\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2])")
                         
                         let previewduedateweight: Font.Weight = datedifference ?? 0 < 2 ? (Date() > assignment.duedate ? .bold : .semibold) : .light

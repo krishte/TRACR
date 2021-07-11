@@ -557,7 +557,83 @@ struct SubassignmentBacklogAction: View {
     }
     
     var body: some View {
-        if self.subPageType == "Introduction" || (actionViewPresets.actionViewHeight != 280 && actionViewPresets.actionViewHeight != 281) {
+        if self.subPageType == "What is this?" {
+            HStack {
+                Text("Tasks Backlog").font(.system(size: 14)).fontWeight(.light)
+                Spacer()
+                Button(action: {
+                    actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
+                    actionViewPresets.actionViewHeight = 1
+                    actionViewPresets.actionViewType = ""
+                }, label: {
+                    Image(systemName: "xmark").font(.system(size: 11)).foregroundColor(self.colorScheme == .light ? Color.black : Color.white)
+                })
+            }.frame(width: UIScreen.main.bounds.size.width - 75)
+            
+            Spacer()
+            
+            HStack {
+                Text("The Tasks Backlog keeps track of all the tasks which you have not swiped left to complete. Here, you can keep track of your backlog, and update progress on these tasks so that they are rescheduled. You can additionally swipe tasks from the past to the right to reschedule them.").font(.system(size: 15)).fontWeight(.light)
+
+                Spacer()
+            }.frame(width: UIScreen.main.bounds.size.width - 75)
+            
+            Spacer()
+            
+            VStack {
+                ZStack {
+                    HStack {
+                        ZStack {
+                            Rectangle().fill(Color.blue).frame(width: 2*(UIScreen.main.bounds.size.width - 75)/3, height: 30)
+                            Image(systemName: "timer").resizable().frame(width: 16, height: 16).offset(x: (-(UIScreen.main.bounds.size.width - 75)/3) + 16)
+                        }
+                        Spacer()
+                    }.frame(width: UIScreen.main.bounds.size.width - 75)
+                    
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 6, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("one"), Color("very_light_gray")]), startPoint: .leading, endPoint: .trailing)).frame(width: 3*(UIScreen.main.bounds.size.width - 75)/4, height: 30)
+                            Image(systemName: "arrow.right").resizable().frame(width: 24, height: 16).offset(x: -10)
+                        }
+                    }.frame(width: UIScreen.main.bounds.size.width - 75)
+                }
+                
+                Spacer().frame(height: 8)
+                
+                ZStack {
+                    HStack {
+                        Spacer()
+                        ZStack {
+                            Rectangle().fill(Color("fourteen")).frame(width: 2*(UIScreen.main.bounds.size.width - 75)/3, height: 30)
+                            Image(systemName: "checkmark.circle").resizable().frame(width: 16, height: 16).offset(x: ((UIScreen.main.bounds.size.width - 75)/3) - 16)
+                        }
+                    }.frame(width: UIScreen.main.bounds.size.width - 75)
+                    
+                    HStack {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 6, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("very_light_gray"), Color("twelve")]), startPoint: .leading, endPoint: .trailing)).frame(width: 3*(UIScreen.main.bounds.size.width - 75)/4, height: 30)
+                            Image(systemName: "arrow.left").resizable().frame(width: 24, height: 16).offset(x: 10)
+                        }
+                        Spacer()
+                    }.frame(width: UIScreen.main.bounds.size.width - 75)
+                }
+            }
+            
+            Spacer()
+            
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+            
+            Button(action: {
+                self.subPageType = "Introduction"
+                
+                UserDefaults.standard.set(true, forKey: "launchedBacklogBefore")
+            }) {
+                Text("Okay, Got it!").font(.system(size: 17)).fontWeight(.semibold).foregroundColor(Color.green).frame(width: UIScreen.main.bounds.size.width-80, height: 25)
+            }.padding(.vertical, 8).padding(.bottom, -3)
+        }
+        
+        else if self.subPageType == "Introduction" || (actionViewPresets.actionViewHeight != 280 && actionViewPresets.actionViewHeight != 281) {
             //301 = MUST case
             if actionViewPresets.actionViewHeight == 301 {
                 HStack {
@@ -599,6 +675,11 @@ struct SubassignmentBacklogAction: View {
                 }
                 else {
                     self.uniformlistviewshows = true
+                }
+                
+                let launchedBacklogBefore = UserDefaults.standard.bool(forKey: "launchedBacklogBefore")
+                if !launchedBacklogBefore {
+                    self.subPageType = "What is this?"
                 }
             }
             
@@ -1033,29 +1114,29 @@ struct ActionView: View {
         }
         
         //Dealing with No Classes/Freetime
-        if freetimelist.isEmpty {
-            nofreetime = true
-        }
+//        if freetimelist.isEmpty {
+//            nofreetime = true
+//        }
         
-        else {
-            nofreetime = false
-        }
+//        else {
+//            nofreetime = false
+//        }
+//
+//        if classlist.isEmpty {
+//            noclasses = true
+//        }
+//
+//        else {
+//            noclasses = false
+//        }
         
-        if classlist.isEmpty {
-            noclasses = true
-        }
-        
-        else {
-            noclasses = false
-        }
-        
-        if (nofreetime || noclasses) && subpageSetup == "None" {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
-                actionViewPresets.actionViewOffset = 0
-                actionViewPresets.actionViewType = "NoClassesOrFreetime"
-                actionViewPresets.actionViewHeight = CGFloat(330)
-            }
-        }
+//        if (nofreetime || noclasses) && subpageSetup == "None" {
+//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(0)) {
+//                actionViewPresets.actionViewOffset = 0
+//                actionViewPresets.actionViewType = "NoClassesOrFreetime"
+//                actionViewPresets.actionViewHeight = CGFloat(330)
+//            }
+//        }
     }
     
     var body: some View {
@@ -1068,9 +1149,9 @@ struct ActionView: View {
                 SubassignmentBacklogAction()
             }
             
-            else if actionViewPresets.actionViewType == "NoClassesOrFreetime" {
-                NoClassesOrFreetime(noclasses: $noclasses, nofreetime: $nofreetime, subpage: $subpageSetup)
-            }
+//            else if actionViewPresets.actionViewType == "NoClassesOrFreetime" {
+//                NoClassesOrFreetime(noclasses: $noclasses, nofreetime: $nofreetime, subpage: $subpageSetup)
+//            }
         }.onAppear(perform: initialize).padding(.all, 15).frame(maxWidth: UIScreen.main.bounds.size.width, maxHeight: actionViewPresets.actionViewHeight).background(Color("very_light_gray")).cornerRadius(18).padding(.all, 15)
     }
 }
@@ -1593,7 +1674,6 @@ struct HomeBodyView: View {
                 }.padding(.all, 10).padding(.leading, 10)
                 ZStack {
                     ZStack {
-
                         RoundedRectangle(cornerRadius: 0, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientA"), Color("gradientB")]), startPoint: .leading, endPoint: .trailing))
                             
                            VStack {
@@ -1654,12 +1734,8 @@ struct HomeBodyView: View {
                                         }
                                     }
                                 }.padding(.all, 16)
-
-                    
-
                     }.frame(width: UIScreen.main.bounds.size.width, height: 100).padding(10).animation(.spring()).offset(y:-CGFloat(upcomingoffset))
                     HStack {
-
                         Spacer()
                         Button(action:{
                             self.hidingupcoming.toggle()
@@ -2311,6 +2387,8 @@ struct HomeView: View {
     @State var elapsedTime = 0
     @State var backlogWiggle = 0.0
     
+    @State var settingsFreeTimeIndicator = false
+    
     @ViewBuilder
     private func sheetContent() -> some View {        
         if (self.sheetNavigator.modalView == .freetime) {
@@ -2511,7 +2589,24 @@ struct HomeView: View {
                 }.navigationBarItems(leading:
                     HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                         Button(action: {self.actionViewPresets.actionViewHeight < 10 ? self.showingSettingsView = true : ()}) {
-                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                            ZStack {
+                                Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                                
+                                //not used because of permenant freetimes
+                                
+//                                if self.settingsFreeTimeIndicator {
+//                                    VStack {
+//                                        HStack {
+//                                            Spacer()
+//                                            ZStack {
+//                                                Circle().fill(Color.red).frame(width: 19, height: 19)
+//                                            }.offset(x: 3, y: -3)
+//                                        }
+//
+//                                        Spacer()
+//                                    }
+//                                }
+                            }
                         }.padding(.leading, 2.0)
 
                         Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
@@ -2524,6 +2619,11 @@ struct HomeView: View {
                                     actionViewHeight = CGFloat(300)
 //                                    older version
 //                                    actionViewHeight = CGFloat(200 + min((addTimeSubassignmentBacklog.backlogList.count * 32), 90))
+                                }
+                                
+                                let launchedBacklogBefore = UserDefaults.standard.bool(forKey: "launchedBacklogBefore")
+                                if !launchedBacklogBefore {
+                                    actionViewHeight = CGFloat(300)
                                 }
                                 
                                 actionViewPresets.actionViewOffset = 0
@@ -2658,6 +2758,11 @@ struct HomeView: View {
                 defaults.set(countnewassignments, forKey: "countnewassignments")
                 defaults.set(Date(), forKey: "lastlauncheddate")
             }
+            
+            if freetimelist.isEmpty {
+                self.settingsFreeTimeIndicator = true
+            }
+            
         }
     }
     

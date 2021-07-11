@@ -465,7 +465,7 @@ struct ContentView: View {
                 VStack {
                     MasterRunningDisplay().offset(y: masterRunning.masterDisplay ? 0 : -200 ).animation(.spring())
                     Spacer()
-                }.frame(width: UIScreen.main.bounds.size.width).background((masterRunning.masterDisplay ? Color(UIColor.label).opacity(0.15) : Color.clear).edgesIgnoringSafeArea(.all))
+                }.frame(width: UIScreen.main.bounds.size.width).background((masterRunning.masterDisplay ? Color(UIColor.label).opacity(self.colorScheme == .light ? 0.15 : 0.04) : Color.clear).edgesIgnoringSafeArea(.all))
             }
             
         }

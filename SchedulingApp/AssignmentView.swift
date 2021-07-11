@@ -144,8 +144,8 @@ struct IndividualAssignmentFilterView: View {
                         Text(previewduedatetext).fontWeight(previewduedateweight).foregroundColor(previewduedatecolor).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
                         if (getunscheduledtime() != 0)
                         {
-                            Image(systemName: "exclamationmark.circle.fill").resizable().foregroundColor(Color.red).frame(width: 15, height: 15)
-                            Spacer().frame(width: 10)
+                            Image(systemName: "exclamationmark.circle.fill").resizable().frame(width: 15, height: 15)
+                            Spacer().frame(width: 4)
                         }
                     }.padding(.bottom, -3)
                 }
@@ -170,7 +170,7 @@ struct IndividualAssignmentFilterView: View {
                             
                             if (getunscheduledtime() != 0)
                             {
-                                Text("There are " + gethourminutestext(minutenumber: getunscheduledtime()) + " minutes that could not be scheduled. Please adjust your work hours or shorten the assignment.").foregroundColor(Color.red).frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
+                                Text("There are " + gethourminutestext(minutenumber: getunscheduledtime()) + " that could not be scheduled. Please adjust your work hours or shorten the assignment.").frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
                             }
                         }
                         VStack {

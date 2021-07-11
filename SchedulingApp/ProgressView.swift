@@ -1207,7 +1207,7 @@ struct ProgressView: View {
                                                     Spacer()
                                                     HStack {
                                                         Spacer()
-                                                        Text(gettextval(value2: value, classity: classity)).font(.system(size: 12)).padding(.trailing, getrightpadding(classity: classity)).padding(.bottom, (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1) - 5)
+                                                        Text(gettextval(value2: value, classity: classity)).font(.system(size: 12)).padding(.trailing, getrightpadding(classity: classity) - 5).padding(.bottom, (220/CGFloat(getloopnumber(classity: classity)))*CGFloat(value+1) - 5)
                                                     }
                                                 }
                                             }//.id(refreshID)
@@ -1259,12 +1259,12 @@ struct ProgressView: View {
 //                                        Text("Day").tag(0)
 //                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-70)*2/3).padding(.bottom, 4)
                                     
+                                    AddTimeClockView(clockType: self.$clockType, dateRange: self.$dateRange).transition(.opacity).padding(.bottom, 4)
+                                    
                                     Picker("Clock Type", selection: $clockType) {
                                         Image(systemName: "sun.max.fill").tag(0)
                                         Image(systemName: "moon.fill").tag(1)
-                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-30)*1/3).padding(.bottom, 4)
-                                    
-                                    AddTimeClockView(clockType: self.$clockType, dateRange: self.$dateRange).transition(.opacity)
+                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-30)*1/3)
                                 }
                             }
 //                            ZStack {

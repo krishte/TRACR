@@ -903,6 +903,69 @@ struct AddTimeClockView: View {
 }
 
 
+struct LittleRedIndicator: View {
+    var body: some View {
+        VStack {
+            HStack {
+                Spacer()
+                ZStack {
+                    Circle().fill(Color.red).frame(width: 14, height: 14)
+                }.offset(x: 4, y: -3)
+            }
+
+            Spacer()
+        }
+    }
+}
+
+
+struct TopBitView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
+    @FetchRequest(entity: Classcool.entity(),
+                  sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
+    
+    var classlist: FetchedResults<Classcool>
+    func allClassesTrash() -> Bool {
+        for classity in self.classlist {
+            if !classity.isTrash {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    func displayNoneText() -> Bool {
+        if classlist.isEmpty {
+            return true
+        }
+        
+        else if allClassesTrash() {
+            return true
+        }
+        
+        return false
+    }
+    
+    var body: some View {
+        HStack {
+            Text("Progress").font(.largeTitle).bold().frame(height:40)
+            Spacer()
+        }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
+            
+        if self.displayNoneText() {
+            VStack {
+                VStack {
+                    Spacer()
+                    Text("No Classes").font(.title2).fontWeight(.bold)
+                    Text("Add a Class using the + button to start making progress!").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
 struct ProgressView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var googleDelegate: GoogleDelegate
@@ -913,6 +976,9 @@ struct ProgressView: View {
     var classlist: FetchedResults<Classcool>
     @FetchRequest(entity: Assignment.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Assignment.duedate, ascending: true)])
     var assignmentlist: FetchedResults<Assignment>
+    
+    @FetchRequest(entity: AddTimeLog.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \AddTimeLog.starttime, ascending: true)])
+    var addtimelog: FetchedResults<AddTimeLog>
     
     @State var NewAssignmentPresenting = false
     @State var NewClassPresenting = false
@@ -1072,6 +1138,7 @@ struct ProgressView: View {
         
         if (classity.gradingscheme[0..<1] == "N")
         {
+            print(classity.gradingscheme)
             let value = classity.gradingscheme[3..<classity.gradingscheme.count]
             let intvalue = Int(value) ?? 8
             if (intvalue%2==0)
@@ -1096,6 +1163,7 @@ struct ProgressView: View {
         }
         else
         {
+            print(String(20*(value2+1)))
             return String(20*(value2+1))
         }
 
@@ -1134,6 +1202,16 @@ struct ProgressView: View {
         return 0
     }
     
+    func allClassesTrash() -> Bool {
+        for classity in self.classlist {
+            if !classity.isTrash {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
     //bug! changing tab makes it stuck (temp fix: permanently displayed)
 //    @State var bigGraphTitleOpacity: Double = 1.0
     
@@ -1141,24 +1219,24 @@ struct ProgressView: View {
     @State var clockType: Int = 0
     @State var dateRange: Int = 2
     
+    @State var rescheduledtabselection: Int = 0
+    
     var body: some View {
          NavigationView {
             VStack {
-//            HStack {
-//                Text("Progress").font(.largeTitle).bold().frame(height:40)
-//                Spacer()
-//            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
+            TopBitView()
+            
             ZStack {
-                NavigationLink(destination: EmptyView()) {
-                    EmptyView()
-                }
+//                NavigationLink(destination: EmptyView()) {
+//                    EmptyView()
+//                }
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                 { EmptyView() }
                 
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .center )
                     {
-                        if (classlist.count > 0)
+                        if (classlist.count > 0 && !self.allClassesTrash())
                         {
                             TabView(selection: $selectedGraphClass)
                             {
@@ -1243,246 +1321,273 @@ struct ProgressView: View {
 //                                }
 //                            }
                         }
-                        HStack(alignment: .center) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(Color("clockbg"))
-                                    .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (300 ))
-                                
-                                VStack {
-                                    Text("Rescheduled Tasks").fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-50)*2/3)
+                        // || self.allClassesTrash()
+//                        if !(self.allClassesTrash()) {
+//                        else {
+                            HStack(alignment: .center) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .fill(Color("clockbg"))
+                                        .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (300 ))
                                     
-//                                    Picker("Date Range", selection: $dateRange) {
-//                                        Text("Year").tag(3)
-//                                        Text("Month").tag(2)
-//                                        Text("Week").tag(1)
-//                                        Text("Day").tag(0)
-//                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-70)*2/3).padding(.bottom, 4)
-                                    
-                                    AddTimeClockView(clockType: self.$clockType, dateRange: self.$dateRange).transition(.opacity).padding(.bottom, 4)
-                                    
-                                    Picker("Clock Type", selection: $clockType) {
-                                        Image(systemName: "sun.max.fill").tag(0)
-                                        Image(systemName: "moon.fill").tag(1)
-                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-30)*1/3)
-                                }
-                            }
-//                            ZStack {
-//                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-//                                    .fill(Color("thirteen"))
-//                                    .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
-//                                VStack {
-//
-//                                    if (editingweeklygoal)
-//                                    {
-//                                        VStack
-//                                        {
-//                                            Text("Set Your Weekly Worload Goal!").font(.system(size: 20)).fontWeight(.bold).foregroundColor(Color.black).padding(10)
-//                                            Button(action:{
-//                                                withAnimation(.spring())
-//                                                {
-//                                                    displayinggoalsetting.toggle()
-//                                                }
-//                                            })
-//                                            {
-//                                                Image(systemName: "chevron.compact.down").resizable().frame(width: 42, height: 10)
-//                                            }.buttonStyle(PlainButtonStyle())
-//                                            if (displayinggoalsetting)
-//                                            {
-//                                                Stepper(String(weeklygoal) + " hours", value: $weeklygoal, in: 0...168).padding(15)
-//                                            }
-//
-//                                        }
-//                                    }
-//                                    else
-//                                    {
-//                                        HStack
-//                                        {
-//                                            VStack
-//                                            {
-//                                                ZStack
-//                                                {
-//                                                    VStack
-//                                                    {
-//                                                        Spacer().frame(height: 20)
-//                                                        Text("\(String(format: "%.0f", Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal)*100))" + "%").fontWeight(.bold).font(.system(size: 25))
-//                                                        Spacer()
-//                                                    }
-//                                                    VStack
-//                                                    {
-//                                                        Spacer().frame(height: 70)
-//                                                        HStack
-//                                                        {
-//                                                            Spacer()
-//                                                            Rectangle().frame(width: 5, height: 80)
-//                                                            Spacer().frame(width: 60)
-//                                                            Rectangle().frame(width: 5, height: 80)
-//                                                            Spacer()
-//                                                        }
-//                                                        Spacer()
-//                                                    }
-//                                                    VStack
-//                                                    {
-//                                                        Spacer().frame(height: 150)
-//                                                        Rectangle().frame(width: 70, height: 5)
-//                                                        Spacer()
-//                                                    }
-//                                                    VStack
-//                                                    {
-//                                                        Spacer().frame(height: 150 -  min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
-//                                                        Rectangle().fill(Color.blue).frame(width: 60, height: min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
-//                                                        Spacer()
-//                                                    }
-//
-//                                                }
-//                                            }
-////                                            Spacer()
-////                                            Rectangle().frame(width: 2, height: 160)
-////                                            Spacer()
-////                                            VStack
-////                                            {
-////                                                Text(String(completedamountofweeklygoalminutes/60) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
-////                                                Rectangle().frame(width: 100, height: 2)
-////                                                Text(String(weeklygoal) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
-////                                            }
-//                                        }
-//                                    }
-//
-//                                }
-//                                VStack
-//                                {
-//                                    HStack
-//                                    {
-//                                        Spacer()
-//                                        Button(action:
-//                                        {
-//                                            editingweeklygoal.toggle()
-//                                        })
-//                                        {
-//                                            Image(systemName: editingweeklygoal ? "pencil.circle.fill" : "pencil.circle").resizable().frame(width: 20, height:20).padding(10)
-//                                        }.buttonStyle(PlainButtonStyle())
-//
-////
-//                                    }
-//                                    Spacer()
-//                                }
-//
-//                            }
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                    .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
-//                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
-                                    .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (300 ))
-                                ScrollView(showsIndicators: false) {
- 
- 
-                                        VStack(alignment: .leading,spacing:10) {
-                                            Text("Your Classes:").font(.system(size: 16)).fontWeight(.semibold).padding(.leading, 10)
-                                            ForEach(classlist) {
-                                                classcool in
-                                                if (!classcool.isTrash)
-                                                {
+                                    VStack(spacing: 0) {
+                                        Text("Rescheduled Tasks").fontWeight(.semibold).frame(width: (UIScreen.main.bounds.size.width-50)*2/3, height: 30).padding(.top, 5)
+                                        
+    //                                    Picker("Date Range", selection: $dateRange) {
+    //                                        Text("Year").tag(3)
+    //                                        Text("Month").tag(2)
+    //                                        Text("Week").tag(1)
+    //                                        Text("Day").tag(0)
+    //                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-70)*2/3).padding(.bottom, 4)
+                                        TabView(selection: self.$rescheduledtabselection) {
+                                            VStack(spacing: 12) {
+                                                Text("View all the tasks which you swiped right to reschedule on a clock face, based on when they were originally scheduled.").fontWeight(.light).minimumScaleFactor(0.9).frame(width: 2*(UIScreen.main.bounds.size.width-30)/3 - 32, alignment: .leading)
+                                                
+                                                Text("You can use this chart as a guide to adjust your work hours to maximize productivity.").fontWeight(.light).minimumScaleFactor(0.9).frame(width: 2*(UIScreen.main.bounds.size.width-30)/3 - 32, alignment: .leading)
+                                                
+                                                Spacer()
+                                                
+                                                if self.addtimelog.isEmpty {
+                                                    Text("You have rescheduled 0 tasks!").fontWeight(.light)
+                                                }
 
-                                                    HStack {
-                                                        
-                                                        Rectangle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
-                                                        Spacer()
-                                                        Button(action: {
-                                                            withAnimation(.spring())
-                                                            {
-                                                                self.selectedGraphClass = getclassindex(classity: classcool)
-                                                            }
-                                                            //self.refreshID = UUID()
-                                                        })
-                                                        {
-                                                          
-                                                            Text(classcool.name).font(.system(size: 15)).fontWeight(self.selectedGraphClass == getclassindex(classity: classcool) ? .semibold : .regular).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-60, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selectedGraphClass == getclassindex(classity: classcool) ? 1.0 : 0.5)
+                                                else {
+                                                    Button(action: {
+                                                        withAnimation(Animation.spring()) {
+                                                            self.rescheduledtabselection = 1
                                                         }
-        //                                                Spacer()
-        //                                                if (self.selection.contains(classcool.name)) {
-        //
-        //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
-        //                                                }
-                                                        Spacer()
+                                                    }) {
+                                                        Text("View Chart").fontWeight(.light)
+                                                    }
+                                                }
+                                            }.padding(.all, 12).tag(0)
+                                            
+                                            if !self.addtimelog.isEmpty {
+                                                VStack {
+                                                    AddTimeClockView(clockType: self.$clockType, dateRange: self.$dateRange).transition(.opacity).padding(.bottom, 4)
+                                                    
+                                                    Picker("Clock Type", selection: $clockType) {
+                                                        Image(systemName: "sun.max.fill").tag(0)
+                                                        Image(systemName: "moon.fill").tag(1)
+                                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-30)*1/3)
+                                                }.tag(1)
+                                            }
+                                        }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 270)
+                                    }
+                                }
+    //                            ZStack {
+    //                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+    //                                    .fill(Color("thirteen"))
+    //                                    .frame(width: (UIScreen.main.bounds.size.width-30)*2/3, height: (200 ))
+    //                                VStack {
+    //
+    //                                    if (editingweeklygoal)
+    //                                    {
+    //                                        VStack
+    //                                        {
+    //                                            Text("Set Your Weekly Worload Goal!").font(.system(size: 20)).fontWeight(.bold).foregroundColor(Color.black).padding(10)
+    //                                            Button(action:{
+    //                                                withAnimation(.spring())
+    //                                                {
+    //                                                    displayinggoalsetting.toggle()
+    //                                                }
+    //                                            })
+    //                                            {
+    //                                                Image(systemName: "chevron.compact.down").resizable().frame(width: 42, height: 10)
+    //                                            }.buttonStyle(PlainButtonStyle())
+    //                                            if (displayinggoalsetting)
+    //                                            {
+    //                                                Stepper(String(weeklygoal) + " hours", value: $weeklygoal, in: 0...168).padding(15)
+    //                                            }
+    //
+    //                                        }
+    //                                    }
+    //                                    else
+    //                                    {
+    //                                        HStack
+    //                                        {
+    //                                            VStack
+    //                                            {
+    //                                                ZStack
+    //                                                {
+    //                                                    VStack
+    //                                                    {
+    //                                                        Spacer().frame(height: 20)
+    //                                                        Text("\(String(format: "%.0f", Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal)*100))" + "%").fontWeight(.bold).font(.system(size: 25))
+    //                                                        Spacer()
+    //                                                    }
+    //                                                    VStack
+    //                                                    {
+    //                                                        Spacer().frame(height: 70)
+    //                                                        HStack
+    //                                                        {
+    //                                                            Spacer()
+    //                                                            Rectangle().frame(width: 5, height: 80)
+    //                                                            Spacer().frame(width: 60)
+    //                                                            Rectangle().frame(width: 5, height: 80)
+    //                                                            Spacer()
+    //                                                        }
+    //                                                        Spacer()
+    //                                                    }
+    //                                                    VStack
+    //                                                    {
+    //                                                        Spacer().frame(height: 150)
+    //                                                        Rectangle().frame(width: 70, height: 5)
+    //                                                        Spacer()
+    //                                                    }
+    //                                                    VStack
+    //                                                    {
+    //                                                        Spacer().frame(height: 150 -  min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+    //                                                        Rectangle().fill(Color.blue).frame(width: 60, height: min(80, CGFloat(Double(completedamountofweeklygoalminutes)/Double(60*weeklygoal))*80 ))
+    //                                                        Spacer()
+    //                                                    }
+    //
+    //                                                }
+    //                                            }
+    ////                                            Spacer()
+    ////                                            Rectangle().frame(width: 2, height: 160)
+    ////                                            Spacer()
+    ////                                            VStack
+    ////                                            {
+    ////                                                Text(String(completedamountofweeklygoalminutes/60) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
+    ////                                                Rectangle().frame(width: 100, height: 2)
+    ////                                                Text(String(weeklygoal) + " hours").fontWeight(.bold).font(.system(size: 20)).frame(width: 120)
+    ////                                            }
+    //                                        }
+    //                                    }
+    //
+    //                                }
+    //                                VStack
+    //                                {
+    //                                    HStack
+    //                                    {
+    //                                        Spacer()
+    //                                        Button(action:
+    //                                        {
+    //                                            editingweeklygoal.toggle()
+    //                                        })
+    //                                        {
+    //                                            Image(systemName: editingweeklygoal ? "pencil.circle.fill" : "pencil.circle").resizable().frame(width: 20, height:20).padding(10)
+    //                                        }.buttonStyle(PlainButtonStyle())
+    //
+    ////
+    //                                    }
+    //                                    Spacer()
+    //                                }
+    //
+    //                            }
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .fill(LinearGradient(gradient: Gradient(colors: [ Color("graphbackgroundtop"), Color("graphbackgroundbottom")]), startPoint: .bottomTrailing, endPoint: .topLeading))
+    //                                    .fill(LinearGradient(gradient: Gradient(colors: [Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple]), startPoint: .bottomTrailing, endPoint: .topLeading))
+                                        .frame(width: (UIScreen.main.bounds.size.width-30)*1/3, height: (300 ))
+                                    ScrollView(showsIndicators: false) {
+     
+     
+                                            VStack(alignment: .leading,spacing:10) {
+                                                Text("Your Classes:").font(.system(size: 16)).fontWeight(.semibold).padding(.leading, 10)
+                                                ForEach(classlist) {
+                                                    classcool in
+                                                    if (!classcool.isTrash)
+                                                    {
+
+                                                        HStack {
+                                                            
+                                                            Rectangle().fill(classcool.color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: classcool.color) : Color(classcool.color)).frame(width: 20, height: 4).padding(.leading, 10).opacity(self.selection.contains(classcool.name) ? 1.0 : 0.5)
+                                                            Spacer()
+                                                            Button(action: {
+                                                                withAnimation(.spring())
+                                                                {
+                                                                    self.selectedGraphClass = getclassindex(classity: classcool)
+                                                                }
+                                                                //self.refreshID = UUID()
+                                                            })
+                                                            {
+                                                              
+                                                                Text(classcool.name).font(.system(size: 15)).fontWeight(self.selectedGraphClass == getclassindex(classity: classcool) ? .semibold : .regular).frame(width:(UIScreen.main.bounds.size.width-30)*1/3-60, alignment: .topLeading).foregroundColor(Color("selectedcolor")).opacity(self.selectedGraphClass == getclassindex(classity: classcool) ? 1.0 : 0.5)
+                                                            }
+            //                                                Spacer()
+            //                                                if (self.selection.contains(classcool.name)) {
+            //
+            //                                                    Image(systemName: "checkmark").foregroundColor(.blue)
+            //                                                }
+                                                            Spacer()
+                                                        }
+                                                        
                                                     }
                                                     
                                                 }
-                                                
-                                            }
-                                    }
-                                    
-                                }.frame(height: 280)//.padding(10)
-                                //Text("Key").font(.title)
-                            }
-                        }.padding(.horizontal, 10)
+                                        }
+                                        
+                                    }.frame(height: 280)//.padding(10)
+                                    //Text("Key").font(.title)
+                                }
+                            }.opacity((self.allClassesTrash() || self.classlist.isEmpty) ? 0.0 : 1.0).disabled((self.allClassesTrash() || self.classlist.isEmpty) ? true : false).frame(height: (self.allClassesTrash() || self.classlist.isEmpty) ? 1 : 300).padding(.horizontal, 10)
+//                        }
                         
                         WorkloadPie()
  
 //                        Spacer().frame(height: 8)
                        // Text("Classes").font(.system(size: 35)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-20, alignment: .leading)
 
-                            ForEach(0..<classlist.count, id: \.self) {
-                                value in
-//                                if (self.classlist[value].isTrash)
-//                                {
-                                    NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
-                                        EmptyView()
-                                    }
-                                    HStack {
-                                        
-                                        Button(action: {
-                                            self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
-                                        }) {
-                                            if (self.getlastclass(value: value))
-                                            {
-                                                ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading).padding(.leading, 5)
-                                            }
-                                            else if (self.getdivisiblebytwo(value: value))
-                                            {
-                                                
-                                                ClassProgressView(classcool: self.classlist[value])
-                                                
-                                            }
-     
-                                        }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                            Button (action: {
-     
-                                                self.sheetnavigator.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
-                                                self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
-                                            }) {
-                                                Text("Add Grade")
-                                            }
+                        ForEach(0..<classlist.count, id: \.self) {
+                            value in
+//                            if (!self.classlist[value].isTrash) {
+                                NavigationLink(destination: DetailProgressView(classcool2: self.classlist[value]), tag: self.getclassnumber(classcool: self.classlist[value]), selection: self.$selectedClass) {
+                                    EmptyView()
+                                }
+                                HStack {
+                                    
+                                    Button(action: {
+                                        self.selectedClass = self.getclassnumber(classcool: self.classlist[value])
+                                    }) {
+                                        if (self.getlastclass(value: value))
+                                        {
+                                            ClassProgressView(classcool: self.classlist[value]).frame(alignment: .leading).padding(.leading, 5)
+                                        }
+                                        else if (self.getdivisiblebytwo(value: value))
+                                        {
                                             
-                                        }.padding(0)
-                                        
-                                        Button(action: {
-                                            self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
+                                            ClassProgressView(classcool: self.classlist[value])
+                                            
+                                        }
+ 
+                                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                        Button (action: {
+ 
+                                            self.sheetnavigator.storedindex = self.getactualclassnumber(classcool: self.classlist[value])
+                                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
                                         }) {
-                                            if (self.getlastclass(value: value))
-                                            {
-                                            }
-                                            else if (self.getdivisiblebytwo(value: value))
-                                            {
-                                                ClassProgressView(classcool: self.classlist[value+1])
-                                            }
-                                        }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                            Button (action: {
-                                                self.sheetnavigator.storedindex = self.getactualclassnumber(classcool: self.classlist[value+1])
-                                                self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
-                                            }) {
-                                                Text("Add Grade")
-                                            }
-                                        }.padding(0)
+                                            Text("Add Grade")
+                                        }
                                         
-                                    }
-                               // }
-                                
-                            }.sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.sheetnavigator.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
-                                Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
-                            }
-                            
-                        
-
+                                    }.padding(0)
+                                    
+                                    Button(action: {
+                                        self.selectedClass = self.getclassnumber(classcool: self.classlist[value+1])
+                                    }) {
+                                        if (self.getlastclass(value: value))
+                                        {
+                                        }
+                                        else if (self.getdivisiblebytwo(value: value))
+                                        {
+                                            ClassProgressView(classcool: self.classlist[value+1])
+                                        }
+                                    }.buttonStyle(PlainButtonStyle()).contextMenu {
+                                        Button (action: {
+                                            self.sheetnavigator.storedindex = self.getactualclassnumber(classcool: self.classlist[value+1])
+                                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting2.toggle() : self.noAssignmentsAlert2.toggle()
+                                        }) {
+                                            Text("Add Grade")
+                                        }
+                                    }.padding(0)
+                                    
+//                                }
+                                }
+                        }.opacity(self.allClassesTrash() ? 0.0 : 1.0).disabled(self.allClassesTrash() ? true : false)
+                        .sheet(isPresented: self.$NewGradePresenting2, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting2, classfilter: self.sheetnavigator.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert2) {
+                            Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
+                        }
                     }
                     
                     Spacer().frame(height: 5)
@@ -1646,13 +1751,19 @@ struct ProgressView: View {
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                     Button(action: {self.showingSettingsView = true}) {
-                        Image(systemName:"gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                        ZStack {
+                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                            
+                            if self.freetimelist.isEmpty {
+                                LittleRedIndicator()
+                            }
+                        }
                     }.padding(.leading, 2.0)
                 
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                     Text("").frame(width: UIScreen.main.bounds.size.width/11, height: 20)
 
-                }).navigationTitle("Progress")//.padding(.top, 0))//.navigationTitle("Progress")
+                })//.navigationTitle("Progress")//.padding(.top, 0))//.navigationTitle("Progress")
          }.navigationViewStyle(StackNavigationViewStyle())
          .onDisappear {
             let defaults = UserDefaults.standard

@@ -84,13 +84,29 @@ struct SelectGoogleAssignmentView: View
     }
     
     
+    func classNameWithNumber(className: String, classId: String) -> String {
+        var counter = 0
+        for val in 0..<foundassignments.count {
+            if foundassignments[val].1 == classId {
+                counter += 1
+            }
+        }
+        return className + " (" + String(counter) + ")"
+    }
+    
     var body: some View
     {
         Form
         {
             if (!googleDelegate.signedIn)
             {
-                Text("Log in to google to use this feature!")
+                HStack {
+                    Text("Sign in with Google to use this feature").fontWeight(.light).foregroundColor(Color("darkgray"))
+                    
+                    Spacer()
+                }
+                .listRowInsets(EdgeInsets())
+                .background(Color(UIColor.systemGroupedBackground))
             }
             else
             {
@@ -99,7 +115,7 @@ struct SelectGoogleAssignmentView: View
                     classity in
                     if (classity.googleclassroomid != "")
                     {
-                        Section(header: Text(classity.name).fontWeight(.bold).padding(10 ).font(.system(size: 20)))
+                        Section(header: Text(self.classNameWithNumber(className: classity.name, classId: classity.googleclassroomid)).fontWeight(.bold).padding(10 ).font(.system(size: 20)))
                         {
                             ForEach(0 ..< foundassignments.count, id: \.self)
                             {
@@ -1286,7 +1302,7 @@ struct NewClassModalView: View {
                     }
                     else if (linkingtogc)
                     {
-                        Text("Log in to google to use this feature!")
+                        Text("Sign in with Google to use this feature")
                     }
                 }
                 
@@ -3591,7 +3607,7 @@ struct EditAssignmentModalView: View {
                                     self.managedObjectContext.delete(self.assignmentslist[index])
                                     for (_, classcool) in classlist.enumerated()
                                     {
-                                        if (classcool.originalname == assignmentval.subject)
+                                        if (classcool.originalname == assignmentval.subject) && (!assignmentval.completed)
                                         {
                                             classcool.assignmentnumber -= 1
                                         }

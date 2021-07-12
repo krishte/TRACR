@@ -102,7 +102,7 @@ struct AssignmentsView: View {
     @State var selectedassignmentedit: String = ""
     @ObservedObject var sheetnavigator: SheetNavigatorFilterView = SheetNavigatorFilterView()
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
-
+    
     @EnvironmentObject var masterRunning: MasterRunning
     
     init(selectedFilter:String, value: Bool){
@@ -152,16 +152,32 @@ struct AssignmentsView: View {
         incompleteAssignmentsThereBool = true
     }
     
+    func noIncompleteAssignmentsThereFunc() -> Bool {
+        for assignment in assignmentlist {
+            if assignment.completed {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
     var body: some View {
         VStack {
             Text(self.showCompleted ? "Completed Assignments" : "Incomplete Assignments").animation(.none).padding(.all, 2)
             
-            if !incompleteAssignmentsThereBool && !self.showCompleted {
-                Spacer().frame(height: 100)
-                Image(systemName: "zzz").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)
-                Image(systemName: "bed.double").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)
-               // Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
-                Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
+            if self.noIncompleteAssignmentsThereFunc() && !self.showCompleted {
+                VStack {
+                    Spacer()
+                    Text("No Assignments").font(.title2).fontWeight(.bold)
+                    Text("Add an Assignment using the + button").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                    Spacer()
+                }.frame(height: UIScreen.main.bounds.size.height/2)
+//                Spacer().frame(height: 100)
+//                Image(systemName: "zzz").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)
+//                Image(systemName: "bed.double").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)
+//               // Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+//                Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
             }
             
             ScrollView {
@@ -446,8 +462,23 @@ struct FilterView: View {
                 leading:
                 HStack(spacing: UIScreen.main.bounds.size.width / 4.5) {
                     Button(action: {self.showingSettingsView = true}) {
-                        Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
-                        }.padding(.leading, 2.0)
+                        ZStack {
+                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                            
+                            if self.freetimelist.isEmpty {
+                                VStack {
+                                    HStack {
+                                        Spacer()
+                                        ZStack {
+                                            Circle().fill(Color.red).frame(width: 14, height: 14)
+                                        }.offset(x: 4, y: -3)
+                                    }
+
+                                    Spacer()
+                                }
+                            }
+                        }
+                    }.padding(.leading, 2.0)
                     
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                         Button(action: {

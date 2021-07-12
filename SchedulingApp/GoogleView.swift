@@ -267,19 +267,19 @@ struct GoogleUnsignedinView: View
 
                 
                 Text("Google Classroom").font(.largeTitle).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 12)
-                Text("Sign in with your Google Account to link your Google Classroom classes and assignments with TRACR.").font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 8)
+                Text("Sign in with your Google Account to link your Google Classroom classes and assignments with TRACR.").font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.vertical, 8).lineLimit(4).minimumScaleFactor(0.9)
 
                 
                 TabView(selection: self.$currentPageGCPreview) {
-                    Image("Progress View").resizable().aspectRatio(contentMode: .fit).tag(0)
-                    Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).tag(1)
+                    Image("GCPreview1").resizable().aspectRatio(contentMode: .fit).tag(0)
+                    Image("GCPreview2").resizable().aspectRatio(contentMode: .fit).tag(1)
                 }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, height: 400, alignment: .leading)
                 .onReceive(self.GCtimer, perform: { _ in
                     withAnimation {
                         print(self.currentPageGCPreview)
                         self.currentPageGCPreview = self.currentPageGCPreview < 1 ? self.currentPageGCPreview + 1 : 0
                     }
-                })
+                }).padding(.vertical, 8)
 
                 Spacer()
 
@@ -304,7 +304,8 @@ struct GoogleUnsignedinView: View
                         Image("Google Sign In Button with Text").resizable().frame(width: 382/1.5, height: 90/1.5).padding(.horizontal, 60).shadow(radius: 3, x: -2, y: 2)
                     }.buttonStyle(PlainButtonStyle())
                 }
-
+                
+                Text("Or Continue with the Setup").font(.title3).fontWeight(.light).padding(.vertical, 6)
 
             Spacer()
             }
@@ -332,12 +333,12 @@ struct OverallGoogleView: View {
             {
                 ScrollView {
                     Text("Google Classroom").font(.largeTitle).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 12)
-                    Text("Sign in with your Google Account to link your Google Classroom classes and assignments with TRACR.").font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.top, 8)
+                    Text("Sign in with your Google Account to link your Google Classroom classes and assignments with TRACR.").font(.title2).fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.vertical, 8).lineLimit(4).minimumScaleFactor(0.9)
 
                     
                     TabView(selection: self.$currentPageGCPreview) {
-                        Image("Progress View").resizable().aspectRatio(contentMode: .fit).tag(0)
-                        Image("Inside Progress View").resizable().aspectRatio(contentMode: .fit).tag(1)
+                        Image("GCPreview1").resizable().aspectRatio(contentMode: .fit).tag(0)
+                        Image("GCPreview2").resizable().aspectRatio(contentMode: .fit).tag(1)
                     }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, height: 400, alignment: .leading)
                     .onReceive(self.GCtimer, perform: { _ in
                         withAnimation {

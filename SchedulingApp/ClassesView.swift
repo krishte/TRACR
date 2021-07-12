@@ -570,9 +570,15 @@ struct DetailView: View {
                         EditAssignmentModalView(NewAssignmentPresenting: self.$showeditassignment, selectedassignment: self.getassignmentindex(), assignmentname: self.assignmentlist[self.getassignmentindex()].name, timeleft: Int(self.assignmentlist[self.getassignmentindex()].timeleft), duedate: self.assignmentlist[self.getassignmentindex()].duedate, iscompleted: self.assignmentlist[self.getassignmentindex()].completed, gradeval: Int(self.assignmentlist[self.getassignmentindex()].grade), assignmentsubject: self.assignmentlist[self.getassignmentindex()].subject, assignmenttype: self.assignmenttypes.firstIndex(of: self.assignmentlist[self.getassignmentindex()].type)!).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).animation(.spring())
                     if (!getexistingassignments())
                     {
-                        Spacer().frame(height: 100)
-                        Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
-                        Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
+                        VStack {
+                            Spacer()
+                            Text("No Assignments").font(.title2).fontWeight(.bold)
+                            Text("Add an Assignment using the + button").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                            Spacer()
+                        }.frame(height: UIScreen.main.bounds.size.height/2)
+//                        Spacer().frame(height: 100)
+//                        Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+//                        Text("No Assignments!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
                         
                     }
                     if (getCompletedAssignmentNumber() > 0)
@@ -2022,14 +2028,14 @@ struct ClassesView: View {
     var body: some View {
         NavigationView {
             VStack {
-//            HStack {
-//                Text("Classes").font(.largeTitle).bold().frame(height:40)
-//                Spacer()
-//            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
+            HStack {
+                Text("Classes").font(.largeTitle).bold().frame(height:40)
+                Spacer()
+            }.padding(.all, 10).padding(.top, -60).padding(.leading, 10)
             ZStack {
-                NavigationLink(destination: EmptyView()) {
-                    EmptyView()
-                }
+//                NavigationLink(destination: EmptyView()) {
+//                    EmptyView()
+//                }
                 NavigationLink(destination: SettingsView(), isActive: self.$showingSettingsView)
                  { EmptyView() }
                 ScrollView {
@@ -2063,6 +2069,7 @@ struct ClassesView: View {
                                     Divider()
                                     Button(action: {
                                         classcool.isTrash = true
+                                        classcool.googleclassroomid = ""
                                         for (index2, element) in self.assignmentlist.enumerated() {
                                             if (element.subject == classcool.originalname) {
                                                 for (index3, element2) in self.subassignmentlist.enumerated() {
@@ -2094,15 +2101,20 @@ struct ClassesView: View {
                     }
                     else
                     {
-
                         VStack {
-                            Spacer().frame(height: 100)
-                            ZStack {
-
-                                Image(systemName: "moon.zzz").resizable().frame(width: 200, height: 250)
-                                Text("No classes created").font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, height: 30, alignment: .center).offset(y: 175)
-                            }
-                        }
+                            Spacer()
+                            Text("No Classes").font(.title2).fontWeight(.bold)
+                            Text("Add a Class using the + button").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                            Spacer()
+                        }.frame(height: UIScreen.main.bounds.size.height/2)
+//                        VStack {
+//                            Spacer().frame(height: 100)
+//                            ZStack {
+//
+//                                Image(systemName: "moon.zzz").resizable().frame(width: 200, height: 250)
+//                                Text("No classes created").font(.title).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, height: 30, alignment: .center).offset(y: 175)
+//                            }
+//                        }
                     }
 
                 }.frame(width: UIScreen.main.bounds.size.width).sheet(isPresented: self.$NewAssignmentPresenting2, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting2, selectedClass: self.sheetnavigator.storedindex, preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: self.$noClassesAlert) {
@@ -2270,11 +2282,26 @@ struct ClassesView: View {
                             self.showingSettingsView = true
                         })
                         {
-                            Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                            ZStack {
+                                Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
+                                
+                                if self.freetimelist.isEmpty {
+                                    VStack {
+                                        HStack {
+                                            Spacer()
+                                            ZStack {
+                                                Circle().fill(Color.red).frame(width: 14, height: 14)
+                                            }.offset(x: 4, y: -3)
+                                        }
+
+                                        Spacer()
+                                    }
+                                }
+                            }
                         }.padding(.leading, 2.0)
                     
                     Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
-            }).navigationTitle("Classes")
+            })//.navigationTitle("Classes")
         }.navigationViewStyle(StackNavigationViewStyle())
         .onDisappear() {
             self.showingSettingsView = false

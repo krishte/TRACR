@@ -1768,9 +1768,15 @@ struct HomeBodyView: View {
                 }.animation(.spring())
                     
                 if subassignmentlist.count == 0 {
-                    Spacer().frame(height: 100)
-                    Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
-                    Text("No Tasks!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
+                    VStack {
+                        Spacer()
+                        Text("No Tasks").font(.title2).fontWeight(.bold)
+                        Text("Add an Assignment for TRACR to create new tasks").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                        Spacer()
+                    }.frame(height: UIScreen.main.bounds.size.height/2)
+//                    Spacer().frame(height: 100)
+//                    Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
+//                    Text("No Tasks!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)
                 }
 
                 }.padding(.top, self.hidingupcoming ? -100 : 0).animation(.spring())
@@ -2387,8 +2393,6 @@ struct HomeView: View {
     @State var elapsedTime = 0
     @State var backlogWiggle = 0.0
     
-    @State var settingsFreeTimeIndicator = false
-    
     @ViewBuilder
     private func sheetContent() -> some View {        
         if (self.sheetNavigator.modalView == .freetime) {
@@ -2592,20 +2596,18 @@ struct HomeView: View {
                             ZStack {
                                 Image(systemName: "gear").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).font( Font.title.weight(.medium)).frame(width: UIScreen.main.bounds.size.width / 12)
                                 
-                                //not used because of permenant freetimes
-                                
-//                                if self.settingsFreeTimeIndicator {
-//                                    VStack {
-//                                        HStack {
-//                                            Spacer()
-//                                            ZStack {
-//                                                Circle().fill(Color.red).frame(width: 19, height: 19)
-//                                            }.offset(x: 3, y: -3)
-//                                        }
-//
-//                                        Spacer()
-//                                    }
-//                                }
+                                if self.freetimelist.isEmpty {
+                                    VStack {
+                                        HStack {
+                                            Spacer()
+                                            ZStack {
+                                                Circle().fill(Color.red).frame(width: 14, height: 14)
+                                            }.offset(x: 4, y: -3)
+                                        }
+
+                                        Spacer()
+                                    }
+                                }
                             }
                         }.padding(.leading, 2.0)
 
@@ -2718,6 +2720,7 @@ struct HomeView: View {
                     }
                   //  print(idlist)
                     let service = GTLRClassroomService()
+                    //crashed here homeview
                     service.authorizer = GIDSignIn.sharedInstance().currentUser.authentication.fetcherAuthorizer()
     
                     for idiii in idlist {
@@ -2758,11 +2761,6 @@ struct HomeView: View {
                 defaults.set(countnewassignments, forKey: "countnewassignments")
                 defaults.set(Date(), forKey: "lastlauncheddate")
             }
-            
-            if freetimelist.isEmpty {
-                self.settingsFreeTimeIndicator = true
-            }
-            
         }
     }
     

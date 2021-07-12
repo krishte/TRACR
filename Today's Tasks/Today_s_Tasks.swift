@@ -149,9 +149,12 @@ struct TasksProvider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         return SimpleEntry(date: Date(), isPlaceholder: true, headerText: "", largeBodyText: "", smallBodyText1: "", smallBodyText2: "", progressCount: 0, minorProgressCount: 0, schedule: [])
     }
-
+    
     //sometimes in the preview
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+        let defaults = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
+        let specificworkhoursview = defaults?.object(forKey: "specificworktimes") as? Bool ?? true
+        
         let (subassignmentlist, assignmentlist) = getSAandAList()
 
         let nowDate: Date = Date()
@@ -175,12 +178,18 @@ struct TasksProvider: TimelineProvider {
                     let (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
                     let smallBodyText1 = "\(dateToTime(date: subassignmentlist[index].startdatetime)) - \(dateToTime(date: subassignmentlist[index].enddatetime))"
                     
-                    if startdatetime < nowDate {
-                        entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
+                    if specificworkhoursview {
+                        if startdatetime < nowDate {
+                            entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
+                        }
+                        
+                        else {
+                            entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray)
+                        }
                     }
                     
                     else {
-                        entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray)
+                        entry = SimpleEntry(date: nowDate, isPlaceholder: false, headerText: "TODAY", largeBodyText: largeBodyText, smallBodyText1: "", smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray)
                     }
                     
                     break
@@ -193,6 +202,9 @@ struct TasksProvider: TimelineProvider {
     
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+        let defaults = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
+        let specificworkhoursview = defaults?.object(forKey: "specificworktimes") as? Bool ?? true
+        
         let (subassignmentlist, assignmentlist) = getSAandAList()
         var entries: [SimpleEntry] = []
 
@@ -217,20 +229,26 @@ struct TasksProvider: TimelineProvider {
                     let (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
                     let smallBodyText1 = "\(dateToTime(date: subassignmentlist[index].startdatetime)) - \(dateToTime(date: subassignmentlist[index].enddatetime))"
                     
-                    if startdatetime < nowDate {
-                        entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
+                    if specificworkhoursview {
+                        if startdatetime < nowDate {
+                            entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
+                        }
+                        
+                        else {
+                            entries.append(SimpleEntry(date: lastSAEndDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray))
+                            
+                            entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
+                        }
+                        
+                        lastSAEndDate = subassignmentlist[index].enddatetime
+                        
+                        if index == subassignmentlist.count - 1 {
+                            entries.append(SimpleEntry(date: subassignmentlist[index].enddatetime, isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: scheduleArray))
+                        }
                     }
                     
                     else {
-                        entries.append(SimpleEntry(date: lastSAEndDate, isPlaceholder: false, headerText: "COMING UP", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: 0, schedule: scheduleArray))
-                        
-                        entries.append(SimpleEntry(date: startdatetime, isPlaceholder: false, headerText: "NOW", largeBodyText: largeBodyText, smallBodyText1: smallBodyText1, smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
-                    }
-                    
-                    lastSAEndDate = subassignmentlist[index].enddatetime
-                    
-                    if index == subassignmentlist.count - 1 {
-                        entries.append(SimpleEntry(date: subassignmentlist[index].enddatetime, isPlaceholder: false, headerText: "TODAY", largeBodyText: "No Tasks Scheduled", smallBodyText1: "Have a Great Day!", smallBodyText2: "", progressCount: 100, minorProgressCount: 0, schedule: scheduleArray))
+                        entries.append(SimpleEntry(date: Date(), isPlaceholder: false, headerText: "TODAY", largeBodyText: largeBodyText, smallBodyText1: "See Tasks", smallBodyText2: "", progressCount: progressCount, minorProgressCount: minorProgressCount, schedule: scheduleArray))
                     }
                 }
             }
@@ -518,11 +536,13 @@ struct TodaysTasksMediumView: View {
                             RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
                             
                             HStack {
-                                if Double(entry.progressCount + entry.minorProgressCount)/100 > 0.98 {
-                                    Spacer()
-                                }
+//                                if Double(entry.progressCount + entry.minorProgressCount)/100 > 0.98 {
+//                                    Spacer()
+//                                }
                                 
-                                RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15)
+//                                if entry.minorProgressCount != 0 {
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15)
+//                                }
                                 
                                 if Double(entry.progressCount + entry.minorProgressCount)/100 < 0.98 {
                                     Spacer()
@@ -697,11 +717,13 @@ struct TodaysTasksLargeView: View {
                                 RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.white).frame(width: (geometry.size.width - 32), height: 15)
                                 
                                 HStack {
-                                    if Double(entry.progressCount + entry.minorProgressCount)/100 > 0.98 {
-                                        Spacer()
-                                    }
+//                                    if Double(entry.progressCount + entry.minorProgressCount)/100 > 0.98 {
+//                                        Spacer()
+//                                    }
                                     
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15)
+//                                    if entry.minorProgressCount != 0 {
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color.green).frame(width:  CGFloat(CGFloat(entry.progressCount + entry.minorProgressCount)/100 * (geometry.size.width - 32)), height: 15)
+//                                    }
                                     
                                     if Double(entry.progressCount + entry.minorProgressCount)/100 < 0.98 {
                                         Spacer()

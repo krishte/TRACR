@@ -258,12 +258,15 @@ struct SyllabusView: View {
         Form {
             if (showinginfo)
             {
-                Section
-                {
-                    Text("Selecting an IB syllabus will give you access to IB Statistics for the classes. The 'None' option allows for more flexibility")
+                HStack {
+                    Text("If you follow the International Baccalaureate, select the IB syllabus to gain access to IB classes and the class statistics.").fontWeight(.light).foregroundColor(Color("darkgray"))
+
+                    Spacer()
                 }
+                .listRowInsets(EdgeInsets())
+                .background(Color(UIColor.systemGroupedBackground))
             }
-            Section(header: Text("Main Syllabus"), footer: Text(mainsyllabus == 1 ? "Use the International Baccalaureate's Subject Choices" : "FREEDOM").font(.footnote))
+            Section(header: Text("Main Syllabus"), footer: Text(mainsyllabus == 1 ? "Use the International Baccalaureate's Subject Choices" : "No Main Syllabus").font(.footnote))
             {
                 Picker(selection: $mainsyllabus, label: Text("Main Syllabus")) {
                     ForEach(0..<mainsyllabuslist.count) { mainsyllabusindex in
@@ -279,41 +282,41 @@ struct SyllabusView: View {
 //                print("sfsf")
 //                self.MainSyllabusChanged = true
 //            }
-            Section
-            {
-                Text("My Grading Schemes:").font(.title2)
-                List
-                {
-                    ForEach(gradingschemes, id: \.self)
-                    {
-                        gradingscheme in
-                        HStack
-                        {
-                            if (gradingscheme[0..<1] == "P")
-                            {
-                                Text("Percentage-based")
-                            }
-                            else if (gradingscheme[0..<1] == "L")
-                            {
-                                Text("Letter-based: " + String(gradingscheme[1..<gradingscheme.count]))
-                            }
-                            else
-                            {
-                                Text("Number-based: " + String(gradingscheme[1..<gradingscheme.count]))
-                            }
-
-                       //     Text(gradingscheme)
-                            Spacer()
-                          //  Image(systemName: "chevron.left").foregroundColor(Color.gray)
-                        }
-                    }
-//                    .onDelete { indexSet in
-//                        for index in indexSet {
-//                            gradingschemes.remove(at: index)
+//            Section
+//            {
+//                Text("My Grading Schemes:").font(.title2)
+//                List
+//                {
+//                    ForEach(gradingschemes, id: \.self)
+//                    {
+//                        gradingscheme in
+//                        HStack
+//                        {
+//                            if (gradingscheme[0..<1] == "P")
+//                            {
+//                                Text("Percentage-based")
+//                            }
+//                            else if (gradingscheme[0..<1] == "L")
+//                            {
+//                                Text("Letter-based: " + String(gradingscheme[1..<gradingscheme.count]))
+//                            }
+//                            else
+//                            {
+//                                Text("Number-based: " + String(gradingscheme[1..<gradingscheme.count]))
+//                            }
+//
+//                       //     Text(gradingscheme)
+//                            Spacer()
+//                          //  Image(systemName: "chevron.left").foregroundColor(Color.gray)
 //                        }
-//                   }
-                }
-            }
+//                    }
+////                    .onDelete { indexSet in
+////                        for index in indexSet {
+////                            gradingschemes.remove(at: index)
+////                        }
+////                   }
+//                }
+//            }
 //            Section
 //            {
 //                Button(action:{
@@ -545,7 +548,7 @@ struct SettingsView: View {
     @State var easteregg3: Bool = false
     @State var specificworkhoursview: Bool = true
     @State var specificworkhoursviewcounter: Int = 0
-    @State var pickertext: [String] = ["Specific Work Hours", "Non-Specific Work Hours"]
+    @State var pickertext: [String] = ["Specific Times", "Daily Checklist"]
     @State var showingAlert: Bool = false
     
     var body: some View {
@@ -689,28 +692,40 @@ struct SettingsView: View {
                         Form
                         {
 
-                            Section
-                            {
-                                Text("Work hours are used to schedule tasks for assignments. Tasks will always be scheduled during you work hours so make sure to include all the times when you can work.")
-                                Spacer().frame(height: 10)
+//                            Section
+//                            {
+                            HStack {
+                                Text("Your Work Hours will determine when TRACR can schedule your tasks. If you want tasks to be scheduled at specific times within the day, select the Specific Times option. If you instead want a general daily checklist of tasks, select the Daily Checklist option.").fontWeight(.light).foregroundColor(Color("darkgray"))
+
+                                Spacer()
+                            }
+                            .listRowInsets(EdgeInsets())
+                            .background(Color(UIColor.systemGroupedBackground))
+                                
+//                                Text("Note: TRACR will only schedule tasks during you Work Hours, so make sure to include all the times when you can work.").fontWeight(.light)
+//                                Spacer().frame(height: 10)
+//                            }
+                            Section {
                                 HStack
                                 {
                                     VStack
                                     {
-                                        Image("WorkHoursType1").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 350)
-                                        Text("Non-specific Work Hours View").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
+                                        Image("Home View 1").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 190)
+                                        Divider().frame(height: 1)
+                                        Text("Specific Times").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                     }
                                     Spacer()
                                     VStack
                                     {
-                                        Image("WorkHoursType2").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 350)
-                                        Text("Specific Work Hours View").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
+                                        Image("Home view 2").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 190)
+                                        Divider().frame(height: 1)
+                                        Text("Daily Checklist").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                     }
                                 }
                             }
-                            Section
+                            Section(header: Text("Options"))
                             {
-                                Picker(selection: $specificworkhoursviewcounter, label: Text("Work Hours Options")) {
+                                Picker(selection: $specificworkhoursviewcounter, label: Text("Scheduling Options")) {
                                     ForEach(0..<2) { mainsyllabusindex in
                                         Text(pickertext[mainsyllabusindex])
                                     }
@@ -732,7 +747,7 @@ struct SettingsView: View {
 //                                }
                             }
                             
-                        }.alert(isPresented:$showingAlert) {
+                        }.navigationTitle("Scheduling Options").alert(isPresented:$showingAlert) {
                             Alert(
                                 title: Text("Deletion of work hours"),
                                 message: Text("This will delete all current work hours. New work hours will need to be created in settings."),
@@ -750,9 +765,10 @@ struct SettingsView: View {
                                 },
                                 secondaryButton: .cancel() {
                                     specificworkhoursview = false
+                                    specificworkhoursviewcounter = 1
                                 }
                             )
-                        }.navigationTitle("Work Hours Options")
+                        }
                         .onAppear
                         {
                             let defaults = UserDefaults.standard
@@ -768,6 +784,8 @@ struct SettingsView: View {
                         }.onDisappear
                         {
                             let defaults = UserDefaults.standard
+                            let defaultsWidget = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
+                            
                             if (specificworkhoursviewcounter == 0)
                             {
                                 specificworkhoursview = true
@@ -777,6 +795,8 @@ struct SettingsView: View {
                                 specificworkhoursview = false
                             }
                             defaults.set(specificworkhoursview, forKey: "specificworktimes")
+                            defaultsWidget?.set(specificworkhoursview, forKey: "specificworktimes")
+                            
                         }
                     )
                     {
@@ -802,7 +822,7 @@ struct SettingsView: View {
                                 }
                             }
                             Spacer().frame(width:20)
-                            Text("Work Hours Options").font(.system(size:20))
+                            Text("Scheduling Options").font(.system(size:20))
                         }.frame(height:40)
                         
                     }
@@ -811,8 +831,9 @@ struct SettingsView: View {
                     ) {
                         HStack {
                             ZStack {
-                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.blue).frame(width:40, height:40)
-                                Image(systemName: "calendar").resizable().frame(width:25, height:25)
+                                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(self.freetimelist.isEmpty ? Color.red : Color.blue).frame(width:40, height:40)
+
+                                Image(systemName: self.freetimelist.isEmpty ? "calendar.badge.exclamationmark" : "calendar").resizable().frame(width: self.freetimelist.isEmpty ? 29 : 25, height:25).offset(x: self.freetimelist.isEmpty ? 2 : 0)
                             }
                             Spacer().frame(width:20)
                             Text("Work Hours").font(.system(size:20))

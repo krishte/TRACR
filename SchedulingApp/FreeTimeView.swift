@@ -1121,7 +1121,7 @@ struct WorkHours: View {
                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color(colorlist[getcolorindex(day: day)])).frame(height: 50)
                                     HStack
                                     {
-                                        Text(day).font(.title).fontWeight(.bold)//.padding(20)
+                                        Text(day).font(.title).fontWeight(.bold).minimumScaleFactor(0.8)//.padding(20)
                                         Spacer()
                                         Text("\(storedtimesnonspecific[getcolorindex(day: day)] / 60)h \(storedtimesnonspecific[getcolorindex(day: day)] % 60)min")
                                     }.padding(.horizontal, 20)
@@ -1140,7 +1140,7 @@ struct WorkHours: View {
                                 {
                                     ZStack
                                     {
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.red).frame(width: 50, height: 40).opacity(storedtimesnonspecific[getcolorindex(day: day)] == 0 ? 0.6 : 1)
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.red).frame(width: 50, height: 50).opacity(storedtimesnonspecific[getcolorindex(day: day)] == 0 ? 0.6 : 1)
                                         Text("-15").fontWeight(.bold).foregroundColor(Color.white)
                                     }
                                 }
@@ -1157,7 +1157,7 @@ struct WorkHours: View {
                                     
                                     ZStack
                                     {
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.green).frame(width: 50, height: 40).opacity(storedtimesnonspecific[getcolorindex(day: day)] == 1440 ? 0.6 : 1)
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.green).frame(width: 50, height: 50).opacity(storedtimesnonspecific[getcolorindex(day: day)] == 1440 ? 0.6 : 1)
                                         Text("+15").fontWeight(.bold).foregroundColor(Color.white)
                                     }
                                     
@@ -1165,7 +1165,7 @@ struct WorkHours: View {
                               //  Stepper("", value: $storedtimesnonspecific[getcolorindex(day: day)], in: 0...24).padding(.trailing, 30)
                             }.padding(.horizontal, 15)
                         }
-                        Spacer().frame(height: 30)
+                        Spacer().frame(height: 15)
                     }
                 }
             }

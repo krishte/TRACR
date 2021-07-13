@@ -777,6 +777,7 @@ struct SettingsView: View {
                                 specificworkhoursview = false
                             }
                             defaults.set(specificworkhoursview, forKey: "specificworktimes")
+    
                         }
                     )
                     {

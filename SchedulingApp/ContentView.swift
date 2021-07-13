@@ -161,12 +161,13 @@ struct ContentView: View {
         
         
     }
+    @State var showingtutorialview = false
     @State var selectedtab = 0
     @State var worktype1selected: Bool = true
     
     var body: some View {
         ZStack {
-            if (!firstLaunchTutorial)
+            if (firstLaunchTutorial)
             {
 //                NavigationView
 //                {
@@ -311,6 +312,8 @@ struct ContentView: View {
                                     {
                                         Spacer()
                                         Text("Yay! Looks like you've completed the setup. Press 'Continue' then click the add button to add your first class.")
+                                        NavigationLink(destination: TutorialView(), isActive: self.$showingtutorialview)
+                                            { EmptyView() }
                                         Spacer()
   
                                     }
@@ -322,16 +325,30 @@ struct ContentView: View {
                 //        }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
                     VStack
                     {
-                        Spacer()
-                        if (selectedtab == 5)
-                        {
+                    Spacer()
+                    if (showingtutorialview)
+                    {
+                        
+                    }
+                    else if (selectedtab == 5)
+                    {
+
                             HStack
                             {
-                                NavigationLink(destination: TutorialView())
+                                
+                                Button(action:
+                                        {
+                                            //firstLaunchTutorial.toggle()
+                                            showingtutorialview.toggle()
+                                            print("tutorial view toggled")
+                                        })
                                 {
-                                    Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-60/2, height: 70)
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("thirteen")).frame(width: UIScreen.main.bounds.size.width-60/2, height: 50)
-                                    Text("Head to Tutorial").foregroundColor(Color.white).fontWeight(.bold)
+                                    ZStack
+                                    {
+                                        Rectangle().fill(Color.clear).frame(width: (UIScreen.main.bounds.size.width-60)/2, height: 70)
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("thirteen")).frame(width: (UIScreen.main.bounds.size.width-60)/2, height: 50)
+                                        Text("Head to Tutorial").foregroundColor(Color.white).fontWeight(.bold)
+                                    }
                                 }
                                 Spacer().frame(width: 20)
                                 Button(action:
@@ -353,8 +370,8 @@ struct ContentView: View {
                                     {
 
 
-                                        Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-60/2, height: 70)
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-60/2, height: 50)
+                                        Rectangle().fill(Color.clear).frame(width: (UIScreen.main.bounds.size.width-60)/2, height: 70)
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: (UIScreen.main.bounds.size.width-60)/2, height: 50)
                                         Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
                                         
                                         
@@ -362,6 +379,7 @@ struct ContentView: View {
                                 }
                             }
                             Spacer().frame(height: 10)
+                            
                         }
                         else
                         {

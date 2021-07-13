@@ -398,7 +398,7 @@ struct SubassignmentAddTimeAction: View {
             
             Spacer()
             
-            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 1)
             
             HStack {
                 Button(action: {
@@ -435,7 +435,7 @@ struct SubassignmentAddTimeAction: View {
                 
                 Spacer()
                 
-                Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
+                Rectangle().fill(Color.gray).frame(width: 1, height: 25)
                 
                 Spacer()
                 
@@ -467,7 +467,7 @@ struct SubassignmentAddTimeAction: View {
             
             Spacer()
             
-            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 1)
     //        if masterRunning.masterRunningNow {
     //            MasterClass()
     //        }
@@ -573,7 +573,7 @@ struct SubassignmentBacklogAction: View {
             Spacer()
             
             HStack {
-                Text("The Tasks Backlog keeps track of all the tasks which you have not swiped left to complete. Here, you can keep track of your backlog, and update progress on these tasks so that they are rescheduled. You can additionally swipe tasks from the past to the right to reschedule them.").font(.system(size: 15)).fontWeight(.light)
+                Text("The Tasks Backlog keeps track of all the tasks which you have not swiped left to complete. Here, you can keep track of your backlog, and update progress on these tasks so that they are rescheduled. You can additionally swipe tasks from the past to the right to reschedule them.").font(.system(size: 15)).fontWeight(.light).minimumScaleFactor(0.7)
 
                 Spacer()
             }.frame(width: UIScreen.main.bounds.size.width - 75)
@@ -622,10 +622,14 @@ struct SubassignmentBacklogAction: View {
             
             Spacer()
             
-            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 1)
             
             Button(action: {
                 self.subPageType = "Introduction"
+                
+                if self.addTimeSubassignmentBacklog.backlogList.count == 0 {
+                    actionViewPresets.actionViewHeight = 150
+                }
                 
                 UserDefaults.standard.set(true, forKey: "launchedBacklogBefore")
             }) {
@@ -739,7 +743,7 @@ struct SubassignmentBacklogAction: View {
                 
                 Spacer()
                 
-                Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+                Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 1)
                 
                 Button(action: {
                     self.subPageType = "Tasks"
@@ -768,7 +772,7 @@ struct SubassignmentBacklogAction: View {
                 
                 Spacer()
                 
-                Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+                Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 1)
                 
                 Button(action: {
                     actionViewPresets.actionViewOffset = UIScreen.main.bounds.size.width
@@ -873,7 +877,7 @@ struct SubassignmentBacklogAction: View {
             
             Spacer()
             
-            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 0.4)
+            Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-75, height: 1)
             
             Button(action: {
                 let newAddTimeLog = AddTimeLog(context: self.managedObjectContext)
@@ -1025,7 +1029,7 @@ struct NoClassesOrFreetime: View {
                     
                     Spacer()
                     
-                    Rectangle().fill(Color.gray).frame(width: 0.4, height: 25)
+                    Rectangle().fill(Color.gray).frame(width: 1, height: 25)
                     
                     Spacer()
                     
@@ -2653,7 +2657,7 @@ struct HomeView: View {
                                             Spacer()
                                             ZStack {
                                                 Circle().fill(Color.red).frame(width: 14, height: 14)
-                                            }.offset(x: 4, y: -3)
+                                            }.offset(x: 3, y: -3)
                                         }
 
                                         Spacer()

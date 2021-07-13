@@ -201,7 +201,7 @@ struct TutorialView: View {
                         TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows your grades for all your classes over time.", tutorialInstructions2: "Select which Classes you want to appear on the Graph.", tutorialInstructions3: "Hold a Class to add a Grade for the specific Class.", tutorialInstructions4: "Click on a Class to see detailed information and statistics on your Grades for your Class.", tutorialInstructions5: "", tutorialposition: []).tag(10)
                         TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics.", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(11)
                     }
-                }.tabViewStyle(PageTabViewStyle()).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: self.tutorialPageSelected == 0 ? .never : .always))
+                }.tabViewStyle(PageTabViewStyle()).frame(height: self.tutorialPageSelected == 0 ? UIScreen.main.bounds.size.height + 110: UIScreen.main.bounds.size.height).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: self.tutorialPageSelected == 0 ? .never : .always))
             } else {
                 EmptyView()
                 // Fallback on earlier versions
@@ -517,6 +517,7 @@ struct SyllabusView: View {
 
 struct SettingsView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
+    @EnvironmentObject var googleDelegate: GoogleDelegate
 
     @FetchRequest(entity: Classcool.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Classcool.name, ascending: true)])
     
@@ -938,6 +939,17 @@ struct SettingsView: View {
                 self.managedObjectContext.delete(self.addtimeloglist[index])
             }
             GIDSignIn.sharedInstance().signOut()
+            
+            
+            googleDelegate.signedIn = false
+            
+            let defaults = UserDefaults.standard
+            defaults.set([], forKey: "savedgoogleclasses")
+            defaults.set([], forKey: "savedgoogleclassesids")
+            
+            
+            
+            
             let boollist: [Bool] = [true, false, false, false, false, false, false]
             for i in 0...4
             {
@@ -972,6 +984,8 @@ struct SettingsView: View {
 }
 
 struct HelpCenterView: View {
+    
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     let faqtitles = ["Payment", "Data usage", "Report a problem", "Tutorial", "Dark Mode"]
     let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email: tracrteam@gmail.com","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial.", "Dark Mode": "To use our app in dark mode, you have to change this in your phone’s Settings App in Display & Brightness, and that automatically makes our app function in dark mode."]
     let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50, "Dark Mode" : 100]

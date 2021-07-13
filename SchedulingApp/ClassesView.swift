@@ -2313,7 +2313,7 @@ struct ClassesView: View {
                                             Spacer()
                                             ZStack {
                                                 Circle().fill(Color.red).frame(width: 14, height: 14)
-                                            }.offset(x: 4, y: -3)
+                                            }.offset(x: 3, y: -3)
                                         }
 
                                         Spacer()

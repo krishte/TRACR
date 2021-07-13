@@ -391,7 +391,7 @@ struct TodaysTasksSmallView: View {
                     
                     VStack {
                         HStack {
-                            Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(3).allowsTightening(true)
+                            Text(entry.largeBodyText).fontWeight(.bold).font(.system(size: 25)).lineLimit(entry.largeBodyText == "No Tasks Scheduled" ? 2 : 3).allowsTightening(true).minimumScaleFactor(0.7)
                             Spacer()
                         }
                         

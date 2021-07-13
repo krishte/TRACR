@@ -103,7 +103,15 @@ struct IndividualAssignmentFilterView: View {
         return Int(assignment.timeleft) - totalsubtime
     }
 
-    
+    func atLeastOneTask() -> Bool {
+        for subassignment in subassignmentlist {
+            if subassignment.assignmentname == assignment.name {
+                return true
+            }
+        }
+        
+        return false
+    }
     var body: some View {
         ZStack {
             VStack {
@@ -130,9 +138,6 @@ struct IndividualAssignmentFilterView: View {
             VStack {
                 if (!isExpanded) {
                     HStack {
-                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2 + 40, height: 30, alignment: .topLeading).padding(.leading, 5)
-                        Spacer()
-                        
                         let datedifference = Calendar.current.dateComponents([.day], from: Calendar.current.startOfDay(for: Date()), to: Calendar.current.startOfDay(for: assignmentactualduedate )).day
 
                         let previewduedatetext: String = datedifference == 1 ? "Tomorrow" : (datedifference == 0 ? "Today" : "\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2])")
@@ -141,7 +146,15 @@ struct IndividualAssignmentFilterView: View {
                         
                         let previewduedatecolor: Color = Date() > assignment.duedate ? Color("ohnored") : ((colorScheme == .light) ? Color.black : Color.white)
                         
-                        Text(previewduedatetext).fontWeight(previewduedateweight).foregroundColor(previewduedatecolor).frame(width: UIScreen.main.bounds.size.width/2 - 120, height: 20, alignment: .topTrailing).padding(.trailing, 5)
+                        let previewduedatewidth: CGFloat = previewduedatetext == "Tomorrow" ? UIScreen.main.bounds.size.width/2 - 95 : UIScreen.main.bounds.size.width/2 - 140
+                        
+                        let assignmentnamewidth: CGFloat = previewduedatetext == "Tomorrow" ? UIScreen.main.bounds.size.width/2 + 10 : UIScreen.main.bounds.size.width/2 + 55
+                        
+                        Text(assignment.name).font(.system(size: 20)).fontWeight(.bold).frame(width: assignmentnamewidth, height: 30, alignment: .topLeading).padding(.leading, 5)
+                        
+                        Spacer()
+                        
+                        Text(previewduedatetext).fontWeight(previewduedateweight).foregroundColor(previewduedatecolor).frame(width: previewduedatewidth, height: 20, alignment: .topTrailing).minimumScaleFactor(0.92).padding(.trailing, 5)
                         if (getunscheduledtime() != 0)
                         {
                             Image(systemName: "exclamationmark.circle.fill").resizable().frame(width: 15, height: 15)
@@ -170,7 +183,7 @@ struct IndividualAssignmentFilterView: View {
                             
                             if (getunscheduledtime() != 0)
                             {
-                                Text("There are " + gethourminutestext(minutenumber: getunscheduledtime()) + " that could not be scheduled. Please adjust your work hours or shorten the assignment.").frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
+                                Text("There " + (gethourminutestext(minutenumber: getunscheduledtime()).last! == "s" ? "are " : "is ") + gethourminutestext(minutenumber: getunscheduledtime()) + " that could not be scheduled. Please adjust your work hours or shorten the assignment.").fontWeight(.light).frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
                             }
                         }
                         VStack {
@@ -202,7 +215,7 @@ struct IndividualAssignmentFilterView: View {
                     }
                 }
                 
-                if isExpanded {
+                if isExpanded && self.atLeastOneTask() {
                     HStack {
                         Text(TASKStext()).font(.footnote).fontWeight(.light).rotationEffect(Angle(degrees: 270.0), anchor: .center).fixedSize().frame(width: 25, height: 90)
                         

@@ -122,7 +122,7 @@ struct DetailProgressView: View {
     @State var showassignmentedit: Bool = false
     @State var selectedassignmentedit: String = ""
     let minussize: CGFloat = 45
-    let squarecolor: String = "graphbackgroundtop"
+    let squarecolor: String = "statsbg"
     @State var NewGradePresenting = false
     @State var storedindex = -1
     @State var noAssignmentsAlert = false
@@ -284,41 +284,39 @@ struct DetailProgressView: View {
                         }
                         VStack
                         {
-                            
-                            Spacer().frame(height: 40)
-                            HStack {
-                                Text("Additional Insights").font(.headline)
-                                Spacer()
-                            }.padding(.leading, 15)
-                            Spacer().frame(height: 20)
- 
                             if (getgradenum())
                             {
+                                Spacer().frame(height: 40)
+                                HStack {
+                                    Text("Additional Insights").font(.headline)
+                                    Spacer()
+                                }.padding(.leading, 15)
+                                Spacer().frame(height: 20)
 
                                 HStack {
                                     VStack {
-                                        Text("Average").font(.system(size: 18)).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                        Text("\(getAverageGrade(), specifier: "%.2f")").font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        Text("Average Grade").font(.system(size: 20)).fontWeight(.bold).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                        Text("\(getAverageGrade(), specifier: "%.2f")").font(.system(size: 25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         if (getChangeInAverageGrade() >= 0)
                                         {
-                                            Text("+\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("+ \(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         }
                                         else
                                         {
-                                            Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("\(getChangeInAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         }
                                     }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                     Spacer().frame(width: 20)
                                     VStack {
-                                        Text("Last Assignment vs. Average").font(.system(size: 18)).multilineTextAlignment(.center).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                        Text(String(getLastAssignmentGrade())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                        Text("Last Assignment").font(.system(size: 20)).fontWeight(.bold).multilineTextAlignment(.center).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                        Text(String(getLastAssignmentGrade())).font(.system(size: 25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         if (Double(getLastAssignmentGrade()) - getAverageGrade() >= 0.0)
                                         {
-                                            Text("+\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("+ \(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.green).font(.system(size: 25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         }
                                         else
                                         {
-                                            Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("\(Double(getLastAssignmentGrade()) - getAverageGrade(), specifier: "%.2f")").foregroundColor(Color.red).font(.system(size: 25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         }
                                     }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                 }
@@ -328,15 +326,15 @@ struct DetailProgressView: View {
                                     Spacer().frame(height: 20)
                                     HStack {
                                         VStack {
-                                            Text("Class Average").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                            Text(getGlobalAverageI() == 0 ? "No Data": String(getGlobalAverageI())).font(.system(size: 25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("IB Class Average").font(.system(size: 20)).fontWeight(.bold).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                            Text(getGlobalAverageI() == 0 ? "No Data": String(getGlobalAverageI())).font(.system(size: 25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                             Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
-     
+
                                         }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                         Spacer().frame(width: 20)
                                         VStack {
-                                            Text("Percentile").padding(10).font(.system(size: 18)).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
-                                            Text(getPercentile() == 0 ? "No Data": String(getPercentile()) + "%").font(.system(size:  25)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
+                                            Text("IB Percentile").font(.system(size: 20)).fontWeight(.bold).padding(10).background(Color(squarecolor)).frame(width: UIScreen.main.bounds.size.width/2-minussize ,height: (UIScreen.main.bounds.size.width/2-minussize)/2)
+                                            Text(getPercentile() == 0 ? "No Data": String(getPercentile()) + "%").font(.system(size:  25)).fontWeight(.light).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                             Text("").font(.system(size: 20)).frame(width: UIScreen.main.bounds.size.width/2-minussize , height: (UIScreen.main.bounds.size.width/2-minussize)/4)
                                         }.padding(10).background(Color(squarecolor)).cornerRadius(25)//.shadow(radius: 10)
                                     }
@@ -347,13 +345,16 @@ struct DetailProgressView: View {
                         }.frame(width: UIScreen.main.bounds.size.width)
  
                     }
-                    
+                                        
                     Spacer().frame(height: 20)
-  //                  HStack {
-                        Text("Completed Assignments").font(.headline)
+//                    HStack {
+//                        Text("Completed Assignments").font(.headline)
 //                        Spacer()
 //                    }.padding(.leading, 15)
-                    Spacer().frame(height: 20)
+                    
+                    Text("Completed Assignments").font(.headline).frame(width: UIScreen.main.bounds.size.width-20, height: 40, alignment: .topLeading)//.offset(y: 30)
+
+//                    Spacer().frame(height: 20)
                     
                     ForEach(assignmentlist)
                     {
@@ -412,7 +413,7 @@ struct DetailProgressView: View {
 
                             }
                         )
-                    }.padding(20).buttonStyle(PlainButtonStyle()).shadow(radius: 5)
+                    }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)
                 }
             }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
                 Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
@@ -825,12 +826,12 @@ struct AddTimeClockView: View {
         var finalBools: [Bool] = []
         
         for finalDouble in finalDoublesDay {
-            finalAngles.append([Angle(degrees: finalDouble[0]), Angle(degrees: finalDouble[1])])
+            finalAngles.append([Angle(degrees: finalDouble[0] - 90.0), Angle(degrees: finalDouble[1] - 90.0)])
             finalBools.append(true)
         }
         
         for finalDouble in finalDoublesNight {
-            finalAngles.append([Angle(degrees: finalDouble[0]), Angle(degrees: finalDouble[1])])
+            finalAngles.append([Angle(degrees: finalDouble[0] - 90.0), Angle(degrees: finalDouble[1] - 90.0)])
             finalBools.append(false)
         }
         
@@ -904,7 +905,7 @@ struct LittleRedIndicator: View {
                 Spacer()
                 ZStack {
                     Circle().fill(Color.red).frame(width: 14, height: 14)
-                }.offset(x: 4, y: -3)
+                }.offset(x: 3, y: -3)
             }
 
             Spacer()
@@ -1339,14 +1340,16 @@ struct ProgressView: View {
     //                                    }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-70)*2/3).padding(.bottom, 4)
                                         TabView(selection: self.$rescheduledtabselection) {
                                             VStack(spacing: 12) {
-                                                Text("View all the tasks which you swiped right to reschedule on a clock face, based on when they were originally scheduled.").fontWeight(.light).minimumScaleFactor(0.9).frame(width: 2*(UIScreen.main.bounds.size.width-30)/3 - 32, alignment: .leading)
+                                                Text("View all the tasks which you swiped right to reschedule on a clock face, based on when they were originally scheduled.").fontWeight(.light).lineLimit(5).minimumScaleFactor(0.5).frame(width: 2*(UIScreen.main.bounds.size.width-30)/3 - 32, alignment: .leading)
                                                 
-                                                Text("You can use this chart as a guide to adjust your work hours to maximize productivity.").fontWeight(.light).minimumScaleFactor(0.9).frame(width: 2*(UIScreen.main.bounds.size.width-30)/3 - 32, alignment: .leading)
+                                                Text("You can use this chart as a guide to adjust your work hours to maximize productivity.").fontWeight(.light).minimumScaleFactor(0.6).frame(width: 2*(UIScreen.main.bounds.size.width-30)/3 - 32, alignment: .leading)
                                                 
                                                 Spacer()
                                                 
                                                 if self.addtimelog.isEmpty {
-                                                    Text("You have rescheduled 0 tasks!").fontWeight(.light)
+                                                    HStack {
+                                                        Text("You have rescheduled 0 tasks!").fontWeight(.light).multilineTextAlignment(.center)
+                                                    }
                                                 }
 
                                                 else {

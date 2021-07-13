@@ -157,7 +157,6 @@ struct FreeTimeIndividual: View {
                             withAnimation(.spring()) {
                                 self.showsavebuttons = true
                             }
-                            print("showsavebutttonsval", self.showsavebuttons)
                             withAnimation(.spring()) {
                                 self.draggingup = false
                             }
@@ -172,7 +171,7 @@ struct FreeTimeIndividual: View {
                             let x = Int(round(100*((self.yoffset+self.height))))
                             let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
                             freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-                        
+
                             do {
                                 try self.managedObjectContext.save()
                                 //print("AssignmentTypes rangemin/rangemax changed")
@@ -1186,17 +1185,31 @@ struct WorkHours: View {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {
                                         Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+                                        
+                                        if self.freetimelist.isEmpty {
+                                            VStack {
+                                                HStack {
+                                                    Spacer()
+                                                    ZStack {
+                                                        Circle().fill(Color.red).frame(width: 20, height: 20)
+                                                    }.offset(x: -12, y: 12)
+                                                }
+
+                                                Spacer()
+                                            }
+                                        }
                                     }
                                 )
-                            }.buttonStyle(PlainButtonStyle()).contextMenu {
-                                Button(action: {
-                                    self.freetimeediting.addingmode = true
-                                    self.freetimeediting.showsavebuttons = true
-                                }) {
-                                    Text("Work Hours")
-                                    Image(systemName: "clock")
-                                }
-                            }
+                            }.buttonStyle(PlainButtonStyle())
+//                            .contextMenu {
+//                                Button(action: {
+//                                    self.freetimeediting.addingmode = true
+//                                    self.freetimeediting.showsavebuttons = true
+//                                }) {
+//                                    Text("Work Hours")
+//                                    Image(systemName: "clock")
+//                                }
+//                            }
                         }
                     }
                 }

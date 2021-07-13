@@ -104,7 +104,7 @@ struct SelectGoogleAssignmentView: View
                     Text("Sign in with Google to use this feature").fontWeight(.light).foregroundColor(Color("darkgray"))
                     
                     Spacer()
-                }
+                }.frame(height: 80)
                 .listRowInsets(EdgeInsets())
                 .background(Color(UIColor.systemGroupedBackground))
             }

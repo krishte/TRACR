@@ -412,7 +412,7 @@ struct DetailProgressView: View {
 
                             }
                         )
-                    }.padding(20).buttonStyle(PlainButtonStyle()).shadow(radius: 5)
+                    }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)
                 }
             }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
                 Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))

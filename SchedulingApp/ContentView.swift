@@ -501,7 +501,7 @@ struct ContentView: View {
                                     
                                     Spacer().frame(height: 20)
                                 }//.navigationBarTitleDisplayMode(.inline)
-                            }
+                            } 
                         }
                     }.frame(height: (selectedtab != 5) ? UIScreen.main.bounds.size.height-90 : UIScreen.main.bounds.size.height)
                     //Spacer()

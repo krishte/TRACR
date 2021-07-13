@@ -448,18 +448,35 @@ struct ContentView: View {
 
                         if (selectedtab == 5)
                         {
-                            NavigationView
-                            {
-                                ScrollView
-                                {
-                                    VStack
-                                    {
-                                        Spacer()
-                                        Text("Yay! Looks like you've completed the setup. Press 'Continue' then click the add button to add your first class.")
-                                        Spacer()
-  
-                                    }
-                                }
+                            NavigationView {
+                                VStack {
+                                    Text("TRACR has been setup to schedule your tasks! To learn more about TRACR's features, head to the tutorial, or start using TRACR by clicking Continue and adding a Class with the + button.").font(.title3).fontWeight(.semibold).lineLimit(6).padding(.horizontal, 15).padding(.top, 5)
+                                    Spacer()
+
+                                    HStack {
+                                        NavigationLink(destination: TutorialView()) {
+                                            ZStack {
+                                                Rectangle().fill(Color.clear).frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 70)
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.orange).frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 50)
+                                                Text("Head to Tutorial").foregroundColor(Color.white).fontWeight(.bold)
+                                            }.frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 70)
+                                        }
+
+                                        Spacer().frame(width: 10)
+
+                                        Button(action: {
+                                            firstLaunchTutorial.toggle()
+                                        }){
+                                            ZStack {
+                                                Rectangle().fill(Color.clear).frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 70)
+                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 50)
+                                                Text("Continue to App").foregroundColor(Color.white).fontWeight(.bold)
+                                            }.frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 70)
+                                        }
+                                    }.frame(width: UIScreen.main.bounds.size.width-40)
+                                    
+//                                    Spacer().frame(height: 20)
+                                }.navigationTitle("Setup Completed!").navigationBarTitleDisplayMode(.large)
                             }
                         }
                     }.frame(height: UIScreen.main.bounds.size.height-90)
@@ -468,47 +485,7 @@ struct ContentView: View {
                     VStack
                     {
                         Spacer()
-                        if (selectedtab == 5)
-                        {
-                            HStack
-                            {
-                                NavigationLink(destination: TutorialView())
-                                {
-                                    Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-60/2, height: 70)
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color("thirteen")).frame(width: UIScreen.main.bounds.size.width-60/2, height: 50)
-                                    Text("Head to Tutorial").foregroundColor(Color.white).fontWeight(.bold)
-                                }
-                                Spacer().frame(width: 20)
-                                Button(action:
-                                        {
-                                            if (selectedtab < 5)
-                                            {
-                                                selectedtab += 1
-                                            }
-                                            else
-                                            {
-                                                print("hello")
-                                                firstLaunchTutorial.toggle()
-                                                print("hello2")
-                                            }
-                                         //   selectedtab += 1
-                                        })
-                                {
-                                    ZStack
-                                    {
-
-
-                                        Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-60/2, height: 70)
-                                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: UIScreen.main.bounds.size.width-60/2, height: 50)
-                                        Text("Continue").foregroundColor(Color.white).fontWeight(.bold)
-                                        
-                                        
-                                    }
-                                }
-                            }
-                            Spacer().frame(height: 20)
-                        }
-                        else
+                        if (selectedtab != 5)
                         {
                             Button(action:
                                     {

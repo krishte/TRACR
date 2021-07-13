@@ -909,63 +909,65 @@ struct SettingsView: View {
     }
     
     func delete() -> Void {
-        if (self.subassignmentlist.count > 0) {
-            for (index, _) in self.subassignmentlist.enumerated() {
-                 self.managedObjectContext.delete(self.subassignmentlist[index])
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(100)) {
+            if (self.subassignmentlist.count > 0) {
+                for (index, _) in self.subassignmentlist.enumerated() {
+                     self.managedObjectContext.delete(self.subassignmentlist[index])
+                }
             }
-        }
 
-        for (_, element) in self.assignmenttypeslist.enumerated() {
-            element.rangemin = 60
-            element.rangemax = 180
-        }
-        
-        if (self.assignmentlist.count > 0) {
-            for (index, _) in self.assignmentlist.enumerated() {
-                 self.managedObjectContext.delete(self.assignmentlist[index])
+            for (_, element) in self.assignmenttypeslist.enumerated() {
+                element.rangemin = 60
+                element.rangemax = 180
             }
-        }
-        if (self.classlist.count > 0) {
-            for (index, _) in self.classlist.enumerated() {
-                 self.managedObjectContext.delete(self.classlist[index])
+            
+            if (self.assignmentlist.count > 0) {
+                for (index, _) in self.assignmentlist.enumerated() {
+                     self.managedObjectContext.delete(self.assignmentlist[index])
+                }
             }
-        }
-        for (index, _) in self.freetimelist.enumerated() {
-             self.managedObjectContext.delete(self.freetimelist[index])
-        }
-        for (index, _) in self.addtimeloglist.enumerated()
-        {
-            self.managedObjectContext.delete(self.addtimeloglist[index])
-        }
-        GIDSignIn.sharedInstance().signOut()
-        let boollist: [Bool] = [true, false, false, false, false, false, false]
-        for i in 0...4
-        {
-            let newFreetime = Freetime(context: self.managedObjectContext)
-            newFreetime.startdatetime = Date(timeInterval: TimeInterval(3600*16), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-            newFreetime.enddatetime = Date(timeInterval: TimeInterval(3600*20), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-            newFreetime.tempenddatetime = newFreetime.startdatetime
-            newFreetime.tempenddatetime = newFreetime.enddatetime
-            newFreetime.monday = boollist[i]
-            newFreetime.sunday = boollist[(i+1)%7]
-            newFreetime.saturday = boollist[(i+2)%7]
-            newFreetime.friday = boollist[(i+3)%7]
-            newFreetime.thursday = boollist[(i+4)%7]
-            newFreetime.wednesday = boollist[(i+5)%7]
-            newFreetime.tuesday = boollist[(i+6)%7]
+            if (self.classlist.count > 0) {
+                for (index, _) in self.classlist.enumerated() {
+                     self.managedObjectContext.delete(self.classlist[index])
+                }
+            }
+            for (index, _) in self.freetimelist.enumerated() {
+                 self.managedObjectContext.delete(self.freetimelist[index])
+            }
+            for (index, _) in self.addtimeloglist.enumerated()
+            {
+                self.managedObjectContext.delete(self.addtimeloglist[index])
+            }
+            GIDSignIn.sharedInstance().signOut()
+            let boollist: [Bool] = [true, false, false, false, false, false, false]
+            for i in 0...4
+            {
+                let newFreetime = Freetime(context: self.managedObjectContext)
+                newFreetime.startdatetime = Date(timeInterval: TimeInterval(3600*16), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                newFreetime.enddatetime = Date(timeInterval: TimeInterval(3600*20), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                newFreetime.tempstartdatetime = newFreetime.startdatetime
+                newFreetime.tempenddatetime = newFreetime.enddatetime
+                newFreetime.monday = boollist[i]
+                newFreetime.sunday = boollist[(i+1)%7]
+                newFreetime.saturday = boollist[(i+2)%7]
+                newFreetime.friday = boollist[(i+3)%7]
+                newFreetime.thursday = boollist[(i+4)%7]
+                newFreetime.wednesday = boollist[(i+5)%7]
+                newFreetime.tuesday = boollist[(i+6)%7]
+                do {
+                    try self.managedObjectContext.save()
+                    //print("AssignmentTypes rangemin/rangemax changed")
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+
             do {
                 try self.managedObjectContext.save()
                 //print("AssignmentTypes rangemin/rangemax changed")
             } catch {
                 print(error.localizedDescription)
             }
-        }
-
-        do {
-            try self.managedObjectContext.save()
-            //print("AssignmentTypes rangemin/rangemax changed")
-        } catch {
-            print(error.localizedDescription)
         }
     }
 }

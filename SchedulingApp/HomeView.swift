@@ -1771,9 +1771,18 @@ struct HomeBodyView: View {
                     VStack {
                         Spacer()
                         Text("No Tasks").font(.title2).fontWeight(.bold)
-                        Text("Add an Assignment for TRACR to create new tasks").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                        HStack {
+                            Text("Add an Assignment using the").foregroundColor(.gray).fontWeight(.semibold)
+                            RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Color.blue).frame(width: 15, height: 15).overlay(
+                                ZStack {
+                                    Image(systemName: "plus").resizable().font(Font.title.weight(.bold)).foregroundColor(Color.white).frame(width: 9, height: 9)
+                                }
+                            )
+                        }
+                        Text("button for TRACR to schedule new tasks").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
                         Spacer()
                     }.frame(height: UIScreen.main.bounds.size.height/2)
+                    
 //                    Spacer().frame(height: 100)
 //                    Image(colorScheme == .light ? "emptyassignment" : "emptyassignmentdark").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width-100)//.frame(width: UIScreen.main.bounds.size.width, alignment: .center)//.offset(x: -20)
 //                    Text("No Tasks!").font(.system(size: 40)).frame(width: UIScreen.main.bounds.size.width - 40, height: 100, alignment: .center).multilineTextAlignment(.center)

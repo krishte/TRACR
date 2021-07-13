@@ -354,6 +354,10 @@ struct EditClassModalView: View {
                                 self.createclassallowed = false
                             }
                         }
+                        
+                        if testname == "" {
+                            self.createclassallowed = false
+                        }
 
                         if self.createclassallowed {
                             for classity in self.classlist {
@@ -2101,10 +2105,19 @@ struct ClassesView: View {
                     }
                     else
                     {
+                        
                         VStack {
                             Spacer()
                             Text("No Classes").font(.title2).fontWeight(.bold)
-                            Text("Add a Class using the + button").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                            HStack {
+                                Text("Add a Class using the").foregroundColor(.gray).fontWeight(.semibold)
+                                RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Color.blue).frame(width: 15, height: 15).overlay(
+                                    ZStack {
+                                        Image(systemName: "plus").resizable().font(Font.title.weight(.bold)).foregroundColor(Color.white).frame(width: 9, height: 9)
+                                    }
+                                )
+                                Text("button").foregroundColor(.gray).fontWeight(.semibold)
+                            }
                             Spacer()
                         }.frame(height: UIScreen.main.bounds.size.height/2)
 //                        VStack {

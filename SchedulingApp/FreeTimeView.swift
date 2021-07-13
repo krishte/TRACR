@@ -958,14 +958,15 @@ struct WorkHours: View {
                                 
                                 else {
                                     
-                                    
                                     if (self.selection.contains(day) && !self.freetimeediting.editingmode) {
+                                        print("3")
                                         self.savefreetimes()
                                         self.freetimeediting.editingmode = true
                                         self.freetimeediting.showsavebuttons = false
                                     }
 
                                     else {
+                                        print("4")
                                         self.selectDeselect(day)
                                     }
                                 }

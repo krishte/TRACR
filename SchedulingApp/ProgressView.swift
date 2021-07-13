@@ -404,24 +404,16 @@ struct DetailProgressView: View {
 //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
                         
                     }) {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).padding(20).overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).overlay(
                             ZStack {
                                 //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                 Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
                             }
-                        ).shadow(radius: 50)
-                    }.buttonStyle(PlainButtonStyle()).contextMenu {
-                        Button(action: {
-                            self.storedindex = self.getactualclassnumber(classcool: self.classcool)
-                            self.getcompletedassignmentsbyclass() ? self.NewGradePresenting.toggle() : self.noAssignmentsAlert.toggle()
-                        }) {
-                            Text("Grade")
-                            Image(systemName: "percent")
-                        }
-                    }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
-                        Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
-                    }
+                        )
+                    }.padding(20).buttonStyle(PlainButtonStyle()).shadow(radius: 5)
                 }
+            }.animation(.spring()).sheet(isPresented: self.$NewGradePresenting, content: { NewGradeModalView(NewGradePresenting: self.$NewGradePresenting, classfilter: self.storedindex).environment(\.managedObjectContext, self.managedObjectContext)}).alert(isPresented: self.$noAssignmentsAlert) {
+                Alert(title: Text("No Completed Assignments for this Class"), message: Text("Complete an Assignment First"))
             }
         }
     }
@@ -955,13 +947,19 @@ struct TopBitView: View {
             
         if self.displayNoneText() {
             VStack {
-                VStack {
-                    Spacer()
-                    Text("No Classes").font(.title2).fontWeight(.bold)
-                    Text("Add a Class using the + button to start making progress!").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
-                    Spacer()
+                Spacer()
+                Text("No Classes").font(.title2).fontWeight(.bold)
+                HStack {
+                    Text("Add a Class using the").foregroundColor(.gray).fontWeight(.semibold)
+                    RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Color.blue).frame(width: 15, height: 15).overlay(
+                        ZStack {
+                            Image(systemName: "plus").resizable().font(Font.title.weight(.bold)).foregroundColor(Color.white).frame(width: 9, height: 9)
+                        }
+                    )
                 }
-            }
+                Text("button to start making progress!").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                Spacer()
+            }.frame(height: UIScreen.main.bounds.size.height/2)
         }
     }
 }
@@ -1138,7 +1136,6 @@ struct ProgressView: View {
         
         if (classity.gradingscheme[0..<1] == "N")
         {
-            print(classity.gradingscheme)
             let value = classity.gradingscheme[3..<classity.gradingscheme.count]
             let intvalue = Int(value) ?? 8
             if (intvalue%2==0)
@@ -1163,7 +1160,6 @@ struct ProgressView: View {
         }
         else
         {
-            print(String(20*(value2+1)))
             return String(20*(value2+1))
         }
 

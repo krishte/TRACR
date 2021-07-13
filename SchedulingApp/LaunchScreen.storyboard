@@ -25,7 +25,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
-                        <color key="backgroundColor" name="three"/>
+                        <color key="backgroundColor" name="three-b"/>
                         <constraints>
                             <constraint firstItem="NlJ-wu-qE7" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="QVE-mL-iWO"/>
                             <constraint firstItem="NlJ-wu-qE7" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" constant="-75" id="nzf-Aq-ikw"/>
@@ -39,8 +39,8 @@
     </scenes>
     <resources>
         <image name="Tracr" width="161.33332824707031" height="40.333332061767578"/>
-        <namedColor name="three">
-            <color red="0.33199998736381531" green="0.73000001907348633" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="three-b">
+            <color red="0.36599999666213989" green="0.69599997997283936" blue="0.98900002241134644" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>

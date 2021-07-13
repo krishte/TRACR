@@ -154,7 +154,7 @@ struct AssignmentsView: View {
     
     func noIncompleteAssignmentsThereFunc() -> Bool {
         for assignment in assignmentlist {
-            if assignment.completed {
+            if !assignment.completed {
                 return false
             }
         }
@@ -170,7 +170,15 @@ struct AssignmentsView: View {
                 VStack {
                     Spacer()
                     Text("No Assignments").font(.title2).fontWeight(.bold)
-                    Text("Add an Assignment using the + button").foregroundColor(.gray).fontWeight(.semibold).multilineTextAlignment(.center)
+                    HStack {
+                        Text("Add an Assignment using the").foregroundColor(.gray).fontWeight(.semibold)
+                        RoundedRectangle(cornerRadius: 3, style: .continuous).fill(Color.blue).frame(width: 15, height: 15).overlay(
+                            ZStack {
+                                Image(systemName: "plus").resizable().font(Font.title.weight(.bold)).foregroundColor(Color.white).frame(width: 9, height: 9)
+                            }
+                        )
+                        Text("button").foregroundColor(.gray).fontWeight(.semibold)
+                    }
                     Spacer()
                 }.frame(height: UIScreen.main.bounds.size.height/2)
 //                Spacer().frame(height: 100)

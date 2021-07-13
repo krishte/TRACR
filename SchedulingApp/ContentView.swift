@@ -161,6 +161,7 @@ struct ContentView: View {
         
         
     }
+    @State var showingtutorialview = false
     @State var selectedtab = 0
     @State var worktype1selected: Bool = true
     
@@ -168,7 +169,7 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            if (!firstLaunchTutorial)
+            if (firstLaunchTutorial)
             {
 //                NavigationView
 //                {
@@ -486,6 +487,7 @@ struct ContentView: View {
                     {
                         Spacer()
                         if (selectedtab != 5)
+
                         {
                             Button(action:
                                     {

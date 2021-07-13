@@ -796,7 +796,6 @@ struct SettingsView: View {
                             }
                             defaults.set(specificworkhoursview, forKey: "specificworktimes")
                             defaultsWidget?.set(specificworkhoursview, forKey: "specificworktimes")
-                            
                         }
                     )
                     {

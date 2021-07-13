@@ -1495,8 +1495,9 @@ struct MasterClass: View {
             
         }
         for i in 0...daystilllatestdate {
-            if (subassignmentdict[i]!.count > 0 &&  specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]!.count > 0)
+            if (subassignmentdict[i]!.count > 0 &&  specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]!.count > 0 )
             {
+                
                 if (specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]!.count == 1)
                 {
                     let startime = Date(timeInterval: TimeInterval(Calendar.current.dateComponents([.minute], from: Date(timeInterval: TimeInterval(0), since: Calendar.current.startOfDay(for: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0)), to: specificdatefreetimedict[Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!]![0].0).minute!*60), since: Calendar.current.date(byAdding: .day, value: i, to: startOfDay)!)
@@ -1504,6 +1505,10 @@ struct MasterClass: View {
                     var timeoffset = 0
                     
                     for (name, lengthofwork) in subassignmentdict[i]! {
+                        if (lengthofwork < 5)
+                        {
+                            continue
+                        }
                         
                         let newSubassignment4 = Subassignmentnew(context: self.managedObjectContext)
                            newSubassignment4.assignmentname = name
@@ -1532,6 +1537,10 @@ struct MasterClass: View {
                     var counter = 1
                     var timeoffset = 0
                     for (name, lengthofwork) in subassignmentdict[i]! {
+                        if (lengthofwork < 5)
+                        {
+                            continue
+                        }
                         var lengthofwork2 = lengthofwork
                         while (lengthofwork2 > 0)
                         {

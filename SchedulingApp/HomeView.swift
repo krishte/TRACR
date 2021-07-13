@@ -1152,6 +1152,8 @@ struct HomeBodyView: View {
     @State var scrolling = false
     @State var hidingupcoming = false
     @State var upcomingoffset = 0
+    @State var refreshID = UUID()
+  //  @State var daytitlesexpanded: [Bool] = [true for i in 0...daytitles]
     
     @EnvironmentObject var masterRunning: MasterRunning
     let assignmenttypes = ["Homework", "Study", "Test", "Essay", "Presentation/Oral", "Exam", "Report/Paper"]
@@ -1551,7 +1553,7 @@ struct HomeBodyView: View {
                                         ForEach(subassignmentlist) { subassignment in
 
                                             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1.3).onTapGesture {
+                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname, refreshID2: self.$refreshID).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1).onTapGesture {
                                                     if (self.subassignmentstartdatetime == subassignment.startdatetime)
                                                     {
                                                         self.subassignmentassignmentname = "";
@@ -1687,9 +1689,9 @@ struct HomeBodyView: View {
                 ForEach(0 ..< daytitlesfromlastmonday.count) { daytitle in
                     if (Calendar.current.dateComponents([.day], from: calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? calendar.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : calendar.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day! <= daytitle)
                     {
-                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle],  daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment).animation(.spring())
+                        SubassignmentListView(daytitle: self.daytitlesfromlastmonday[daytitle],  daytitlesfromlastmonday: self.daytitlesfromlastmonday, datesfromlastmonday: self.datesfromlastmonday, subassignmentassignmentname: self.$subassignmentassignmentname, selectedcolor: self.$selectedColor, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, refreshID2: self.$refreshID).animation(.spring())//.id(refreshID)
                     }
-                }.animation(.spring())
+                }.animation(.spring())//.id(refreshID)
                     
                 if subassignmentlist.count == 0 {
                     Spacer().frame(height: 100)
@@ -1707,6 +1709,7 @@ struct HomeBodyView: View {
             let defaults = UserDefaults.standard
          //   let lastlauncheddate = defaults.object(forKey: "lastlauncheddate") as? Date ?? Date(timeIntervalSince1970: 0)
             let specificworktimes = defaults.object(forKey: "specificworktimes") as? Bool ?? true
+            refreshID = UUID()
             if (specificworktimes)
             {
                 self.uniformlistviewshows = false
@@ -1743,12 +1746,13 @@ struct SubassignmentListView: View {
     @Binding var selectedcolor: String
     @Binding var showeditassignment: Bool
     @Binding var selectededitassignment: String
+    @Binding var refreshID: UUID
     var shortdateformatter: DateFormatter
     
     @Environment(\.managedObjectContext) var managedObjectContext
     @EnvironmentObject var masterRunning: MasterRunning
     
-    init(daytitle: String, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>)
+    init(daytitle: String, daytitlesfromlastmonday: [String], datesfromlastmonday: [Date], subassignmentassignmentname: Binding<String>, selectedcolor: Binding<String>, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>, refreshID2: Binding<UUID>)
     {
         self.daytitle = daytitle
 
@@ -1761,6 +1765,7 @@ struct SubassignmentListView: View {
         shortdateformatter.dateStyle = .short
         self.daytitlesfromlastmonday = daytitlesfromlastmonday
         self.datesfromlastmonday = datesfromlastmonday
+        self._refreshID = refreshID2
     }
     
     func getcurrentdatestring() -> String {
@@ -1798,18 +1803,52 @@ struct SubassignmentListView: View {
         }
         return false
     }
+    func getnumberofsubassignment() -> Int
+    {
+        var count = 0
+        for subassignment in subassignmentlist
+        {
+            if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring())
+            {
+                if (isrepeatedsubassignment(assignmentname: subassignment.assignmentname))
+                {
+                    if (isfirstofgroup(subassignment3: subassignment))
+                    {
+                        count += 1
+                    }
+                }
+                else
+                {
+                    count += 1
+                }
+            }
+        }
+        return count
+    }
     
     @State var tasksThereBool: Bool = false
     
     func tasksThereFunc() {
-        tasksThereBool = true
+        for subassignment in subassignmentlist
+        {
+            if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring())
+            {
+                tasksThereBool = true
+                return
+            }
+        }
+        tasksThereBool = false
+    }
+    func tasksNotThereFunc()
+    {
+        tasksThereBool = false
     }
     @State var showingsubassignments: Bool = true
     
     var body: some View {
       //  ScrollView {
         
-        if tasksThereBool {
+        if tasksThereBool && getnumberofsubassignment() != 0 {
             Button(action:
             {
                 withAnimation(.spring())
@@ -1822,6 +1861,7 @@ struct SubassignmentListView: View {
                     Spacer().frame(width: 10)
                     Text(daytitle).font(.system(size: 20)).foregroundColor(daytitlesfromlastmonday.firstIndex(of: daytitle) == Calendar.current.dateComponents([.day], from: Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)! > Date() ? Calendar.current.date(byAdding: .day, value: -6, to: Date().startOfWeek!)! : Calendar.current.date(byAdding: .day, value: 1, to: Date().startOfWeek!)!, to: Date()).day! ? Color.blue : Color("blackwhite")).fontWeight(.bold)
                     Spacer()
+                    Text("("+String(getnumberofsubassignment())+")").font(.system(size: 15)).fontWeight(.light).foregroundColor(colorScheme == .light ? Color.black : Color.white)
                     Image(systemName: "chevron.down").resizable().foregroundColor(colorScheme == .light ? Color.black : Color.white).frame(width: 15, height: 10).rotationEffect(Angle(degrees: self.showingsubassignments ? 0 : -90), anchor: .center).padding(.trailing, 10)
                 }.frame(width: UIScreen.main.bounds.size.width, height: 40).background(Color("add_overlay_bg"))
             }
@@ -1832,14 +1872,30 @@ struct SubassignmentListView: View {
 //        }
         if (showingsubassignments)
         {
-        ForEach(subassignmentlist) {
-            subassignment in
-            if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
-                if (isrepeatedsubassignment(assignmentname: subassignment.assignmentname))
-                {
-                    if (isfirstofgroup(subassignment3: subassignment))
+            ForEach(subassignmentlist) {
+                subassignment in
+                if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.getcurrentdatestring()) {
+                    if (isrepeatedsubassignment(assignmentname: subassignment.assignmentname))
                     {
-                        IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: true, subassignmentassignmentname2: self.$subassignmentassignmentname).onTapGesture {
+                        if (isfirstofgroup(subassignment3: subassignment))
+                        {
+                            IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: true, subassignmentassignmentname2: self.$subassignmentassignmentname, refreshID2: self.$refreshID).onTapGesture {
+                                selectedcolor = subassignment.color
+                                if (self.subassignmentassignmentname == subassignment.assignmentname)
+                                {
+                                    self.subassignmentassignmentname = "";
+                                }
+                                else
+                                {
+                                    self.subassignmentassignmentname = subassignment.assignmentname
+                                }
+                                
+                            }.onAppear(perform: tasksThereFunc)//.onDisappear(perform: tasksNotThereFunc)//.id(refreshID)
+                        }
+                    }
+                    else
+                    {
+                        IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname, refreshID2: self.$refreshID).onTapGesture {
                             selectedcolor = subassignment.color
                             if (self.subassignmentassignmentname == subassignment.assignmentname)
                             {
@@ -1850,27 +1906,11 @@ struct SubassignmentListView: View {
                                 self.subassignmentassignmentname = subassignment.assignmentname
                             }
                             
-                        }.onAppear(perform: tasksThereFunc)
-                    }
+                        }.onAppear(perform: tasksThereFunc)//.onDisappear(perform: tasksNotThereFunc)//.id(refreshID)
+                    }//was +122 but had to subtract 2*60.35 to account for GMT + 2
                 }
-                else
-                {
-                    IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: true, showeditassignment: self.$showeditassignment, selectededitassignment: self.$selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname).onTapGesture {
-                        selectedcolor = subassignment.color
-                        if (self.subassignmentassignmentname == subassignment.assignmentname)
-                        {
-                            self.subassignmentassignmentname = "";
-                        }
-                        else
-                        {
-                            self.subassignmentassignmentname = subassignment.assignmentname
-                        }
-                        
-                    }.onAppear(perform: tasksThereFunc)
-                }//was +122 but had to subtract 2*60.35 to account for GMT + 2
-            }
-            
-        }.animation(.spring())
+                
+            }.animation(.spring())
         }
         
 //        if masterRunning.masterRunningNow {
@@ -1947,6 +1987,7 @@ struct IndividualSubassignmentView: View {
     @Binding var showeditassignment: Bool
     @Binding var selectededitassignment: String
     @Binding var subassignmentassignmentname: String
+    @Binding var refreshID: UUID
     
     @EnvironmentObject var masterRunning: MasterRunning
     
@@ -1954,12 +1995,12 @@ struct IndividualSubassignmentView: View {
     
     var shortdateformatter: DateFormatter
     
-    init(subassignment2: Subassignmentnew, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>, isrepeated: Bool, subassignmentassignmentname2: Binding<String>) {
+    init(subassignment2: Subassignmentnew, fixedHeight: Bool, showeditassignment: Binding<Bool>, selectededitassignment: Binding<String>, isrepeated: Bool, subassignmentassignmentname2: Binding<String>, refreshID2: Binding<UUID>) {
 
         self._showeditassignment = showeditassignment
         self._selectededitassignment = selectededitassignment
         self._subassignmentassignmentname = subassignmentassignmentname2
-        
+        self._refreshID = refreshID2
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         self.starttime = formatter.string(from: subassignment2.startdatetime)
@@ -2092,7 +2133,7 @@ struct IndividualSubassignmentView: View {
 
                 Spacer()
 
-            }.frame(height: fixedHeight ? 50 : 38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).padding(12).background(color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: color) : Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
+            }.frame(height: fixedHeight ? 50 : max(CGFloat(Double(((Double(subassignmentlength))/60))*60.35-24), CGFloat(60.35/2-24))).padding(12).background(color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: color) : Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
                 Button(action: {
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname
@@ -2218,6 +2259,7 @@ struct IndividualSubassignmentView: View {
                                 }
                             }
                             self.subassignmentassignmentname = ""
+                            refreshID = UUID()
                             do {
                                 try self.managedObjectContext.save()
                             } catch {

@@ -30,8 +30,8 @@
             filePath = "SchedulingApp/SettingsView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1586"
-            endingLineNumber = "1586"
+            startingLineNumber = "1587"
+            endingLineNumber = "1587"
             landmarkName = "body"
             landmarkType = "24">
             <Locations>
@@ -126,10 +126,10 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1014"
-            endingLineNumber = "1014"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "1015"
+            endingLineNumber = "1015"
+            landmarkName = "sheetContent()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -142,10 +142,10 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1215"
-            endingLineNumber = "1215"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "1216"
+            endingLineNumber = "1216"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -158,10 +158,10 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1206"
-            endingLineNumber = "1206"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "1207"
+            endingLineNumber = "1207"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -174,10 +174,10 @@
             filePath = "SchedulingApp/ProgressView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1205"
-            endingLineNumber = "1205"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            startingLineNumber = "1206"
+            endingLineNumber = "1206"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

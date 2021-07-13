@@ -404,12 +404,13 @@ struct DetailProgressView: View {
 //                        self.ocolor = self.ocolor == Color.blue ? Color.green : Color.blue
                         
                     }) {
-                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).padding(20).overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(.horizontal, getAverageGrade() == 0 ? 20 : 40).padding(.vertical, 20).overlay(
                             ZStack {
                                 //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
                                 Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
+
                             }
-                        ).shadow(radius: 50)
+                        )
                     }.buttonStyle(PlainButtonStyle()).contextMenu {
                         Button(action: {
                             self.storedindex = self.getactualclassnumber(classcool: self.classcool)

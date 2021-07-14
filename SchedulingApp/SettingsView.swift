@@ -1015,7 +1015,7 @@ struct HelpCenterView: View {
     let heights = ["What are Type Sliders?" : 50  , "How can I link my Account to Google Classroom?" : 50, "How can I clear my data?" : 75, "Data Usage" : 50, "Track your Performance" : 100]
     let colors = ["What are Type Sliders?" : "one", "How can I link my Account to Google Classroom?" : "two", "How can I clear my data?" : "three", "Data Usage" : "four", "Track your Performance" : "fifteen"]
     
-    @State private var selection: Set<String> = ["What are Type Sliders?", "How can I link my Account to Google Classroom?", "How can I clear my data?", "Data Usage", "Track your Performance"]
+    @State private var selection: Set<String> = []
 
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {

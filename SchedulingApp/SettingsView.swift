@@ -147,31 +147,53 @@ struct TutorialPageView: View {
 struct TutorialFirstPageView: View {
     @Binding var tutorialPageSelected: Int
     
-    let TutorialTitles: [String] = ["Home Tab", "Tasks", "Add Time to Assignments", "Add Button", "Adding a Class", "Adding Free Time", "Classes Tab", "Inside a Class", "Assignments Tab", "Progress Tab", "Progress of Individual Classes"]
-    
+    let TutorialTitles: [String] = ["Home Tab", "Tasks", "Add Time to Assignments", "Add Button", "Adding a Class", "Adding Work Hours", "Classes Tab", "Inside a Class", "Assignments Tab", "Progress Tab", "Progress of Individual Classes", "Google Classroom"]
+    let TutorialImages: [String] = ["house", "house.fill", "tray.full", "plus.square", "folder.badge.plus", "calendar.badge.plus", "folder", "folder.circle", "doc.plaintext", "chart.bar", "percent", "Google Classroom Square Logo"]
+    func getrandomcolor() -> Color
+    {
+        let colorlist = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen"]
+        let randomInt = Int.random(in: 0..<15)
+        return Color(colorlist[randomInt])
+    }
     var body: some View {
         ZStack {
-            VStack(alignment: .leading, spacing: 5) {
+            VStack(alignment: .leading, spacing: 15) {
                 HStack(spacing: 23) {
                     Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 80, height: 80).cornerRadius(10)
                     
                     Text("Tutorial").font(.largeTitle).fontWeight(.light)
-                }
+                }.padding(.horizontal, 40)
                 
-                Spacer().frame(height: 20)
+                Spacer().frame(height: 10)
                 
-                ForEach(1..<12) { tag in
+                ForEach(1..<13) { tag in
                     Button(action: {
                         withAnimation(.spring()) {
                             self.tutorialPageSelected = tag
                         }
-                    }) {
+                    })
+                    {
                         HStack {
-                            Text("\(tag).").font(.system(size: 25)).fontWeight(.bold).frame(width: 45)
-                            Text("\(self.TutorialTitles[tag - 1])").font(.system(size: 23)).fontWeight(.light)
-                        }.padding(.all, 7)
+                            if (tag == 12)
+                            {
+                                Image("Google Classroom Square Logo").resizable().aspectRatio(contentMode: .fit).foregroundColor(getrandomcolor()).frame(height: 40)
+                            }
+                            else
+                            {
+                                Image(systemName: TutorialImages[tag-1]).resizable().aspectRatio(contentMode: .fit).foregroundColor(getrandomcolor()).frame(height: 40)
+                            }
+                            Spacer().frame(width: 20)
+                            VStack {
+                                HStack {
+                                    Text(TutorialTitles[tag-1]).fontWeight(.bold).font(.system(size: 20))
+                                    Spacer()
+                                }
+                            }.frame(width: UIScreen.main.bounds.size.width - 136)
+                        }.padding(.horizontal, 40)
                     }
+
                 }
+             //   Spacer().frame(height:20)
             }
         }
     }
@@ -186,22 +208,23 @@ struct TutorialView: View {
                 TabView(selection: $tutorialPageSelected) {
                     Group {
                         TutorialFirstPageView(tutorialPageSelected: self.$tutorialPageSelected).tag(0)
-                        TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home Tab", tutorialInstructions1: "The left side of the Preview Bar shows next upcoming Task.", tutorialInstructions2: "If you click on a Task, it will divide the Preview Bar into two, and the right side will show a detailed description of the selected Assignment.", tutorialInstructions3: "Holding a date will allow you to add an Assignment that has a due date set to that date.", tutorialInstructions4: "If you have completed a Task, swipe left on it.", tutorialInstructions5: "", tutorialposition: []).tag(1)
-                        TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "Clicking on the switch indicator on the top-right corner of the Home Tab will give you a diffently structured layout of all of your tasks that doesn't schedule your tasks by time in a given day.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(2)
-                        TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete your Task or you weren't available, swipe right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(3)
-                        TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Click the Add Button to add an Assignment in the Home and Assignments Tabs, a Class in the Classes Tab and a Grade in the Progress Tab.", tutorialInstructions2: "Hold the Add Button to choose to specifically add an Assignment, Class, Free Time or Grade.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(4)
-                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class.", tutorialInstructions2: "", tutorialInstructions3: "Choose your preferred colour to be displayed for your Class and its Assignments.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(5)
-                        TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Free Time", tutorialInstructions1: "Select the start and end time of your Free Time.", tutorialInstructions2: "Select when the Free Time should repeat, or the specific date for the Free Time if it only takes place once.", tutorialInstructions3: "To view and delete your Free Times, click 'View Free Times'.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(6)
+                        TutorialPageView(tutorialScreenshot: "Home View 1", tutorialTitle: "Home Tab", tutorialInstructions1: "The Preview Bar shows the next upcoming Task.", tutorialInstructions2: "If you tap on a Task, the Preview Bar will show details about the assignment to which the Task belongs.", tutorialInstructions3: "Holding a date will allow you to add an Assignment that has a due date set to that date.", tutorialInstructions4: "If you have completed a Task, swipe from right to left on it.", tutorialInstructions5: "", tutorialposition: []).tag(1)
+                        TutorialPageView(tutorialScreenshot: "Home view 2", tutorialTitle: "Tasks", tutorialInstructions1: "To see this view, change your scheduling options from 'specific times' to 'daily checklist'.", tutorialInstructions2: "Instead of telling you exactly when to complete the Tasks, this view only shows you how long Tasks are and the days when they should be copmleted.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(2)
+                        TutorialPageView(tutorialScreenshot: "Home View 1.1", tutorialTitle: "Add Time to Assignments", tutorialInstructions1: "If you couldn't complete a past Task or you weren't available to, swipe from left to right and select the percentage of the Task you were able to complete.", tutorialInstructions2: "This only applies to Tasks that have passed.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(3)
+                        TutorialPageView(tutorialScreenshot: "Add button screenshot", tutorialTitle: "Add Button", tutorialInstructions1: "Tap the add button to see the options for adding an assignment, a class, or a grade.", tutorialInstructions2: "Tap the add button again to hide the options.", tutorialInstructions3: "", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(4)
+                        TutorialPageView(tutorialScreenshot: "Adding class", tutorialTitle: "Adding a Class", tutorialInstructions1: "Select your specific Class if you're an IB student and input your class name otherwise.", tutorialInstructions2: "If you have logged in to Google Classroom, then you can link this TRACR Class to your Google Class.", tutorialInstructions3: "Choose your preferred color to be displayed for your Class and its Assignments or create your own custom gradient.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(5)
+                        TutorialPageView(tutorialScreenshot: "Adding free time", tutorialTitle: "Adding Work Hours", tutorialInstructions1: "Clcik the add button to add a new Work Hours time", tutorialInstructions2: "Select when you would like your Work Hours time to repeat by selecting the days above.", tutorialInstructions3: "Press in one of the green areas, then drag on the boundaries of the to adjust the time and duration of the Work Hours time.", tutorialInstructions4: "To delete a Work Hours time, swipe from right to left.", tutorialInstructions5: "", tutorialposition: []).tag(6)
                     }
                     
                     Group {
-                        TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes Tab", tutorialInstructions1: "Hold a Class and click 'Add Assignment' to add an Assignment for that Class.", tutorialInstructions2: "Hold a Class, and click 'Delete Class' to delete it.", tutorialInstructions3: "Click on a Class to see a list of all its Assignments and other details.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(7)
-                        TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, Assignments for that Class are shown.", tutorialInstructions2: "Click on the 'Edit' button (top-right corner) to edit specific Class details.", tutorialInstructions3: "Swipe assignments left to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the Assignment to edit Assignment details.", tutorialposition: []).tag(8)
-                        TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments Tab", tutorialInstructions1: "Click the top-right button to toggle Completed Assignments.", tutorialInstructions2: "The blue progress bar shows your progress for the completion of the Assignment.", tutorialInstructions3: "Swipe left on Assignments to complete them.", tutorialInstructions4: "Click on an Assignment to expand and show detailed information.", tutorialInstructions5: "Click on the Edit button on the assignment to edit Assignment details.", tutorialposition: []).tag(9)
-                        TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows your grades for all your classes over time.", tutorialInstructions2: "Select which Classes you want to appear on the Graph.", tutorialInstructions3: "Hold a Class to add a Grade for the specific Class.", tutorialInstructions4: "Click on a Class to see detailed information and statistics on your Grades for your Class.", tutorialInstructions5: "", tutorialposition: []).tag(10)
-                        TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics.", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(11)
+                        TutorialPageView(tutorialScreenshot: "Classes view", tutorialTitle: "Classes Tab", tutorialInstructions1: "Hold a Class and tap 'Add Assignment' to add an Assignment for that Class.", tutorialInstructions2: "Hold a Class, and tap 'Delete Class' to delete it.", tutorialInstructions3: "Tap on a Class to see a list of all its Assignments and other details.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(7)
+                        TutorialPageView(tutorialScreenshot: "Inside classes view", tutorialTitle: "Inside a Class", tutorialInstructions1: "Inside a Class, Assignments for that Class are shown.", tutorialInstructions2: "Tap on the 'Edit' button (top-right corner) to edit specific Class details.", tutorialInstructions3: "Swipe assignments from right to left to complete them.", tutorialInstructions4: "Tap on an Assignment to expand and show detailed information about Tasks for that assignment.", tutorialInstructions5: "Tap on the Edit button on the Assignment to edit Assignment details.", tutorialposition: []).tag(8)
+                        TutorialPageView(tutorialScreenshot: "Assignments view", tutorialTitle: "Assignments Tab", tutorialInstructions1: "Tap the top-right button to toggle Completed Assignments.", tutorialInstructions2: "The blue progress bar shows your progress for the completion of the Assignment.", tutorialInstructions3: "Swipe from right to left on Assignments to complete them.", tutorialInstructions4: "Tap on an Assignment to expand and show detailed information about Tasks for that assignment.", tutorialInstructions5: "Tap on the Edit button on the assignment to edit Assignment details.", tutorialposition: []).tag(9)
+                        TutorialPageView(tutorialScreenshot: "Progress View", tutorialTitle: "Progress Tab", tutorialInstructions1: "The Graph shows your grades for all your classes over time.", tutorialInstructions2: "Select which Class you want to appear on the Graph.",tutorialInstructions3: "The yellow box shows during which times you reschedule Tasks.", tutorialInstructions4: "Hold a Class to add a Grade for that specific Class.", tutorialInstructions5: "Tap on a Class to see detailed information and statistics on your Grades for that Class.", tutorialposition: []).tag(10)
+                        TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics (only for IB).", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(11)
+                        TutorialPageView(tutorialScreenshot: "GCTutorial", tutorialTitle: "Google Classroom", tutorialInstructions1: "Here you can view all your classes from google classroom", tutorialInstructions2: "Tap on a class here to link it to one of your TRACR classes", tutorialInstructions3: "Colored classes have been linked to TRACR classes and grey classes have not been linked.", tutorialInstructions4: "Linking to Google Classroom allows you to add assignments directly from Google Classroom", tutorialInstructions5: "", tutorialposition: []).tag(12)
                     }
-                }.tabViewStyle(PageTabViewStyle()).frame(height: self.tutorialPageSelected == 0 ? UIScreen.main.bounds.size.height + 110: UIScreen.main.bounds.size.height).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: self.tutorialPageSelected == 0 ? .never : .always))
+                }.tabViewStyle(PageTabViewStyle()).frame(height: self.tutorialPageSelected == 0 ? UIScreen.main.bounds.size.height: UIScreen.main.bounds.size.height).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: self.tutorialPageSelected == 0 ? .never : .always))
             } else {
                 EmptyView()
                 // Fallback on earlier versions
@@ -986,12 +1009,12 @@ struct SettingsView: View {
 struct HelpCenterView: View {
     
     @Environment(\.colorScheme) var colorScheme: ColorScheme
-    let faqtitles = ["Payment", "Data usage", "Report a problem", "Tutorial", "Dark Mode"]
-    let faqtext = ["Payment": "The application is free to use and does not require any in-app purchases.", "Data usage" : "No customer data is used by Tracr and the app does not require wifi to be used.", "Report a problem" : "Problems and bugs within the app can be reported to the following email: tracrteam@gmail.com","Tutorial" : "Questions regarding how to use the app could be solved through the tutorial.", "Dark Mode": "To use our app in dark mode, you have to change this in your phone’s Settings App in Display & Brightness, and that automatically makes our app function in dark mode."]
-    let heights = ["Payment" : 50  , "Data usage" : 50, "Report a problem" : 75, "Tutorial" : 50, "Dark Mode" : 100]
-    let colors = ["Payment" : "one", "Data usage" : "two", "Report a problem" : "three", "Tutorial" : "four", "Dark Mode" : "fifteen"]
+    let faqtitles = ["What are Type Sliders?", "How can I link my Account to Google Classroom?", "How can I clear my data?", "Data Usage", "Track your Performance"]
+    let faqtext = ["What are Type Sliders?": "Type Sliders is a tool that allows you to set a range of time you want to spend per session for an assignment, depending on the type of assignment eg.essay, exam,presentation. To access this feature, go to the home screen, and click on the settings logo on the top-left corner.", "How can I link my Account to Google Classroom?" : "TRACR has a distinguished feature that allows you to connect to your Google Classroom account, so that your classes added in TRACR are linked to your Google Classroom classes, making adding assignments much easier. To connect to Google Classroom, add a class, and click on the blue button stating: “Link to a Google Classroom class +.", "How can I clear my data?" : "Go to the home screen, and click on the settings logo on the top-left corner. And at the bottom of the settings page you will find a red button called “Clear All Data”. However, note that clearing data is irreversible, so the cleared data can not be restored.","Data Usage" : "No user data is used nor collected by TRACR and the app does not require wifi to be used.For more information see the privacy policy at the TRACR website.", "Track your Performance": "TRACR has a feature that allows you to put your grades, allowing you to see long-term progress."]
+    let heights = ["What are Type Sliders?" : 50  , "How can I link my Account to Google Classroom?" : 50, "How can I clear my data?" : 75, "Data Usage" : 50, "Track your Performance" : 100]
+    let colors = ["What are Type Sliders?" : "one", "How can I link my Account to Google Classroom?" : "two", "How can I clear my data?" : "three", "Data Usage" : "four", "Track your Performance" : "fifteen"]
     
-    @State private var selection: Set<String> = ["Payment", "Data usage", "Report a problem", "Tutorial", "Dark Mode"]
+    @State private var selection: Set<String> = ["What are Type Sliders?", "How can I link my Account to Google Classroom?", "How can I clear my data?", "Data Usage", "Track your Performance"]
 
     private func selectDeselect(_ singularassignment: String) {
         if selection.contains(singularassignment) {

@@ -3,6 +3,7 @@ import UIKit
 import SwiftUI
 import GoogleSignIn
 import GoogleAPIClientForREST
+import WidgetKit
 
 class TextFieldManager: ObservableObject {
     @Published var userInput = "" {
@@ -3034,7 +3035,7 @@ struct NewGradeModalView: View {
                                 } catch {
                                     print(error.localizedDescription)
                                 }
-                                masterRunning.uniqueAssignmentName = self.assignmentname
+//                                masterRunning.uniqueAssignmentName = self.assignmentname
 //                                print("G")
                                 //master function shouldn't be run
 //                                masterRunning.masterRunningNow = true
@@ -3588,6 +3589,12 @@ struct EditAssignmentModalView: View {
                                 self.assignmentslist[self.selectedassignment].completed = false
                                 self.assignmentslist[self.selectedassignment].progress =    Int64((Double(self.assignmentslist[self.selectedassignment].totaltime - self.assignmentslist[self.selectedassignment].timeleft)/Double(self.assignmentslist[self.selectedassignment].totaltime )) * 100)
                                 
+                                masterRunning.uniqueAssignmentName = self.nameofassignment
+                                //assignment specific
+                                print("H")
+                                masterRunning.masterRunningNow = true
+                                print("variable changed in editassignmentmodalview")
+                                
                             }
                             
                             
@@ -3597,11 +3604,6 @@ struct EditAssignmentModalView: View {
                                 print(error.localizedDescription)
                             }
 
-                            masterRunning.uniqueAssignmentName = self.nameofassignment
-                            //assignment specific
-                            print("H")
-                            masterRunning.masterRunningNow = true
-                            print("variable changed in editassignmentmodalview")
                             
                             self.NewAssignmentPresenting = false
                         }
@@ -3661,6 +3663,7 @@ struct EditAssignmentModalView: View {
                              }
                                 
                             }
+                            WidgetCenter.shared.reloadTimelines(ofKind: "Today's Tasks")
                           //  masterRunning.masterRunningNow = true
                             
                             self.deleteassignmentallowed = false

@@ -1363,7 +1363,7 @@ struct ProgressView: View {
                                                 }
                                             }.padding(.all, 12).tag(0)
                                             
-                                            if !self.addtimelog.isEmpty {
+//                                            if !self.addtimelog.isEmpty {
                                                 VStack {
                                                     AddTimeClockView(clockType: self.$clockType, dateRange: self.$dateRange).transition(.opacity).padding(.bottom, 4)
                                                     
@@ -1372,7 +1372,7 @@ struct ProgressView: View {
                                                         Image(systemName: "moon.fill").tag(1)
                                                     }.pickerStyle(SegmentedPickerStyle()).frame(width: (UIScreen.main.bounds.size.width-30)*1/3)
                                                 }.tag(1)
-                                            }
+//                                            }
                                         }.tabViewStyle(PageTabViewStyle(indexDisplayMode: .never)).frame(height: 270)
                                     }
                                 }

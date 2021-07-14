@@ -175,7 +175,16 @@ struct TasksProvider: TimelineProvider {
                 if (subassignmentlist[index].enddatetime > nowDate) && (subassignmentlist[index].startdatetime < tomorrowDate) {
                     let startdatetime = subassignmentlist[index].startdatetime
                     let largeBodyText = subassignmentlist[index].assignmentname
-                    let (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
+                    var (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
+                    
+                    if progressCount > 101 {
+                        progressCount = 0
+                    }
+                    
+                    if minorProgressCount > 101 {
+                        progressCount = 0
+                    }
+                    
                     let smallBodyText1 = "\(dateToTime(date: subassignmentlist[index].startdatetime)) - \(dateToTime(date: subassignmentlist[index].enddatetime))"
                     
                     if specificworkhoursview {
@@ -226,8 +235,18 @@ struct TasksProvider: TimelineProvider {
                 if (subassignmentlist[index].enddatetime > nowDate) && (subassignmentlist[index].startdatetime < tomorrowDate) {
                     let startdatetime = subassignmentlist[index].startdatetime
                     let largeBodyText = subassignmentlist[index].assignmentname
-                    let (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
+                    var (progressCount, minorProgressCount) = getProgress(assignmentlist: assignmentlist, subassignmentname: subassignmentlist[index].assignmentname, subassignmentlength: Calendar.current.dateComponents([.minute], from: subassignmentlist[index].startdatetime, to: subassignmentlist[index].enddatetime).minute!)
                     let smallBodyText1 = "\(dateToTime(date: subassignmentlist[index].startdatetime)) - \(dateToTime(date: subassignmentlist[index].enddatetime))"
+                    
+                    if progressCount > 101 {
+                        progressCount = 0
+                    }
+                    
+                    if minorProgressCount > 101 {
+                        progressCount = 0
+                    }
+                    print("ASDASFAFD")
+                    print(progressCount, minorProgressCount)
                     
                     if specificworkhoursview {
                         if startdatetime < nowDate {

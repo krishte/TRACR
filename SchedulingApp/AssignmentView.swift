@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 struct IndividualAssignmentFilterView: View {
     @ObservedObject var assignment: Assignment
@@ -324,6 +325,7 @@ struct IndividualAssignmentFilterView: View {
                                 
                                 simpleSuccess()
                                 
+                                WidgetCenter.shared.reloadTimelines(ofKind: "Today's Tasks")
                               //  masterRunning.masterRunningNow = true
                              }
                          }

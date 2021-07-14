@@ -1123,7 +1123,7 @@ struct WorkHours: View {
                                     RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color(colorlist[getcolorindex(day: day)])).frame(height: 50)
                                     HStack
                                     {
-                                        Text(day).font(.title).fontWeight(.bold).minimumScaleFactor(0.8)//.padding(20)
+                                        Text(day).font(.title).fontWeight(.bold).frame(height: 40 ).minimumScaleFactor(0.6)//.padding(20)
                                         Spacer()
                                         Text("\(storedtimesnonspecific[getcolorindex(day: day)] / 60)h \(storedtimesnonspecific[getcolorindex(day: day)] % 60)min")
                                     }.padding(.horizontal, 20)

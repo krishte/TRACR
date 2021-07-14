@@ -142,9 +142,9 @@ struct IndividualAssignmentFilterView: View {
 
                         let previewduedatetext: String = datedifference == 1 ? "Tomorrow" : (datedifference == 0 ? "Today" : "\(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 3]) \(assignmentduedate.components(separatedBy: " ")[assignmentduedate.components(separatedBy: " ").count - 2])")
                         
-                        let previewduedateweight: Font.Weight = datedifference ?? 0 < 2 ? (Date() > assignment.duedate ? .bold : .semibold) : .light
+                        let previewduedateweight: Font.Weight = datedifference ?? 0 < 2 ? (Date() > assignmentactualduedate ? .bold : .semibold) : .light
                         
-                        let previewduedatecolor: Color = Date() > assignment.duedate ? Color("ohnored") : ((colorScheme == .light) ? Color.black : Color.white)
+                        let previewduedatecolor: Color = Date() > assignmentactualduedate ? Color("ohnored") : ((colorScheme == .light) ? Color.black : Color.white)
                         
                         let previewduedatewidth: CGFloat = previewduedatetext == "Tomorrow" ? UIScreen.main.bounds.size.width/2 - 95 : UIScreen.main.bounds.size.width/2 - 140
                         

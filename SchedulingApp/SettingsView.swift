@@ -711,14 +711,14 @@ struct SettingsView: View {
                                 {
                                     VStack
                                     {
-                                        Image("Home View 1").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 190)
+                                        Image("Home View 1").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 290)
                                         Divider().frame(height: 1)
                                         Text("Specific Times").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                     }
                                     Spacer()
                                     VStack
                                     {
-                                        Image("Home view 2").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 190)
+                                        Image("Home view 2").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 290)
                                         Divider().frame(height: 1)
                                         Text("Daily Checklist").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                     }

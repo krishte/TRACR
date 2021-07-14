@@ -3255,14 +3255,6 @@ struct EditAssignmentModalView: View {
             }
         }
         minutecount %= 60
-        if (hours == 0)
-        {
-            return 6
-        }
-        if (hours != getminhourindex())
-        {
-            return 0
-        }
         return minutecount/5
     }
     
@@ -3390,11 +3382,9 @@ struct EditAssignmentModalView: View {
                         HStack {
                             VStack {
                                 Picker(selection: $hours, label: Text("Hour")) {
-                                    ForEach(0..<hourlist.count) {
-                                        if ($0 >= getminhourindex())
-                                        {
-                                            Text(String(self.hourlist[$0]) + (self.hourlist[$0] == 1 ? " hour" : " hours"))
-                                        }
+                                    ForEach(hourlist[getminhourindex()...].indices) { index in
+                                        Text(String(self.hourlist[index]) + (self.hourlist[index] == 1 ? " hour" : " hours"))
+                                        
                                         
                                      }
                                  }.pickerStyle(WheelPickerStyle())
@@ -3404,21 +3394,21 @@ struct EditAssignmentModalView: View {
 
 
                             VStack {
-                                if (hours == 0)
+                                if (hours > 0)
                                 {
                                     Picker(selection: $minutes, label: Text("Minutes")) {
-                                        ForEach(0..<minutelist.count) {
-                                            if ($0 < minutelist.count && $0 >= 6)
+                                        ForEach(minutelist.indices) { index in
+                                            if (index < minutelist.count)
                                             {
-                                                Text(String(self.minutelist[$0]) + " mins")
+                                                Text(String(self.minutelist[index]) + " mins")
                                             }
                                         }
                                     }.pickerStyle(WheelPickerStyle())
                                 }
-                                else if (hours == getminhourindex())
+                                else if (getminhourindex() == 0 && getminminuteindex() == 0)
                                 {
                                     Picker(selection: $minutes, label: Text("Minutes")) {
-                                        ForEach(minutelist[getminminuteindex()...].indices) { index in
+                                        ForEach(minutelist[6...].indices) { index in
                                             if (index < minutelist.count)
                                             {
                                                 Text(String(self.minutelist[index]) + " mins")
@@ -3429,10 +3419,10 @@ struct EditAssignmentModalView: View {
                                 else
                                 {
                                     Picker(selection: $minutes, label: Text("Minutes")) {
-                                        ForEach(0..<minutelist.count) {
-                                            if ($0 < minutelist.count)
+                                        ForEach(minutelist[getminminuteindex()...].indices) { index in
+                                            if (index < minutelist.count)
                                             {
-                                                Text(String(self.minutelist[$0]) + " mins")
+                                                Text(String(self.minutelist[index]) + " mins")
                                             }
                                         }
                                     }.pickerStyle(WheelPickerStyle())
@@ -3530,7 +3520,20 @@ struct EditAssignmentModalView: View {
                             self.assignmentslist[self.selectedassignment].name = self.nameofassignment
                             self.assignmentslist[self.selectedassignment].duedate = self.selectedDate
                             self.assignmentslist[self.selectedassignment].type = self.assignmenttypes2[self.assignmenttypeval]
-                            let change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
+                            var change: Int64 = 0
+                            if (hours > 0)
+                            {
+                                change = Int64(60*self.hourlist[self.hours+getminhourindex()] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
+                            }
+                            else if (getminhourindex() == 0 && getminminuteindex() == 0)
+                            {
+                                change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes+6]) - self.assignmentslist[self.selectedassignment].timeleft
+                            }
+                            else
+                            {
+                                change = Int64(60*self.hourlist[self.hours+getminhourindex()] + self.minutelist[self.minutes+getminminuteindex()]) - self.assignmentslist[self.selectedassignment].timeleft
+
+                            }
                             self.assignmentslist[self.selectedassignment].timeleft += change
                             self.assignmentslist[self.selectedassignment].totaltime += change
                             
@@ -3670,6 +3673,32 @@ struct EditAssignmentModalView: View {
                 }
                 
             }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline)
+            .onAppear
+            {
+                if (hours > 0)
+                {
+                    if (hours == getminhourindex())
+                    {
+                        minutes -= getminminuteindex()
+                    }
+                    else
+                    {
+                        
+                    }
+                }
+                else
+                {
+                    if (getminminuteindex() <= 6)
+                    {
+                        minutes = 0
+                    }
+                    else
+                    {
+                        minutes -= getminminuteindex()
+                    }
+                }
+                
+            }
         }
 //        if masterRunning.masterRunningNow {
 //            MasterClass().environment(\.managedObjectContext, self.managedObjectContext)

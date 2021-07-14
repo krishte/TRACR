@@ -80,8 +80,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1786"
             endingLineNumber = "1786"
-            landmarkName = "repetitionTextCreator(_:)"
-            landmarkType = "7">
+            landmarkName = "NewFreetimeModalView"
+            landmarkType = "14">
             <Locations>
                <Location
                   uuid = "84018ED3-0F64-41D5-8E04-21351D03EB47 - a33b48e0a919012c"
@@ -128,7 +128,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1015"
             endingLineNumber = "1015"
-            landmarkName = "sheetContent()"
+            landmarkName = "selectDeselect(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -144,8 +144,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1216"
             endingLineNumber = "1216"
-            landmarkName = "body"
-            landmarkType = "24">
+            landmarkName = "ProgressView"
+            landmarkType = "14">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -160,8 +160,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1207"
             endingLineNumber = "1207"
-            landmarkName = "body"
-            landmarkType = "24">
+            landmarkName = "allClassesTrash()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -176,8 +176,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1206"
             endingLineNumber = "1206"
-            landmarkName = "body"
-            landmarkType = "24">
+            landmarkName = "allClassesTrash()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -717,6 +717,7 @@ struct WorkHours: View {
     @State var storedtimesnonspecific: [Int] = [0, 0, 0, 0, 0, 0, 0]
     
     @EnvironmentObject var masterRunning: MasterRunning
+    @State var freetimeedited: Bool = false
     
     @State var refreshID = UUID()
     @State var specificworkhoursview: Bool = true
@@ -812,7 +813,7 @@ struct WorkHours: View {
         {
             self.managedObjectContext.delete(self.freetimelist[index])
         }
-        
+        freetimeedited = true
        
         for i in 0..<7
         {
@@ -838,6 +839,7 @@ struct WorkHours: View {
     }
     
     func savefreetimes() -> Void {
+        freetimeedited = true
         for freetime in freetimelist {
             freetime.startdatetime = freetime.tempstartdatetime
             freetime.enddatetime = freetime.tempenddatetime
@@ -1255,7 +1257,10 @@ struct WorkHours: View {
         {
             let defaults = UserDefaults.standard
             defaults.set(specificworkhoursview, forKey: "specificworktimes")
-            masterRunning.masterRunningNow = true
+            if (freetimeedited)
+            {
+                masterRunning.masterRunningNow = true
+            }
             print("K2")
         }.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.large)
         .toolbar {

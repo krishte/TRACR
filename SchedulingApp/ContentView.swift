@@ -184,6 +184,7 @@ struct ContentView: View {
                    // {
                      //   TabView(selection: $selectedtab)
             //            {
+                    
                     VStack
                     {
                         if (selectedtab == 0)
@@ -192,6 +193,7 @@ struct ContentView: View {
                             {
 //                                Spacer().frame(height: 35)
                                 Spacer()
+
                                 Text("Welcome To TRACR").font(.system(size: 38)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20).padding(.top, 5).lineLimit(1).minimumScaleFactor(0.5)//.padding(.top, -30)//.frame(alignment: .leading)
 //                                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 300)//.padding(.top, -50)
                                 
@@ -503,7 +505,7 @@ struct ContentView: View {
                                 }//.navigationBarTitleDisplayMode(.inline)
                             } 
                         }
-                    }.frame(height: (selectedtab != 5) ? UIScreen.main.bounds.size.height-90 : UIScreen.main.bounds.size.height)
+                    }.frame(height: (selectedtab != 5) ? UIScreen.main.bounds.size.height-90 : (UIDevice.current.hasNotch ? UIScreen.main.bounds.size.height-35 : UIScreen.main.bounds.size.height))
                     //Spacer()
                 //        }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
                     VStack

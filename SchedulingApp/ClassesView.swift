@@ -643,14 +643,7 @@ struct DetailView: View {
                                 Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).scaleEffect(self.scalevalue)
                             }
                         ).shadow(radius: 50)
-                    }.buttonStyle(PlainButtonStyle()).contextMenu {
-                        Button(action: {
-                            self.classlist.count > 0 ? self.NewAssignmentPresenting.toggle() : self.noClassesAlert.toggle()
-                        }) {
-                            Text("Assignment")
-                            Image(systemName: "doc.plaintext")
-                        }
-                    }.animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool), preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {
+                    }.buttonStyle(PlainButtonStyle()).animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool), preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {
                         Alert(title: Text("No Classes Added"), message: Text("Add a Class First"))
                     }
                 }

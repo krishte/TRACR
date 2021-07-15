@@ -178,7 +178,7 @@ struct FreeTimeIndividual: View {
                             let x = Int(round(100*((self.yoffset+self.height))))
                             let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
                             freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
- 
+
                             do {
                                 try self.managedObjectContext.save()
                                 //print("AssignmentTypes rangemin/rangemax changed")

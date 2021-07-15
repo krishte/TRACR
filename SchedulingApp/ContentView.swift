@@ -342,14 +342,14 @@ struct ContentView: View {
                                         {
                                             VStack
                                             {
-                                                Image("Home View 1").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 290)
+                                                Image("Home View 1").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
                                                 Divider().frame(height: 1)
                                                 Text("Specific Times").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                             }
                                             Spacer()
                                             VStack
                                             {
-                                                Image("Home view 2").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 290)
+                                                Image("Home view 2").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
                                                 Divider().frame(height: 1)
                                                 Text("Daily Checklist").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                             }
@@ -505,7 +505,7 @@ struct ContentView: View {
                                 }//.navigationBarTitleDisplayMode(.inline)
                             } 
                         }
-                    }.frame(height: (selectedtab != 5) ? UIScreen.main.bounds.size.height-90 : (UIDevice.current.hasNotch ? UIScreen.main.bounds.size.height-35 : UIScreen.main.bounds.size.height))
+                    }.frame(height: (selectedtab != 5) ? UIScreen.main.bounds.size.height-90 : (UIDevice.current.hasNotch ? UIScreen.main.bounds.size.height-35 : UIScreen.main.bounds.size.height - 5))
                     //Spacer()
                 //        }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
                     VStack

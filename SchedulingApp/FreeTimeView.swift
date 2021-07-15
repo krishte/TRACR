@@ -5,27 +5,27 @@
 //  Created by Charan Vadrevu on 02.01.21.
 //  Copyright © 2021 Tejas Krishnan. All rights reserved.
 //
-
+ 
 import Foundation
 import Combine
 import SwiftUI
-
+ 
 extension UIDevice {
     var hasNotch: Bool {
-        let bottom = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+        let bottom = UIApplication.shared.delegate?.window??.safeAreaInsets.bottom ?? 0
         return bottom > 0
     }
 }
-
+ 
 class FreeTimeEditingView: ObservableObject {
     @Published var editingmode: Bool = true
     @Published var showsavebuttons: Bool = false
     @Published var addingmode: Bool = false
 }
-
+ 
 struct FreeTimeIndividual: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-
+ 
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
     @State var yoffset: CGFloat
@@ -39,7 +39,7 @@ struct FreeTimeIndividual: View {
     @State var draggingup: Bool = false
     @State var draggingdown: Bool = false
     @State var changingheightallowed = true
-
+ 
     @State var xoffset: CGFloat = 0
     @State var inmotion: Bool = false
     
@@ -52,7 +52,7 @@ struct FreeTimeIndividual: View {
                 }
             }
         }
-
+ 
         return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60
     }
     
@@ -66,7 +66,7 @@ struct FreeTimeIndividual: View {
                 }
             }
         }
-
+ 
         if (mindate == Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))) {
             return CGFloat(24*60.35)
         }
@@ -74,11 +74,11 @@ struct FreeTimeIndividual: View {
         return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
     }
     func getoffset() -> CGFloat {
-
+ 
             return self.yoffset
     }
     func getHeight() -> CGFloat {
-
+ 
             return self.height
     }
     func getstarttext() -> String {
@@ -124,7 +124,7 @@ struct FreeTimeIndividual: View {
                             withAnimation(.spring()) {
                                 self.showsavebuttons = false
                             }
-
+ 
                             if self.yoffset >= 0 && self.height >= 30.175 {
                                 if !(self.yoffset == 0 && value.translation.height < 0) {
                                     if (self.changingheightallowed) {
@@ -220,7 +220,7 @@ struct FreeTimeIndividual: View {
                             self.draggingup = true
                             self.draggingdown = true
                         }
-
+ 
                         withAnimation(.easeInOut(duration: 0.1), {
                             self.inmotion = true
                         })
@@ -273,9 +273,9 @@ struct FreeTimeIndividual: View {
                             for (index, freetime) in freetimelist.enumerated() {
                                 if (freetime.startdatetime == self.starttime && freetime.enddatetime == self.endtime) {
                                     if (freetime.monday == dayvals[0] && freetime.tuesday == dayvals[1] && freetime.wednesday == dayvals[2] && freetime.thursday == dayvals[3] && freetime.friday == dayvals[4] && freetime.saturday == dayvals[5] && freetime.sunday == dayvals[6]) {
-
+ 
                                         self.managedObjectContext.delete(self.freetimelist[index])
-
+ 
                                         do {
                                             try self.managedObjectContext.save()
                                             //print("AssignmentTypes rangemin/rangemax changed")
@@ -352,7 +352,7 @@ struct FreeTimeIndividual: View {
                     Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingdown ? 1 : 0)
                 }
             }.cornerRadius(8).offset(x: 20 + self.xoffset, y: self.getoffset())
-
+ 
             HStack {
                 Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(y: self.getoffset() - (self.getHeight()/2) + 15).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 65)
                 Spacer()
@@ -365,7 +365,7 @@ struct FreeTimeIndividual: View {
         }
     }
 }
-
+ 
 struct ObstructingFreeTimes: View {
     @Binding var ObstructingFreeTimeObjectsWhenAdding: [Freetime]
     
@@ -408,7 +408,7 @@ struct ObstructingFreeTimes: View {
                         break
                     }
                 }
-
+ 
                 if shouldAdd {
                     freetimeBlocks.append([ObstructingFreetime.startdatetime, ObstructingFreetime.enddatetime])
                 }
@@ -437,7 +437,7 @@ struct ObstructingFreeTimes: View {
                     PossibleDateBrackets.append([DateObjectToCGFloat(date: freetimeBlocks[i][1]), DateObjectToCGFloat(date: freetimeBlocks[i+1][0])])
                 }
             }
-
+ 
             return PossibleDateBrackets
         }
         
@@ -456,13 +456,13 @@ struct ObstructingFreeTimes: View {
             .onDisappear(perform: removeFromObstructingList)
     }
 }
-
+ 
 struct FreeTimeToAdd: View {
     @State var pdb: [CGFloat]
     @Binding var addFreeTimeCGFloats: [CGFloat]
     
     @Binding var showsavebuttons: Bool
-
+ 
     @State var draggingup: Bool = false
     @State var draggingdown: Bool = false
     
@@ -495,7 +495,7 @@ struct FreeTimeToAdd: View {
         
         return stringitya + ":" + stringityb
     }
-
+ 
     func getendtext() -> String {
         let y = Int(round(100*(self.yoffset + self.height)))
         var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
@@ -537,7 +537,7 @@ struct FreeTimeToAdd: View {
                 }
             }.offset(x: -15, y: self.pdb[0])
         }
-
+ 
         else {
             ZStack {
                 VStack(spacing: 0) {
@@ -546,7 +546,7 @@ struct FreeTimeToAdd: View {
                                 withAnimation(.spring()) {
                                     self.showsavebuttons = false
                                 }
-
+ 
                                 if self.yoffset >= 0 && self.height >= 30.175 {
                                     if !(self.yoffset == 0 && value.translation.height < 0) {
                                         if (self.changingheightallowed) {
@@ -608,7 +608,7 @@ struct FreeTimeToAdd: View {
                         if self.yoffset >= 0 {
                             self.yoffset = self.yoffset + value.translation.height
                         }
-
+ 
                         if self.yoffset < 0 {
                             self.yoffset = 0
                         }
@@ -689,7 +689,7 @@ struct FreeTimeToAdd: View {
                         Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingdown ? 1 : 0)
                     }
                 }.cornerRadius(8).offset(x: 20, y: self.yoffset)
-
+ 
                 HStack {
                     Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).offset(y: self.yoffset - (self.getHeight()/2) + 15).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 65)
                     Spacer()
@@ -698,11 +698,11 @@ struct FreeTimeToAdd: View {
         }
     }
 }
-
-
+ 
+ 
 struct WorkHours: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-
+ 
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
     
@@ -745,7 +745,7 @@ struct WorkHours: View {
             addingselection.insert(singularassignment)
         }
     }
-
+ 
     func getdisplayval(freetimeval: Freetime) -> Bool {
         if (selection.contains("Monday")) {
             return freetimeval.monday
@@ -887,7 +887,7 @@ struct WorkHours: View {
         let y = Int(round(100*(addFreeTimeCGFloats[0])))
         let starttimeval = Int((addFreeTimeCGFloats[0])/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
         let generalstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-
+ 
         let x = Int(round(100*((addFreeTimeCGFloats[1]))))
         let endtimeval =  Int(((addFreeTimeCGFloats[1]))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
         let generalenddatetime = Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
@@ -942,7 +942,7 @@ struct WorkHours: View {
             {
                 VStack {
                     Spacer().frame(height: 5)
-
+ 
                     HStack(spacing: (UIScreen.main.bounds.size.width / 29)) {
                         ForEach(dayslist,  id: \.self) { day in
                             ZStack {
@@ -972,7 +972,7 @@ struct WorkHours: View {
                                         self.freetimeediting.editingmode = true
                                         self.freetimeediting.showsavebuttons = false
                                     }
-
+ 
                                     else {
                                         print("4")
                                         self.selectDeselect(day)
@@ -1203,7 +1203,7 @@ struct WorkHours: View {
                                                         Circle().fill(Color.red).frame(width: 20, height: 20)
                                                     }.offset(x: -12, y: 12)
                                                 }
-
+ 
                                                 Spacer()
                                             }
                                         }
@@ -1296,7 +1296,7 @@ struct WorkHours: View {
 //                                }
 //                            }
 //                        }
-//                        
+//
 //                    }
 //                })
 //                {
@@ -1327,3 +1327,4 @@ struct WorkHours: View {
         }
     }
 }
+

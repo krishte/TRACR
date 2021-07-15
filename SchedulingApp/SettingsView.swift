@@ -147,7 +147,7 @@ struct TutorialPageView: View {
 struct TutorialFirstPageView: View {
     @Binding var tutorialPageSelected: Int
     
-    let TutorialTitles: [String] = ["Home Tab", "Tasks", "Add Time to Assignments", "Add Button", "Adding a Class", "Adding Work Hours", "Classes Tab", "Inside a Class", "Assignments Tab", "Progress Tab", "Progress of Individual Classes", "Google Classroom"]
+    let TutorialTitles: [String] = ["Home Tab", "Tasks", "Reschedule Tasks", "Add Button", "Adding a Class", "Adding Work Hours", "Classes Tab", "Inside a Class", "Assignments Tab", "Progress Tab", "Progress of Individual Classes", "Google Classroom"]
     let TutorialImages: [String] = ["house", "house.fill", "tray.full", "plus.square", "folder.badge.plus", "calendar.badge.plus", "folder", "folder.circle", "doc.plaintext", "chart.bar", "percent", "Google Classroom Square Logo"]
     func getrandomcolor() -> Color
     {
@@ -156,8 +156,10 @@ struct TutorialFirstPageView: View {
         return Color(colorlist[randomInt])
     }
     var body: some View {
-        ZStack {
+//        ZStack {
+        ScrollView {
             VStack(alignment: .leading, spacing: 15) {
+                Spacer().frame(height: 20)
                 HStack(spacing: 23) {
                     Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 80, height: 80).cornerRadius(10)
                     
@@ -185,7 +187,7 @@ struct TutorialFirstPageView: View {
                             Spacer().frame(width: 20)
                             VStack {
                                 HStack {
-                                    Text(TutorialTitles[tag-1]).fontWeight(.bold).font(.system(size: 20))
+                                    Text(TutorialTitles[tag-1]).fontWeight(.bold).font(.system(size: 20)).lineLimit(1).minimumScaleFactor(0.6)
                                     Spacer()
                                 }
                             }.frame(width: UIScreen.main.bounds.size.width - 136)
@@ -193,9 +195,11 @@ struct TutorialFirstPageView: View {
                     }
 
                 }
+                Spacer().frame(height: 20)
              //   Spacer().frame(height:20)
             }
         }
+//        }
     }
 }
 
@@ -224,7 +228,7 @@ struct TutorialView: View {
                         TutorialPageView(tutorialScreenshot: "Inside Progress View", tutorialTitle: "Progress of Individual Classes", tutorialInstructions1: "Inside a Class, a bar graph displays your grades over time for that Class.", tutorialInstructions2: "Underneath, there are a range of interesting statistics and insights to highlight your progress relative to global statistics (only for IB).", tutorialInstructions3: "At the bottom, there is a list of all the Completed Assignments for this Class.", tutorialInstructions4: "", tutorialInstructions5: "", tutorialposition: []).tag(11)
                         TutorialPageView(tutorialScreenshot: "GCTutorial", tutorialTitle: "Google Classroom", tutorialInstructions1: "Here you can view all your classes from google classroom", tutorialInstructions2: "Tap on a class here to link it to one of your TRACR classes", tutorialInstructions3: "Colored classes have been linked to TRACR classes and grey classes have not been linked.", tutorialInstructions4: "Linking to Google Classroom allows you to add assignments directly from Google Classroom", tutorialInstructions5: "", tutorialposition: []).tag(12)
                     }
-                }.tabViewStyle(PageTabViewStyle()).frame(height: UIDevice.current.hasNotch ? UIScreen.main.bounds.size.height : (self.tutorialPageSelected == 0 ? UIScreen.main.bounds.size.height+110 : UIScreen.main.bounds.size.height)).indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: self.tutorialPageSelected == 0 ? .never : .always))
+                }.tabViewStyle(PageTabViewStyle())//.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: self.tutorialPageSelected == 0 ? .never : .always))
             } else {
                 EmptyView()
                 // Fallback on earlier versions
@@ -241,7 +245,7 @@ struct TutorialView: View {
                 {
                     withAnimation(.spring())
                     {
-                        print(UIDevice.current.hasNotch)
+//                        print(UIDevice.current.hasNotch)
                         tutorialPageSelected = 0
                     }
                 })
@@ -735,14 +739,14 @@ struct SettingsView: View {
                                 {
                                     VStack
                                     {
-                                        Image("Home View 1").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 290)
+                                        Image("Home View 1").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
                                         Divider().frame(height: 1)
                                         Text("Specific Times").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                     }
                                     Spacer()
                                     VStack
                                     {
-                                        Image("Home view 2").resizable().frame(width: UIScreen.main.bounds.size.width/2-50, height: 290)
+                                        Image("Home view 2").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
                                         Divider().frame(height: 1)
                                         Text("Daily Checklist").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
                                     }
@@ -1051,6 +1055,7 @@ struct HelpCenterView: View {
                             }
                         }
                     }.animation(.spring())
+                    Spacer().frame(height: 20)
                 }).animation(.spring())
             }.navigationBarItems(trailing: Button(action: {
                 if (self.selection.count < 5) {

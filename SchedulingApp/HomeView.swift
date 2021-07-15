@@ -11,6 +11,7 @@ import UIKit
 import SwiftUI
 import GoogleSignIn
 import GoogleAPIClientForREST
+import WidgetKit
  
 extension Calendar {
     static let gregorian = Calendar(identifier: .gregorian)
@@ -2361,6 +2362,7 @@ struct IndividualSubassignmentView: View {
                                 print(error.localizedDescription)
                             }
                             simpleSuccess()
+                            WidgetCenter.shared.reloadTimelines(ofKind: "Today's Tasks")
                           // masterRunning.masterRunningNow = true
                           //  masterRunning.displayText = true
                         }

@@ -31,12 +31,11 @@ struct FreeTimeIndividual: View {
     @State var yoffset: CGFloat
     @State var height: CGFloat
     @State var dayvals: [Bool]
-    @Binding var starttime: Date
-    @Binding var endtime: Date
+    @State var starttime: Date
+    @State var endtime: Date
     @Binding var editingmode: Bool
     @Binding var showsavebuttons: Bool
     @State var freetimeobject: Freetime
-    @Binding var id: UUID
     @State var draggingup: Bool = false
     @State var draggingdown: Bool = false
     @State var changingheightallowed = true
@@ -174,21 +173,18 @@ struct FreeTimeIndividual: View {
                             self.height -= roundedval
                             let y = Int(round(100*(self.yoffset)))
                             let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
-                            starttime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-                           // freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                            freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                             
                             let x = Int(round(100*((self.yoffset+self.height))))
                             let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
-                          //  freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-                            endtime = Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-                          //  print("showsavebuttons", showsavebuttons)
-                          //  id = UUID()
-//                            do {
-//                                try self.managedObjectContext.save()
-//                                //print("AssignmentTypes rangemin/rangemax changed")
-//                            } catch {
-//                                print(error.localizedDescription)
-//                            }
+                            freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+
+                            do {
+                                try self.managedObjectContext.save()
+                                //print("AssignmentTypes rangemin/rangemax changed")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
                         }
                     })
                     
@@ -255,20 +251,17 @@ struct FreeTimeIndividual: View {
                         self.yoffset = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09)
                         let y = Int(round(100*(self.yoffset)))
                         let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
-                        starttime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-                      //  freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                        freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                         
                         let x = Int(round(100*((self.yoffset+self.height))))
                         let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
-                       // freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-                        endtime = Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-//
-//                        do {
-//                            try self.managedObjectContext.save()
-//                            //print("AssignmentTypes rangemin/rangemax changed")
-//                        } catch {
-//                            print(error.localizedDescription)
-//                        }
+                        freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                        do {
+                            try self.managedObjectContext.save()
+                            //print("AssignmentTypes rangemin/rangemax changed")
+                        } catch {
+                            print(error.localizedDescription)
+                        }
                     }
                     
                     else {
@@ -341,21 +334,18 @@ struct FreeTimeIndividual: View {
                             
                             let y = Int(round(100*(self.yoffset)))
                             let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
-                          //  freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-                            starttime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                            freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                             
                             let x = Int(round(100*((self.yoffset+self.height))))
                             let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
-                            endtime = Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
-
-                          //  freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+                            freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                             
-//                            do {
-//                                try self.managedObjectContext.save()
-//                                //print("AssignmentTypes rangemin/rangemax changed")
-//                            } catch {
-//                                print(error.localizedDescription)
-//                            }
+                            do {
+                                try self.managedObjectContext.save()
+                                //print("AssignmentTypes rangemin/rangemax changed")
+                            } catch {
+                                print(error.localizedDescription)
+                            }
                         }
                     })
                     
@@ -730,9 +720,6 @@ struct WorkHours: View {
     @State var PossibleDateBrackets: [[CGFloat]] = [[CGFloat(0), CGFloat(24 * 60.35)]]
     @State var addFreeTimeCGFloats: [CGFloat] = []
     
-    @State var freetimestartdatetimelist: [Date] = []
-    @State var freetimeenddatetimelist: [Date] = []
-    
     @State var pressing: Bool = false
     @State var storedtimesnonspecific: [Int] = [0, 0, 0, 0, 0, 0, 0]
     
@@ -860,10 +847,9 @@ struct WorkHours: View {
     
     func savefreetimes() -> Void {
         freetimeedited = true
-        for (index, freetime) in freetimelist.enumerated() {
-            print(freetimestartdatetimelist[index].description, freetimeenddatetimelist[index].description)
-            freetime.startdatetime = freetimestartdatetimelist[index]
-            freetime.enddatetime = freetimeenddatetimelist[index]
+        for freetime in freetimelist {
+            freetime.startdatetime = freetime.tempstartdatetime
+            freetime.enddatetime = freetime.tempenddatetime
             do {
                 try self.managedObjectContext.save()
                 //print("AssignmentTypes rangemin/rangemax changed")
@@ -881,11 +867,9 @@ struct WorkHours: View {
     }
     
     func cancelfreetimes() -> Void {
-        for (index, freetime) in freetimelist.enumerated() {
+        for freetime in freetimelist {
             freetime.tempstartdatetime = freetime.startdatetime
             freetime.tempenddatetime = freetime.enddatetime
-            freetimestartdatetimelist[index] = freetime.startdatetime
-            freetimeenddatetimelist[index] = freetime.enddatetime
             do {
                 try self.managedObjectContext.save()
                 //print("AssignmentTypes rangemin/rangemax changed")
@@ -930,13 +914,6 @@ struct WorkHours: View {
                 print(error.localizedDescription)
             }
         }
-        for (index, freetime) in freetimelist.enumerated()
-        {
-            freetimestartdatetimelist = []
-            freetimeenddatetimelist = []
-            freetimestartdatetimelist.append(freetime.startdatetime)
-            freetimeenddatetimelist.append(freetime.enddatetime)
-        }
         
         masterRunning.masterRunningNow = true
         print("L")
@@ -957,17 +934,7 @@ struct WorkHours: View {
         }
         return 0
     }
-    func getfreetimeobjectindex(freetime2: Freetime) -> Int
-    {
-        for (index, freetime) in freetimelist.enumerated()
-        {
-            if freetime2 == freetime
-            {
-                return index
-            }
-        }
-        return 0
-    }
+    
     var body: some View {
         VStack {
         ZStack {
@@ -1078,10 +1045,7 @@ struct WorkHours: View {
                                                 
                                                 else {
                                                     if (getdisplayval(freetimeval: freetime)) {
-                                                        if (freetimestartdatetimelist.count > 0)
-                                                        {
-                                                            FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: $freetimestartdatetimelist[getfreetimeobjectindex(freetime2: freetime)], endtime: $freetimeenddatetimelist[getfreetimeobjectindex(freetime2: freetime)], editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime, id: self.$refreshID)
-                                                        }
+                                                        FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime)
                                                     }
                                                 }
                                             }.id(self.refreshID)
@@ -1143,7 +1107,7 @@ struct WorkHours: View {
                                         }.padding(.all, 7).padding(.leading, -7)
                                     }
                                 }
-                            }.background(Color("ftaddmenubg")).cornerRadius(14).padding(.all, 14).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2).id(refreshID)
+                            }.background(Color("ftaddmenubg")).cornerRadius(14).padding(.all, 14).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
                         }
                     }
                 }
@@ -1268,11 +1232,6 @@ struct WorkHours: View {
         {
             let defaults = UserDefaults.standard
             specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
-            for freetime in freetimelist
-            {
-                freetimestartdatetimelist.append(freetime.startdatetime)
-                freetimeenddatetimelist.append(freetime.enddatetime)
-            }
             if (!specificworkhoursview)
             {
                 for freetime in freetimelist
@@ -1300,7 +1259,6 @@ struct WorkHours: View {
                 }
         
             }
-
             
         }.onDisappear
         {

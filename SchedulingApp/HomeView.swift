@@ -309,6 +309,9 @@ struct SubassignmentAddTimeAction: View {
     @FetchRequest(entity: AddTimeLog.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \AddTimeLog.name, ascending: true)])
     var addtimeloglist: FetchedResults<AddTimeLog>
     
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    var classlist: FetchedResults<Classcool>
+    
     @EnvironmentObject var addTimeSubassignment: AddTimeSubassignment
     @EnvironmentObject var actionViewPresets: ActionViewPresets
 
@@ -502,6 +505,12 @@ struct SubassignmentAddTimeAction: View {
                         if element.progress == 100 {
                             element.completed = true
                             lastTaskAndCompleted = true
+                            
+                            for classity in self.classlist {
+                                if (classity.originalname == element.subject) {
+                                    classity.assignmentnumber -= 1
+                                }
+                            }
                         }
                     }
                 }
@@ -540,6 +549,9 @@ struct SubassignmentBacklogAction: View {
     @FetchRequest(entity: Subassignmentnew.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
     
     var subassignmentlist: FetchedResults<Subassignmentnew>
+    
+    @FetchRequest(entity: Classcool.entity(), sortDescriptors: [])
+    var classlist: FetchedResults<Classcool>
     
     @State var subPageType: String = "Introduction"
     @State var subassignmentcompletionpercentage: Double = 0
@@ -917,6 +929,12 @@ struct SubassignmentBacklogAction: View {
                         if element.progress == 100 {
                             element.completed = true
                             lastTaskAndCompleted = true
+                            
+                            for classity in self.classlist {
+                                if (classity.originalname == element.subject) {
+                                    classity.assignmentnumber -= 1
+                                }
+                            }
                         }
                     }
                 }

@@ -294,7 +294,7 @@ struct GoogleUnsignedinView: View
     //                        }
                 if (googleDelegate.signedIn)
                 {
-                    Text("You're succesfully signed in!")
+                    Text("You're succesfully signed in!").font(.title3).fontWeight(.light).padding(.vertical, 6)
                 }
                 else
                 {
@@ -303,9 +303,10 @@ struct GoogleUnsignedinView: View
                     }) {
                         Image("Google Sign In Button with Text").resizable().frame(width: 382/1.5, height: 90/1.5).padding(.horizontal, 60).shadow(radius: 3, x: -2, y: 2)
                     }.buttonStyle(PlainButtonStyle())
+                    Text("Or Continue with the Setup").font(.title3).fontWeight(.light).padding(.vertical, 6)
                 }
                 
-                Text("Or Continue with the Setup").font(.title3).fontWeight(.light).padding(.vertical, 6)
+                
 
             Spacer()
             }
@@ -342,7 +343,7 @@ struct OverallGoogleView: View {
                     }.tabViewStyle(PageTabViewStyle()).frame(width: UIScreen.main.bounds.size.width-40, height: 400, alignment: .leading)
                     .onReceive(self.GCtimer, perform: { _ in
                         withAnimation {
-                            print(self.currentPageGCPreview)
+                            //print(self.currentPageGCPreview)
                             self.currentPageGCPreview = self.currentPageGCPreview < 1 ? self.currentPageGCPreview + 1 : 0
                         }
                     })

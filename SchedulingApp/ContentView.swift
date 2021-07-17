@@ -164,6 +164,7 @@ struct ContentView: View {
 
         }
         print("width", UIScreen.main.bounds.size.width, "height", UIScreen.main.bounds.size.height)
+        print("hasnotch", UIDevice.current.hasNotch)
         
     }
     @State var showingtutorialview = false
@@ -189,104 +190,108 @@ struct ContentView: View {
                     {
                         if (selectedtab == 0)
                         {
-                            VStack
+                            NavigationView
                             {
-//                                Spacer().frame(height: 35)
-                                Spacer()
+                                VStack
+                                {
+                                    //Spacer().frame(height: UIDevice.current.hasNotch ? 150 : 0)
+                                   // Spacer()
 
-                                Text("Welcome To TRACR").font(.system(size: 38)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20).padding(.top, 5).lineLimit(1).minimumScaleFactor(0.5)//.padding(.top, -30)//.frame(alignment: .leading)
-//                                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 300)//.padding(.top, -50)
-                                
-//                                Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().aspectRatio(contentMode: .fit).frame(width: 200)
-                                
-                                Spacer().frame(height: 10)
-                                
-                                Text("An app designed to help you stay on top of your schoolwork.").fontWeight(.light).padding(.horizontal, 20).lineLimit(2).minimumScaleFactor(0.95)
-                                
-                                Spacer().frame(height: 16)
-                                
-                                ScrollView(.vertical, showsIndicators: false) {
-                                    VStack(spacing: 25) {
-                                        HStack {
-                                            Image(systemName: "calendar").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color("freetimeblue")).frame(width: 45)
-                                            Spacer().frame(width: 20)
-                                            VStack {
-                                                HStack {
-                                                    Text("Work Hours").fontWeight(.bold)
-                                                    Spacer()
-                                                }
-                                                HStack {
-                                                    Text("Schedule your tasks according to your preferred work hours").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
-                                                    Spacer()
-                                                }.frame(height: 50)
-                                            }.frame(width: UIScreen.main.bounds.size.width - 136)
-                                        }.padding(.horizontal, 40)
-                                        
-                                        HStack {
-                                            Image(systemName: "folder").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.red).frame(width: 45)
-                                            Spacer().frame(width: 20)
-                                            VStack {
-                                                HStack {
-                                                Text("Classes").fontWeight(.bold)
-                                                    Spacer()
-                                                }
-                                                HStack {
-                                                    Text("Keep track of work from all your classes").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
-                                                    Spacer()
-                                                }.frame(height: 50)
-                                            }.frame(width: UIScreen.main.bounds.size.width - 136)
-                                        }.padding(.horizontal, 40)
-                                        
-                                        HStack {
-                                            Image(systemName: "doc.plaintext").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.blue).frame(width: 45)
-                                            Spacer().frame(width: 20)
-                                            VStack {
-                                                HStack {
-                                                    Text("Assignments").fontWeight(.bold)
-                                                    Spacer()
-                                                }
-                                                HStack {
-                                                    Text("Complete or reschedule assignments for a later time").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
-                                                    Spacer()
-                                                }.frame(height: 50)
-                                            }.frame(width: UIScreen.main.bounds.size.width - 136)
-                                        }.padding(.horizontal, 40)
-                                        
-                                        HStack {
-                                            Image(systemName: "chart.bar").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.green).frame(width: 45)
-                                            Spacer().frame(width: 20)
-                                            VStack {
-                                                HStack {
-                                                    Text("Progress").fontWeight(.bold)
-                                                    Spacer()
-                                                }
-                                                HStack {
-                                                    Text("Keep track of your achievements and progress").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
-                                                    Spacer()
-                                                }.frame(height: 50)
-                                            }.frame(width: UIScreen.main.bounds.size.width - 136)
-                                        }.padding(.horizontal, 40)
-                                        
-                                        HStack {
-                                            Image(systemName: "tray.full.fill").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.orange).frame(width: 45)
-                                            Spacer().frame(width: 20)
-                                            VStack {
-                                                HStack {
-                                                    Text("Tasks Backlog").fontWeight(.bold)
-                                                    Spacer()
-                                                }
-                                                HStack {
-                                                    Text("Never fall behind on tasks").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
-                                                    Spacer()
-                                                }.frame(height: 25)
-                                            }.frame(width: UIScreen.main.bounds.size.width - 136)
-                                        }.padding(.horizontal, 40)
-                                    }
-                                }.frame(height: UIScreen.main.bounds.size.height - 240)
-                                
-//                                Spacer()
-//                                Spacer()
-                            }.tag(0)
+                                    Text("Welcome To TRACR").font(.system(size: 38)).fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width-40, alignment: .leading).padding(.horizontal, 20).padding(.top, 40).lineLimit(1).minimumScaleFactor(0.5)//.padding(.top, -30)//.frame(alignment: .leading)
+    //                                Image("TracrIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 300)//.padding(.top, -50)
+                                    
+    //                                Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().aspectRatio(contentMode: .fit).frame(width: 200)
+                                    
+                                    Spacer().frame(height: 10)
+                                    
+                                    Text("An app designed to help you stay on top of your schoolwork.").fontWeight(.light).padding(.horizontal, 20).lineLimit(2).minimumScaleFactor(0.95).frame(width: UIScreen.main.bounds.size.width, height: 50)
+                                    
+                                    Spacer().frame(height: 16)
+                                    
+                                    ScrollView(.vertical, showsIndicators: false) {
+                                        VStack(spacing: 25) {
+                                            HStack {
+                                                Image(systemName: "calendar").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color("freetimeblue")).frame(width: 45)
+                                                Spacer().frame(width: 20)
+                                                VStack {
+                                                    HStack {
+                                                        Text("Work Hours").fontWeight(.bold)
+                                                        Spacer()
+                                                    }
+                                                    HStack {
+                                                        Text("Schedule your tasks according to your preferred work hours").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
+                                                        Spacer()
+                                                    }.frame(height: 50)
+                                                }.frame(width: UIScreen.main.bounds.size.width - 136)
+                                            }.padding(.horizontal, 40)
+                                            
+                                            HStack {
+                                                Image(systemName: "folder").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.red).frame(width: 45)
+                                                Spacer().frame(width: 20)
+                                                VStack {
+                                                    HStack {
+                                                    Text("Classes").fontWeight(.bold)
+                                                        Spacer()
+                                                    }
+                                                    HStack {
+                                                        Text("Keep track of work from all your classes").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
+                                                        Spacer()
+                                                    }.frame(height: 50)
+                                                }.frame(width: UIScreen.main.bounds.size.width - 136)
+                                            }.padding(.horizontal, 40)
+                                            
+                                            HStack {
+                                                Image(systemName: "doc.plaintext").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.blue).frame(width: 45)
+                                                Spacer().frame(width: 20)
+                                                VStack {
+                                                    HStack {
+                                                        Text("Assignments").fontWeight(.bold)
+                                                        Spacer()
+                                                    }
+                                                    HStack {
+                                                        Text("Complete or reschedule assignments for a later time").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
+                                                        Spacer()
+                                                    }.frame(height: 50)
+                                                }.frame(width: UIScreen.main.bounds.size.width - 136)
+                                            }.padding(.horizontal, 40)
+                                            
+                                            HStack {
+                                                Image(systemName: "chart.bar").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.green).frame(width: 45)
+                                                Spacer().frame(width: 20)
+                                                VStack {
+                                                    HStack {
+                                                        Text("Progress").fontWeight(.bold)
+                                                        Spacer()
+                                                    }
+                                                    HStack {
+                                                        Text("Keep track of your achievements and progress").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
+                                                        Spacer()
+                                                    }.frame(height: 50)
+                                                }.frame(width: UIScreen.main.bounds.size.width - 136)
+                                            }.padding(.horizontal, 40)
+                                            
+                                            HStack {
+                                                Image(systemName: "tray.full.fill").resizable().aspectRatio(contentMode: .fit).foregroundColor(Color.orange).frame(width: 45)
+                                                Spacer().frame(width: 20)
+                                                VStack {
+                                                    HStack {
+                                                        Text("Tasks Backlog").fontWeight(.bold)
+                                                        Spacer()
+                                                    }
+                                                    HStack {
+                                                        Text("Never fall behind on tasks").fontWeight(.light).lineLimit(2).minimumScaleFactor(0.95)
+                                                        Spacer()
+                                                    }.frame(height: 25)
+                                                }.frame(width: UIScreen.main.bounds.size.width - 136)
+                                            }.padding(.horizontal, 40)
+                                        }
+                                    }.frame(height: UIScreen.main.bounds.size.height - 300)
+
+                                    
+    //                                Spacer()
+    //                                Spacer()
+                                }.tag(0).navigationTitle("Welcome!").navigationBarTitleDisplayMode(.inline)
+                            }
                         }
                         if (selectedtab == 1)
                         {
@@ -298,6 +303,7 @@ struct ContentView: View {
                             NavigationView
                             {
                                 GoogleUnsignedinView().tag(1)
+
                             }.navigationTitle("Google Classroom").navigationBarTitleDisplayMode(.inline)
                         }
                         if (selectedtab == 2)
@@ -373,80 +379,7 @@ struct ContentView: View {
                                     }
                                     .listRowInsets(EdgeInsets())
                                     .background(Color(UIColor.systemGroupedBackground))
-                                    
-//                                }
-                                
-                                
-                                
-                                
-//                               VStack
-//                               {
-//                                Spacer().frame(height: 20)
-//                                    HStack
-//                                    {
-//                                        Spacer()
-//                                        Button(action:
-//                                                {
-//                                                    worktype1selected = true
-//                                                })
-//                                        {
-//                                            ZStack
-//                                            {
-//                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.clear).frame(width:UIScreen.main.bounds.size.width/2)
-//                                                if (worktype1selected)
-//                                                {
-//                                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width:UIScreen.main.bounds.size.width/2 - 20 )
-//                                                }
-//                                                TabView
-//                                                {
-//                                                    Image("WorkHoursType1").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
-//                                                    Image("HomeViewType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
-//                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).frame(height: 440)
-//                                            }.offset(x: 10)
-//                                        }
-//                                        Spacer().frame(width: 20)
-//                                        Button(action:
-//                                                {
-//                                                    worktype1selected = false
-//                                                })
-//                                        {
-//                                            ZStack
-//                                            {
-//                                                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.clear).frame(width:UIScreen.main.bounds.size.width/2)
-//                                                if (!worktype1selected)
-//                                                {
-//                                                    RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width:UIScreen.main.bounds.size.width/2 - 20 )
-//                                                }
-//                                                TabView
-//                                                {
-//                                                    Image("WorkHoursType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
-//                                                    Image("HomeViewType2").resizable().aspectRatio(contentMode: .fit).frame(width: UIScreen.main.bounds.size.width/2-10, height: 400).padding(.vertical, 20)
-//                                                }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).frame(height: 440)
-//                                            }.offset(x: -10)
-//                                        }
-//                                        Spacer()
-//                                    }
-//                                Spacer().frame(height: 10)
-//                                    HStack
-//                                    {
-//                                        Spacer()
-//                                        VStack
-//                                        {
-//                                            Text("Option 1").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-40)
-//                                            Text("This option requires you only to select amounts of time to work on each day. For example, you could set yourself 5 hours on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
-//                                            Spacer()
-//                                        }
-//                                        Spacer().frame(width: 20)
-//                                        VStack
-//                                        {
-//                                            Text("Option 2").fontWeight(.bold).frame(width: UIScreen.main.bounds.size.width/2-40)
-//                                            Text("This option requires you to select amonts of time to work on each day in addition to when the time will take place. For example, you could set yourself 5 hours from 8am to 13pm on Mondays.").frame(width: UIScreen.main.bounds.size.width/2-40)
-//                                            Spacer()
-//                                        }
-//                                        Spacer()
-//                                    }
-//
-//                               }
+
                             }.navigationTitle("Scheduling Options").navigationBarTitleDisplayMode(.inline)
                             }.onDisappear {
                                 worktype1selected = self.selectedWorkHours == 0 ? false : true
@@ -478,7 +411,8 @@ struct ContentView: View {
                                     Spacer()
 
                                     HStack {
-                                        NavigationLink(destination: TutorialView().navigationTitle("Tutorial").navigationBarTitleDisplayMode(.inline)) {
+                                        NavigationLink(destination: TutorialView().navigationTitle("Tutorial").navigationBarTitleDisplayMode(.inline))
+                                        {
                                             ZStack {
                                                 Rectangle().fill(Color.clear).frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 70)
                                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.orange).frame(width: (UIScreen.main.bounds.size.width-50)/2, height: 50)
@@ -501,11 +435,11 @@ struct ContentView: View {
                                         }
                                     }.frame(width: UIScreen.main.bounds.size.width-40)
                                     
-                                    Spacer().frame(height: 20)
-                                }//.navigationBarTitleDisplayMode(.inline)
-                            } 
+                                   //Spacer().frame(height: 20)
+                                }.navigationTitle("Finalizing Setup").navigationBarTitleDisplayMode(.inline)
+                            }
                         }
-                    }.frame(height: (selectedtab != 5) ? UIScreen.main.bounds.size.height-90 : (UIDevice.current.hasNotch ? UIScreen.main.bounds.size.height-35 : UIScreen.main.bounds.size.height - 5))
+                    }.frame(height: (selectedtab != 5) ? UIScreen.main.bounds.size.height-90 : (UIDevice.current.hasNotch ? UIScreen.main.bounds.size.height-20 : UIScreen.main.bounds.size.height - 20))
                     //Spacer()
                 //        }.indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .always)).tabViewStyle(PageTabViewStyle()).navigationBarTitle("Setup", displayMode: .inline)
                     VStack

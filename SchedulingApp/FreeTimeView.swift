@@ -28,6 +28,7 @@ struct FreeTimeIndividual: View {
  
     @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
     var freetimelist: FetchedResults<Freetime>
+    
     @State var yoffset: CGFloat
     @State var height: CGFloat
     @State var dayvals: [Bool]
@@ -36,6 +37,7 @@ struct FreeTimeIndividual: View {
     @Binding var editingmode: Bool
     @Binding var showsavebuttons: Bool
     @State var freetimeobject: Freetime
+    @Binding var refreshID: UUID
     @State var draggingup: Bool = false
     @State var draggingdown: Bool = false
     @State var changingheightallowed = true
@@ -163,6 +165,7 @@ struct FreeTimeIndividual: View {
                         if (!self.editingmode) {
                             withAnimation(.spring()) {
                                 self.showsavebuttons = true
+
                             }
                             withAnimation(.spring()) {
                                 self.draggingup = false
@@ -188,7 +191,7 @@ struct FreeTimeIndividual: View {
                         }
                     })
                     
-                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingup ? 1 : 0)
+                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.showsavebuttons ? 1 : 0)
                 }.frame(width: UIScreen.main.bounds.size.width - 80, height: 10)
                 
                 RoundedRectangle(cornerRadius:  0, style: .continuous).fill(Color("freetimeblue")).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: self.editingmode ? 10 : 0, coordinateSpace: .local).onChanged { value in
@@ -325,6 +328,7 @@ struct FreeTimeIndividual: View {
                         if (!self.editingmode) {
                             withAnimation(.spring()) {
                                 self.showsavebuttons = true
+                                
                             }
                             withAnimation(.spring()) {
                                 self.draggingdown = false
@@ -349,7 +353,7 @@ struct FreeTimeIndividual: View {
                         }
                     })
                     
-                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingdown ? 1 : 0)
+                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.showsavebuttons ? 1 : 0)
                 }
             }.cornerRadius(8).offset(x: 20 + self.xoffset, y: self.getoffset())
  
@@ -462,6 +466,7 @@ struct FreeTimeToAdd: View {
     @Binding var addFreeTimeCGFloats: [CGFloat]
     
     @Binding var showsavebuttons: Bool
+    @Binding var refreshID: UUID
  
     @State var draggingup: Bool = false
     @State var draggingdown: Bool = false
@@ -597,7 +602,7 @@ struct FreeTimeToAdd: View {
                             self.addFreeTimeCGFloats[1] = self.yoffset + self.height
                         })
                         
-                        Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingup ? 1 : 0)
+                        Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.showsavebuttons ? 1 : 0)
                     }.frame(width: UIScreen.main.bounds.size.width - 80, height: 10)
                     
                     RoundedRectangle(cornerRadius:  0, style: .continuous).fill(Color.green).frame(width: UIScreen.main.bounds.size.width - 80, height: self.getHeight() - 20).gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local).onChanged { value in
@@ -686,7 +691,7 @@ struct FreeTimeToAdd: View {
                             self.addFreeTimeCGFloats[1] = self.yoffset + self.height
                         })
                         
-                        Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.draggingdown ? 1 : 0)
+                        Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.showsavebuttons ? 1 : 0)
                     }
                 }.cornerRadius(8).offset(x: 20, y: self.yoffset)
  
@@ -711,7 +716,7 @@ struct WorkHours: View {
     var dayslist: [String] = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     @State private var selection: Set<String> = ["Monday"]
     @State private var addingselection: Set<String> = ["Monday"]
-    @ObservedObject var freetimeediting: FreeTimeEditingView = FreeTimeEditingView()
+    @State var freetimeediting: FreeTimeEditingView = FreeTimeEditingView()
     var colorlist: [String] = ["one", "two", "three", "four", "five", "six", "seven"]
     @State var ObstructingFreeTimeObjectsWhenAdding: [Freetime] = []
     
@@ -725,6 +730,7 @@ struct WorkHours: View {
     
     @EnvironmentObject var masterRunning: MasterRunning
     @State var freetimeedited: Bool = false
+    @State var scaleValue = 1.00
     
     @State var refreshID = UUID()
     @State var specificworkhoursview: Bool = true
@@ -1045,14 +1051,30 @@ struct WorkHours: View {
                                                 
                                                 else {
                                                     if (getdisplayval(freetimeval: freetime)) {
-                                                        FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime)
+                                                        FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime, refreshID: self.$refreshID).onLongPressGesture(minimumDuration: 0.45, pressing: { _ in
+                                                            //do something to give indication that something is happening
+//                                                            withAnimation(.spring())
+//                                                            {
+//                                                                scaleValue = 0.9
+//                                                            }
+
+                                                        }) {
+                                                            if !self.freetimeediting.addingmode {
+                                                                self.freetimeediting.showsavebuttons = true
+                                                                self.freetimeediting.editingmode = false
+                                                                
+                                                                refreshID = UUID()
+                                                            }
+                                                        //    scaleValue = 1.0
+                                                            refreshID = UUID()
+                                                        }.scaleEffect(CGFloat(scaleValue))//.environment(\.managedObjectContext, self.managedObjectContext)
                                                     }
                                                 }
                                             }.id(self.refreshID)
                                                 
                                             if self.freetimeediting.addingmode {
                                                 ForEach(self.PossibleDateBrackets, id: \.self) { PossibleDateBracket in
-                                                    FreeTimeToAdd(pdb: [PossibleDateBracket[0], PossibleDateBracket[1]], addFreeTimeCGFloats: self.$addFreeTimeCGFloats, showsavebuttons: self.$freetimeediting.showsavebuttons)
+                                                    FreeTimeToAdd(pdb: [PossibleDateBracket[0], PossibleDateBracket[1]], addFreeTimeCGFloats: self.$addFreeTimeCGFloats, showsavebuttons: self.$freetimeediting.showsavebuttons, refreshID: self.$refreshID)
                                                 }
                                             }
                                         }
@@ -1107,7 +1129,7 @@ struct WorkHours: View {
                                         }.padding(.all, 7).padding(.leading, -7)
                                     }
                                 }
-                            }.background(Color("ftaddmenubg")).cornerRadius(14).padding(.all, 14).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2)
+                            }.background(Color("ftaddmenubg")).cornerRadius(14).padding(.all, 14).shadow(color: (colorScheme == .light ? .gray : .black), radius: 3, x: 2, y: 2).id(refreshID)
                         }
                     }
                 }
@@ -1190,6 +1212,7 @@ struct WorkHours: View {
                             Button(action: {
                                 self.freetimeediting.addingmode = true
                                 self.freetimeediting.showsavebuttons = true
+                                refreshID = UUID()
                             }) {
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(20).overlay(
                                     ZStack {
@@ -1317,6 +1340,7 @@ struct WorkHours: View {
                                 if self.freetimeediting.editingmode {
                                     self.savefreetimes()
                                 }
+                                refreshID = UUID()
                             }
                         }) {
                             Text(self.freetimeediting.addingmode ? "" : (self.freetimeediting.editingmode ? "Edit" : "Save")).fontWeight(.bold).foregroundColor(Color.blue)

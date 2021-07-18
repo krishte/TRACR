@@ -365,7 +365,16 @@ struct ContentView: View {
                                             Picker(selection: self.$selectedWorkHours, label: Text("Scheduling Options")) {
                                                 Text("Specific Times").tag(0)
                                                 Text("Daily Checklist").tag(1)
-                                            }.pickerStyle(SegmentedPickerStyle())
+                                            }.pickerStyle(SegmentedPickerStyle()).onChange(of: self.selectedWorkHours)
+                                            {
+                                                _ in
+                                                worktype1selected = self.selectedWorkHours == 0 ? false : true
+                                                let defaults = UserDefaults.standard
+                                                let defaultsWidget = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
+                                                
+                                                defaults.set(!worktype1selected, forKey: "specificworktimes")
+                                                defaultsWidget?.set(!worktype1selected, forKey: "specificworktimes")
+                                            }
                                         }
                                         
                                         VStack {
@@ -379,7 +388,15 @@ struct ContentView: View {
                                         .listRowInsets(EdgeInsets())
                                         .background(Color(UIColor.systemGroupedBackground))
 
-                                    }.navigationTitle("Scheduling Options").navigationBarTitleDisplayMode(.inline)
+                                    }.navigationTitle("Scheduling Options").navigationBarTitleDisplayMode(.inline).onDisappear {
+                                        print("selection disappeared")
+                                        worktype1selected = self.selectedWorkHours == 0 ? false : true
+                                        let defaults = UserDefaults.standard
+                                        let defaultsWidget = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
+                                        
+                                        defaults.set(!worktype1selected, forKey: "specificworktimes")
+                                        defaultsWidget?.set(!worktype1selected, forKey: "specificworktimes")
+                                    }
                                 }
                                 else
                                 {
@@ -390,13 +407,6 @@ struct ContentView: View {
                                 
                                 
 
-                            }.onDisappear {
-                                worktype1selected = self.selectedWorkHours == 0 ? false : true
-                                let defaults = UserDefaults.standard
-                                let defaultsWidget = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
-                                
-                                defaults.set(!worktype1selected, forKey: "specificworktimes")
-                                defaultsWidget?.set(!worktype1selected, forKey: "specificworktimes")
                             }
                         }
                         if (selectedtab == 4)

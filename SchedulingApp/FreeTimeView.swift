@@ -831,8 +831,9 @@ struct WorkHours: View {
         for i in 0..<7
         {
             let newFreetime = Freetime(context: self.managedObjectContext)
-            newFreetime.startdatetime = Date(timeIntervalSince1970: TimeInterval(3600*24-storedtimesnonspecific[i]*60))
-            newFreetime.enddatetime = Date(timeIntervalSince1970: TimeInterval(3600*24))
+            newFreetime.startdatetime = Date(timeInterval: TimeInterval(3600*24-storedtimesnonspecific[i]*60), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+            newFreetime.enddatetime = Date(timeInterval: TimeInterval(3600*24), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+            //Date(timeInterval: TimeInterval(3600*24), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
             newFreetime.tempstartdatetime = newFreetime.startdatetime
             newFreetime.tempenddatetime = newFreetime.enddatetime
             newFreetime.monday = boollist[i%7]
@@ -1270,6 +1271,7 @@ struct WorkHours: View {
         }.onAppear
         {
             let defaults = UserDefaults.standard
+            print("value about to be read")
             specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
             if (!specificworkhoursview)
             {
@@ -1450,7 +1452,7 @@ struct AnimatedWorkHoursTutorialView: View
                                 Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.bottombarshowing ? 1 : 0).padding(.top, self.freetimepadding+self.freetimeheight-7).padding(.trailing, (UIScreen.main.bounds.size.width - 80)/2 + 20 - 22.5)
                                 if (viewopacity == 1.0)
                                 {
-                                    Circle().fill(Color.gray).frame(width: 10, height: 10).padding(.top, self.greycircleoffset - 5).padding(.trailing, (UIScreen.main.bounds.size.width - 80)/2 + 20 - 42.5 ).opacity(0.6)
+                                    Circle().fill(Color.gray).frame(width: 20, height: 20).padding(.top, self.greycircleoffset - 10).padding(.trailing, (UIScreen.main.bounds.size.width - 80)/2 + 20 - 52.5 ).opacity(0.6)
                                 }
 
                             }

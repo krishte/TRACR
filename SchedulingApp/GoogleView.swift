@@ -309,8 +309,8 @@ struct GoogleUnsignedinView: View
                 
 
             Spacer()
-            }
-        }.navigationTitle("Google Classroom").navigationBarTitleDisplayMode(.inline)
+            }.frame(width: UIScreen.main.bounds.size.width)
+        }.frame(width: UIScreen.main.bounds.size.width).navigationTitle("Google Classroom").navigationBarTitleDisplayMode(.inline)
     }
 }
 struct OverallGoogleView: View {

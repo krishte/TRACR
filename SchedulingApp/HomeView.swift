@@ -1189,7 +1189,7 @@ struct TimeIndicator: View {
                 Circle().fill(Color("datenumberred")).frame(width: 12, height: 12)
                 Rectangle().fill(Color("datenumberred")).frame(width: UIScreen.main.bounds.size.width-36, height: 2)
                 
-            }.padding(.top, (CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: dateForTimeIndicator), to: dateForTimeIndicator).second!).truncatingRemainder(dividingBy: 86400))/3600 * 60.35)
+            }.padding(.top, (CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: dateForTimeIndicator), to: dateForTimeIndicator).second!).truncatingRemainder(dividingBy: 86400))/3600 * 60)
             Spacer()
         }
     }
@@ -1202,6 +1202,8 @@ struct HomeBodyView: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
 
     @EnvironmentObject var changingDate: DisplayedDate
+    @FetchRequest(entity: Freetime.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \Freetime.startdatetime, ascending: true)])
+    var freetimelist: FetchedResults<Freetime>
  
     @FetchRequest(entity: Subassignmentnew.entity(),
                   sortDescriptors: [NSSortDescriptor(keyPath: \Subassignmentnew.startdatetime, ascending: true)])
@@ -1257,6 +1259,7 @@ struct HomeBodyView: View {
     @State var hidingupcoming = false
     @State var upcomingoffset = 0
     @State var refreshID = UUID()
+    @State var workhourstapped: Bool = false
   //  @State var daytitlesexpanded: [Bool] = [true for i in 0...daytitles]
     
     @EnvironmentObject var masterRunning: MasterRunning
@@ -1481,6 +1484,13 @@ struct HomeBodyView: View {
         }
         return false
     }
+    func isVisibleFreetime(freetime: Freetime, dateObject: Date) -> Bool
+    {
+        let boollist = [freetime.sunday, freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday]
+        return boollist[(Calendar.current.component(.weekday, from: Calendar.current.date(byAdding: .day, value: 0, to: dateObject)!) - 1)]
+        
+        
+    }
 
     
     var body: some View {
@@ -1632,10 +1642,10 @@ struct HomeBodyView: View {
                         }.frame(width: UIScreen.main.bounds.size.width).animation(.spring()).padding(.top, 5)
                                                     
                 VStack {
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         ZStack {
                             HStack(alignment: .top) {
-                                VStack(alignment: .leading) {
+                                VStack(alignment: .leading, spacing: 10) {
                                     ForEach((0...24), id: \.self) { hour in
                                         HStack {
                                             Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
@@ -1654,10 +1664,33 @@ struct HomeBodyView: View {
                                     Spacer().frame(height: 25)
                                     
                                     ZStack(alignment: .topTrailing) {
+                                        ForEach(freetimelist)
+                                        {
+                                            freetime in
+                                            if (isVisibleFreetime(freetime: freetime, dateObject: self.datesfromlastmonday[self.nthdayfromnow]))
+                                            {
+                                               // Rectangle().fill(Color.green).frame(width: UIScreen.main.bounds.size.width-50, height: 5).padding(.top,CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60 ).padding(.trailing, 10)
+                                               // Rectangle().fill(Color.green).frame(width: UIScreen.main.bounds.size.width-50, height: 5).padding(.top,CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: freetime.enddatetime), to: freetime.enddatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60 - 5 ).padding(.trailing, 10)
+                                                Rectangle().strokeBorder(Color("freetimeblue"), style: StrokeStyle(lineWidth: 1))
+                                                    .background(Rectangle().fill(Color("freetimeblue")).opacity(0.43)).frame(width: workhourstapped ? UIScreen.main.bounds.size.width-44 : 5, height: CGFloat(Calendar.current.dateComponents([.second], from:freetime.startdatetime, to: freetime.enddatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60).padding(.top,CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60 ).padding(.trailing, workhourstapped ? 5 : UIScreen.main.bounds.size.width-44).onTapGesture {
+                                                        withAnimation(.spring())
+                                                        {
+                                                            workhourstapped.toggle()
+                                                        }
+                                                    }
+                                                if (workhourstapped)
+                                                {
+                                                    Rectangle().fill(Color("freetimeblue")).frame(width: 90, height: 20).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: freetime.enddatetime), to: freetime.enddatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60).padding(.trailing, 5).opacity(0.43)
+                                                    Text("Work Hours").font(.system(size: 10)).fontWeight(.bold).frame(width: 70).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: freetime.enddatetime), to: freetime.enddatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60 + 3).padding(.trailing, 15)
+                                                    
+                                                }
+                                            }
+                                            
+                                        }.animation(.spring())
                                         ForEach(subassignmentlist) { subassignment in
 
                                             if (self.shortdateformatter.string(from: subassignment.startdatetime) == self.shortdateformatter.string(from: self.datesfromlastmonday[self.nthdayfromnow])) {
-                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname, refreshID2: self.$refreshID).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60.35 + 1).onTapGesture {
+                                                IndividualSubassignmentView(subassignment2: subassignment, fixedHeight: false, showeditassignment: self.$showeditassignment, selectededitassignment: self.$sheetnavigator.selectededitassignment, isrepeated: false, subassignmentassignmentname2: self.$subassignmentassignmentname, refreshID2: self.$refreshID).padding(.top, CGFloat(Calendar.current.dateComponents([.second], from: Calendar.current.startOfDay(for: subassignment.startdatetime), to: subassignment.startdatetime).second!).truncatingRemainder(dividingBy: 86400)/3600 * 60).onTapGesture {
                                                     if (self.subassignmentstartdatetime == subassignment.startdatetime)
                                                     {
                                                         self.subassignmentassignmentname = "";
@@ -1676,6 +1709,7 @@ struct HomeBodyView: View {
                                                     //was +122 but had to subtract 2*60.35 to account for GMT + 
                                             }
                                         }.animation(.spring())
+
                                     }
                                     Spacer()
                                 }
@@ -2187,7 +2221,7 @@ struct IndividualSubassignmentView: View {
                if (isDragged) {
                    ZStack {
                         HStack {
-                            Rectangle().fill(Color("fourteen")) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +    CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? UIScreen.main.bounds.size.width - 10 + self.dragoffset.width : UIScreen.main.bounds.size.width-30+self.dragoffset.width)
+                            Rectangle().fill(Color("fourteen")) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +    CGFloat(Double(((Double(subassignmentlength)-60)/60))*60)).offset(x: self.fixedHeight ? UIScreen.main.bounds.size.width - 10 + self.dragoffset.width : UIScreen.main.bounds.size.width-30+self.dragoffset.width)
                         }
                         HStack {
                             Spacer()
@@ -2199,7 +2233,7 @@ struct IndividualSubassignmentView: View {
                 if (isDraggedleft) {
                     ZStack {
                         HStack {
-                            Rectangle().fill(Color.blue) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
+                            Rectangle().fill(Color.blue) .frame(width: UIScreen.main.bounds.size.width-20, height: fixedHeight ? 70 : 58 +  CGFloat(Double(((Double(subassignmentlength)-60)/60))*60)).offset(x: self.fixedHeight ? screenval+10+self.dragoffset.width : -UIScreen.main.bounds.size.width-20+self.dragoffset.width)
                         }
                         
                         HStack {
@@ -2229,7 +2263,7 @@ struct IndividualSubassignmentView: View {
                     if (subassignmentlength < 30)
                     {
                         HStack{
-                            Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
+                            Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
 
                             
                         //    Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
@@ -2238,7 +2272,7 @@ struct IndividualSubassignmentView: View {
                     }
                     else
                     {
-                        Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
+                        Text(self.name).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60) < 40 ? 12 : 15)).fontWeight(.bold).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading).padding(.top, 5)
 
                         
                       // Text(self.starttime + " - " + self.endtime).font(.system(size:  38 + CGFloat(Double(((Double(subassignmentlength)-60)/60))*60.35) < 40 ? 12 : 15)).frame(width: self.fixedHeight ? UIScreen.main.bounds.size.width-40 :  UIScreen.main.bounds.size.width-80, alignment: .topLeading)
@@ -2247,7 +2281,7 @@ struct IndividualSubassignmentView: View {
 
                 Spacer()
 
-            }.frame(height: fixedHeight ? 50 : max(CGFloat(Double(((Double(subassignmentlength))/60))*60.35-24), CGFloat(60.35/2-24))).padding(12).background(color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: color) : Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
+            }.frame(height: fixedHeight ? 50 : max(CGFloat(Double(((Double(subassignmentlength))/60))*60-24), CGFloat(60/2-24))).padding(12).background(color.contains("rgbcode") ? GetColorFromRGBCode(rgbcode: color) : Color(color)).cornerRadius(10).contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous)).offset(x: self.dragoffset.width).contextMenu {
                 Button(action: {
                     self.showeditassignment = true
                     self.selectededitassignment = subassignment.assignmentname

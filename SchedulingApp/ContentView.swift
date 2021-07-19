@@ -170,6 +170,7 @@ struct ContentView: View {
     @State var showingtutorialview = false
     @State var selectedtab = 0
     @State var worktype1selected: Bool = true
+    @State var currentworkhoursview = 0
     
     @State var selectedWorkHours: Int = 0
     
@@ -205,7 +206,7 @@ struct ContentView: View {
                                     Spacer().frame(height: 10)
                                     
                                     Text("An app designed to help you stay on top of your schoolwork.").fontWeight(.light).padding(.horizontal, 20).lineLimit(2).minimumScaleFactor(0.95).frame(width: UIScreen.main.bounds.size.width, height: 50)
-                                    
+                                                                        
                                     Spacer().frame(height: 16)
                                     
                                     ScrollView(.vertical, showsIndicators: false) {
@@ -319,83 +320,104 @@ struct ContentView: View {
                         {
                             NavigationView
                             {
+                                if (currentworkhoursview == 0)
+                                {
+                                    Form
+                                    {
+                                        HStack {
+                                            Text("Scheduling Options").font(.largeTitle).bold()
+                                            Spacer()
+                                        }.frame(height:40).padding(.bottom, 10).listRowInsets(EdgeInsets()).background(Color(UIColor.systemGroupedBackground))
+
+            //                            Section
+            //                            {
+                                        HStack {
+                                            Text("Your Work Hours will determine when TRACR can schedule your tasks. If you want tasks to be scheduled at specific times within the day, select the Specific Times option. If you instead want a general daily checklist of tasks, select the Daily Checklist option.").fontWeight(.light).foregroundColor(Color("darkgray"))
+
+                                            Spacer()
+                                        }
+                                        .listRowInsets(EdgeInsets())
+                                        .background(Color(UIColor.systemGroupedBackground))
+                                            
+            //                                Text("Note: TRACR will only schedule tasks during you Work Hours, so make sure to include all the times when you can work.").fontWeight(.light)
+            //                                Spacer().frame(height: 10)
+            //                            }
+                                        Section(header: Text("Options")) {
+                                            HStack
+                                            {
+                                                VStack
+                                                {
+                                                    Image("Home View 1").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
+//                                                    Divider().frame(height: 1)
+//                                                    Text("Specific Times").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
+                                                }
+                                                Spacer()
+                                                VStack
+                                                {
+                                                    Image("Home view 2").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
+//                                                    Divider().frame(height: 1)
+//                                                    Text("Daily Checklist").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
+                                                }
+                                            }
+//                                        }
+//                                        Section(header: Text("Options"))
+//                                        {
+                                            Picker(selection: self.$selectedWorkHours, label: Text("Scheduling Options")) {
+                                                Text("Specific Times").tag(0)
+                                                Text("Daily Checklist").tag(1)
+                                            }.pickerStyle(SegmentedPickerStyle()).onChange(of: self.selectedWorkHours)
+                                            {
+                                                _ in
+                                                worktype1selected = self.selectedWorkHours == 0 ? false : true
+                                                let defaults = UserDefaults.standard
+                                                let defaultsWidget = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
+                                                
+                                                defaults.set(!worktype1selected, forKey: "specificworktimes")
+                                                defaultsWidget?.set(!worktype1selected, forKey: "specificworktimes")
+                                            }
+                                            
+                                        }
+//                                        }
+                                        
+                                        VStack {
+                                            HStack {
+                                                Text("Click Continue to add your Work Hours.").fontWeight(.light).foregroundColor(Color("darkgray"))
+
+                                                Spacer()
+                                            }
+                                            Spacer()
+                                        }
+                                        .listRowInsets(EdgeInsets())
+                                        .background(Color(UIColor.systemGroupedBackground))
+
+                                    }.navigationTitle("Scheduling Options").navigationBarTitleDisplayMode(.inline).onDisappear {
+                                        print("selection disappeared")
+                                        worktype1selected = self.selectedWorkHours == 0 ? false : true
+                                        let defaults = UserDefaults.standard
+                                        let defaultsWidget = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
+                                        
+                                        defaults.set(!worktype1selected, forKey: "specificworktimes")
+                                        defaultsWidget?.set(!worktype1selected, forKey: "specificworktimes")
+                                    }
+                                }
+                                else
+                                {
+                                    AnimatedWorkHoursTutorialView()
+                                }
 //                            ScrollView
 //                            {
                                 
                                 
-                                Form
-                                {
-                                    HStack {
-                                        Text("Scheduling Options").font(.largeTitle).bold()
-                                        Spacer()
-                                    }.frame(height:40).padding(.bottom, 10).listRowInsets(EdgeInsets()).background(Color(UIColor.systemGroupedBackground))
 
-        //                            Section
-        //                            {
-                                    HStack {
-                                        Text("Your Work Hours will determine when TRACR can schedule your tasks. If you want tasks to be scheduled at specific times within the day, select the Specific Times option. If you instead want a general daily checklist of tasks, select the Daily Checklist option.").fontWeight(.light).foregroundColor(Color("darkgray"))
-
-                                        Spacer()
-                                    }
-                                    .listRowInsets(EdgeInsets())
-                                    .background(Color(UIColor.systemGroupedBackground))
-                                        
-        //                                Text("Note: TRACR will only schedule tasks during you Work Hours, so make sure to include all the times when you can work.").fontWeight(.light)
-        //                                Spacer().frame(height: 10)
-        //                            }
-                                    Section {
-                                        HStack
-                                        {
-                                            VStack
-                                            {
-                                                Image("Home View 1").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
-                                                Divider().frame(height: 1)
-                                                Text("Specific Times").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
-                                            }
-                                            Spacer()
-                                            VStack
-                                            {
-                                                Image("Home view 2").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width/2-50)
-                                                Divider().frame(height: 1)
-                                                Text("Daily Checklist").fontWeight(.semibold).frame(width: UIScreen.main.bounds.size.width/2-50, height: 50)
-                                            }
-                                        }
-                                    }
-                                    Section(header: Text("Options"))
-                                    {
-                                        Picker(selection: self.$selectedWorkHours, label: Text("Scheduling Options")) {
-                                            Text("Specific Times").tag(0)
-                                            Text("Daily Checklist").tag(1)
-                                        }.pickerStyle(SegmentedPickerStyle())
-                                    }
-                                    
-                                    VStack {
-                                        HStack {
-                                            Text("Click Continue to add your Work Hours.").fontWeight(.light).foregroundColor(Color("darkgray"))
-
-                                            Spacer()
-                                        }
-                                        Spacer()
-                                    }
-                                    .listRowInsets(EdgeInsets())
-                                    .background(Color(UIColor.systemGroupedBackground))
-
-                            }.navigationTitle("Scheduling Options").navigationBarTitleDisplayMode(.inline)
-                            }.onDisappear {
-                                worktype1selected = self.selectedWorkHours == 0 ? false : true
-                                let defaults = UserDefaults.standard
-                                let defaultsWidget = UserDefaults(suiteName: "group.com.schedulingapp.tracrwidget")
-                                
-                                defaults.set(!worktype1selected, forKey: "specificworktimes")
-                                defaultsWidget?.set(!worktype1selected, forKey: "specificworktimes")
                             }
                         }
                         if (selectedtab == 4)
                         {
                             NavigationView
                             {
+                                
                                 WorkHours().tag(4)
-                            }//.navigationTitle("Work Hours").navigationBarTitleDisplayMode(.inline)
+                            }
                         }
 
                         if (selectedtab == 5)
@@ -450,7 +472,25 @@ struct ContentView: View {
                         {
                             Button(action:
                                     {
-                                        if ((selectedtab == 4 && freetimelist.count != 0) || selectedtab != 4)
+                                        if (selectedtab == 3 && currentworkhoursview == 0)
+                                        {
+                                            if (selectedWorkHours == 0)
+                                            {
+                                                withAnimation(.spring())
+                                                {
+                                                    currentworkhoursview = 1
+                                                }
+                                            }
+                                            else
+                                            {
+                                                withAnimation(.spring())
+                                                {
+                                                    selectedtab += 1
+                                                }
+                                            }
+
+                                        }
+                                        else if ((selectedtab == 4 && freetimelist.count != 0) || selectedtab != 4)
                                         {
                                             if (selectedtab < 5)
                                             {
@@ -469,7 +509,8 @@ struct ContentView: View {
                             {
                                 ZStack
                                 {
-
+                                    
+                                    
                                     if ((selectedtab == 4 && freetimelist.count != 0) || selectedtab != 4)
                                     {
                                         Rectangle().fill(Color.clear).frame(width: UIScreen.main.bounds.size.width-40, height: 70)

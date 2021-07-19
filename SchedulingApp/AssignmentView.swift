@@ -184,7 +184,7 @@ struct IndividualAssignmentFilterView: View {
                             
                             if (getunscheduledtime() != 0)
                             {
-                                Text("There " + (gethourminutestext(minutenumber: getunscheduledtime()).last! == "s" ? "are " : "is ") + gethourminutestext(minutenumber: getunscheduledtime()) + " that could not be scheduled. Please adjust your work hours or shorten the assignment.").fontWeight(.light).frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
+                                Text("There " + (gethourminutestext(minutenumber: getunscheduledtime()).last! == "s" ? "are " : "is ") + gethourminutestext(minutenumber: getunscheduledtime()) + " that could not be scheduled. Please adjust your Work Hours in Settings or shorten the Assignment.").fontWeight(.light).frame(width: UIScreen.main.bounds.size.width-50, height: 75, alignment: .topLeading)
                             }
                         }
                         VStack {

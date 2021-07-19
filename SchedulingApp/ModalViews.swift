@@ -643,17 +643,112 @@ struct NewGoogleAssignmentModalView: View {
                         }
                     }) {
                         Text("Add Assignment")
-                    }.alert(isPresented: $showingAlert) {
-                        Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
                     }
                 }
-                
             }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
             .onChanged { _ in
                 UIApplication.shared.endEditing()
             }.onEnded { _ in
                 UIApplication.shared.endEditing()
-            }).navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
+            }).navigationBarItems(leading:Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")}) , trailing: Button(action: {
+                self.createassignmentallowed = true
+                
+                for assignment in self.assignmentslist {
+                    if assignment.name == self.nameofassignment {
+                        self.createassignmentallowed = false
+                    }
+                }
+                
+                if (self.nameofassignment == "")
+                {
+                    self.createassignmentallowed = false
+                }
+                if self.createassignmentallowed {
+                    if (!self.completedassignment)
+                    {
+                        let newAssignment = Assignment(context: self.managedObjectContext)
+                        newAssignment.completed = false
+                        newAssignment.grade = 0
+                        newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                        newAssignment.name = self.nameofassignment
+                        newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                        newAssignment.progress = 0
+                        newAssignment.duedate = self.selectedDate
+                        
+                        if (self.hours == 0)
+                        {
+                            newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                        }
+                        else
+                        {
+                            newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                        }
+                        newAssignment.timeleft = newAssignment.totaltime
+                    
+                        for classity in self.classlist {
+                            if (classity.originalname == newAssignment.subject) {
+                                newAssignment.color = classity.color
+                                classity.assignmentnumber += 1
+                            }
+                        }
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                    }
+                    else
+                    {
+                        let newAssignment = Assignment(context: self.managedObjectContext)
+                        newAssignment.completed = true
+                        newAssignment.grade = Int64(self.assignmentgrade)
+                        newAssignment.subject = self.classlist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                        newAssignment.name = self.nameofassignment
+                        newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                        newAssignment.progress = 100
+                        newAssignment.duedate = self.selectedDate
+                        
+                        if (self.hours == 0)
+                        {
+                            newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                        }
+                        else
+                        {
+                            newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                        }
+                        newAssignment.timeleft = 0
+                    
+                        for classity in self.classlist {
+                            if (classity.originalname == newAssignment.subject) {
+                                newAssignment.color = classity.color
+//                                        classity.assignmentnumber += 1
+                            }
+                        }
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                    }
+                    masterRunning.uniqueAssignmentName = self.nameofassignment
+
+                    print("C")
+                    masterRunning.masterRunningNow = true
+                    masterRunning.displayText = true
+                    
+
+                    
+                    self.NewAssignmentPresenting = false
+                }
+             
+                else {
+                    self.showingAlert = true
+                }
+            }) {
+                Text("Add")
+            }).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline).alert(isPresented: $showingAlert) {
+                Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+            }
         }
         .onAppear
         {
@@ -1662,8 +1757,6 @@ struct NewClassModalView: View {
                         }
                     }) {
                         Text("Add Class")
-                    }.alert(isPresented: $showingAlert) {
-                        Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
                 }
             }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
@@ -1671,7 +1764,124 @@ struct NewClassModalView: View {
                 UIApplication.shared.endEditing()
             }.onEnded { _ in
                 UIApplication.shared.endEditing()
-            }).navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Class").navigationBarTitleDisplayMode(.inline)
+            }).navigationBarItems(leading: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")}), trailing:  Button(action: {
+                var testname = !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.groups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.groups[self.classgroupnameindex][self.classnameindex])"
+                
+                var shortenedtestname =  !(self.classgroupnameindex == 6 || self.classgroupnameindex == 7 || (self.classgroupnameindex == 3 && self.classnameindex == 6) || (self.classgroupnameindex == 2 && self.classnameindex == 5) || (self.classgroupnameindex == 1 && self.classnameindex > 8)) ? "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex]) \(["SL", "HL"][self.classlevelindex])" : "\(self.shortenedgroups[self.classgroupnameindex][self.classnameindex])"
+                
+                if (!self.isIB)
+                {
+                    testname = self.classnamenonib
+                    shortenedtestname = self.classnamenonib
+                }
+                self.createclassallowed = true
+                
+                for classity in self.classlist {
+                    if (classity.name == shortenedtestname || classity.name == testname) {
+                        // print("sdfds")
+                        if (!classity.isTrash)
+                        {
+                            self.createclassallowed = false
+                        }
+                    }
+                }
+                
+                if testname == "" {
+                    self.createclassallowed = false
+                }
+
+                if self.createclassallowed {
+                    let newClass = Classcool(context: self.managedObjectContext)
+                    newClass.tolerance = Int64(self.classtolerancedouble.rounded(.down))
+                    newClass.name = shortenedtestname
+                    newClass.assignmentnumber = 0
+                    newClass.originalname = testname
+                    newClass.isTrash = false
+                    newClass.googleclassroomid = ""
+                    if (linkingtogc && linkableclasses.count > 0)
+                    {
+                        newClass.googleclassroomid = linkableclasses[selectedgoogleclassroomclass].0
+                    }
+                    if (gradingschemelist.count > 0)
+                    {
+                        newClass.gradingscheme = self.gradingschemelist[self.gradingscheme]
+                    }
+                    else
+                    {
+                        newClass.gradingscheme = (groups[classgroupnameindex][classnameindex] == "Extended Essay" || groups[classgroupnameindex][classnameindex] == "Theory of Knowledge" ) ? "LA-E" : "N1-7"
+                    }
+                 //   newClass.isarchived = false
+                    
+                    if self.customcolorchosen {
+                        let r1 = String(format: "%.3f", abs(customcolor1.components.red))
+                        let g1 = String(format: "%.3f", abs(customcolor1.components.green))
+                        let b1 = String(format: "%.3f", abs(customcolor1.components.blue))
+                        var r2 = String(format: "%.3f", abs(customcolor2.components.red))
+                        var g2 = String(format: "%.3f", abs(customcolor2.components.green))
+                        var b2 = String(format: "%.3f", abs(customcolor2.components.blue))
+                        
+                        if r1 == r2 {
+                            if r2 == "1.000" {
+                                r2 = String(Double(r2)! - 0.001)
+                            }
+                            
+                            else {
+                                r2 = String(Double(r2)! + 0.001)
+                            }
+                        }
+                        
+                        else if g1 == g2 {
+                            if g2 == "1.000" {
+                                g2 = String(Double(g2)! - 0.001)
+                            }
+                            
+                            else {
+                                g2 = String(Double(g2)! + 0.001)
+                            }
+                        }
+                        
+                        else if b1 == b2 {
+                            if b2 == "1.000" {
+                                b2 = String(Double(b2)! - 0.001)
+                            }
+                            
+                            else {
+                                b2 = String(Double(b2)! + 0.001)
+                            }
+                        }
+                        
+                        newClass.color = "rgbcode1-\(r1)-\(g1)-\(b1)-rgbcode2-\(r2)-\(g2)-\(b2)"
+                    }
+                    
+                    else {
+                        if self.coloraselectedindex != nil {
+                            newClass.color = self.colorsa[self.coloraselectedindex!]
+                        }
+                        else if self.colorbselectedindex != nil {
+                            newClass.color = self.colorsb[self.colorbselectedindex!]
+                        }
+                        else if self.colorcselectedindex != nil {
+                            newClass.color = self.colorsc[self.colorcselectedindex!]
+                        }
+                    }
+
+                    do {
+                        try self.managedObjectContext.save()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                    
+                    self.NewClassPresenting = false
+                }
+                    
+                else {
+                    self.showingAlert = true
+                }
+            }) {
+                Text("Add")
+            }).navigationTitle("Add Class").navigationBarTitleDisplayMode(.inline).alert(isPresented: $showingAlert) {
+                Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
+            }
         }.onAppear()
         {
             let defaults = UserDefaults.standard
@@ -3079,8 +3289,6 @@ struct NewGradeModalView: View {
                             }
                         }) {
                             Text("Add Completed Assignment")
-                        }.alert(isPresented: $showingAlert) {
-                            Alert(title: self.assignmentname == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.assignmentname == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
                         }
                     }
                     
@@ -3188,7 +3396,99 @@ struct NewGradeModalView: View {
                 UIApplication.shared.endEditing()
             }.onEnded { _ in
                 UIApplication.shared.endEditing()
-            }).navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Grade").navigationBarTitleDisplayMode(.inline)
+            }).navigationBarItems(leading: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")}), trailing: Button(action:
+            {
+                if (newassignment)
+                {
+                    self.createassignmentallowed = true
+
+                    for assignment in self.assignmentlist {
+                        if assignment.name == self.assignmentname {
+                            self.createassignmentallowed = false
+                        }
+                    }
+
+                    if (self.assignmentname == "")
+                    {
+                        self.createassignmentallowed = false
+                    }
+
+                    if self.createassignmentallowed {
+
+                        let newAssignment = Assignment(context: self.managedObjectContext)
+                        newAssignment.completed = true
+                        newAssignment.grade = Int64(self.assignmentgrade)
+                        newAssignment.subject = self.classeslist[self.getnontrashclasslist()[self.selectedclass]].originalname
+                        newAssignment.name = self.assignmentname
+                        newAssignment.type = self.assignmenttypes[self.assignmenttype]
+                        newAssignment.progress = 100
+                        newAssignment.duedate = self.selectedDate
+
+                        if (self.hours == 0)
+                        {
+                            newAssignment.totaltime = Int64(self.minutelist[self.minutes+6])
+                        }
+                        else
+                        {
+                            newAssignment.totaltime = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes])
+                        }
+                        newAssignment.timeleft = 0
+
+                        for classity in self.classeslist {
+                            if (classity.originalname == newAssignment.subject) {
+                                newAssignment.color = classity.color
+//                                        classity.assignmentnumber += 1
+                            }
+                        }
+
+                        //assignment specific
+                        
+
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+//                                masterRunning.uniqueAssignmentName = self.assignmentname
+//                                print("G")
+                        //master function shouldn't be run
+//                                masterRunning.masterRunningNow = true
+//                                masterRunning.displayText = true
+                        
+                        self.NewGradePresenting = false
+                    }
+
+                    else {
+                        self.showingAlert = true
+                    }
+                }
+                else
+                {
+                    if (self.getgradableassignments().count > 0)
+                    {
+                        let value = self.getgradableassignments()[self.selectedassignment]
+                        for assignment in self.assignmentlist {
+                            if (assignment.name == self.assignmentlist[value].name)
+                            {
+                                assignment.grade =  Int64(self.assignmentgrade.rounded(.down))
+                            }
+                        }
+                     
+                        do {
+                            try self.managedObjectContext.save()
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                        
+                        self.NewGradePresenting = false
+                    }
+                }
+            })
+            {
+                Text("Add")
+            }).navigationTitle("Add Grade").navigationBarTitleDisplayMode(.inline).alert(isPresented: $showingAlert) {
+                Alert(title: self.assignmentname == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.assignmentname == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+            }
         }
     }
 }
@@ -3650,8 +3950,6 @@ struct EditAssignmentModalView: View {
                         }
                     }) {
                         Text("Save Changes")
-                    }.alert(isPresented: $showingAlert) {
-                        Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
                     }
                 }
                 Section
@@ -3711,13 +4009,133 @@ struct EditAssignmentModalView: View {
                         Text("Delete Assignment")
                     }.foregroundColor(Color.red)
                 }
-                
             }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
             .onChanged { _ in
                 UIApplication.shared.endEditing()
             }.onEnded { _ in
                 UIApplication.shared.endEditing()
-            }).navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline)
+            }).navigationBarItems(leading: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")}), trailing: Button(action: {
+                self.createassignmentallowed = true
+                
+
+                if (self.nameofassignment != self.originalname)
+                {
+                    for assignment in self.assignmentslist {
+                        if assignment.name == self.nameofassignment {
+                            self.createassignmentallowed = false
+                        }
+                    }
+                }
+                if (self.nameofassignment == "")
+                {
+                    createassignmentallowed = false
+                }
+
+                if self.createassignmentallowed {
+                    for subassignment in subassignmentlist {
+                        if (subassignment.assignmentname == self.assignmentslist[self.selectedassignment].name)
+                        {
+                            subassignment.assignmentname = self.nameofassignment
+                        }
+                    }
+                    self.assignmentslist[self.selectedassignment].name = self.nameofassignment
+                    self.assignmentslist[self.selectedassignment].duedate = self.selectedDate
+                    self.assignmentslist[self.selectedassignment].type = self.assignmenttypes2[self.assignmenttypeval]
+                    var change: Int64 = 0
+                    if (hours > 0)
+                    {
+                        change = Int64(60*self.hourlist[self.hours+getminhourindex()] + self.minutelist[self.minutes]) - self.assignmentslist[self.selectedassignment].timeleft
+                    }
+                    else if (getminhourindex() == 0 && getminminuteindex() == 0)
+                    {
+                        change = Int64(60*self.hourlist[self.hours] + self.minutelist[self.minutes+6]) - self.assignmentslist[self.selectedassignment].timeleft
+                    }
+                    else
+                    {
+                        change = Int64(60*self.hourlist[self.hours+getminhourindex()] + self.minutelist[self.minutes+getminminuteindex()]) - self.assignmentslist[self.selectedassignment].timeleft
+
+                    }
+                    self.assignmentslist[self.selectedassignment].timeleft += change
+                    self.assignmentslist[self.selectedassignment].totaltime += change
+                    
+                    
+                    if (self.assignmentslist[self.selectedassignment].timeleft == 0 || self.iscompleted)
+                    {
+                        print("a")
+                        if ( !self.assignmentslist[self.selectedassignment].completed )
+                        {
+                            print("b")
+                            for classity in self.classlist {
+                                if (self.assignmentslist[self.selectedassignment].subject == classity.originalname)
+                                {
+                                    classity.assignmentnumber -= 1
+                                }
+                            }
+                        }
+                        for (index, subassignment) in subassignmentlist.enumerated() {
+                            if (subassignment.assignmentname == self.nameofassignment)
+                            {
+                                self.managedObjectContext.delete(self.subassignmentlist[index])
+                            }
+                        }
+                        self.assignmentslist[self.selectedassignment].grade = Int64(self.gradeval)
+                        self.assignmentslist[self.selectedassignment].progress = 100
+                        self.assignmentslist[self.selectedassignment].completed = true
+                        
+                    }
+
+                    else
+                    {
+                        print("c")
+                        if (self.assignmentslist[self.selectedassignment].completed)
+                        {
+                            print("d")
+                            for classity in self.classlist {
+                                if (self.assignmentslist[self.selectedassignment].subject == classity.originalname)
+                                {
+                                    classity.assignmentnumber += 1
+                                }
+                            }
+                            
+                        }
+                        if (self.assignmentslist[self.selectedassignment].subject == "Theory of Knowledge" || self.assignmentslist[self.selectedassignment].subject == "Extended Essay")
+                        {
+                            self.assignmentslist[self.selectedassignment].grade = 2
+                        }
+                        else
+                        {
+                            self.assignmentslist[self.selectedassignment].grade = 0
+                        }
+                        self.assignmentslist[self.selectedassignment].completed = false
+                        self.assignmentslist[self.selectedassignment].progress =    Int64((Double(self.assignmentslist[self.selectedassignment].totaltime - self.assignmentslist[self.selectedassignment].timeleft)/Double(self.assignmentslist[self.selectedassignment].totaltime )) * 100)
+                        
+                        masterRunning.uniqueAssignmentName = self.nameofassignment
+                        //assignment specific
+                        print("H")
+                        masterRunning.masterRunningNow = true
+                        print("variable changed in editassignmentmodalview")
+                        
+                    }
+                    
+                    
+                    do {
+                        try self.managedObjectContext.save()
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+
+                    
+                    self.NewAssignmentPresenting = false
+                }
+             
+                else {
+                    self.showingAlert = true
+                }
+            }) {
+                Text("Save")
+            }).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline).alert(isPresented: $showingAlert) {
+                Alert(title: self.nameofassignment == "" ? Text("No Assignment Name Provided") : Text("Assignment Already Exists"), message: self.nameofassignment == "" ? Text("Add an Assignment Name") : Text("Change Assignment Name"), dismissButton: .default(Text("Continue")))
+            }
             .onAppear
             {
                 if (hours > 0)

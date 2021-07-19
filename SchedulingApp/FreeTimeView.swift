@@ -847,8 +847,9 @@ struct WorkHours: View {
         for i in 0..<7
         {
             let newFreetime = Freetime(context: self.managedObjectContext)
-            newFreetime.startdatetime = Date(timeIntervalSince1970: TimeInterval(3600*24-storedtimesnonspecific[i]*60))
-            newFreetime.enddatetime = Date(timeIntervalSince1970: TimeInterval(3600*24))
+            newFreetime.startdatetime = Date(timeInterval: TimeInterval(3600*24-storedtimesnonspecific[i]*60), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+            newFreetime.enddatetime = Date(timeInterval: TimeInterval(3600*24), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
+            //Date(timeInterval: TimeInterval(3600*24), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
             newFreetime.tempstartdatetime = newFreetime.startdatetime
             newFreetime.tempenddatetime = newFreetime.enddatetime
             newFreetime.monday = boollist[i%7]
@@ -972,6 +973,22 @@ struct WorkHours: View {
                                 
                                 RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(((self.addingselection.contains(day) && self.freetimeediting.addingmode) ? Color("datenumberred") : Color.clear), lineWidth: 2).frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).animation(.easeInOut(duration: 0.14))
                                 
+                                if (self.freetimeediting.addingmode && !self.addingselection.contains(day))
+                                {
+                                    VStack
+                                    {
+                                        HStack
+                                        {
+                                            Spacer()
+                                            ZStack
+                                            {
+                                                Circle().foregroundColor(Color.red).frame(width:(UIScreen.main.bounds.size.width / 29), height: (UIScreen.main.bounds.size.width / 29) )
+                                                Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width:(UIScreen.main.bounds.size.width / 29) - 6, height: (UIScreen.main.bounds.size.width / 29) - 6).font(Font.title.weight(.black))
+                                            }
+                                        }.frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3)
+                                        Spacer()
+                                    }.frame(width: (UIScreen.main.bounds.size.width / 29) * 3, height: (UIScreen.main.bounds.size.width / 29) * 3).offset(x: 6, y: -6)
+                                }
                                 Text(String(Array(day)[0..<3]))
                             }.rotationEffect((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Angle.degrees(self.rotationdegree) : Angle.degrees(0.0))
                             .animation((self.selection.contains(day) && !self.freetimeediting.editingmode) ? Animation.easeInOut(duration: 0.19).repeatForever(autoreverses: true) : Animation.linear(duration: 0))
@@ -1270,6 +1287,7 @@ struct WorkHours: View {
         }.onAppear
         {
             let defaults = UserDefaults.standard
+            print("value about to be read")
             specificworkhoursview = defaults.object(forKey: "specificworktimes") as? Bool ?? true
             if (!specificworkhoursview)
             {
@@ -1363,6 +1381,230 @@ struct WorkHours: View {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+struct AnimatedWorkHoursTutorialView: View
+{
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+
+    @State var freetimeheight: CGFloat = 180
+    @State var freetimepadding: CGFloat = 60
+    @State var topbarshowing: Bool = true
+    @State var bottombarshowing: Bool = true
+    @State var opacityval = 1.0
+    @State var viewopacity = 0.3
+    @State var greycircleoffset: CGFloat = 60
+    func getstarttext() -> String {
+        let y = Int(round(100*(self.freetimepadding)))
+        
+       // print("Starttime: " + "\(Double(y%6035)/Double(6035)*4)")
+        var stringitya = String(format: "%f", (self.freetimepadding)/60)[0..<2]
+        var stringityb =  "\(Int(Double(y%6000)/Double(6000)*4+0.01)*15)"
+            
+        if (stringitya.contains(".")) {
+            stringitya = "0" + String(stringitya[0..<1])
+        }
+        
+        if (stringityb.count == 1) {
+            stringityb += "0"
+        }
+        
+        return stringitya + ":" + stringityb
+    }
+    
+    func getendtext() -> String {
+        let y = Int(round(100*(self.freetimepadding+self.freetimeheight)))
+        var stringitya = String(format: "%f", (self.freetimepadding + self.freetimeheight)/60)[0..<2]
+        var stringityb =  "\(Int(Double(y%6000)/Double(6000)*4 + 0.01)*15)"
+            
+        if (stringitya.contains(".")) {
+            stringitya = "0" + String(stringitya[0..<1])
+        }
+        
+        if (stringityb.count == 1) {
+            stringityb += "0"
+        }
+        
+        return stringitya + ":" + stringityb
+    }
+    var body: some View
+    {
+        ScrollView {
+            VStack(spacing: 5) {
+                HStack {
+                    Text("Adding Work Hours").font(.title3).fontWeight(.bold)
+                    Spacer()
+                }
+                
+                HStack {
+                    Text("Click the blue + button to start adding your Work Hours. Continue by tapping on the green areas to add and save your Work Hours. Tap the days of the week to add repeating Work Hours.")
+                    Spacer()
+                }
+
+                HStack {
+                    Text("Editing Work Hours").font(.title3).fontWeight(.bold)
+                    Spacer()
+                }.padding(.top, 5)
+                
+                HStack {
+                    Text("Click Edit at the top-right or hold on a day of the week to start editing your Work Hours. Drag to edit your Work Hours as demonstrated below:")
+                    Spacer()
+                }
+            }.padding(.top, 15).padding(.horizontal, 15)
+            
+            ZStack
+            {
+                VStack
+                {
+                    Spacer().frame(height: 50)
+                    ZStack
+                    {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading, spacing: 10) {
+                                ForEach((0...7), id: \.self) { hour in
+                                    HStack {
+                                        Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
+                                        Rectangle().fill(Color.gray).frame(width: UIScreen.main.bounds.size.width-50, height: 0.5)
+                                    }
+                                }.frame(height: 50)
+                                Spacer()
+                            }
+                        }
+                        
+                        HStack(alignment: .top) {
+                            Spacer()
+                            VStack {
+                                Spacer().frame(height: 25)
+                                
+                                       
+                                ZStack(alignment: .topTrailing) {
+                                    
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("freetimeblue")).frame(width: UIScreen.main.bounds.size.width - 80, height: self.freetimeheight).padding(.top, freetimepadding).padding(.trailing, 20)
+                                    HStack {
+                                        Text(self.getstarttext() + " - " + self.getendtext()).foregroundColor(.white).frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 65).padding(.top, self.freetimepadding+10)
+                                        Spacer()
+                                    }
+                                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.topbarshowing ? 1 : 0).padding(.top, self.freetimepadding + 3).padding(.trailing, (UIScreen.main.bounds.size.width - 80)/2 + 20 - 22.5 )
+                                    Image(systemName: "minus").resizable().foregroundColor(Color.white).frame(width: 45, height: 4).opacity(self.bottombarshowing ? 1 : 0).padding(.top, self.freetimepadding+self.freetimeheight-7).padding(.trailing, (UIScreen.main.bounds.size.width - 80)/2 + 20 - 22.5)
+                                    if (viewopacity == 1.0)
+                                    {
+                                        Circle().fill(Color.gray).frame(width: 30, height: 30).padding(.top, self.greycircleoffset - 10).padding(.trailing, (UIScreen.main.bounds.size.width - 80)/2 + 20 - 48 ).opacity(0.6)
+                                    }
+
+                                }
+                                
+                                Spacer()
+                            }
+                        }
+                    }
+                    Spacer()
+                }.frame(height: 530).opacity(viewopacity)
+                
+                Button(action:
+                {
+                    withAnimation((.spring()))
+                    {
+                        viewopacity = 1.0
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(100)) {
+                        withAnimation(.spring())
+                        {
+                            self.opacityval = 0.5
+                            greycircleoffset = 55
+
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(300)) {
+                        withAnimation(.spring())
+                        {
+                            self.opacityval = 1.0
+                            self.topbarshowing = false
+                        }
+                        withAnimation(Animation.easeInOut(duration: 0.7)) {
+                            self.freetimepadding = 120
+                            self.freetimeheight = 120
+                            greycircleoffset = 115
+            
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1000)) {
+                        withAnimation(.spring())
+                        {
+                            self.topbarshowing = true
+                            greycircleoffset = 175
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(1300)) {
+                        withAnimation(.spring())
+                        {
+                            self.topbarshowing = false
+                            self.bottombarshowing = false
+                        }
+                        withAnimation(Animation.easeInOut(duration: 0.7)) {
+                            self.freetimepadding = 180
+                            greycircleoffset = 235
+                        }
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2000)) {
+                        withAnimation(.spring())
+                        {
+                            self.topbarshowing = true
+                            self.bottombarshowing = true
+                            greycircleoffset = 295
+                        }
+                       
+
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2300)) {
+                        withAnimation(.spring())
+                        {
+                            self.bottombarshowing = false
+                        }
+                        withAnimation(Animation.easeInOut(duration: 0.7)) {
+                            self.freetimeheight = 60
+                            greycircleoffset = 235
+                        }
+                        
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(3000)) {
+                        withAnimation(.spring())
+                        {
+                            self.bottombarshowing = true
+                            viewopacity = 0.3
+                            freetimepadding = 60
+                            freetimeheight = 180
+                            greycircleoffset = 55
+                        }
+                        
+                        
+                    }
+                    
+
+                    
+                })
+                {
+                    if (viewopacity == 0.3)
+                    {
+                        VStack
+                        {
+                            Image(systemName: "play.fill").resizable().foregroundColor((self.colorScheme == .light) ? .black : .white).frame(width: 20, height: 25)
+                            Text("Watch Demo").fontWeight(.bold).foregroundColor((self.colorScheme == .light) ? .black : .white)
+                            
+                        }
+                    }
+                }
+            }
+        }.navigationTitle("Work Hours Tutorial").navigationBarTitleDisplayMode(.inline).toolbar {
+            ToolbarItem(placement: .navigationBarLeading)
+            {
+                Text("")
+            }
+            ToolbarItem(placement: .navigationBarTrailing)
+            {
+                //Text("Edit").foregroundColor(Color.blue).opacity(opacityval)
             }
         }
     }

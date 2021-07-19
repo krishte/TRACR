@@ -407,10 +407,11 @@ struct DetailProgressView: View {
                     }) {
                         RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).opacity(1).padding(.horizontal, getAverageGrade() == 0 ? 20 : 40).padding(.vertical, 20).overlay(
 
+                            
                             ZStack {
                                 //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
-                                Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30)
-
+                                Image(systemName: "plus").resizable().font(Font.title.weight(.bold)).foregroundColor(Color.white).frame(width: 12, height: 12).offset(x: -12, y: 12)
+                                Image(systemName: "percent").resizable().foregroundColor(Color.white).scaledToFit().frame(width: 21).offset(x: 5, y: -5)
                             }
                         )
                     }.buttonStyle(PlainButtonStyle()).shadow(radius: 5)

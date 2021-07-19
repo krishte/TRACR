@@ -2688,6 +2688,8 @@ struct HomeView: View {
 
                         Image(self.colorScheme == .light ? "Tracr" : "TracrDark").resizable().scaledToFit().frame(width: UIScreen.main.bounds.size.width / 3.5).offset(y: 5)
                         
+                        let launchedBacklogBefore = UserDefaults.standard.bool(forKey: "launchedBacklogBefore")
+                        
                         Button(action: {
                             if actionViewPresets.actionViewType == "" {
                                 var actionViewHeight: CGFloat = 150
@@ -2698,7 +2700,6 @@ struct HomeView: View {
 //                                    actionViewHeight = CGFloat(200 + min((addTimeSubassignmentBacklog.backlogList.count * 32), 90))
                                 }
                                 
-                                let launchedBacklogBefore = UserDefaults.standard.bool(forKey: "launchedBacklogBefore")
                                 if !launchedBacklogBefore {
                                     actionViewHeight = CGFloat(300)
                                 }
@@ -2719,7 +2720,20 @@ struct HomeView: View {
                             //.font(Font.title.weight(.medium))
                             Image(systemName: self.addTimeSubassignmentBacklog.backlogList.count > 0 ? "tray.full.fill" : "tray.fill").resizable().scaledToFit().foregroundColor(colorScheme == .light ? Color.black : Color.white).frame(width: UIScreen.main.bounds.size.width / 12).overlay(
                                 ZStack {
-                                    if (self.addTimeSubassignmentBacklog.backlogList.count > 0) {
+                                    if !launchedBacklogBefore {
+                                        VStack {
+                                            HStack {
+                                                Spacer()
+                                                ZStack {
+                                                    Circle().fill(Color.red).frame(width: 19, height: 19)
+                                                }.offset(x: 6, y: -6)
+                                            }
+                                            
+                                            Spacer()
+                                        }
+                                    }
+                                    
+                                    else if (self.addTimeSubassignmentBacklog.backlogList.count > 0) {
                                         VStack {
                                             HStack {
                                                 Spacer()

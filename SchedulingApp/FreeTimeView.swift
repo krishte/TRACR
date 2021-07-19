@@ -523,21 +523,37 @@ struct FreeTimeToAdd: View {
     
     var body: some View {
         if self.addFreeTimeCGFloats.isEmpty || self.addFreeTimeCGFloats[0] < (self.pdb[0] - 5) || self.addFreeTimeCGFloats[1] > (self.pdb[1] + 5) {
-            Button(action:
-            {
-                self.addFreeTimeCGFloats = [self.pdb[0], CGFloat(self.pdb[0] + 60.35/2)]
-                self.yoffset = self.addFreeTimeCGFloats[0]
-                self.height = self.addFreeTimeCGFloats[1] - self.addFreeTimeCGFloats[0]
+            ZStack {
+                Rectangle()
+                    .strokeBorder(Color.green, style: StrokeStyle(lineWidth: 3))
+                    .background(Rectangle().fill(Color.green).opacity(0.43))
+                    .frame(width: UIScreen.main.bounds.size.width - 80, height: self.pdb[1] - self.pdb[0])
                 
-            })
-            {
-                ZStack {
-                    Rectangle()
-                        .strokeBorder(Color.green, style: StrokeStyle(lineWidth: 3))
-                        .background(Rectangle().fill(Color.green).opacity(0.43))
-                        .frame(width: UIScreen.main.bounds.size.width - 80, height: self.pdb[1] - self.pdb[0])
-                    VStack {
-                        Image(systemName: "plus").resizable().foregroundColor(Color.green).frame(width: 20, height: 20)
+                VStack(spacing: 0) {
+                    if Int((self.pdb[1] - self.pdb[0])/60.35) >= 1 {
+                        ForEach(0..<Int((self.pdb[1] - self.pdb[0])/60.35)) { nth in
+                            Button(action: {
+                                let addOffset: CGFloat = CGFloat(nth) * 60.35
+                                self.addFreeTimeCGFloats = [(self.pdb[0] + addOffset), CGFloat(self.pdb[0] + 60.35/2 + addOffset)]
+                                self.yoffset = self.addFreeTimeCGFloats[0]
+                                self.height = self.addFreeTimeCGFloats[1] - self.addFreeTimeCGFloats[0]
+                            }) {
+                                HStack {
+                                    Image(systemName: "plus").resizable().foregroundColor(Color.green).frame(width: 20, height: 20)
+                                }.frame(width: UIScreen.main.bounds.size.width - 80, height: 60.35)
+                            }
+                        }
+                    }
+                    else {
+                        Button(action: {
+                            self.addFreeTimeCGFloats = [self.pdb[0], CGFloat(self.pdb[0] + 60.35/2)]
+                            self.yoffset = self.addFreeTimeCGFloats[0]
+                            self.height = self.addFreeTimeCGFloats[1] - self.addFreeTimeCGFloats[0]
+                        }) {
+                            HStack {
+                                Image(systemName: "plus").resizable().foregroundColor(Color.green).frame(width: 20, height: 20)
+                            }.frame(width: UIScreen.main.bounds.size.width - 80)
+                        }
                     }
                 }
             }.offset(x: -15, y: self.pdb[0])

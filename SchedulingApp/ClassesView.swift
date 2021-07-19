@@ -168,7 +168,9 @@ struct EditClassModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Class Name", text: $textfieldmanager.userInput)
+                    TextField("Class Name", text: $textfieldmanager.userInput).onTapGesture {
+                        UIApplication.shared.endEditing()
+                    }
                 }
                 
 //                Section {
@@ -454,10 +456,14 @@ struct EditClassModalView: View {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
                 }
-            }.navigationBarItems(trailing: Button(action: {
-                                                    self.showeditclass = false
-                                                    self.EditClassPresenting = false
-                
+            }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onChanged { _ in
+                UIApplication.shared.endEditing()
+            }.onEnded { _ in
+                UIApplication.shared.endEditing()
+            }).navigationBarItems(trailing: Button(action: {
+                self.showeditclass = false
+                self.EditClassPresenting = false
             }, label: {Text("Cancel")})).navigationTitle("Edit Class").navigationBarTitleDisplayMode(.inline)
         }
 
@@ -640,7 +646,8 @@ struct DetailView: View {
                         RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.blue).frame(width: 70, height: 70).scaleEffect(self.scalevalue).padding(20).overlay(
                             ZStack {
                                 //Circle().strokeBorder(Color.black, lineWidth: 0.5).frame(width: 50, height: 50)
-                                Image(systemName: "plus").resizable().foregroundColor(Color.white).frame(width: 30, height: 30).scaleEffect(self.scalevalue)
+                                Image(systemName: "plus").resizable().font(Font.title.weight(.bold)).foregroundColor(Color.white).frame(width: 12, height: 12).offset(x: -12, y: 12).scaleEffect(self.scalevalue)
+                                Image(systemName: "doc.plaintext").resizable().foregroundColor(Color.white).scaledToFit().frame(width: 21).offset(x: 5, y: -5).scaleEffect(self.scalevalue)
                             }
                         ).shadow(radius: 50)
                     }.buttonStyle(PlainButtonStyle()).animation(.spring()).sheet(isPresented: $NewAssignmentPresenting, content: { NewGoogleAssignmentModalView(NewAssignmentPresenting: self.$NewAssignmentPresenting, selectedClass: self.getclassindex(classcool: self.classcool), preselecteddate: -1).environment(\.managedObjectContext, self.managedObjectContext).environmentObject(self.masterRunning)}).alert(isPresented: $noClassesAlert) {

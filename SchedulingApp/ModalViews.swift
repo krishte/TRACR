@@ -20,6 +20,12 @@ class TextFieldManager: ObservableObject {
     }
 }
 
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
 struct SelectGoogleAssignmentView: View
 {
     @EnvironmentObject var googleDelegate: GoogleDelegate
@@ -320,7 +326,9 @@ struct NewGoogleAssignmentModalView: View {
 //
 //                    }
                     
-                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch)
+                    TextField("Assignment Name", text: $nameofassignment).keyboardType(.webSearch).onTapGesture {
+                        UIApplication.shared.endEditing()
+                    }
                     
                     NavigationLink(destination: SelectGoogleAssignmentView(selectedgoogleassignment: $selectedgoogleassignment, foundassignments: $foundassignments, activeselection: $activeselection, selectedclass: $selectedclass, assignmenttype: $assignmenttype, nameofassignment: $nameofassignment, selectedDate: $selectedDate, foundassignmentdates: $foundassignmentdates).environmentObject(googleDelegate).onAppear
                     {
@@ -501,7 +509,7 @@ struct NewGoogleAssignmentModalView: View {
 
                         }) {
                             HStack {
-                                Text("Select Due Date and Time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                Text("Due Date").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                 Spacer()
                                 Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                             }
@@ -522,7 +530,7 @@ struct NewGoogleAssignmentModalView: View {
 
                         }) {
                             HStack {
-                                Text("Select Due Date and Time").foregroundColor(Color.black)
+                                Text("Due Date").foregroundColor(Color.black)
                                 Spacer()
                                 Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                             }
@@ -640,7 +648,12 @@ struct NewGoogleAssignmentModalView: View {
                     }
                 }
                 
-            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
+            }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onChanged { _ in
+                UIApplication.shared.endEditing()
+            }.onEnded { _ in
+                UIApplication.shared.endEditing()
+            }).navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
         }
         .onAppear
         {
@@ -852,7 +865,9 @@ struct NewAssignmentModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.webSearch)
+                    TextField("Assignment Name", text: $textfieldmanager.userInput).keyboardType(.webSearch).onTapGesture {
+                        UIApplication.shared.endEditing()
+                    }
                 }
                 
 //                Section {
@@ -986,7 +1001,7 @@ struct NewAssignmentModalView: View {
 
                         }) {
                             HStack {
-                                Text("Select Due Date and Time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                Text("Due Date").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                 Spacer()
                                 Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                             }
@@ -1007,7 +1022,7 @@ struct NewAssignmentModalView: View {
 
                         }) {
                             HStack {
-                                Text("Select Due Date and Time").foregroundColor(Color.black)
+                                Text("Due Date").foregroundColor(Color.black)
                                 Spacer()
                                 Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                             }
@@ -1122,7 +1137,12 @@ struct NewAssignmentModalView: View {
                     }
                 }
                 
-            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
+            }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onChanged { _ in
+                UIApplication.shared.endEditing()
+            }.onEnded { _ in
+                UIApplication.shared.endEditing()
+            }).navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Assignment").navigationBarTitleDisplayMode(.inline)
         }
         
 //        if masterRunning.masterRunningNow {
@@ -1271,7 +1291,9 @@ struct NewClassModalView: View {
                     }
                     else
                     {
-                        TextField("Class Name", text: self.$classnamenonib).keyboardType(.default)
+                        TextField("Class Name", text: self.$classnamenonib).keyboardType(.default).onTapGesture {
+                            UIApplication.shared.endEditing()
+                        }
                     }
                 }
                 Section
@@ -1643,7 +1665,13 @@ struct NewClassModalView: View {
                     }.alert(isPresented: $showingAlert) {
                         Alert(title: Text("Class Already Exists"), message: Text("Change Class"), dismissButton: .default(Text("Continue")))
                     }
-                }            }.navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Class").navigationBarTitleDisplayMode(.inline)
+                }
+            }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onChanged { _ in
+                UIApplication.shared.endEditing()
+            }.onEnded { _ in
+                UIApplication.shared.endEditing()
+            }).navigationBarItems(trailing: Button(action: {self.NewClassPresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Class").navigationBarTitleDisplayMode(.inline)
         }.onAppear()
         {
             let defaults = UserDefaults.standard
@@ -2834,7 +2862,9 @@ struct NewGradeModalView: View {
                 if (newassignment)
                 {
                     Section {
-                        TextField("Assignment Name", text: $assignmentname).keyboardType(.webSearch)
+                        TextField("Assignment Name", text: $assignmentname).keyboardType(.webSearch).onTapGesture {
+                            UIApplication.shared.endEditing()
+                        }
                     }
                 
                     
@@ -2947,7 +2977,7 @@ struct NewGradeModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select Due Date and Time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                    Text("Due Date").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                                 }
@@ -2968,7 +2998,7 @@ struct NewGradeModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select Due Date and Time").foregroundColor(Color.black)
+                                    Text("Due Date").foregroundColor(Color.black)
                                     Spacer()
                                     Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                                 }
@@ -3153,7 +3183,12 @@ struct NewGradeModalView: View {
                         }
                     }
                 }
-            }.navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Grade").navigationBarTitleDisplayMode(.inline)
+            }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onChanged { _ in
+                UIApplication.shared.endEditing()
+            }.onEnded { _ in
+                UIApplication.shared.endEditing()
+            }).navigationBarItems(trailing: Button(action: {self.NewGradePresenting = false}, label: {Text("Cancel")})).navigationTitle("Add Grade").navigationBarTitleDisplayMode(.inline)
         }
     }
 }
@@ -3312,7 +3347,9 @@ struct EditAssignmentModalView: View {
         NavigationView {
             Form {
                 Section {
-                    TextField("Assignment Name", text: self.$nameofassignment).keyboardType(.default)//.disabled(nameofassignment.count > (20 - 1))
+                    TextField("Assignment Name", text: self.$nameofassignment).keyboardType(.default).onTapGesture {
+                        UIApplication.shared.endEditing()
+                    }//.disabled(nameofassignment.count > (20 - 1))
                 }
 
                 //Text(String(assignmenttype))
@@ -3443,7 +3480,7 @@ struct EditAssignmentModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select due date and time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                    Text("Due Date").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                                 }
@@ -3462,7 +3499,7 @@ struct EditAssignmentModalView: View {
 
                             }) {
                                 HStack {
-                                    Text("Select due date and time").foregroundColor(colorScheme == .light ? Color.black : Color.white)
+                                    Text("Due Date").foregroundColor(colorScheme == .light ? Color.black : Color.white)
                                     Spacer()
                                     Text(formatter.string(from: selectedDate)).foregroundColor(expandedduedate ? Color.blue: Color.gray)
                                 }
@@ -3675,7 +3712,12 @@ struct EditAssignmentModalView: View {
                     }.foregroundColor(Color.red)
                 }
                 
-            }.navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline)
+            }.gesture(DragGesture(minimumDistance: 10, coordinateSpace: .local)
+            .onChanged { _ in
+                UIApplication.shared.endEditing()
+            }.onEnded { _ in
+                UIApplication.shared.endEditing()
+            }).navigationBarItems(trailing: Button(action: {self.NewAssignmentPresenting = false}, label: {Text("Cancel")})).navigationTitle("Edit Assignment").navigationBarTitleDisplayMode(.inline)
             .onAppear
             {
                 if (hours > 0)

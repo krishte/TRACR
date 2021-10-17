@@ -1008,6 +1008,7 @@ struct ProgressView: View {
     @State var weeklygoal: Int = 0
     @State var editingweeklygoal: Bool = false
     @State var completedamountofweeklygoalminutes: Int = 90
+    @State var showlabel = true
     
     
     
@@ -1291,17 +1292,20 @@ struct ProgressView: View {
 
                
                                             Line(classcool: classity)
+                                            if (showlabel)
+                                            {
                                             
-                                            VStack {
-                                                HStack {
-                                                    Text("Your Grades (by Class)").font(.footnote).fontWeight(.semibold).padding(.all, 5).background(Color("CharansOCD twin")).overlay(
-                                                        RoundedRectangle(cornerRadius: 5)
-                                                            .stroke(Color("CharansOCD twin"), lineWidth: 4)
-                                                    )
+                                                VStack {
+                                                    HStack {
+                                                        Text("Your Grades (by Class)").font(.footnote).fontWeight(.semibold).padding(.all, 5).background(Color("CharansOCD twin")).overlay(
+                                                            RoundedRectangle(cornerRadius: 5)
+                                                                .stroke(Color("CharansOCD twin"), lineWidth: 4)
+                                                        ).animation(.spring())
+                                                        Spacer()
+                                                    }
                                                     Spacer()
-                                                }
-                                                Spacer()
-                                            }.padding(.all, 12).padding(.horizontal, 3)
+                                                }.padding(.all, 12).padding(.horizontal, 3)
+                                            }
 //                                            .opacity(self.bigGraphTitleOpacity)
 //                                            .onAppear {
 //                                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2800)) {
@@ -1773,6 +1777,8 @@ struct ProgressView: View {
             self.showingSettingsView = false
             self.selectedClass = 0
             self.showpopup = false
+             
+             
          }.onAppear {
             let defaults = UserDefaults.standard
             weeklygoal = defaults.object(forKey: "weeklygoal") as? Int ?? 0
@@ -1784,6 +1790,11 @@ struct ProgressView: View {
             if (classlist.count > 0)
             {
                 self.selectDeselect(classlist[0].name)
+            }
+             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(2800)) {
+                withAnimation(.spring()) {
+                    showlabel = false
+                }
             }
             self.refreshID = UUID()
          }

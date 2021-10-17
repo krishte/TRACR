@@ -1000,7 +1000,7 @@ struct NoClassesOrFreetime: View {
                         Spacer()
                     }.padding(.horizontal, 5)
                     HStack {
-                        Text("You can do this by holding the blue Add button and selecting 'Free Time' and 'Class'").font(.system(size: 14)).fontWeight(.semibold)
+                        Text("You can do this by tapping the blue Add button and selecting 'Free Time' and 'Class'").font(.system(size: 14)).fontWeight(.semibold)
                         Spacer()
                     }.padding(.horizontal, 5)
                 }

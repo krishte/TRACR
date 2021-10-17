@@ -55,7 +55,7 @@ struct FreeTimeIndividual: View {
             }
         }
  
-        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60.35/60
+        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: maxdate), to: maxdate).minute!)*60/60
     }
     
     func getmaxbottom() -> CGFloat {
@@ -70,10 +70,10 @@ struct FreeTimeIndividual: View {
         }
  
         if (mindate == Date(timeInterval: 3600*24-1, since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))) {
-            return CGFloat(24*60.35)
+            return CGFloat(24*60)
         }
         
-        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60.35/60
+        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: mindate), to: mindate).minute!)*60/60
     }
     func getoffset() -> CGFloat {
  
@@ -87,8 +87,8 @@ struct FreeTimeIndividual: View {
         let y = Int(round(100*(self.yoffset)))
         
        // print("Starttime: " + "\(Double(y%6035)/Double(6035)*4)")
-        var stringitya = String(format: "%f", (self.yoffset)/60.35)[0..<2]
-        var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4+0.01)*15)"
+        var stringitya = String(format: "%f", (self.yoffset)/60)[0..<2]
+        var stringityb =  "\(Int(Double(y%6000)/Double(6000)*4+0.01)*15)"
             
         if (stringitya.contains(".")) {
             stringitya = "0" + String(stringitya[0..<1])
@@ -103,8 +103,8 @@ struct FreeTimeIndividual: View {
     
     func getendtext() -> String {
         let y = Int(round(100*(self.yoffset+self.height)))
-        var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
-        var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4 + 0.01)*15)"
+        var stringitya = String(format: "%f", (self.yoffset + self.height)/60)[0..<2]
+        var stringityb =  "\(Int(Double(y%6000)/Double(6000)*4 + 0.01)*15)"
             
         if (stringitya.contains(".")) {
             stringitya = "0" + String(stringitya[0..<1])
@@ -127,7 +127,7 @@ struct FreeTimeIndividual: View {
                                 self.showsavebuttons = false
                             }
  
-                            if self.yoffset >= 0 && self.height >= 30.175 {
+                            if self.yoffset >= 0 && self.height >= 30 {
                                 if !(self.yoffset == 0 && value.translation.height < 0) {
                                     if (self.changingheightallowed) {
                                         self.height = self.height - value.translation.height
@@ -136,8 +136,8 @@ struct FreeTimeIndividual: View {
                                 }
                             }
                             
-                            if self.height < 30.175 {
-                                self.height = 30.175
+                            if self.height < 30 {
+                                self.height = 30
                             }
                             
                             withAnimation(.spring()) {
@@ -171,15 +171,15 @@ struct FreeTimeIndividual: View {
                                 self.draggingup = false
                             }
                             
-                            let roundedval = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09) - self.yoffset
+                            let roundedval = CGFloat(Double(Int(self.yoffset/(15) + 0.5))*15) - self.yoffset
                             self.yoffset += roundedval
                             self.height -= roundedval
                             let y = Int(round(100*(self.yoffset)))
-                            let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
+                            let starttimeval = Int((self.yoffset)/60)*3600 + Int(Double(y%6000)/Double(6000)*4)*15*60
                             freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                             
                             let x = Int(round(100*((self.yoffset+self.height))))
-                            let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
+                            let endtimeval =  Int(((self.yoffset+self.height))/60)*3600 + Int(Double(x%6000)/Double(6000)*4)*15*60
                             freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
 
                             do {
@@ -215,8 +215,8 @@ struct FreeTimeIndividual: View {
                             self.yoffset = getmaxbottom()-self.height
                         }
                         
-                        if ((self.yoffset+self.height)/60.35 >= 24) {
-                            self.yoffset = 24*60.35-self.height
+                        if ((self.yoffset+self.height)/60 >= 24) {
+                            self.yoffset = 24*60-self.height
                         }
                         
                         withAnimation(.spring()) {
@@ -251,13 +251,13 @@ struct FreeTimeIndividual: View {
                             self.draggingdown = false
                         }
                         
-                        self.yoffset = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09)
+                        self.yoffset = CGFloat(Double(Int(self.yoffset/(15) + 0.5))*15)
                         let y = Int(round(100*(self.yoffset)))
-                        let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
+                        let starttimeval = Int((self.yoffset)/60)*3600 + Int(Double(y%6000)/Double(6000)*4)*15*60
                         freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                         
                         let x = Int(round(100*((self.yoffset+self.height))))
-                        let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
+                        let endtimeval =  Int(((self.yoffset+self.height))/60)*3600 + Int(Double(x%6000)/Double(6000)*4)*15*60
                         freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                         do {
                             try self.managedObjectContext.save()
@@ -303,20 +303,20 @@ struct FreeTimeIndividual: View {
                                 self.showsavebuttons = false
                             }
                             
-                            if self.height >= 30.175 {
+                            if self.height >= 30 {
                                 self.height = self.height + value.translation.height
                             }
                             
-                            if self.height < 30.175 {
-                                self.height = 30.175
+                            if self.height < 30 {
+                                self.height = 30
                             }
                             
                             if (self.yoffset+self.height > getmaxbottom()) {
                                 self.height = getmaxbottom() - self.yoffset
                             }
                             
-                            if ((self.yoffset+self.height)/60.35 >= 24) {
-                                self.height = 24*60.35-self.yoffset
+                            if ((self.yoffset+self.height)/60 >= 24) {
+                                self.height = 24*60-self.yoffset
                             }
                             
                             withAnimation(.spring()) {
@@ -333,15 +333,15 @@ struct FreeTimeIndividual: View {
                             withAnimation(.spring()) {
                                 self.draggingdown = false
                             }
-                            self.height = CGFloat(Double(Int(self.height/(15.09) + 0.5))*15.09)
-                            self.height = max(self.height, 30.175)
+                            self.height = CGFloat(Double(Int(self.height/(15) + 0.5))*15)
+                            self.height = max(self.height, 30)
                             
                             let y = Int(round(100*(self.yoffset)))
-                            let starttimeval = Int((self.yoffset)/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
+                            let starttimeval = Int((self.yoffset)/60)*3600 + Int(Double(y%6000)/Double(6000)*4)*15*60
                             freetimeobject.tempstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                             
                             let x = Int(round(100*((self.yoffset+self.height))))
-                            let endtimeval =  Int(((self.yoffset+self.height))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
+                            let endtimeval =  Int(((self.yoffset+self.height))/60)*3600 + Int(Double(x%6000)/Double(6000)*4)*15*60
                             freetimeobject.tempenddatetime =  Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
                             
                             do {
@@ -388,7 +388,7 @@ struct ObstructingFreeTimes: View {
     }
     
     func DateObjectToCGFloat(date: Date) -> CGFloat {
-        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: date), to: date).minute!)*60.35/60
+        return CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: date), to: date).minute!)*60/60
     }
     
     func updateObstructions() -> [[CGFloat]] {
@@ -432,7 +432,7 @@ struct ObstructingFreeTimes: View {
                 }
                 
                 if freetimeBlocks[freetimeBlocks.count - 1][1] <= Date(timeInterval: TimeInterval(84600), since: Calendar.current.startOfDay(for: Date(timeInterval: TimeInterval(-1), since: freetimeBlocks[freetimeBlocks.count - 1][1]))) {
-                    PossibleDateBrackets.append([DateObjectToCGFloat(date: freetimeBlocks[freetimeBlocks.count - 1][1]), CGFloat(24 * 60.35)])
+                    PossibleDateBrackets.append([DateObjectToCGFloat(date: freetimeBlocks[freetimeBlocks.count - 1][1]), CGFloat(24 * 60)])
                 }
             }
             
@@ -446,7 +446,7 @@ struct ObstructingFreeTimes: View {
         }
         
         else {
-            return [[CGFloat(0), CGFloat(24 * 60.35)]]
+            return [[CGFloat(0), CGFloat(24 * 60)]]
         }
     }
     
@@ -454,8 +454,8 @@ struct ObstructingFreeTimes: View {
         RoundedRectangle(cornerRadius: 8, style: .continuous)
             .strokeBorder(Color("freetimeblue"), style: StrokeStyle(lineWidth: 3, lineCap: .square, lineJoin: .round, dash: [12]))
             .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Color("freetimeblue")).opacity(0.28))
-            .frame(width: UIScreen.main.bounds.size.width - 80, height: CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60)
-            .offset(x: -15, y: CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60)
+            .frame(width: UIScreen.main.bounds.size.width - 80, height: CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60/60)
+            .offset(x: -15, y: CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60/60)
             .onAppear(perform: appendToObstructingList)
             .onDisappear(perform: removeFromObstructingList)
     }
@@ -487,8 +487,8 @@ struct FreeTimeToAdd: View {
     func getstarttext() -> String {
         let y = Int(round(100*(self.yoffset)))
         
-        var stringitya = String(format: "%f", (self.yoffset)/60.35)[0..<2]
-        var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4+0.01)*15)"
+        var stringitya = String(format: "%f", (self.yoffset)/60)[0..<2]
+        var stringityb =  "\(Int(Double(y%6000)/Double(6000)*4+0.01)*15)"
             
         if (stringitya.contains(".")) {
             stringitya = "0" + String(stringitya[0..<1])
@@ -503,8 +503,8 @@ struct FreeTimeToAdd: View {
  
     func getendtext() -> String {
         let y = Int(round(100*(self.yoffset + self.height)))
-        var stringitya = String(format: "%f", (self.yoffset + self.height)/60.35)[0..<2]
-        var stringityb =  "\(Int(Double(y%6035)/Double(6035)*4 + 0.01)*15)"
+        var stringitya = String(format: "%f", (self.yoffset + self.height)/60)[0..<2]
+        var stringityb =  "\(Int(Double(y%6000)/Double(6000)*4 + 0.01)*15)"
             
         if (stringitya.contains(".")) {
             stringitya = "0" + String(stringitya[0..<1])
@@ -530,23 +530,23 @@ struct FreeTimeToAdd: View {
                     .frame(width: UIScreen.main.bounds.size.width - 80, height: self.pdb[1] - self.pdb[0])
                 
                 VStack(spacing: 0) {
-                    if Int((self.pdb[1] - self.pdb[0])/60.35) >= 1 {
-                        ForEach(0..<Int((self.pdb[1] - self.pdb[0])/60.35)) { nth in
+                    if Int((self.pdb[1] - self.pdb[0])/60) >= 1 {
+                        ForEach(0..<Int((self.pdb[1] - self.pdb[0])/60)) { nth in
                             Button(action: {
-                                let addOffset: CGFloat = CGFloat(nth) * 60.35
-                                self.addFreeTimeCGFloats = [(self.pdb[0] + addOffset), CGFloat(self.pdb[0] + 60.35/2 + addOffset)]
+                                let addOffset: CGFloat = CGFloat(nth) * 60
+                                self.addFreeTimeCGFloats = [(self.pdb[0] + addOffset), CGFloat(self.pdb[0] + 60/2 + addOffset)]
                                 self.yoffset = self.addFreeTimeCGFloats[0]
                                 self.height = self.addFreeTimeCGFloats[1] - self.addFreeTimeCGFloats[0]
                             }) {
                                 HStack {
                                     Image(systemName: "plus").resizable().foregroundColor(Color.green).frame(width: 20, height: 20)
-                                }.frame(width: UIScreen.main.bounds.size.width - 80, height: 60.35)
+                                }.frame(width: UIScreen.main.bounds.size.width - 80, height: 60)
                             }
                         }
                     }
                     else {
                         Button(action: {
-                            self.addFreeTimeCGFloats = [self.pdb[0], CGFloat(self.pdb[0] + 60.35/2)]
+                            self.addFreeTimeCGFloats = [self.pdb[0], CGFloat(self.pdb[0] + 60/2)]
                             self.yoffset = self.addFreeTimeCGFloats[0]
                             self.height = self.addFreeTimeCGFloats[1] - self.addFreeTimeCGFloats[0]
                         }) {
@@ -568,7 +568,7 @@ struct FreeTimeToAdd: View {
                                     self.showsavebuttons = false
                                 }
  
-                                if self.yoffset >= 0 && self.height >= 30.175 {
+                                if self.yoffset >= 0 && self.height >= 30 {
                                     if !(self.yoffset == 0 && value.translation.height < 0) {
                                         if (self.changingheightallowed) {
                                             self.height = self.height - value.translation.height
@@ -577,8 +577,8 @@ struct FreeTimeToAdd: View {
                                     }
                                 }
                                 
-                                if self.height < 30.175 {
-                                    self.height = 30.175
+                                if self.height < 30 {
+                                    self.height = 30
                                 }
                                 
                                 withAnimation(.spring()) {
@@ -610,7 +610,7 @@ struct FreeTimeToAdd: View {
                                 self.draggingup = false
                             }
                             
-                            let roundedval = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09) - self.yoffset
+                            let roundedval = CGFloat(Double(Int(self.yoffset/(15) + 0.5))*15) - self.yoffset
                             self.yoffset += roundedval
                             self.height -= roundedval
                             
@@ -642,8 +642,8 @@ struct FreeTimeToAdd: View {
                             self.yoffset = getmaxbottom()-self.height
                         }
                         
-                        if ((self.yoffset+self.height)/60.35 >= 24) {
-                            self.yoffset = 24*60.35-self.height
+                        if ((self.yoffset+self.height)/60 >= 24) {
+                            self.yoffset = 24*60-self.height
                         }
                         
                         withAnimation(.spring()) {
@@ -660,7 +660,7 @@ struct FreeTimeToAdd: View {
                             self.draggingdown = false
                         }
                         
-                        self.yoffset = CGFloat(Double(Int(self.yoffset/(15.09) + 0.5))*15.09)
+                        self.yoffset = CGFloat(Double(Int(self.yoffset/(15) + 0.5))*15)
                         
                         self.addFreeTimeCGFloats[0] = self.yoffset
                         self.addFreeTimeCGFloats[1] = self.yoffset + self.height
@@ -672,20 +672,20 @@ struct FreeTimeToAdd: View {
                                 self.showsavebuttons = false
                             }
                             
-                            if self.height >= 30.175 {
+                            if self.height >= 30 {
                                 self.height = self.height + value.translation.height
                             }
                             
-                            if self.height < 30.175 {
-                                self.height = 30.175
+                            if self.height < 30 {
+                                self.height = 30
                             }
                             
                             if (self.yoffset+self.height > getmaxbottom()) {
                                 self.height = getmaxbottom() - self.yoffset
                             }
                             
-                            if ((self.yoffset+self.height)/60.35 >= 24) {
-                                self.height = 24*60.35-self.yoffset
+                            if ((self.yoffset+self.height)/60 >= 24) {
+                                self.height = 24*60-self.yoffset
                             }
                             
                             withAnimation(.spring()) {
@@ -700,8 +700,8 @@ struct FreeTimeToAdd: View {
                                 self.draggingdown = false
                             }
                             
-                            self.height = CGFloat(Double(Int(self.height/(15.09) + 0.5))*15.09)
-                            self.height = max(self.height, 30.175)
+                            self.height = CGFloat(Double(Int(self.height/(15) + 0.5))*15)
+                            self.height = max(self.height, 30)
                             
                             self.addFreeTimeCGFloats[0] = self.yoffset
                             self.addFreeTimeCGFloats[1] = self.yoffset + self.height
@@ -738,7 +738,7 @@ struct WorkHours: View {
     
     @State var rotationdegree = 20.0
     
-    @State var PossibleDateBrackets: [[CGFloat]] = [[CGFloat(0), CGFloat(24 * 60.35)]]
+    @State var PossibleDateBrackets: [[CGFloat]] = [[CGFloat(0), CGFloat(24 * 60)]]
     @State var addFreeTimeCGFloats: [CGFloat] = []
     
     @State var pressing: Bool = false
@@ -908,11 +908,11 @@ struct WorkHours: View {
     
     func addfreetime() -> Void {
         let y = Int(round(100*(addFreeTimeCGFloats[0])))
-        let starttimeval = Int((addFreeTimeCGFloats[0])/60.35)*3600 + Int(Double(y%6035)/Double(6035)*4)*15*60
+        let starttimeval = Int((addFreeTimeCGFloats[0])/60)*3600 + Int(Double(y%6000)/Double(6000)*4)*15*60
         let generalstartdatetime = Date(timeInterval: TimeInterval(starttimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
  
         let x = Int(round(100*((addFreeTimeCGFloats[1]))))
-        let endtimeval =  Int(((addFreeTimeCGFloats[1]))/60.35)*3600 + Int(Double(x%6035)/Double(6035)*4)*15*60
+        let endtimeval =  Int(((addFreeTimeCGFloats[1]))/60)*3600 + Int(Double(x%6000)/Double(6000)*4)*15*60
         let generalenddatetime = Date(timeInterval: TimeInterval(endtimeval), since: Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0)))
     
         self.addingselection.forEach { dayoftheweek in
@@ -1049,7 +1049,7 @@ struct WorkHours: View {
                         ScrollView {
                             ZStack {
                                 HStack(alignment: .top) {
-                                    VStack(alignment: .leading) {
+                                    VStack(alignment: .leading, spacing: 10) {
                                         ForEach((0...24), id: \.self) { hour in
                                             HStack {
                                                 Text(String(format: "%02d", hour)).font(.system(size: 13)).frame(width: 20, height: 20)
@@ -1084,7 +1084,7 @@ struct WorkHours: View {
                                                 
                                                 else {
                                                     if (getdisplayval(freetimeval: freetime)) {
-                                                        FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60.35/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60.35/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime, refreshID: self.$refreshID).onLongPressGesture(minimumDuration: 0.45, pressing: { _ in
+                                                        FreeTimeIndividual(yoffset:  CGFloat(Calendar.current.dateComponents([.minute], from: Calendar.current.startOfDay(for: freetime.startdatetime), to: freetime.startdatetime).minute!)*60/60, height:  CGFloat(Calendar.current.dateComponents([.minute], from: freetime.startdatetime, to: freetime.enddatetime).minute!)*60/60, dayvals: [freetime.monday, freetime.tuesday, freetime.wednesday, freetime.thursday, freetime.friday, freetime.saturday, freetime.sunday], starttime: freetime.startdatetime, endtime: freetime.enddatetime, editingmode: self.$freetimeediting.editingmode, showsavebuttons: self.$freetimeediting.showsavebuttons, freetimeobject: freetime, refreshID: self.$refreshID).onLongPressGesture(minimumDuration: 0.45, pressing: { _ in
                                                             //do something to give indication that something is happening
 //                                                            withAnimation(.spring())
 //                                                            {

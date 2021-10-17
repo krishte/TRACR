@@ -766,66 +766,66 @@ struct TodaysTasksLargeView: View {
                     
                     Spacer()
                     
-                    VStack {
-                        HStack {
-                            Text("Today's Tasks").fontWeight(.semibold).font(.title3)
-                            Spacer()
-                        }
-                                            
-                        ForEach(0..<3, id: \.self) { scheduleEntryIndex in
-                            HStack {
-                                ZStack {
-                                    let n = 2 * scheduleEntryIndex
-
-                                    if (n < entry.schedule.count) {
-                                        VStack {
-                                            HStack {
-                                                Text(entry.schedule[n].taskName).fontWeight(.semibold).font(.body)
-                                                Spacer()
-                                            }.padding(.top, 6)
-                                            
-                                            HStack {
-                                                Text(entry.schedule[n].className).fontWeight(.light).font(.caption)
-                                                Spacer()
-                                            }
-                                            
-                                            Spacer()
-                                        }.frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8)
-                                    }
-                                    
-                                    else {
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.05)
-                                    }
-                                }
-
-                                Spacer()
-
-                                ZStack {
-                                    let n = 2 * scheduleEntryIndex + 1
-
-                                    if (n < entry.schedule.count) {
-                                        VStack {
-                                            HStack {
-                                                Text(entry.schedule[n].taskName).fontWeight(.semibold).font(.body)
-                                                Spacer()
-                                            }.padding(.top, 6)
-                                            
-                                            HStack {
-                                                Text(entry.schedule[n].className).fontWeight(.light).font(.caption)
-                                                Spacer()
-                                            }
-                                            
-                                            Spacer()
-                                        }.frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8)
-                                    }
-                                    
-                                    else {
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.05)
-                                    }
-                                }
-                            }
-                        }
-                    }
+//                    VStack {
+//                        HStack {
+//                            Text("Today's Tasks").fontWeight(.semibold).font(.title3)
+//                            Spacer()
+//                        }
+//                                            
+//                        ForEach(0..<3, id: \.self) { scheduleEntryIndex in
+//                            HStack {
+//                                ZStack {
+//                                    let n = 2 * scheduleEntryIndex
+//
+//                                    if (n < entry.schedule.count) {
+//                                        VStack {
+//                                            HStack {
+//                                                Text(entry.schedule[n].taskName).fontWeight(.semibold).font(.body)
+//                                                Spacer()
+//                                            }.padding(.top, 6)
+//                                            
+//                                            HStack {
+//                                                Text(entry.schedule[n].className).fontWeight(.light).font(.caption)
+//                                                Spacer()
+//                                            }
+//                                            
+//                                            Spacer()
+//                                        }.frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8)
+//                                    }
+//                                    
+//                                    else {
+//                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.05)
+//                                    }
+//                                }
+//
+//                                Spacer()
+//
+//                                ZStack {
+//                                    let n = 2 * scheduleEntryIndex + 1
+//
+//                                    if (n < entry.schedule.count) {
+//                                        VStack {
+//                                            HStack {
+//                                                Text(entry.schedule[n].taskName).fontWeight(.semibold).font(.body)
+//                                                Spacer()
+//                                            }.padding(.top, 6)
+//                                            
+//                                            HStack {
+//                                                Text(entry.schedule[n].className).fontWeight(.light).font(.caption)
+//                                                Spacer()
+//                                            }
+//                                            
+//                                            Spacer()
+//                                        }.frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8)
+//                                    }
+//                                    
+//                                    else {
+//                                        RoundedRectangle(cornerRadius: 7, style: .continuous).fill(LinearGradient(gradient: Gradient(colors: [Color("gradientD"), Color("gradientC")]), startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: (geometry.size.width-32)/2, height: (geometry.size.height-32)/8).opacity(0.05)
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                 }.padding(.all, 16).background(self.bgGradient).frame(width: geometry.size.width, height: geometry.size.height)
             }
         }

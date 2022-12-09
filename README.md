@@ -37,5 +37,8 @@ This page displays all the assignments sorted by due date, class, length, name, 
 |---|---|---|
 |![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 16 00 09](https://user-images.githubusercontent.com/46422100/206762955-703045cc-25ff-4ea1-92ff-e803c6202ae8.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 20 58 21](https://user-images.githubusercontent.com/46422100/206762987-7511d375-6cb1-4b84-932d-018ff8f657c5.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 28 09](https://user-images.githubusercontent.com/46422100/206763037-52a8b833-18d2-4fb6-97b9-95172fcd1b6f.png)|
 
+### Progress 
 
-
+|Progress (dark mode)|Progress (light mode)| Specific Progress|
+|---|---|---|
+|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 20 59 11](https://user-images.githubusercontent.com/46422100/206812527-a8a3c159-e100-452e-804f-3899f1d02fb3.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 57 34](https://user-images.githubusercontent.com/46422100/206812549-dbfb98b1-ec90-4558-9cce-dfb2f6e8e9bf.png)|![Simulator Screen Shot - iPhone 11 - 2020-09-27 at 22 14 26](https://user-images.githubusercontent.com/46422100/206812585-df840f67-72d3-4bb3-8370-2b6dbfcdca63.png)|![Uploading Simulator Screen Shot - iPhone 11 - 2020-09-27 at 22.14.26.png…]()|

@@ -23,6 +23,8 @@ This is the page shown when the app is launched. Depending on whether the user w
 
 ### Assignments
 
+This page displays all the assignments sorted by due date, class, length, name, and type. Tapping an assignment causes it to expand, displaying all the scheduled tasks for the assignment along with more details about the assignment. 
+
 |Assignments (light mode)|Assignments (dark mode)|Add Assignment|
 |---|---|---|
 |![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 16 00 09](https://user-images.githubusercontent.com/46422100/206762955-703045cc-25ff-4ea1-92ff-e803c6202ae8.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 20 58 21](https://user-images.githubusercontent.com/46422100/206762987-7511d375-6cb1-4b84-932d-018ff8f657c5.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 28 09](https://user-images.githubusercontent.com/46422100/206763037-52a8b833-18d2-4fb6-97b9-95172fcd1b6f.png)|
@@ -30,7 +32,7 @@ This is the page shown when the app is launched. Depending on whether the user w
 
 ### Classes
 
-This page displays all a users' classes and clicking on a class leads to the Specific class page where the assignments for that class both complete and incomplete are displayed. The floating add button in the bottom-right is present in all pages. Clicking on it gives three options: add a class, add an assignment, and add a grade. The Add class page is shown below. 
+This page displays all a users' classes and on a class leads to the Specific class page where the assignments for that class both complete and incomplete are displayed. The floating add button in the bottom-right is present in all pages. Tapping it gives three options: add a class, add an assignment, and add a grade. The Add class page is shown below. 
 
 |Classes|Specific class|Add class|
 |---|---|---|

@@ -43,7 +43,7 @@ This page displays all a users' grades along with various other insights. The to
 
 |Progress (dark mode)|Progress (light mode)| Specific Progress|
 |---|---|---|
-|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 20 59 11](https://user-images.githubusercontent.com/46422100/206812527-a8a3c159-e100-452e-804f-3899f1d02fb3.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 57 34](https://user-images.githubusercontent.com/46422100/206812549-dbfb98b1-ec90-4558-9cce-dfb2f6e8e9bf.png)|![Simulator Screen Shot - iPhone 11 - 2020-09-27 at 22 14 26](https://user-images.githubusercontent.com/46422100/206812585-df840f67-72d3-4bb3-8370-2b6dbfcdca63.png)|![Uploading Simulator Screen Shot - iPhone 11 - 2020-09-27 at 22.14.26.png…]()|
+|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 20 59 11](https://user-images.githubusercontent.com/46422100/206812527-a8a3c159-e100-452e-804f-3899f1d02fb3.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 57 34](https://user-images.githubusercontent.com/46422100/206812549-dbfb98b1-ec90-4558-9cce-dfb2f6e8e9bf.png)|![Simulator Screen Shot - iPhone 11 - 2020-09-27 at 22 14 26](https://user-images.githubusercontent.com/46422100/206813474-8981ad26-d27c-4b1a-a49d-abfd52c527f1.png)|
 
 ### Settings
 

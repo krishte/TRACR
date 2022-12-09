@@ -39,6 +39,10 @@ This page displays all the assignments sorted by due date, class, length, name, 
 
 ### Progress 
 
+This page displays all a users' grades along with various other insights. The top-most graph shows the users grades for each class over time. The rescheduled tasks circle shows when users have been rescheduling tasks to give an idea of when they are most productive. The workload distribution pie chart shows how the user's workload is distributed between classes. Tapping on a class leads to the Specific Progress for that class where the grades are shown in a bar chart and where additional statistics are shown for IB classes.
+
 |Progress (dark mode)|Progress (light mode)| Specific Progress|
 |---|---|---|
 |![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 20 59 11](https://user-images.githubusercontent.com/46422100/206812527-a8a3c159-e100-452e-804f-3899f1d02fb3.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 57 34](https://user-images.githubusercontent.com/46422100/206812549-dbfb98b1-ec90-4558-9cce-dfb2f6e8e9bf.png)|![Simulator Screen Shot - iPhone 11 - 2020-09-27 at 22 14 26](https://user-images.githubusercontent.com/46422100/206812585-df840f67-72d3-4bb3-8370-2b6dbfcdca63.png)|![Uploading Simulator Screen Shot - iPhone 11 - 2020-09-27 at 22.14.26.png…]()|
+
+### Settings

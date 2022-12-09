@@ -47,6 +47,8 @@ This page displays all a users' grades along with various other insights. The to
 
 ### Settings
 
+This is the page shown when the settings button in the top-right of any of the other pages is tapped. The user can adjust the Type sliders according to how long they prefer to spend working on a specific assignment type in a day. The Work hours page is where the user can set when they are free to work on assignment. The information from both Work hours and Type sliders is used by the scheduling algorithm to schedule times to work on assignments. In the Google Classroom page, the user can link their TRACR classes to their Google Classroom classes such that new assignments posted on Google Classroom are automatically added to TRACR.
+
 |Settings|Type sliders|Work hours|
 |---|---|---|
 |![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 31 39](https://user-images.githubusercontent.com/46422100/206813340-3638a276-4d3c-4419-b9e1-8b86a9824829.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 30 54](https://user-images.githubusercontent.com/46422100/206813360-0b614b73-3007-4aee-aa23-339affdca27e.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 29 49](https://user-images.githubusercontent.com/46422100/206813386-867962ab-9109-4eb3-8059-d812e278320d.png)|

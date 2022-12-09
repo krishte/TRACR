@@ -23,7 +23,7 @@ This is the page shown when the app is launched. Depending on whether the user w
 
 ### Classes
 
-|Classes|Specific class|
-|---|---|
-|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 22 51 16](https://user-images.githubusercontent.com/46422100/206757622-8154efc4-7316-475e-85e0-9c0b6562473c.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 16 01 10](https://user-images.githubusercontent.com/46422100/206757651-c8457966-e3a5-4dd7-8579-de612799f7ce.png)|
+|Classes|Specific class|Add class|
+|---|---|---|
+|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-14 at 22 51 16](https://user-images.githubusercontent.com/46422100/206757622-8154efc4-7316-475e-85e0-9c0b6562473c.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 16 01 10](https://user-images.githubusercontent.com/46422100/206757651-c8457966-e3a5-4dd7-8579-de612799f7ce.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 27 08](https://user-images.githubusercontent.com/46422100/206758839-7259454e-f312-4a97-bc16-1f06ec58b8ed.png)|![Uploading Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15.27.08.png…]()|
 

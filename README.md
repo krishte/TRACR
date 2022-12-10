@@ -9,9 +9,9 @@ TRACR is an IOS scheduling app designed to automatically schedule users' assignm
 - **Google Classroom Integration** - TRACR integrates Google Classroom with the input classes, assignments, and deadlines via the Google Classroom API
 - **International Baccleaurate Integration** - For students taking the International Baccleaurate (IB) TRACR displays real IB statistics 
 
-### The Scheduling Algorithm
+## User Interface
 
-The app is made up of five main pages: Home, Assignments, Classes, Progress, and Settings. The following sections detail the functionality of each of these pages with a few images.
+The app is made up of five main pages: Home, Assignments, Classes, Progress, and Settings. The following sections detail the functionality of each of these pages with a few images. 
 
 ### Home
 
@@ -52,3 +52,15 @@ This is the page shown when the settings button in the top-right of any of the o
 |Settings|Type sliders|Work hours|
 |---|---|---|
 |![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 31 39](https://user-images.githubusercontent.com/46422100/206813340-3638a276-4d3c-4419-b9e1-8b86a9824829.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 30 54](https://user-images.githubusercontent.com/46422100/206813360-0b614b73-3007-4aee-aa23-339affdca27e.png)|![Simulator Screen Shot - iPhone 12 Pro Max - 2021-07-09 at 15 29 49](https://user-images.githubusercontent.com/46422100/206813386-867962ab-9109-4eb3-8059-d812e278320d.png)|
+
+## The Scheduling Algorithm
+
+The scheduling algorithm uses the Work hours and Type sliders to create tasks for each assignment. For example, if there is a 5-hour essay due 10 days from now, the user has work hours scheduled from 4pm to 8pm every day, and the user's preferred task length for essays is one hour, then the algorithm might schedule 1 hour tasks to work on this assignment every second day from 4pm to 5pm. This is a very simplified example just to give an idea of what information that algorithm uses and what it ultimately produces.
+
+The biggest issue with any such scheduling algorithm is that when a new assignment is added, there is a very good chance that previously scheduled tasks will have to be moved around to make time for tasks for this new assignment. This causes the scheduled tasks to change frequently, defeating the purpose of scheduling tasks in the first place. Therefore, the approach used by the scheduling algorithm attempts to minimize the rescheduling of previously scheduled tasks and works as follows.
+
+When a new assignment is added to TRACR, the algorithm first attempts to schedule tasks for this assignment without moving around tasks for any other assignment. If this is possible, then it's done. Otherwise, it iteratively goes through assignments with later due dates, attempting to reschedule tasks for these assignments such as to give priority to the newly added assignment. In the image below, the bubbles are the assignments ordered by their due dates.
+
+![Screenshot 2022-12-10 at 01 01 00](https://user-images.githubusercontent.com/46422100/206814188-288c096e-1213-491a-9c6c-2ebdfde70033.png)
+
+As previously stated, this approach reschedules the minimum amount that needs to be rescheduled. The reason tasks for assignmens with due dates before the newly added assignment aren’t rescheduled is that doing so would have no effect on the available time to schedule tasks for the newly added assignment. After rigorous testing, this general idea along with some edge case handling proved to be effective in maintianing a fairly fixed schedule even as assignmens were added and edited. 

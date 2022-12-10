@@ -1,7 +1,7 @@
 # TRACR
 ## Overview
 
-TRACR is an IOS scheduling app designed to automatically schedule users' assignments into evenly distributed tasks based on preferences that have been given by the user
+TRACR is an IOS scheduling app designed to automatically schedule users' assignments into evenly distributed tasks based on preferences that have been given by the user. 
 
 ### Key Features:
 - **Automated Scheduling** - TRACR creates tasks at times and with lengths that vary according to preferences for working hours and for different assignment types such as essays, presentation, and reports. 
